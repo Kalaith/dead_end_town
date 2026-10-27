@@ -86,3 +86,14 @@ The user reports that the game has been playtested again. They want to defend th
 - Ran `Run.ps1` and inspected 1280x720 captures in `docs/verification/`: `street_barricades.png`, `street_attack.png`, `street_salvage.png` and `street_frontier.png`, alongside refreshed existing states. Fixtures clear occupants, accelerate work and stage an attacker; these are visual evidence, not human playtest results.
 - Road barriers and guard posts are implemented. Full exposed-boundary accounting, safe road connectivity for facilities, general freeform construction, town expansion and recurring attacks remain open. The original authored approach still comes from the east; the west approach is covered by a staged automated scenario.
 - No toolkit changes, packages, exports, deployment or publication were added.
+
+
+## 28 October 2026: keyboard attack facing fix
+
+The user reports that attacks do not face the same way as the character and confirms using Space while moving with WASD. The presentation previously aimed every player swing at the mouse, including keyboard-only attacks. Its head artwork also always faced down, and turning could redirect a displayed swing arc after the instantaneous hit had already resolved.
+
+- Keyboard movement now sets facing; Space uses that movement direction, retaining it when stopped. Explicit pointer movement switches to mouse aim; clicking follows the cursor while moving. Holding Space gives keyboard facing priority over incidental pointer movement. Key repeat does not unexpectedly steal explicit mouse aim.
+- Aim is resolved from the current actor/camera transform before attacking, even on a frame shorter than one fixed step. Turning waits until the current swing animation ends; hit direction, face, bat and arc stay together. The bat and facial features now point in the same direction. Arc reach/cone now match the existing hit rules, with the unchanged cone value moved into validated balance data.
+- Restore initialises aim from the saved facing, avoiding a snap to the default direction on resuming. The save schema remains 3; no actor fields or migration changes are needed.
+- All 27 scenarios pass, including keyboard facing with a conflicting cursor, stopped facing, mouse/keyboard switching, zero cursor offset, four-direction hit selection, swing lock and restored facing. Parse and editor/import checks pass.
+- Ran `Run.ps1` with `tools/capture_aim.gd`, injecting actual keyboard/mouse input events through Godot and asserting each swing direction. Inspected 1280x720 `attack_up.png`, `attack_down.png`, `attack_left.png` and `attack_right.png`. Refreshed the regular capture tour after the artwork/control-text change. This is automated windowed input and visual verification, not a new human playtest.

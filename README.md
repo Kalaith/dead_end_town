@@ -20,15 +20,17 @@ Alternatively, import `project.godot` in Godot and run the project. The opening 
 
 | Control | Action |
 | --- | --- |
-| WASD / arrows | Move |
-| Mouse | Aim |
-| Left click / Space | Swing bat; hold to repeat |
+| WASD / arrows | Move and face |
+| Mouse / left click | Aim explicitly; click swings toward the cursor, including while moving |
+| Space | Swing in your movement direction; when stopped, keep the last facing; hold to repeat |
 | E | Interact; approve road construction/dismantling; cancel unfinished road work |
 | Hold R | Repair the home gate or road barricade; contribute construction/dismantling work |
 | 1 / 2 / 3 / 4 | Team Follow / Hold / Engage / Return home and guard |
 | F | Assign Mara to nearby road work; otherwise workshop/garden work or home guard |
 | G | Post one survivor at a nearby completed road barricade |
 | Esc / Tab | Pause all simulation and open the menu |
+
+Keyboard movement takes control of facing from the mouse. Space follows movement or your last facing when stationary. Moving the mouse aims explicitly; holding left click follows the cursor while moving. A swing keeps its original direction until its animation finishes.
 
 Start by approaching the home gate, holding R to repair it, then opening it with E. Cross east into the garden yard, clear its three shamblers and press E at the marked porch. Press E again to reserve garden materials, then hold R or assign Mara with F. Keep home access open for her route. A closed gate reports blocked work. The library across the road rescues Paige; the garage adds tools and materials. All actors stay active while off camera. One authored three-zombie approach arrives from the east road after 60 active seconds.
 

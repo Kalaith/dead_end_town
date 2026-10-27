@@ -71,7 +71,7 @@ func _build_menu() -> void:
 	column.add_child(supplies)
 	roster = kit.label("", 16)
 	column.add_child(roster)
-	column.add_child(kit.label("WASD / arrows  Move     Mouse  Aim     Click / Space  Swing\nE  Interact     Hold R  Work     F  Assign Mara     G  Post road guard\n1  Follow     2  Hold     3  Engage     4  Return home     Esc / Tab  Pause", 15))
+	column.add_child(kit.label("WASD / arrows  Move and face     Mouse  Aim\nClick  Swing at cursor     Space  Swing forward (hold to repeat)\nE  Interact     Hold R  Work     F  Assign Mara     G  Post road guard\n1  Follow     2  Hold     3  Engage     4  Return home     Esc / Tab  Pause", 15))
 	first_button = kit.button("Begin", func() -> void: requested.emit("resume"), true)
 	column.add_child(first_button)
 	var row := HBoxContainer.new()
