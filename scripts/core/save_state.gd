@@ -6,21 +6,21 @@ const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "workshop", "mara_site", "roadworks", "road_job"]
+const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "workshop", "roadworks"]
 var catalog: Dictionary
 var store: RefCounted
 
 
 func _init(data: Dictionary, path: String = "user://street.json") -> void:
 	catalog = data
-	store = JsonSave.new(path, 3, valid)
+	store = JsonSave.new(path, 4, valid)
 	store.migrate = migrate
 	store.schema_key = "schema_version"
 	store.block_on_damage = true
 
 
 func snapshot(world: RefCounted) -> Dictionary:
-	var result: Dictionary = {"schema_version": 3, "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
+	var result: Dictionary = {"schema_version": 4, "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
 	for key: String in STATE_KEYS:
 		result[key] = world.get(key).duplicate(true) if key in ["workshop", "roadworks"] else world.get(key)
 	for a: Dictionary in world.survivors:
@@ -45,7 +45,7 @@ func _decode_actor(a: Dictionary) -> Dictionary:
 
 
 func restore(raw: Dictionary) -> RefCounted:
-	var data: Dictionary = migrate(raw) if raw.get("schema_version") in [1, 2] else raw
+	var data: Dictionary = migrate(raw) if raw.get("schema_version") in [1, 2, 3] else raw
 	if not valid(data):
 		return null
 	var world := World.new(catalog)
@@ -66,10 +66,10 @@ func restore(raw: Dictionary) -> RefCounted:
 
 
 func valid(data: Dictionary) -> bool:
-	if not Rules.integer_in(data.get("schema_version"), 3, 3):
+	if not Rules.integer_in(data.get("schema_version"), 4, 4):
 		return false
 	for key: String in STATE_KEYS:
-		if key in ["workshop", "mara_site", "roadworks", "road_job"]:
+		if key in ["workshop", "roadworks"]:
 			continue
 		if key in ["approach", "garden_started", "garden_done", "repair_reserved"]:
 			if not data.get(key) is bool:
@@ -118,6 +118,9 @@ func valid(data: Dictionary) -> bool:
 		return false
 	if (data.workshop.started and not data.properties.garage.claimed) or (data.workshop.equipped and not data.properties.library.claimed):
 		return false
+	for a: Dictionary in data.survivors:
+		if not _valid_task(a, data):
+			return false
 	if not RoadState.valid(data, catalog):
 		return false
 	if data.player.id != "you":
@@ -142,10 +145,12 @@ func valid(data: Dictionary) -> bool:
 func _valid_actor(a: Variant, max_health: float) -> bool:
 	if not a is Dictionary:
 		return false
+	if not a.get("job") is String:
+		return false
 	for key: String in ["id", "name", "activity"]:
 		if not Rules.nonempty(a.get(key)):
 			return false
-	if a.get("order") not in ["Guard", "Follow", "Hold", "Engage", "Home", "Build", "Roadwork", "Roadguard"]:
+	if a.get("order") not in ["Guard", "Follow", "Hold", "Engage", "Home", "Build", "Roadwork", "Roadguard", "Garden", "Workshop"]:
 		return false
 	for key: String in VECTOR_KEYS:
 		if not Rules.is_vec2(a.get(key)):
@@ -159,20 +164,36 @@ func _valid_actor(a: Variant, max_health: float) -> bool:
 
 
 func migrate(data: Dictionary) -> Dictionary:
-	if not Rules.integer_in(data.get("schema_version"), 1, 2):
+	if not Rules.integer_in(data.get("schema_version"), 1, 3):
 		return {}
 	var upgraded: Dictionary = data.duplicate(true)
-	if int(upgraded.schema_version) == 1:
+	var version: int = int(upgraded.schema_version)
+	if version == 1:
 		upgraded.workshop = Workshop.initial()
 		upgraded.mara_site = "garden"
-	upgraded.schema_version = 3
-	upgraded.roadworks = Roadworks.initial(catalog)
-	upgraded.road_job = ""
+	if version <= 2:
+		upgraded.roadworks = Roadworks.initial(catalog)
+		upgraded.road_job = ""
+	if upgraded.get("mara_site") not in ["garden", "garage"] or not upgraded.get("road_job") is String:
+		return {}
+	if not upgraded.get("player") is Dictionary or not upgraded.get("survivors") is Array or not upgraded.get("zombies") is Array:
+		return {}
+	for a: Variant in [upgraded.player] + upgraded.survivors + upgraded.zombies:
+		if not a is Dictionary:
+			return {}
+		a.job = ""
+		if a.get("order") == "Build":
+			a.job = upgraded.mara_site
+		elif a.get("order") == "Roadwork":
+			a.job = upgraded.road_job
+	upgraded.erase("mara_site")
+	upgraded.erase("road_job")
+	upgraded.schema_version = 4
 	return upgraded if valid(upgraded) else {}
 
 
 func _valid_workshop(data: Dictionary) -> bool:
-	if data.get("mara_site") not in ["garden", "garage"] or not data.get("workshop") is Dictionary:
+	if not data.get("workshop") is Dictionary:
 		return false
 	var state: Dictionary = data.workshop
 	for key: String in ["started", "done", "armour_started", "armour_done", "equipped"]:
@@ -190,3 +211,16 @@ func _valid_workshop(data: Dictionary) -> bool:
 	if (state.armour_started and not state.done) or (state.equipped and not state.armour_done):
 		return false
 	return true
+
+
+func _valid_task(a: Dictionary, data: Dictionary) -> bool:
+	match a.order:
+		"Garden":
+			return a.job == "garden" and data.garden_started
+		"Workshop":
+			return a.job == "garage" and data.workshop.started
+		"Build":
+			return (a.job == "garden" and data.garden_started) or (a.job == "garage" and data.workshop.started)
+		"Roadwork":
+			return data.get("roadworks") is Dictionary and data.roadworks.has(a.job)
+	return a.job == ""

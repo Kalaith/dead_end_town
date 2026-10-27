@@ -1,4 +1,4 @@
 extends "res://addons/hatchery/testing/check_runner.gd"
 
 func modules() -> Array[String]:
-	return ["res://tools/checks/checks_street.gd", "res://tools/checks/checks_workshop.gd", "res://tools/checks/checks_roadworks.gd", "res://tools/checks/checks_aim.gd"]
+	return ["res://tools/checks/checks_street.gd", "res://tools/checks/checks_workshop.gd", "res://tools/checks/checks_roadworks.gd", "res://tools/checks/checks_aim.gd", "res://tools/checks/checks_tasks.gd"]

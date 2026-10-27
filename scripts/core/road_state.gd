@@ -62,10 +62,8 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 			for id: String in d.requires:
 				if not data.properties[id].claimed:
 					return false
-	if data.get("road_job") not in ids:
-		return false
 	for a: Dictionary in data.survivors:
-		if a.order == "Roadwork" and (a.id != "mara" or data.road_job == "" or data.roadworks[data.road_job].phase == "empty"):
+		if a.order == "Roadwork" and (a.job not in ids or a.job == "" or data.roadworks[a.job].phase == "empty"):
 			return false
 		if a.order == "Roadguard" and not _guard_has_post(a, data.roadworks, catalog):
 			return false

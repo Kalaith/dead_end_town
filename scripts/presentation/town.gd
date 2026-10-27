@@ -36,6 +36,7 @@ func _ready() -> void:
 	hud = Hud.new()
 	canvas.add_child(hud)
 	hud.requested.connect(command)
+	hud.assignment_requested.connect(assign_survivor)
 	hud.show_menu(true)
 	hud.refresh(world, paused)
 	# Loading is explicit, so opening the prototype cannot overwrite a run.
@@ -91,13 +92,18 @@ func _unhandled_input(event: InputEvent) -> void:
 				KEY_G:
 					world.post_road_guard()
 				KEY_F:
-					world.assign_mara()
+					command("team")
 	if not paused and event.is_action_pressed("interact"):
 		world.interact()
 
 
 func command(value: String) -> void:
 	match value:
+		"team":
+			paused = true
+			hud.refresh(world, paused)
+			hud.show_menu()
+			hud.team_orders.focus_orders()
 		"menu":
 			paused = not paused
 			if paused:
@@ -126,3 +132,9 @@ func command(value: String) -> void:
 			view.world = world
 			accumulator = 0
 			hud.menu_status.text = "New street ready. Your saved street is preserved until you save."
+
+
+func assign_survivor(id: String, task: String) -> void:
+	world.assign_survivor(id, task)
+	hud.menu_status.text = world.messages.back()
+	hud.refresh(world, paused)

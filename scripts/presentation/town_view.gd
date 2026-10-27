@@ -123,7 +123,7 @@ func _garden(rect: Rect2, site: Vector2) -> void:
 			_meter(site + Vector2(-60, 36), 120, float(world.garden_progress) / float(world.balance.work_seconds), TEAL)
 			_text(site + Vector2(-60, 65), "GARDEN / %d%%" % int(float(world.garden_progress) / float(world.balance.work_seconds) * 100), 14, CREAM)
 		else:
-			_text(site + Vector2(-60, 60), "FOOD / GROWING", 14, TEAL)
+			_text(site + Vector2(-60, 60), "FOOD / TENDING" if world.garden_tended() else "FOOD / NEEDS GARDENER", 14, TEAL)
 
 
 func _actor(a: Dictionary, zombie: bool) -> void:

@@ -2,13 +2,15 @@ extends Control
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const UiKit = preload("res://addons/hatchery/ui/ui_kit.gd")
 const Palette = preload("res://addons/hatchery/ui/palette.gd")
+const TeamOrders = preload("res://scripts/presentation/team_orders.gd")
 signal requested(command: String)
+signal assignment_requested(survivor_id: String, task: String)
 var kit: RefCounted
 var stats: Label
 var objective: Label
 var context_label: Label
 var radio: Label
-var roster: Label
+var team_orders: VBoxContainer
 var supplies: Label
 var menu: PanelContainer
 var menu_status: Label
@@ -58,20 +60,21 @@ func _panel(pos: Vector2, extent: Vector2) -> PanelContainer:
 
 
 func _build_menu() -> void:
-	menu = _panel(Vector2(240, 66), Vector2(800, 588))
+	menu = _panel(Vector2(200, 48), Vector2(880, 624))
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 12)
 	menu.add_child(column)
 	pause_title = kit.heading("ONE STREET. A PLACE TO BEGIN.", 24)
 	column.add_child(pause_title)
-	column.add_child(kit.label("Mara guards home while you reclaim the street.\nRepair the gate, clear a yard, then secure its porch.\nThe library holds Paige; the garage holds tools and armour.\nClaim facing properties to barricade their road from both ends.", 16))
+	column.add_child(kit.label("Clear yards and claim their porches. The library holds Paige.\nGive each survivor a job below; the street waits while you plan.", 16))
 	objective = kit.label("", 17, Color("dfb36e"))
 	column.add_child(objective)
 	supplies = kit.label("", 16)
 	column.add_child(supplies)
-	roster = kit.label("", 16)
-	column.add_child(roster)
-	column.add_child(kit.label("WASD / arrows  Move and face     Mouse  Aim\nClick  Swing at cursor     Space  Swing forward (hold to repeat)\nE  Interact     Hold R  Work     F  Assign Mara     G  Post road guard\n1  Follow     2  Hold     3  Engage     4  Return home     Esc / Tab  Pause", 15))
+	team_orders = TeamOrders.new()
+	column.add_child(team_orders)
+	team_orders.assigned.connect(func(id: String, task: String) -> void: assignment_requested.emit(id, task))
+	column.add_child(kit.label("WASD / arrows  Move and face     Mouse  Aim\nClick  Swing at cursor     Space  Swing forward (hold to repeat)\nE  Interact     Hold R  Work     F  Team orders     G  Post road guard\n1-4  Entire team: Follow / Hold / Engage / Home     Esc / Tab  Pause", 15))
 	first_button = kit.button("Begin", func() -> void: requested.emit("resume"), true)
 	column.add_child(first_button)
 	var row := HBoxContainer.new()
@@ -95,11 +98,8 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	supplies.text = "STOCKPILE / %d materials     %d food" % [world.materials, world.food]
 	context_label.text = world.context()
 	context_label.visible = not paused and not context_label.text.is_empty()
-	var people := PackedStringArray()
-	for a: Dictionary in world.survivors:
-		var equipment: String = "Iron armour + shield" if a.id == "paige" and world.workshop.equipped else "Bat / everyday clothes"
-		people.append("%s [%d] / %s / %s" % [a.name, int(a.hp), a.activity, equipment])
-	roster.text = "TEAM / " + "\n".join(people)
+	if paused:
+		team_orders.refresh(world)
 	var latest: String = world.messages.back() if not world.messages.is_empty() else ""
 	if latest != last_message:
 		last_message = latest
@@ -119,17 +119,19 @@ func _goal(world: RefCounted) -> String:
 			return "Rescue Paige at the library, then bring her to the workshop."
 		return "Bring Paige to the workshop; E fits her armour and shield."
 	if world.workshop.armour_started:
-		return "Restore the armour with R or assign Mara with F at the garage."
+		return "Restore the armour with R or assign a survivor with F at the garage."
 	if world.workshop.done:
 		return "Start restoring the cached armour at the garage bench with E."
 	if world.workshop.started:
-		return "Restore the workshop with R or assign Mara with F at the garage."
+		return "Restore the workshop with R or assign a survivor with F at the garage."
 	if world.properties.garage.claimed:
 		return "Restore the workshop at the garage porch with E."
 	if world.garden_done:
 		return "Rescue Paige at the library and recover the garage tools."
 	if world.properties.garden.claimed:
-		return "Start the garden with E, then hold R or assign Mara with F."
+		if world.garden_started:
+			return "Assign a gardener with F, or help build the beds with R."
+		return "Start the garden with E, then hold R or assign a survivor with F."
 	if float(world.properties.home.gate_hp) >= float(world.balance.gate_health) or world.properties.home.open:
 		return "Clear the garden east of home; secure its marked porch with E."
 	return "Repair the home gate with R, then open it with E and head east."

@@ -149,7 +149,7 @@ func check_mara_reaches_road_job_handoffs_and_defenders_strike_over_it() -> Stri
 	var save := SaveState.new(w.catalog)
 	var loaded: RefCounted = save.restore(JSON.parse_string(JSON.stringify(save.snapshot(w))))
 	_advance(loaded, 12.0)
-	if loaded.roadworks.home_east.phase != "ready" or loaded.road_job != "":
+	if loaded.roadworks.home_east.phase != "ready" or loaded.survivors[0].job != "":
 		return "Saved road job failed to route and finish with Mara."
 	var a: Dictionary = loaded.survivors[0]
 	a.pos = Vector2(600, 580)
@@ -215,6 +215,7 @@ func check_expansion_moves_defensive_line_and_legacy_saves_migrate() -> String:
 	var save := SaveState.new(w.catalog)
 	var old: Dictionary = save.snapshot(w)
 	old.schema_version = 2
+	old.mara_site = "garden"
 	old.erase("roadworks")
 	old.erase("road_job")
 	var data: Dictionary = save.store.upgraded(old)

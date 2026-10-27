@@ -58,9 +58,9 @@ static func context(world: RefCounted, d: Dictionary) -> String:
 		"building":
 			if float(s.progress) >= float(world.balance.barricade_seconds) and _occupied(world, Routes.rectangle(d.rect)):
 				return "Barricade ready / step clear of its footprint to finish construction"
-			return "R / Build %d%%   F / Assign Mara   E / Cancel (+%d materials)" % [int(float(s.progress) / float(world.balance.barricade_seconds) * 100), salvage(world, s)]
+			return "R / Build %d%%   F / Team orders   E / Cancel (+%d materials)" % [int(float(s.progress) / float(world.balance.barricade_seconds) * 100), salvage(world, s)]
 		"dismantling":
-			return "R / Dismantle %d%% (+%d materials)   F / Assign Mara   E / Keep barricade" % [int(float(s.progress) / float(world.balance.barricade_remove_seconds) * 100), salvage(world, s)]
+			return "R / Dismantle %d%% (+%d materials)   F / Team orders   E / Keep barricade" % [int(float(s.progress) / float(world.balance.barricade_remove_seconds) * 100), salvage(world, s)]
 	return "E / Dismantle (+%d materials)   R / Repair (%d)   F / Assign repair   G / Post guard" % [salvage(world, s), int(world.balance.barricade_repair_cost)]
 
 
@@ -80,7 +80,7 @@ static func interact(world: RefCounted, d: Dictionary) -> void:
 				return
 			world.materials -= cost
 			s.phase = "building"
-			world.note("%s committed. Hold R or assign Mara with F." % d.name)
+			world.note("%s committed. Hold R or assign a survivor with F." % d.name)
 		"building":
 			var refund: int = salvage(world, s)
 			world.materials += refund
@@ -91,22 +91,16 @@ static func interact(world: RefCounted, d: Dictionary) -> void:
 			s.phase = "dismantling"
 			s.progress = 0.0
 			s.repair_reserved = false
-			world.note("Dismantling approved. Hold R or assign Mara; collision stays until finished.")
+			world.note("Dismantling approved. Hold R or assign a survivor; collision stays until finished.")
 		"dismantling":
 			s.phase = "ready"
 			s.progress = 0.0
 			world.note("Barricade kept. No salvage collected.")
 
 
-static func assign(world: RefCounted, d: Dictionary) -> void:
-	var s: Dictionary = world.roadworks[d.id]
-	if s.phase == "empty" or (s.phase == "ready" and float(s.hp) >= float(world.balance.barricade_health)):
-		world.note("Approve construction or dismantling with E first; undamaged barricades need no work.")
-		return
-	world.road_job = d.id
-	world.survivors[0].order = "Roadwork"
-	world.survivors[0].anchor = Routes.point(d.site)
-	world.note("Mara assigned to %s. Home is unguarded while she works." % d.name)
+static func assign(world: RefCounted, d: Dictionary, survivor_id: String = "mara") -> void:
+	# Compatibility entry point; the live menu always supplies a survivor id.
+	world.assign_survivor(survivor_id, "work:" + d.id)
 
 
 static func guard_post(world: RefCounted, d: Dictionary) -> Vector2:
@@ -135,8 +129,7 @@ static func post_guard(world: RefCounted) -> void:
 	if chosen.is_empty():
 		world.note("No standing survivor is available to guard the road.")
 		return
-	if chosen.id == "mara" and chosen.order == "Roadwork":
-		world.road_job = ""
+	chosen.job = ""
 	chosen.order = "Roadguard"
 	chosen.anchor = post
 	world.note("%s holds %s. Other guards keep their posts." % [chosen.name, d.name])
@@ -149,7 +142,7 @@ static func step(world: RefCounted, dt: float) -> void:
 			continue
 		var executor: bool = world.working and world.player.pos.distance_to(Routes.point(d.center)) < float(world.balance.barricade_work_range)
 		for a: Dictionary in world.survivors:
-			if a.order == "Roadwork" and world.road_job == d.id and float(a.hp) > 0 and a.pos.distance_to(Routes.point(d.site)) < 40:
+			if a.order == "Roadwork" and a.job == d.id and float(a.hp) > 0 and a.pos.distance_to(Routes.point(d.site)) < 40:
 				executor = true
 		if not executor:
 			continue
@@ -201,11 +194,10 @@ static func _repair(world: RefCounted, d: Dictionary, s: Dictionary, dt: float) 
 
 
 static func _release(world: RefCounted, id: String, remove_guard: bool = false) -> void:
-	if world.road_job == id:
-		for a: Dictionary in world.survivors:
-			if a.order == "Roadwork":
-				a.order = "Home"
-		world.road_job = ""
+	for a: Dictionary in world.survivors:
+		if a.order == "Roadwork" and a.job == id:
+			a.order = "Home"
+			a.job = ""
 	if not remove_guard:
 		return
 	for d: Dictionary in world.catalog.barricades:
@@ -213,6 +205,7 @@ static func _release(world: RefCounted, id: String, remove_guard: bool = false) 
 			for a: Dictionary in world.survivors:
 				if a.order == "Roadguard" and a.anchor.distance_to(guard_post(world, d)) < 10:
 					a.order = "Home"
+					a.job = ""
 
 
 static func intercept(world: RefCounted, z: Dictionary, target: Vector2, dt: float) -> bool:

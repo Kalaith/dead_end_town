@@ -56,8 +56,8 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 			anchor = Vector2(360, 445)
 		"Follow", "Engage":
 			anchor = world.player.pos + Vector2(-38, 24)
-		"Build":
-			anchor = world.routes.point(world.definition(world.mara_site).site)
+		"Build", "Garden", "Workshop":
+			anchor = world.routes.point(world.definition(a.job).site)
 	var target: Dictionary = {}
 	var best: float = 150 if a.order != "Engage" else 220
 	for z: Dictionary in world.zombies:
@@ -85,11 +85,22 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.cooldown = float(world.balance.attack_cooldown)
 				a.activity = "Holding the barricade"
 				return
-	if a.order in ["Build", "Roadwork"] and danger(world, anchor, 170):
+	if a.order in ["Build", "Garden", "Workshop", "Roadwork"] and danger(world, anchor, 170):
 		anchor = Vector2(360, 350)
 		a.activity = "Sheltering - work preserved"
 	else:
-		a.activity = ("Working " + world.mara_site) if a.order == "Build" else ("Road defence work" if a.order == "Roadwork" else a.order)
+		a.activity = a.order
+		match a.order:
+			"Build":
+				a.activity = "Working " + a.job
+			"Garden":
+				a.activity = "Tending garden" if world.garden_done else "Building garden"
+			"Workshop":
+				a.activity = "Workshop work" if (world.workshop.started and not world.workshop.done) or (world.workshop.armour_started and not world.workshop.armour_done) else "Workshop ready - approve next job"
+				if world.workshop.armour_done:
+					a.activity = "Workshop work complete"
+			"Roadwork":
+				a.activity = "Road defence work"
 	if a.pos.distance_to(anchor) > (4.0 if a.order == "Roadguard" else 24.0):
 		var old: Vector2 = a.pos
 		_walk(world, a, anchor, dt, _survivor_speed(world, a))
