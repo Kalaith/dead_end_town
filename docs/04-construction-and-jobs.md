@@ -18,11 +18,11 @@ Blueprints have no completed collision benefit. A mid-build barrier should not t
 
 ## Current road-barricade contract, 28 October 2026
 
-Four authored sockets implement temporary defences for the two facing-property pairs. E approves an 8-material commitment; R or Mara assigned with F contributes one shared 8-second work rate. Blueprints have no collision. Completion waits if a living actor occupies the footprint. Nearby threats pause construction, repair and removal. Mara routes to the inside work position and shelters when threatened.
+Four authored sockets implement temporary defences for the two facing-property pairs. E approves an 8-material commitment; R or either survivor assigned through F contributes one shared 8-second work rate. Blueprints have no collision. Completion waits if a living actor occupies the footprint. Nearby threats pause construction, repair and removal. Assigned survivors route to the inside work position and shelters when threatened.
 
 E on a built barrier approves removal, with current salvage displayed before work. R/F contributes 4 seconds while collision stays active; completion refunds once and opens the road. A full-health barrier returns 6 materials; damaged salvage is `floor(6 * health / 180)`. Cancelling removal keeps the barrier and pays nothing. Cancelling a blueprint before work returns all 8; later cancellation returns `floor(8 * lerp(1, 0.75, labour_fraction))`. A breached barrier pays no salvage.
 
-Repairs commit 3 materials once for a fill toward 180 health at 24 health/second. Interruption/reload preserves that commitment. An explicit removal order discards any remaining repair commitment; it never refunds it separately. Work completion returns Mara home. G is a separate guard assignment, preferring a survivor without an existing road post; repairs preserve the guard assignment. Schema 3 stores all phases, labour, health, repair commitments, work destination and guard anchors. These values are initial balance defaults.
+Repairs commit 3 materials once for a fill toward 180 health at 24 health/second. Interruption/reload preserves that commitment. An explicit removal order discards any remaining repair commitment; it never refunds it separately. Road-work completion returns only its assigned workers home. G is a separate guard assignment, preferring a survivor without an existing road post; repairs preserve the guard assignment. Schema 4 stores all phases, labour, health, repair commitments, individual work destinations and guard anchors. These values are initial balance defaults.
 
 ## Construction families
 
@@ -51,6 +51,14 @@ Visible collection and carrying are simple animations tied to reachable storage 
 | Expedition | Follow squad commands | No autonomous settlement job selection |
 
 Do not require a separate hauler. Scavenging is permitted only at explicitly safe sites inside the connected perimeter. Clearing a distant house does not authorise an unescorted worker expedition.
+
+## Implemented individual orders, 28 October 2026
+
+F opens paused orders with one selector per recruited survivor. Garden and Workshop are persistent roles: gardeners build approved beds and then tend food; workshop workers complete approved bench/armour work and wait at the bench. Follow, Hold, Engage and Home guard can also be assigned individually. Existing road work and guard posts appear when relevant. An unavailable project is disabled and explains its prerequisite through its tooltip. Downed survivors cannot be reassigned until recovered.
+
+Roles do not reserve or spend materials: project approval remains the E transaction. Everyone can take either role, two sites can progress concurrently, and multiple people at one site still contribute one combined work rate. Partial progress survives switching workers. Completing a workshop job never clears the garden assignment. Garden production now requires a present gardener or player tending; an untended garden keeps its harvest clock but does not advance it. These are current prototype rules, separate from the broader proposed job queue below.
+
+Danger suspends the affected site's work and survivors retain their assignments while sheltering, then return when it clears. Gates remain physical and blocked routes report their reason. Individual assignments leave other people untouched; the explicit whole-team shortcuts 1-4 override all jobs. Schema-1/2/3 saves migrate old work targets into the appropriate actor records. Legacy one-off Build orders finish and return home; newly chosen roles remain stationed.
 
 ## Job lifecycle
 

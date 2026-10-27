@@ -13,6 +13,7 @@
 | D07 | Document connected property reclamation, home defence, jobs, production, rewards, pressure, and Godot implementation | Current project request |
 | D08 | Keep gameplay information sparse; remove the persistent bottom panel and place details in pause | User feedback after basic combat/territory playtest, 28 October 2026 |
 | D09 | After taking both properties, barricade the street from both directions; dismantle temporary defences to reclaim materials as the front moves | User request after a further game playtest, 28 October 2026 |
+| D10 | Direct survivors individually, such as Mara gardening and Paige working at the workshop while the player guards | User request after recruiting Paige, 28 October 2026 |
 
 The initial request produced this design package. The subsequent request explicitly authorises starting the game using another neighboring project as a template and adopting `../godot_toolkit`. The initial runtime and evidence are recorded in [PROGRESS.md](PROGRESS.md); the design is still broader than the implementation.
 
