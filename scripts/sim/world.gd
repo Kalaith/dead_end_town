@@ -145,16 +145,16 @@ func context() -> String:
 			if p.id == "home":
 				return "E / Rest at home and recover the team"
 			if remaining(p.id) > 0:
-				return "%s / Clear %d remaining shamblers" % [p.name, remaining(p.id)]
+				return "Clear the yard before searching"
 			if not properties[p.id].claimed:
-				return "E / Secure %s and recover %s" % [p.name, p.reward]
+				return "E / Search and secure property"
 			if p.id == "garage":
 				return Workshop.context(self)
 			if p.id == "garden" and not garden_done:
 				return "E / Start garden (8 materials)   |   R / Help build   |   F / Team orders"
 			if p.id == "garden":
 				return "R / Tend garden   |   F / Assign a gardener"
-			return "%s secured / %s recovered" % [p.name, p.reward]
+			return ""
 	return ""
 
 

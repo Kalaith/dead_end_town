@@ -55,7 +55,7 @@ static func step(world: RefCounted) -> void:
 		z.anchor = Routes.point(target_property(world, pos).gate)
 		world.zombies.append(z)
 	if size > 0:
-		world.note("RADIO / %d shamblers entering from %s." % [size, route_names(world)])
+		world.note("RADIO / Shamblers entering from %s." % route_names(world))
 	world.approach = true
 	world.pressure.wave = int(world.pressure.wave) + 1
 	world.pressure.next = world.elapsed + maxf(float(config.minimum_interval), float(config.interval_seconds) - (claims - 1) * float(config.claim_interval_reduction))

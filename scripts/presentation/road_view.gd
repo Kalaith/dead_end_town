@@ -24,14 +24,13 @@ static func paint(view: Node2D, world: RefCounted, font: Font) -> void:
 				view.draw_line(origin + Vector2(12, 0), origin + Vector2(12, 17), color, 3)
 		for y: float in [rect.position.y, rect.end.y]:
 			view.draw_rect(Rect2(center.x - 12, y - 8, 24, 16), color)
-		if near:
+		if world.player.pos.distance_to(center) < float(world.balance.barricade_work_range):
 			view.draw_circle(center, 17, Color("142426"))
 			view.draw_string(font, center + Vector2(-5, 6), "E", HORIZONTAL_ALIGNMENT_LEFT, -1, 17, color)
 		if state.phase in ["building", "dismantling"]:
 			var duration: float = float(world.balance.barricade_seconds if state.phase == "building" else world.balance.barricade_remove_seconds)
 			var pos: Vector2 = center + Vector2(-52, 35)
 			_meter(view, pos, float(state.progress) / duration, color)
-			view.draw_string(font, pos + Vector2(0, 22), "BUILDING" if state.phase == "building" else "REMOVING", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, color)
 		elif built and (near or float(state.hp) < float(world.balance.barricade_health)):
 			_meter(view, center + Vector2(-52, 35), float(state.hp) / float(world.balance.barricade_health), color)
 

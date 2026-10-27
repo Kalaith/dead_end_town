@@ -66,7 +66,7 @@ func _build_menu() -> void:
 	menu.add_child(column)
 	pause_title = kit.heading("ONE STREET. A PLACE TO BEGIN.", 24)
 	column.add_child(pause_title)
-	column.add_child(kit.label("Clear yards and claim their porches. The library holds Paige.\nGive each survivor a job below; the street waits while you plan.", 16))
+	column.add_child(kit.label("Search buildings and hold your ground.", 16))
 	objective = kit.label("", 17, Color("dfb36e"))
 	column.add_child(objective)
 	supplies = kit.label("", 16)
@@ -121,7 +121,7 @@ func _goal(world: RefCounted) -> String:
 		return "Paige equipped. Use 4 to send the team home to guard."
 	if world.workshop.armour_done:
 		if not world.properties.library.claimed:
-			return "Rescue Paige at the library, then bring her to the workshop."
+			return "The restored armour is stored at the workshop."
 		return "Bring Paige to the workshop; E fits her armour and shield."
 	if world.workshop.armour_started:
 		return "Restore the armour with R or assign a survivor with F at the garage."
@@ -132,13 +132,13 @@ func _goal(world: RefCounted) -> String:
 	if world.properties.garage.claimed:
 		return "Restore the workshop at the garage porch with E."
 	if world.garden_done:
-		return "Rescue Paige at the library and recover the garage tools."
+		return "Explore the remaining properties."
 	if world.properties.garden.claimed:
 		if world.garden_started:
 			return "Assign a gardener with F, or help build the beds with R."
 		return "Start the garden with E, then hold R or assign a survivor with F."
 	if float(world.properties.home.gate_hp) >= float(world.balance.gate_health) or world.properties.home.open:
-		return "Clear the garden east of home; secure its marked porch with E."
+		return "Explore east of home; search cleared buildings with E."
 	return "Repair the home gate with R, then open it with E and head east."
 
 

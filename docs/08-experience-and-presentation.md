@@ -15,6 +15,12 @@ The timings below are illustrative playtest targets, not a strict clock or a con
 
 Paige's rescue follows once the basic controls are understood. It should show her overwhelmed by a manageable threat, then give her useful work immediately after rescue. Her later armour milestone echoes that introduction without requiring a scripted helplessness phase.
 
+## Current sparse presentation, 28 October 2026
+
+The street uses physical flags, boarded/lit windows, gates, crops and equipment to show progress. Do not draw property titles, CONNECTED/clear labels, zombie counts, reward previews, permanent facility captions or street slogans over the map. Nearby interaction prompts, progress/health bars, survivor names and brief danger/discovery messages remain. Porch and barricade E markers appear only in interaction range.
+
+Unsearched buildings do not disclose rewards through prompts, objectives or paused orders. Garden/workshop assignments appear after claiming their property. Paige is unknown until searching the cleared library rescues her; neither the opening/pause screen nor an early workshop/armour route may name her beforehand. The rescue notification and recruited survivor row then reveal her normally.
+
 ## Essential interfaces
 
 **World HUD:** health, equipped tool or weapon, relevant ammunition, squad orders, and concise local alerts. Show construction progress at the work site.

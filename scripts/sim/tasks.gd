@@ -14,12 +14,14 @@ static func person(world: RefCounted, id: String) -> Dictionary:
 static func options(world: RefCounted) -> Array[Dictionary]:
 	var result: Array[Dictionary] = [
 		{"id": "home", "label": "Guard home"},
-		{"id": "garden", "label": "Garden: build and tend"},
-		{"id": "garage", "label": "Workshop: build and restore"},
 		{"id": "follow", "label": "Follow me"},
 		{"id": "hold", "label": "Hold current position"},
 		{"id": "engage", "label": "Engage nearby threats"},
 	]
+	if world.properties.garden.claimed:
+		result.append({"id": "garden", "label": "Garden: build and tend"})
+	if world.properties.garage.claimed:
+		result.append({"id": "garage", "label": "Workshop: build and restore"})
 	for d: Dictionary in world.catalog.barricades:
 		var s: Dictionary = world.roadworks[d.id]
 		if s.phase == "empty":

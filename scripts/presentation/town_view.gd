@@ -22,13 +22,10 @@ func _draw() -> void:
 	# The two exposed alleys feed the road between the property blocks.
 	draw_rect(Rect2(660, 0, 120, 500), Color("45473d"))
 	draw_rect(Rect2(660, 660, 120, 500), Color("45473d"))
-	_text(Vector2(665, 120), "NORTH", 15, Color("ada47b"))
-	_text(Vector2(665, 1040), "SOUTH", 15, Color("ada47b"))
 	draw_rect(Rect2(0, 500, 1440, 7), Color("7b8174"))
 	draw_rect(Rect2(0, 653, 1440, 7), Color("7b8174"))
 	for x: int in range(0, 1440, 100):
 		draw_rect(Rect2(x + 10, 577, 50, 5), Color("ada47b"))
-	_text(Vector2(640, 625), "DEAD END / EAST ROAD", 16, Color("858f85"))
 	for p: Dictionary in world.catalog.properties:
 		_property(p)
 	RoadView.paint(self, world, font)
@@ -37,8 +34,6 @@ func _draw() -> void:
 	actors.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.pos.y < b.pos.y)
 	for a: Dictionary in actors:
 		_actor(a, a.has("raid"))
-	if world.properties.library.claimed and world.properties.garage.claimed and world.garden_done:
-		_text(Vector2(820, 600), "A STREET WORTH COMING HOME TO", 16, TEAL)
 
 
 func _property(p: Dictionary) -> void:
@@ -71,21 +66,16 @@ func _property(p: Dictionary) -> void:
 		if not state.claimed:
 			draw_line(window.position, window.end, Color("9b8764"), 6)
 	draw_rect(Rect2(building.get_center().x - 18, building.end.y - 48, 36, 48), Color("263536"))
-	_text(building.position + Vector2(10, 48), p.name, 18, CREAM)
 	_fence(rect, gate, state, accent)
-	# A clear interaction marker and status words supplement colour.
-	draw_circle(site, 23, Color(0.06, 0.12, 0.12, 0.8))
-	draw_arc(site, 23, 0, TAU, 24, accent, 2)
-	_text(site + Vector2(-5, 6), "E", 18, accent)
-	var status: String = "CONNECTED" if state.claimed else ("CLEAR / SECURE AT PORCH" if world.remaining(p.id) == 0 else "%d SHAMBLERS" % world.remaining(p.id))
-	_text(Vector2(rect.position.x + 18, rect.position.y + (245 if gate.y == rect.end.y else 55)), status, 15, accent)
+	# Only nearby porches need a prompt; ownership is visible in flags and windows.
+	if world.player.pos.distance_to(site) < 85:
+		draw_circle(site, 23, Color(0.06, 0.12, 0.12, 0.8))
+		draw_arc(site, 23, 0, TAU, 24, accent, 2)
+		_text(site + Vector2(-5, 6), "E", 18, accent)
 	if p.id == "home":
 		_meter(gate + Vector2(-44, 20), 88, float(state.gate_hp) / float(world.balance.gate_health), accent)
-		_text(gate + Vector2(-40, 46), "%s / %d" % ["OPEN" if state.open else "GATE", int(state.gate_hp)], 13, CREAM)
 	if p.id == "garden":
 		_garden(rect, site)
-	if p.id == "library" and not state.claimed:
-		_text(site + Vector2(30, 0), "Paige is sheltering inside", 14, CREAM)
 	if p.id == "garage":
 		_workshop(site)
 	if state.claimed:
@@ -110,8 +100,6 @@ func _fence(rect: Rect2, gate: Vector2, state: Dictionary, accent: Color) -> voi
 		var end: Vector2 = gate + (Vector2(-44, -60) if state.open else Vector2(44, 0))
 		draw_line(gate - Vector2(44, 0), end, accent.darkened(0.2), 9)
 		draw_line(gate - Vector2(44, 0), end, accent, 2)
-	else:
-		_text(gate + Vector2(-34, 0), "BREACH", 16, RUST)
 
 
 func _garden(rect: Rect2, site: Vector2) -> void:
@@ -126,9 +114,7 @@ func _garden(rect: Rect2, site: Vector2) -> void:
 					draw_line(plant + Vector2(5, -5), plant + Vector2(-5, 5), Color("698e50"), 4)
 		if not world.garden_done:
 			_meter(site + Vector2(-60, 36), 120, float(world.garden_progress) / float(world.balance.work_seconds), TEAL)
-			_text(site + Vector2(-60, 65), "GARDEN / %d%%" % int(float(world.garden_progress) / float(world.balance.work_seconds) * 100), 14, CREAM)
-		else:
-			_text(site + Vector2(-60, 60), "FOOD / TENDING" if world.garden_tended() else "FOOD / NEEDS GARDENER", 14, TEAL)
+
 
 
 func _actor(a: Dictionary, zombie: bool) -> void:
@@ -152,7 +138,8 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		var grip: Vector2 = pos + Vector2(0, -14) + direction * 12
 		draw_line(grip, grip + direction * 27, Color("c7b68e"), 5)
 		draw_circle(grip, 3, Color("d7b08b"))
-		_text(pos + Vector2(-16, -49), a.name, 13, CREAM)
+		if a.id != "you":
+			_text(pos + Vector2(-16, -49), a.name, 13, CREAM)
 	if float(a.swing) > 0:
 		var half_angle: float = acos(float(world.balance.attack_cone_dot))
 		draw_arc(pos, float(world.balance.attack_reach), direction.angle() - half_angle, direction.angle() + half_angle, 24, CREAM, 3)
@@ -203,12 +190,8 @@ func _workshop(site: Vector2) -> void:
 		draw_arc(bench + Vector2(48, -6), 7, PI, TAU, 12, CREAM, 3)
 	if state.started and not state.done:
 		_meter(site + Vector2(-60, 36), 120, float(state.progress) / float(world.balance.workshop_seconds), TEAL)
-		_text(site + Vector2(-60, 63), "RESTORING BENCH", 14, CREAM)
 	elif state.armour_started and not state.armour_done:
 		_meter(site + Vector2(-60, 36), 120, float(state.armour_progress) / float(world.balance.armour_seconds), TEAL)
-		_text(site + Vector2(-60, 63), "RESTORING ARMOUR", 14, CREAM)
-	elif state.done:
-		_text(site + Vector2(-60, 63), "WORKSHOP READY", 14, TEAL)
 
 
 func _armour(pos: Vector2, facing: Vector2) -> void:

@@ -15,6 +15,7 @@
 | D09 | After taking both properties, barricade the street from both directions; dismantle temporary defences to reclaim materials as the front moves | User request after a further game playtest, 28 October 2026 |
 | D10 | Direct survivors individually, such as Mara gardening and Paige working at the workshop while the player guards | User request after recruiting Paige, 28 October 2026 |
 | D11 | Increase resident numbers, recurring raids and attack directions so each territory gain feels fought for | User feedback that zombies are not a threat, 28 October 2026 |
+| D12 | Remove map status/count/reward text and reveal Paige only when rescued | User requests less screen text and discovery without spoilers, 28 October 2026 |
 
 The initial request produced this design package. The subsequent request explicitly authorises starting the game using another neighboring project as a template and adopting `../godot_toolkit`. The initial runtime and evidence are recorded in [PROGRESS.md](PROGRESS.md); the design is still broader than the implementation.
 
