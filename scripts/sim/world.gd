@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Territory = preload("res://scripts/sim/territory.gd")
 const Pressure = preload("res://scripts/sim/pressure.gd")
 const Tasks = preload("res://scripts/sim/tasks.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
@@ -45,7 +46,7 @@ func _init(data: Dictionary) -> void:
 	survivors[0].order = "Guard"
 	survivors[0].anchor = Vector2(360, 445)
 	for p: Dictionary in catalog.properties:
-		properties[p.id] = {"claimed": p.id == "home", "looted": p.id == "home", "open": p.id != "home", "gate_hp": float(balance.gate_health) * (0.65 if p.id == "home" else 1.0)}
+		properties[p.id] = {"claimed": p.id == "home", "looted": p.id == "home", "open": p.id != "home", "occupation": 0.0, "gate_hp": float(balance.gate_health) * (0.65 if p.id == "home" else 1.0)}
 		for spawn: Array in p.zombies:
 			var z: Dictionary = actor("z%d" % zombies.size(), "Shambler", Routes.point(spawn), float(balance.zombie_health))
 			z.home = p.id
@@ -90,6 +91,7 @@ func step(dt: float) -> void:
 	player.pos = routes.move(player.pos, player.pos + travel, travel.length())
 	face_aim()
 	Combat.step(self, dt)
+	Territory.step(self, dt)
 	_work(dt)
 	Workshop.step(self, dt)
 	Roadworks.step(self, dt)
@@ -122,6 +124,8 @@ func remaining(id: String) -> int:
 
 
 func connected(id: String) -> bool:
+	if not properties.home.claimed:
+		return false
 	var reached: Array[String] = ["home"]
 	var index: int = 0
 	while index < reached.size():
@@ -142,7 +146,7 @@ func context() -> String:
 				return "R / Rebuild gate (3 materials, hold to work)"
 			return "E / %s gate%s" % ["Close" if properties[p.id].open else "Open", "   |   R / Repair (3 materials)" if p.id == "home" else ""]
 		if player.pos.distance_to(Routes.point(p.site)) < 85:
-			if p.id == "home":
+			if p.id == "home" and properties.home.claimed:
 				return "E / Rest at home and recover the team"
 			if remaining(p.id) > 0:
 				return "Clear the yard before searching"
@@ -178,7 +182,7 @@ func interact() -> void:
 			rebuild_routes()
 			return
 		if player.pos.distance_to(Routes.point(p.site)) < 85:
-			if p.id == "home":
+			if p.id == "home" and state.claimed:
 				if alert != "SAFE":
 					note("Resolve the home approach before resting.")
 					return
@@ -209,13 +213,17 @@ func claim(id: String) -> bool:
 	if remaining(id) > 0:
 		note("Clear the yard before securing this property.")
 		return false
-	var adjacent: bool = false
+	var adjacent: bool = id == "home"
 	for next: String in definition(id).neighbors:
 		adjacent = adjacent or connected(next)
 	if not adjacent:
 		note("Secure a neighboring property first to connect this site to home.")
 		return false
 	properties[id].claimed = true
+	properties[id].occupation = 0.0
+	if properties[id].looted:
+		note(definition(id).name + " / Reclaimed. Previous improvements preserved.")
+		return true
 	properties[id].looted = true
 	materials += int(balance.claim_materials)
 	if id == "garage":

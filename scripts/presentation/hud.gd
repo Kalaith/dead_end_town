@@ -96,6 +96,8 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	for d: Dictionary in world.catalog.barricades:
 		if world.alert == "SAFE" and Roadworks.active(world.roadworks[d.id]) and Roadworks.danger(world, d):
 			stats.text = "HEALTH %d     STREET / THREATENED" % int(world.player.hp)
+	if not world.properties.home.claimed:
+		stats.text = "HEALTH %d     HOME / LOST" % int(world.player.hp)
 	if world.pressure.warned and stats.text.ends_with("SAFE"):
 		stats.text = "HEALTH %d     RAID / IN %ds" % [int(world.player.hp), ceili(float(world.pressure.next) - world.elapsed)]
 	stats.modulate = Color("e7dfc9") if world.alert == "SAFE" and not stats.text.contains("THREATENED") else Color("ffac82")
@@ -117,6 +119,9 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 
 
 func _goal(world: RefCounted) -> String:
+	for p: Dictionary in world.catalog.properties:
+		if world.properties[p.id].looted and not world.properties[p.id].claimed:
+			return "Clear and reclaim " + p.name + " at its porch with E."
 	if world.workshop.equipped:
 		return "Paige equipped. Use 4 to send the team home to guard."
 	if world.workshop.armour_done:

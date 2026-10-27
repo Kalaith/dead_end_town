@@ -60,7 +60,7 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 			return false
 		if s.phase != "empty":
 			for id: String in d.requires:
-				if not data.properties[id].claimed:
+				if not data.properties[id].looted:
 					return false
 	for a: Dictionary in data.survivors:
 		if a.order == "Roadwork" and (a.job not in ids or a.job == "" or data.roadworks[a.job].phase == "empty"):

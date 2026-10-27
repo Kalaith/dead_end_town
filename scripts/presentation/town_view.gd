@@ -78,6 +78,8 @@ func _property(p: Dictionary) -> void:
 		_garden(rect, site)
 	if p.id == "garage":
 		_workshop(site)
+	if float(state.occupation) > 0:
+		_meter(site + Vector2(-44, 48), 88, 1.0 - float(state.occupation) / float(world.balance.territory_fall_seconds), RUST)
 	if state.claimed:
 		draw_line(site + Vector2(48, -10), site + Vector2(48, 35), CREAM, 3)
 		draw_colored_polygon(PackedVector2Array([site + Vector2(49, -10), site + Vector2(75, -10), site + Vector2(49, 8)]), TEAL)

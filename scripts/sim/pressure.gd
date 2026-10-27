@@ -41,7 +41,7 @@ static func step(world: RefCounted) -> void:
 	for p: Dictionary in world.properties.values():
 		if p.claimed:
 			claims += 1
-	var size: int = mini(int(config.maximum_size), int(config.base_size) + (claims - 1) * int(config.claim_size))
+	var size: int = mini(int(config.maximum_size), int(config.base_size) + (maxi(1, claims) - 1) * int(config.claim_size))
 	size = mini(size, maxi(0, int(config.living_cap) - living))
 	var entries: Array = origins(world)
 	for i: int in range(size):
@@ -58,7 +58,7 @@ static func step(world: RefCounted) -> void:
 		world.note("RADIO / Shamblers entering from %s." % route_names(world))
 	world.approach = true
 	world.pressure.wave = int(world.pressure.wave) + 1
-	world.pressure.next = world.elapsed + maxf(float(config.minimum_interval), float(config.interval_seconds) - (claims - 1) * float(config.claim_interval_reduction))
+	world.pressure.next = world.elapsed + maxf(float(config.minimum_interval), float(config.interval_seconds) - (maxi(1, claims) - 1) * float(config.claim_interval_reduction))
 	world.pressure.warned = false
 
 

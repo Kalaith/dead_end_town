@@ -3,6 +3,7 @@
   "bounds": [1440, 1160],
   "balance": {
     "step": 0.05,
+    "territory_fall_seconds": 8,
     "player_speed": 190,
     "survivor_speed": 145,
     "zombie_speed": 47,

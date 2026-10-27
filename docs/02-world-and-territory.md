@@ -49,7 +49,7 @@ This makes compact expansion useful without awarding an unexplained adjacency mu
 1. A breach opens a physical route for zombies and raises local danger. It does not automatically sever every property beyond it.
 2. A corridor becomes unsafe or blocked. New worker travel through it stops; remote facilities pause if no alternative safe route exists.
 3. Isolated survivors shelter or retreat along a verified route. They never teleport to the stockpile.
-4. A property becomes lost when persistent occupation removes community control under the eventual loss rule. Prototype this as an explicit contested-site resolution with a warning, not an unseen timer.
+4. A claimed property falls after eight active seconds with living zombies physically inside its yard and no standing player or survivor inside. A brief warning and draining porch bar show the occupation. Returning a living defender or clearing all occupants resets it. Closed gates and road barricades prevent occupation until attackers physically enter; downed people cannot defend. This applies to home too. Loss pauses facilities through the ownership graph; surviving improvements and discoveries remain. Clear the yard and use E at its porch to reclaim without repeated loot/rescue rewards.
 5. The player clears the route or site, restores connectivity, and repairs damage. Previously recovered knowledge and rescued survivors remain.
 
 Disconnected stock is unavailable for new orders. For the MVP, keep the single physical stockpile at home; do not implement distributed warehouses until routing and recovery are proven.

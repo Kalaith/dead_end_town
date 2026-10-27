@@ -15,14 +15,14 @@ var store: RefCounted
 
 func _init(data: Dictionary, path: String = "user://street.json") -> void:
 	catalog = data
-	store = JsonSave.new(path, 5, valid)
+	store = JsonSave.new(path, 6, valid)
 	store.migrate = migrate
 	store.schema_key = "schema_version"
 	store.block_on_damage = true
 
 
 func snapshot(world: RefCounted) -> Dictionary:
-	var result: Dictionary = {"schema_version": 5, "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
+	var result: Dictionary = {"schema_version": 6, "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
 	for key: String in STATE_KEYS:
 		result[key] = world.get(key).duplicate(true) if key in ["workshop", "roadworks", "pressure"] else world.get(key)
 	for a: Dictionary in world.survivors:
@@ -47,7 +47,7 @@ func _decode_actor(a: Dictionary) -> Dictionary:
 
 
 func restore(raw: Dictionary) -> RefCounted:
-	var data: Dictionary = migrate(raw) if raw.get("schema_version") in [1, 2, 3, 4] else raw
+	var data: Dictionary = migrate(raw) if raw.get("schema_version") in [1, 2, 3, 4, 5] else raw
 	if not valid(data):
 		return null
 	var world := World.new(catalog)
@@ -68,7 +68,7 @@ func restore(raw: Dictionary) -> RefCounted:
 
 
 func valid(data: Dictionary) -> bool:
-	if not Rules.integer_in(data.get("schema_version"), 5, 5):
+	if not Rules.integer_in(data.get("schema_version"), 6, 6):
 		return false
 	for key: String in STATE_KEYS:
 		if key in ["workshop", "roadworks", "pressure"]:
@@ -92,11 +92,15 @@ func valid(data: Dictionary) -> bool:
 		for key: String in ["claimed", "looted", "open"]:
 			if not state.get(key) is bool:
 				return false
-		if state.claimed != state.looted:
+		if state.claimed and not state.looted:
+			return false
+		if not Rules.finite(state.get("occupation")) or float(state.occupation) < 0 or float(state.occupation) >= float(catalog.balance.territory_fall_seconds):
+			return false
+		if not state.claimed and float(state.occupation) != 0:
 			return false
 		if not Rules.finite(state.get("gate_hp")) or float(state.gate_hp) < 0 or float(state.gate_hp) > float(catalog.balance.gate_health):
 			return false
-	if not data.properties.home.claimed or not _valid_actor(data.get("player"), float(catalog.balance.player_health)):
+	if not data.properties.home.looted or not _valid_actor(data.get("player"), float(catalog.balance.player_health)):
 		return false
 	if not data.get("survivors") is Array or not data.get("zombies") is Array:
 		return false
@@ -108,17 +112,17 @@ func valid(data: Dictionary) -> bool:
 	for z: Variant in data.zombies:
 		if not z.get("raid") is bool or not z.get("home") is String:
 			return false
-	if data.survivors.size() != (2 if data.properties.library.claimed else 1):
+	if data.survivors.size() != (2 if data.properties.library.looted else 1):
 		return false
 	if data.survivors[0].id != "mara" or (data.survivors.size() == 2 and data.survivors[1].id != "paige"):
 		return false
 	if float(data.garden_progress) > float(catalog.balance.work_seconds) or (data.garden_done and not data.garden_started):
 		return false
-	if data.garden_started and not data.properties.garden.claimed:
+	if data.garden_started and not data.properties.garden.looted:
 		return false
 	if data.garden_done and float(data.garden_progress) < float(catalog.balance.work_seconds):
 		return false
-	if (data.workshop.started and not data.properties.garage.claimed) or (data.workshop.equipped and not data.properties.library.claimed):
+	if (data.workshop.started and not data.properties.garage.looted) or (data.workshop.equipped and not data.properties.library.looted):
 		return false
 	for a: Dictionary in data.survivors:
 		if not _valid_task(a, data):
@@ -152,10 +156,12 @@ func _valid_actor(a: Variant, max_health: float) -> bool:
 
 
 func migrate(data: Dictionary) -> Dictionary:
-	if not Rules.integer_in(data.get("schema_version"), 1, 4):
+	if not Rules.integer_in(data.get("schema_version"), 1, 5):
 		return {}
 	var upgraded: Dictionary = data.duplicate(true)
 	var version: int = int(upgraded.schema_version)
+	if version == 5:
+		return _upgrade_territory(upgraded)
 	if version == 1:
 		upgraded.workshop = Workshop.initial()
 		upgraded.mara_site = "garden"
@@ -237,4 +243,15 @@ func _upgrade_pressure(data: Dictionary) -> Dictionary:
 	# Loading old progress gives a preparation interval, never an immediate overdue wave.
 	data.pressure.next = float(data.elapsed) + float(catalog.pressure.interval_seconds)
 	data.schema_version = 5
+	return _upgrade_territory(data)
+
+
+func _upgrade_territory(data: Dictionary) -> Dictionary:
+	if not data.get("properties") is Dictionary:
+		return {}
+	for p: Variant in data.properties.values():
+		if not p is Dictionary:
+			return {}
+		p.occupation = 0.0
+	data.schema_version = 6
 	return data if valid(data) else {}

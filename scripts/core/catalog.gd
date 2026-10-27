@@ -21,7 +21,7 @@ static func problems(data: Dictionary) -> Array[String]:
 	rules.vec2(data, "bounds")
 	if rules.object(data, "balance"):
 		rules.number_between(data.balance, "attack_cone_dot", -1.0, 0.99)
-		for key: String in ["step", "player_speed", "survivor_speed", "zombie_speed", "player_health", "survivor_health", "zombie_health", "melee_damage", "zombie_damage", "attack_reach", "attack_cooldown", "zombie_cooldown", "awareness", "gate_health", "gate_damage", "gate_repair_cost", "gate_repair_rate", "claim_materials", "garden_cost", "work_seconds", "food_seconds", "approach_seconds", "starting_materials", "starting_food", "workshop_cost", "workshop_seconds", "armour_cost", "armour_seconds"]:
+		for key: String in ["step", "player_speed", "survivor_speed", "zombie_speed", "player_health", "survivor_health", "zombie_health", "melee_damage", "zombie_damage", "attack_reach", "attack_cooldown", "zombie_cooldown", "awareness", "gate_health", "gate_damage", "gate_repair_cost", "gate_repair_rate", "claim_materials", "garden_cost", "work_seconds", "food_seconds", "approach_seconds", "territory_fall_seconds", "starting_materials", "starting_food", "workshop_cost", "workshop_seconds", "armour_cost", "armour_seconds"]:
 			rules.number_between(data.balance, key, 0.001, 10000.0)
 		for key: String in ["armour_damage_multiplier", "armour_speed_multiplier", "shield_damage_multiplier"]:
 			rules.number_between(data.balance, key, 0.01, 1.0)

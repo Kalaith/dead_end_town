@@ -115,7 +115,7 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 			return false
 		var target_found: bool = false
 		for p: Dictionary in catalog.properties:
-			if z.anchor == p.gate and data.properties[p.id].claimed:
+			if z.anchor == p.gate and data.properties[p.id].looted:
 				target_found = true
 		if not target_found:
 			return false
