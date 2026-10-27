@@ -36,7 +36,7 @@ M0 is implemented technically; traversal scale and readability still need human 
 
 The user has since confirmed a human playtest of basic combat and territory capture; see the feedback and development step below. Next, replace graph-only adjacency with explicit secured road crossings and exposed-boundary accounting, extend repair and work to general sockets, and review combat/crowd separation and the new equipment in human play.
 
-Still absent: explorable interiors, general blueprint placement/cancellation, general repair targets beyond home, job leases/hauling, general equipment inventory/recipes, firearm, noise-driven migration, recurring horde pressure, contested territory loss/recovery, ending, food upkeep, settings/remapping, gamepad/touch, audio and production art. The ownership graph does not yet prove physically safe street corridors: claiming does not magically secure the road. The alert model covers home only. The guard's barricade strike is a provisional low-fence combat rule.
+Still absent: explorable interiors, general blueprint placement/cancellation, general repair targets beyond home and road barricades, job leases/hauling, general equipment inventory/recipes, firearm, noise-driven migration, recurring horde pressure, contested territory loss/recovery, ending, food upkeep, settings/remapping, gamepad/touch, audio and production art. The ownership graph does not yet prove physically safe street corridors: claiming does not magically secure the road. Alerts cover home and built road defences; other property alerts remain future work. The guard's barricade strike is a provisional low-fence combat rule.
 
 During the initial implementation verification, no human playtest, recorded audio, browser/device check, export build, performance benchmark, deployment or publishing was performed. Publishing wrappers are standard boilerplate without destination configuration or export presets. The initial saves were schema 1; the new progression uses schema 2 with validated migration, as recorded below.
 
@@ -60,5 +60,29 @@ The user reports that a human playtest has happened: they could fight zombies an
 - All 17 headless scenarios pass: the original eleven plus workshop shared labour/cost/unique fitting, unsafe work and insufficient materials, physical workshop travel and armour reload handoff, schema-1 migration, invalid workshop-state rejection, and real zombie damage/directional shield/movement effects.
 - Ran the Godot 4.7.2 parse runner and headless editor/import check successfully.
 - Ran `Run.ps1` and inspected staged 1280x720 captures: `opening.png`, `home.png`, `garden.png`, `workshop.png`, `armour.png` and `planning.png` in `docs/verification/`. These show the reduced live HUD, paused details, bench work and fitted equipment. Capture staging uses fixture clearances and accelerated work; it does not prove human progression feel.
-- The new progression and revised HUD have not received a human playtest. The approach remains the original single authored group, so equipment does not yet have a dedicated defensive encounter. No exports, audio, performance benchmark, deployment or publication were added.
+- At this implementation step, the new progression and revised HUD had not received a human playtest; the user subsequently reported another game playtest below. The approach remains the original single authored group, so equipment does not yet have a dedicated defensive encounter. No exports, audio, performance benchmark, deployment or publication were added.
 - Explicit safe street corridors/perimeter accounting remain the next territory step. Workshop eligibility still uses the existing claimed graph plus local threat clearance; physical actors use the existing route collision, but safe road connectivity is not yet modelled. Do not treat this as complete M4, M6 or M8 acceptance.
+
+
+## 28 October 2026: temporary road defence and a moving line
+
+### Human feedback
+
+The user reports that the game has been playtested again. They want to defend the street from both directions after controlling both houses, and recover materials from temporary barricades when moving deeper into town. No additional specific combat, equipment or save observations were supplied. The new road feature below still awaits human playtesting.
+
+### Implemented
+
+- Home/library and garden/garage each unlock two authored road sockets, one at either end of their shared road block. Ownership only unlocks them. Dashed blueprints appear nearby; building requires an explicit E commitment, R labour or Mara assigned with F. No construction panel or persistent bottom information was added.
+- Each barricade costs 8 materials and 8 seconds of shared work. Final collision waits until living actors clear its footprint. All actors use the same blocked road geometry, including after reload.
+- Zombies attack blocking barricades from either direction, then enter when damage breaches one. Player and survivor melee can reach over these low road defences without ignoring property walls. Street warnings use the existing status strip and brief messages; home danger takes priority.
+- G posts one living survivor inside the nearby barricade, preferring someone without another road post. Repeating G at that post does not pull away another defender. Posted survivors physically route, stop at the line, and defend over it. Normal team orders override posts. Breach or removal releases that line's guard; repairs preserve it.
+- E on a built barricade approves 4 seconds of dismantling. Hold R or assign Mara; collision remains until completion. Full-health salvage is 6 materials, reduced by damage. E again keeps the barricade without payout. Unworked blueprint cancellation returns all 8 materials; part-built cancellation returns the unused/remaining salvage amount. Destruction returns none. Completion/cancellation pays once.
+- A damaged standing barricade can be repaired with R/F for one 3-material commitment. Interrupted labour, repair commitments, construction, removal, work assignment and guard posts persist in save schema 3. Schema-1/2 migration preserves existing progress and supplies, and starts road sockets empty.
+
+### Evidence and limits
+
+- All 24 headless scenarios pass. Seven new scenarios cover facing-property unlocks and affordability; occupied construction footprint and collision; cancellation, damage-scaled salvage and interrupted repair; raiders from both directions and breach; physical Mara work and low-barrier melee; two guard posts through reload and one-sided removal; and moving the defensive line plus schema-2 migration/invalid-state rejection. Existing schema-1 migration and backup recovery checks still pass.
+- Godot 4.7.2 parse/import checks pass. No script/file exceeds 800 lines or function exceeds 400 lines.
+- Ran `Run.ps1` and inspected 1280x720 captures in `docs/verification/`: `street_barricades.png`, `street_attack.png`, `street_salvage.png` and `street_frontier.png`, alongside refreshed existing states. Fixtures clear occupants, accelerate work and stage an attacker; these are visual evidence, not human playtest results.
+- Road barriers and guard posts are implemented. Full exposed-boundary accounting, safe road connectivity for facilities, general freeform construction, town expansion and recurring attacks remain open. The original authored approach still comes from the east; the west approach is covered by a staged automated scenario.
+- No toolkit changes, packages, exports, deployment or publication were added.

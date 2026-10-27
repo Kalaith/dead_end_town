@@ -81,6 +81,18 @@ func _road_tour(game: Node) -> void:
 	await seconds(0.8)
 	await shot("street_barricades")
 	game.paused = true
+	var attacker: Dictionary = game.world.zombies[0]
+	attacker.hp = 60.0
+	attacker.pos = Vector2(677, 580)
+	attacker.raid = true
+	game.world.step(0.05)
+	game.paused = false
+	await frames(2)
+	await shot("street_attack")
+	game.paused = true
+	# Restore the presentation fixture for the independent salvage example.
+	attacker.hp = 0.0
+	game.world.roadworks.home_east.hp = float(game.world.balance.barricade_health)
 	game.world.player.pos = Vector2(592, 580)
 	game.world.interact()
 	game.world.working = true

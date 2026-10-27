@@ -16,6 +16,14 @@ Illustrative fence upgrade: four Materials and two Metal, with the first slice u
 
 Blueprints have no completed collision benefit. A mid-build barrier should not trap a worker when its collision activates. Reserve a valid stand position and check exits at the final build step.
 
+## Current road-barricade contract, 28 October 2026
+
+Four authored sockets implement temporary defences for the two facing-property pairs. E approves an 8-material commitment; R or Mara assigned with F contributes one shared 8-second work rate. Blueprints have no collision. Completion waits if a living actor occupies the footprint. Nearby threats pause construction, repair and removal. Mara routes to the inside work position and shelters when threatened.
+
+E on a built barrier approves removal, with current salvage displayed before work. R/F contributes 4 seconds while collision stays active; completion refunds once and opens the road. A full-health barrier returns 6 materials; damaged salvage is `floor(6 * health / 180)`. Cancelling removal keeps the barrier and pays nothing. Cancelling a blueprint before work returns all 8; later cancellation returns `floor(8 * lerp(1, 0.75, labour_fraction))`. A breached barrier pays no salvage.
+
+Repairs commit 3 materials once for a fill toward 180 health at 24 health/second. Interruption/reload preserves that commitment. An explicit removal order discards any remaining repair commitment; it never refunds it separately. Work completion returns Mara home. G is a separate guard assignment, preferring a survivor without an existing road post; repairs preserve the guard assignment. Schema 3 stores all phases, labour, health, repair commitments, work destination and guard anchors. These values are initial balance defaults.
+
 ## Construction families
 
 Fortifications delay and channel enemies: barricades, gates, reinforced entrances, guard posts. Property improvements support ordinary homes: gardens, storage, basic workbenches, accommodation. Facility upgrades depend on suitable captured buildings: a working garage, medical room, or greenhouse.

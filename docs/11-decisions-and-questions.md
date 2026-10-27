@@ -12,6 +12,7 @@
 | D06 | Rescue a D&D-fan librarian who may eventually wear full iron armour against a wave | User's Page/Paige example |
 | D07 | Document connected property reclamation, home defence, jobs, production, rewards, pressure, and Godot implementation | Current project request |
 | D08 | Keep gameplay information sparse; remove the persistent bottom panel and place details in pause | User feedback after basic combat/territory playtest, 28 October 2026 |
+| D09 | After taking both properties, barricade the street from both directions; dismantle temporary defences to reclaim materials as the front moves | User request after a further game playtest, 28 October 2026 |
 
 The initial request produced this design package. The subsequent request explicitly authorises starting the game using another neighboring project as a template and adopting `../godot_toolkit`. The initial runtime and evidence are recorded in [PROGRESS.md](PROGRESS.md); the design is still broader than the implementation.
 
@@ -24,6 +25,10 @@ The initial request produced this design package. The subsequent request explici
 - Q14: prototype defeat returns the protagonist home at full health and preserves the street, jobs and discoveries. Downed companions recover by resting at the safe home porch. This forgiving prototype rule still needs a playtest.
 
 These are implementation defaults chosen to begin the requested work, not additional confirmed creative commitments. The open-question table remains the broader review agenda.
+
+## Road defence engineering defaults, 28 October 2026
+
+The current map treats home/library and garden/garage as facing pairs. Each pair unlocks two authored road sockets. Build cost 8, work 8 seconds; removal 4 seconds; undamaged salvage 6, reduced proportionally by damage. These quantities and the facing-pair interpretation are implementation defaults, not separately user-selected balance. G assigns one survivor to a physical inside post. Structures remain vulnerable, and no safe-corridor claim is implied.
 
 ## Proposed defaults used across this package
 

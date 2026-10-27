@@ -6,6 +6,12 @@ Properties are authored parcels containing buildings, yards, entrances, claim po
 
 The home is the root of the settlement connection graph. Properties can be cleared far from home, but remote sites do not automatically join the productive settlement. A street crossing requires a designated corridor with visible defensive exposure; the player cannot claim arbitrary disconnected islands by clicking them.
 
+## Implemented temporary road defences, 28 October 2026
+
+The home/library pair unlocks barricades joining their west and east fence ends across the road. Garden/garage unlocks another pair. Claiming changes socket availability; it never creates free walls. Build each defence through its nearby E/R/F work interaction. A completed barricade blocks the player, companions and zombies, and shamblers attack a blocking road defence before continuing toward their target. G stations one survivor on the inside. Low barricades allow melee defence over them.
+
+To advance, dismantle an inner barricade for salvage and build at the next captured pair. Removal leaves collision active until work completes, then opens the route and pays salvage exactly once. The opposite front remains intact. Defenders on a removed or breached line return home; other posts remain assigned. This proves temporary road barriers, not all exposed parcel edges, flanking routes or safe production corridors.
+
 ## Property states
 
 | State | Meaning | Player benefit |

@@ -88,7 +88,7 @@ func _build_menu() -> void:
 func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	stats.text = "HEALTH %d     HOME / %s" % [int(world.player.hp), world.alert]
 	for d: Dictionary in world.catalog.barricades:
-		if Roadworks.active(world.roadworks[d.id]) and Roadworks.danger(world, d):
+		if world.alert == "SAFE" and Roadworks.active(world.roadworks[d.id]) and Roadworks.danger(world, d):
 			stats.text = "HEALTH %d     STREET / THREATENED" % int(world.player.hp)
 	stats.modulate = Color("e7dfc9") if world.alert == "SAFE" and not stats.text.contains("THREATENED") else Color("ffac82")
 	objective.text = "NEXT / " + _goal(world)
