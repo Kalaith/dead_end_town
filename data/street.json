@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "bounds": [1440, 1160],
+  "balance": {
+    "step": 0.05,
+    "player_speed": 190,
+    "survivor_speed": 145,
+    "zombie_speed": 47,
+    "player_health": 100,
+    "survivor_health": 100,
+    "zombie_health": 60,
+    "melee_damage": 30,
+    "zombie_damage": 9,
+    "attack_reach": 76,
+    "attack_cooldown": 0.48,
+    "zombie_cooldown": 1.2,
+    "awareness": 230,
+    "gate_health": 160,
+    "gate_damage": 7,
+    "gate_repair_cost": 3,
+    "gate_repair_rate": 24,
+    "claim_materials": 6,
+    "garden_cost": 8,
+    "work_seconds": 12,
+    "food_seconds": 20,
+    "approach_seconds": 60,
+    "starting_materials": 18,
+    "starting_food": 8
+  },
+  "properties": [
+    {"id":"home","name":"01 / HOME","rect":[80,80,560,400],"building":[180,150,350,155],"gate":[360,480],"site":[360,350],"post":[360,452],"neighbors":["garden","library"],"reward":"Home stockpile","zombies":[]},
+    {"id":"garden","name":"02 / GARDEN HOUSE","rect":[800,80,560,400],"building":[900,150,350,155],"gate":[1080,480],"site":[1080,350],"post":[1080,452],"neighbors":["home","garage"],"reward":"Food garden","zombies":[[980,365],[1170,380],[1080,430]]},
+    {"id":"library","name":"03 / LIBRARY","rect":[80,680,560,400],"building":[180,870,350,155],"gate":[360,680],"site":[360,800],"post":[360,710],"neighbors":["home","garage"],"reward":"Rescue Paige","zombies":[[260,760],[460,780],[360,735]]},
+    {"id":"garage","name":"04 / GARAGE","rect":[800,680,560,400],"building":[900,870,350,155],"gate":[1080,680],"site":[1080,800],"post":[1080,710],"neighbors":["garden","library"],"reward":"Tools and materials","zombies":[[990,760],[1160,760],[1080,830],[1220,820]]}
+  ]
+}

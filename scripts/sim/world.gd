@@ -1,0 +1,255 @@
+extends RefCounted
+## Authoritative fixed-step state. Presentation sends commands only.
+const Routes = preload("res://scripts/sim/routes.gd")
+const Combat = preload("res://scripts/sim/combat.gd")
+var catalog: Dictionary
+var balance: Dictionary
+var properties: Dictionary = {}
+var player: Dictionary
+var survivors: Array[Dictionary] = []
+var zombies: Array[Dictionary] = []
+var routes := Routes.new()
+var materials: int
+var food: int
+var elapsed: float = 0.0
+var approach: bool = false
+var garden_progress: float = 0.0
+var garden_started: bool = false
+var garden_done: bool = false
+var harvest: float = 0.0
+var repair_reserved: bool = false
+var messages: Array[String] = []
+var move_input := Vector2.ZERO
+var aim := Vector2.DOWN
+var working: bool = false
+var alert: String = "SAFE"
+var downs: int = 0
+
+
+func _init(data: Dictionary) -> void:
+	catalog = data
+	balance = data.balance
+	materials = int(balance.starting_materials)
+	food = int(balance.starting_food)
+	player = actor("you", "You", Vector2(360, 365), float(balance.player_health))
+	survivors.append(actor("mara", "Mara", Vector2(360, 445), float(balance.survivor_health)))
+	survivors[0].order = "Guard"
+	survivors[0].anchor = Vector2(360, 445)
+	for p: Dictionary in catalog.properties:
+		properties[p.id] = {"claimed": p.id == "home", "looted": p.id == "home", "open": p.id != "home", "gate_hp": float(balance.gate_health) * (0.65 if p.id == "home" else 1.0)}
+		for spawn: Array in p.zombies:
+			var z: Dictionary = actor("z%d" % zombies.size(), "Shambler", Routes.point(spawn), float(balance.zombie_health))
+			z.home = p.id
+			z.raid = false
+			zombies.append(z)
+	rebuild_routes()
+	note("Mara holds the home gate. Repair it with R, then open it with E.")
+
+
+static func actor(id: String, label: String, pos: Vector2, hp: float) -> Dictionary:
+	return {"id": id, "name": label, "pos": pos, "hp": hp, "cooldown": 0.0, "flash": 0.0, "swing": 0.0, "facing": Vector2.DOWN, "order": "Follow", "anchor": pos, "activity": "Ready"}
+
+
+func rebuild_routes() -> void:
+	routes.rebuild(catalog.properties, properties, Routes.point(catalog.bounds))
+
+
+func definition(id: String) -> Dictionary:
+	for p: Dictionary in catalog.properties:
+		if p.id == id:
+			return p
+	return {}
+
+
+func note(message: String) -> void:
+	messages.append(message)
+	if messages.size() > 5:
+		messages.pop_front()
+
+
+func step(dt: float) -> void:
+	elapsed += dt
+	for a: Dictionary in [player] + survivors + zombies:
+		for key: String in ["cooldown", "flash", "swing"]:
+			a[key] = maxf(0.0, float(a[key]) - dt)
+	var travel: Vector2 = move_input * float(balance.player_speed) * dt
+	player.pos = routes.move(player.pos, player.pos + travel, travel.length())
+	player.facing = aim
+	Combat.step(self, dt)
+	_work(dt)
+	if not approach and elapsed >= float(balance.approach_seconds):
+		approach = true
+		for i: int in range(3):
+			var z: Dictionary = actor("raid%d" % i, "Shambler", Vector2(1400 - i * 28, 580), float(balance.zombie_health))
+			z.home = "street"
+			z.raid = true
+			zombies.append(z)
+		note("RADIO / Three shamblers on the east road. Mara is holding home.")
+	var next_alert: String = "SAFE"
+	for z: Dictionary in zombies:
+		if float(z.hp) > 0 and z.pos.distance_to(Vector2(360, 480)) < 180:
+			next_alert = "BREACHED" if float(properties.home.gate_hp) <= 0 or properties.home.open else "THREATENED"
+	if next_alert != alert:
+		alert = next_alert
+		note("HOME / " + ("Approach resolved. Routine work resumes." if alert == "SAFE" else alert + ": check the gate and defender."))
+
+
+func attack() -> void:
+	Combat.strike(self, player, aim)
+
+
+func remaining(id: String) -> int:
+	var count: int = 0
+	var rect: Rect2 = Routes.rectangle(definition(id).rect)
+	for z: Dictionary in zombies:
+		if float(z.hp) > 0 and rect.has_point(z.pos):
+			count += 1
+	return count
+
+
+func connected(id: String) -> bool:
+	var reached: Array[String] = ["home"]
+	var index: int = 0
+	while index < reached.size():
+		for next: String in definition(reached[index]).neighbors:
+			if properties[next].claimed and not reached.has(next):
+				reached.append(next)
+		index += 1
+	return reached.has(id)
+
+
+func context() -> String:
+	for p: Dictionary in catalog.properties:
+		if player.pos.distance_to(Routes.point(p.gate)) < 76:
+			if float(properties[p.id].gate_hp) <= 0:
+				return "R / Rebuild gate (3 materials, hold to work)"
+			return "E / %s gate%s" % ["Close" if properties[p.id].open else "Open", "   |   R / Repair (3 materials)" if p.id == "home" else ""]
+		if player.pos.distance_to(Routes.point(p.site)) < 85:
+			if p.id == "home":
+				return "E / Rest at home and recover the team"
+			if remaining(p.id) > 0:
+				return "%s / Clear %d remaining shamblers" % [p.name, remaining(p.id)]
+			if not properties[p.id].claimed:
+				return "E / Secure %s and recover %s" % [p.name, p.reward]
+			if p.id == "garden" and not garden_done:
+				return "E / Start garden (8 materials)   |   R / Help build   |   F / Assign Mara"
+	return "Clear the next yard. E interacts at gates and the marked porch."
+
+
+func interact() -> void:
+	for p: Dictionary in catalog.properties:
+		var state: Dictionary = properties[p.id]
+		if player.pos.distance_to(Routes.point(p.gate)) < 76:
+			if float(state.gate_hp) <= 0:
+				note("Gate destroyed. Hold R nearby to rebuild it.")
+				return
+			if state.open:
+				for a: Dictionary in [player] + survivors + zombies:
+					if float(a.hp) > 0 and absf(a.pos.x - float(p.gate[0])) < 60 and absf(a.pos.y - float(p.gate[1])) < 28:
+						note("Gate is occupied. Step clear before closing it.")
+						return
+			state.open = not state.open
+			rebuild_routes()
+			return
+		if player.pos.distance_to(Routes.point(p.site)) < 85:
+			if p.id == "home":
+				if alert != "SAFE":
+					note("Resolve the home approach before resting.")
+					return
+				player.hp = float(balance.player_health)
+				for a: Dictionary in survivors:
+					if float(a.hp) <= 0:
+						a.pos = Vector2(310, 370)
+					a.hp = float(balance.survivor_health)
+				note("Team recovered at home. No offline time passes.")
+				return
+			if not state.claimed:
+				claim(p.id)
+			elif p.id == "garden" and not garden_started:
+				if materials < int(balance.garden_cost):
+					note("Garden needs 8 materials.")
+				else:
+					materials -= int(balance.garden_cost)
+					garden_started = true
+					note("Garden materials reserved once. Hold R to work, or assign Mara with F.")
+			return
+
+
+func claim(id: String) -> bool:
+	if properties[id].claimed:
+		return false
+	if remaining(id) > 0:
+		note("Clear the yard before securing this property.")
+		return false
+	var adjacent: bool = false
+	for next: String in definition(id).neighbors:
+		adjacent = adjacent or connected(next)
+	if not adjacent:
+		note("Secure a neighboring property first to connect this site to home.")
+		return false
+	properties[id].claimed = true
+	properties[id].looted = true
+	materials += int(balance.claim_materials)
+	if id == "garage":
+		materials += 12
+		note("Garage recovered: tools and 12 extra materials. Workshop restoration comes next.")
+	elif id == "library":
+		var paige: Dictionary = actor("paige", "Paige", Routes.point(definition(id).site) + Vector2(35, 0), float(balance.survivor_health))
+		paige.order = "Follow"
+		survivors.append(paige)
+		note("Paige rescued. 'Next time, I want to be the one holding the door.'")
+	else:
+		note("Garden house secured. Start the food garden at its porch with E.")
+	return true
+
+
+func order(value: String) -> void:
+	for a: Dictionary in survivors:
+		a.order = value
+		a.anchor = a.pos if value == "Hold" else player.pos
+	note("Team order: " + value + ".")
+
+
+func assign_mara() -> void:
+	if garden_started and not garden_done:
+		survivors[0].order = "Build"
+		note("Mara assigned to garden. The gate has no guard while she works.")
+	else:
+		survivors[0].order = "Guard"
+		note("Mara returns to the home gate.")
+
+
+func _work(dt: float) -> void:
+	var at_gate: bool = player.pos.distance_to(Vector2(360, 480)) < 76
+	if working and at_gate and float(properties.home.gate_hp) < float(balance.gate_health) and not Combat.danger(self, player.pos, 90):
+		if not repair_reserved and materials >= int(balance.gate_repair_cost):
+			materials -= int(balance.gate_repair_cost)
+			repair_reserved = true
+		if repair_reserved:
+			var destroyed: bool = float(properties.home.gate_hp) <= 0
+			properties.home.gate_hp = minf(float(balance.gate_health), float(properties.home.gate_hp) + dt * float(balance.gate_repair_rate))
+			if destroyed:
+				properties.home.open = true
+				rebuild_routes()
+			if float(properties.home.gate_hp) >= float(balance.gate_health):
+				repair_reserved = false
+				note("Home gate repaired.")
+	if garden_started and not garden_done:
+		var site: Vector2 = Routes.point(definition("garden").site)
+		var executor: bool = working and player.pos.distance_to(site) < 85
+		for a: Dictionary in survivors:
+			if a.order == "Build" and float(a.hp) > 0 and a.pos.distance_to(site) < 40:
+				executor = true
+		if executor and not Combat.danger(self, site, 170) and connected("garden"):
+			garden_progress = minf(float(balance.work_seconds), garden_progress + dt)
+			if garden_progress >= float(balance.work_seconds):
+				garden_done = true
+				note("Food garden ready. A harvest arrives every 20 safe seconds.")
+				for a: Dictionary in survivors:
+					if a.order == "Build":
+						a.order = "Guard"
+	if garden_done and not Combat.danger(self, Routes.point(definition("garden").site), 230):
+		harvest += dt
+		if harvest >= float(balance.food_seconds):
+			harvest -= float(balance.food_seconds)
+			food += 2
