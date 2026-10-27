@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Pressure = preload("res://scripts/sim/pressure.gd")
 const Tasks = preload("res://scripts/sim/tasks.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
@@ -16,6 +17,7 @@ var materials: int
 var food: int
 var elapsed: float = 0.0
 var approach: bool = false
+var pressure: Dictionary
 var garden_progress: float = 0.0
 var garden_started: bool = false
 var garden_done: bool = false
@@ -35,6 +37,7 @@ func _init(data: Dictionary) -> void:
 	catalog = data
 	balance = data.balance
 	roadworks = Roadworks.initial(data)
+	pressure = Pressure.initial(data)
 	materials = int(balance.starting_materials)
 	food = int(balance.starting_food)
 	player = actor("you", "You", Vector2(360, 365), float(balance.player_health))
@@ -48,6 +51,7 @@ func _init(data: Dictionary) -> void:
 			z.home = p.id
 			z.raid = false
 			zombies.append(z)
+	Pressure.add_residents(self)
 	rebuild_routes()
 	note("Mara holds the home gate. Repair it with R, then open it with E.")
 
@@ -89,21 +93,14 @@ func step(dt: float) -> void:
 	_work(dt)
 	Workshop.step(self, dt)
 	Roadworks.step(self, dt)
-	if not approach and elapsed >= float(balance.approach_seconds):
-		approach = true
-		for i: int in range(3):
-			var z: Dictionary = actor("raid%d" % i, "Shambler", Vector2(1400 - i * 28, 580), float(balance.zombie_health))
-			z.home = "street"
-			z.raid = true
-			zombies.append(z)
-		note("RADIO / Three shamblers on the east road. Check your defenders.")
+	Pressure.step(self)
 	var next_alert: String = "SAFE"
 	for z: Dictionary in zombies:
 		if float(z.hp) > 0 and z.pos.distance_to(Vector2(360, 480)) < 180:
 			next_alert = "BREACHED" if float(properties.home.gate_hp) <= 0 or properties.home.open else "THREATENED"
 	if next_alert != alert:
 		alert = next_alert
-		note("HOME / " + ("Approach resolved. Routine work resumes." if alert == "SAFE" else alert + ": check the gate and defender."))
+		note("HOME / " + ("Gate area clear. Watch the street." if alert == "SAFE" else alert + ": check the gate and defender."))
 
 
 func attack() -> void:

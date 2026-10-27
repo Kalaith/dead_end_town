@@ -90,9 +90,14 @@ func _build_menu() -> void:
 
 func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	stats.text = "HEALTH %d     HOME / %s" % [int(world.player.hp), world.alert]
+	for p: Dictionary in world.catalog.properties:
+		if world.alert == "SAFE" and world.properties[p.id].claimed and world.remaining(p.id) > 0:
+			stats.text = "HEALTH %d     STREET / THREATENED" % int(world.player.hp)
 	for d: Dictionary in world.catalog.barricades:
 		if world.alert == "SAFE" and Roadworks.active(world.roadworks[d.id]) and Roadworks.danger(world, d):
 			stats.text = "HEALTH %d     STREET / THREATENED" % int(world.player.hp)
+	if world.pressure.warned and stats.text.ends_with("SAFE"):
+		stats.text = "HEALTH %d     RAID / IN %ds" % [int(world.player.hp), ceili(float(world.pressure.next) - world.elapsed)]
 	stats.modulate = Color("e7dfc9") if world.alert == "SAFE" and not stats.text.contains("THREATENED") else Color("ffac82")
 	objective.text = "NEXT / " + _goal(world)
 	supplies.text = "STOCKPILE / %d materials     %d food" % [world.materials, world.food]

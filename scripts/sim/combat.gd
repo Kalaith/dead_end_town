@@ -137,17 +137,32 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 			_walk(world, z, target.pos, dt, float(world.balance.zombie_speed))
 		return
 	if z.raid:
-		var gate := Vector2(360, 500)
-		if world.properties.home.open or float(world.properties.home.gate_hp) <= 0:
-			gate = Vector2(360, 350)
+		# Alley migrants physically reach the road before choosing a street crossing.
+		# This also makes road barricade interception use the actual approach lane.
+		if z.id.begins_with("wave") and not z.lane_reached:
+			var join: Vector2 = world.routes.point(world.catalog.pressure.alley_join)
+			if z.pos.distance_to(join) > float(world.catalog.pressure.join_radius):
+				_walk(world, z, join, dt, float(world.balance.zombie_speed))
+				return
+			z.lane_reached = true
+		var property: Dictionary = world.definition("home")
+		if z.id.begins_with("wave"):
+			for p: Dictionary in world.catalog.properties:
+				if world.routes.point(p.gate).is_equal_approx(z.anchor):
+					property = p
+		var state: Dictionary = world.properties[property.id]
+		var gate: Vector2 = world.routes.point(property.gate)
+		gate.y += 20 if float(property.gate[1]) > float(property.rect[1]) else -20
+		if state.open or float(state.gate_hp) <= 0:
+			gate = world.routes.point(property.site)
 		if Roadworks.intercept(world, z, gate, dt):
 			return
-		if z.pos.distance_to(gate) < 30 and float(z.cooldown) <= 0 and float(world.properties.home.gate_hp) > 0 and not world.properties.home.open:
-			world.properties.home.gate_hp = maxf(0, float(world.properties.home.gate_hp) - float(world.balance.gate_damage))
+		if z.pos.distance_to(gate) < 30 and float(z.cooldown) <= 0 and float(state.gate_hp) > 0 and not state.open:
+			state.gate_hp = maxf(0, float(state.gate_hp) - float(world.balance.gate_damage))
 			z.cooldown = float(world.balance.zombie_cooldown)
-			if float(world.properties.home.gate_hp) <= 0:
+			if float(state.gate_hp) <= 0:
 				world.rebuild_routes()
-				world.note("HOME / Gate breached. Return to defend and rebuild.")
+				world.note(property.name + " / Gate breached. Defend and rebuild.")
 		else:
 			_walk(world, z, gate, dt, float(world.balance.zombie_speed))
 

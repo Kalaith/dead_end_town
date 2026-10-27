@@ -24,7 +24,7 @@
     "garden_cost": 8,
     "work_seconds": 12,
     "food_seconds": 20,
-    "approach_seconds": 60,
+    "approach_seconds": 45,
     "starting_materials": 18,
     "starting_food": 8,
     "workshop_cost": 10,
@@ -46,6 +46,91 @@
     "barricade_attack_reach": 40,
     "barricade_stand_offset": 30
   },
+  "pressure": {
+    "alley_join": [720, 580],
+    "join_radius": 24,
+    "warning_seconds": 12,
+    "interval_seconds": 65,
+    "claim_interval_reduction": 8,
+    "minimum_interval": 40,
+    "base_size": 4,
+    "claim_size": 2,
+    "maximum_size": 10,
+    "living_cap": 36,
+    "spawn_spacing": 28,
+    "routes": [
+      {
+        "id": "east",
+        "name": "east road",
+        "entry": [
+          1410,
+          580
+        ],
+        "spread": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "west",
+        "name": "west road",
+        "entry": [
+          30,
+          580
+        ],
+        "spread": [
+          0,
+          1
+        ]
+      },
+      {
+        "id": "north",
+        "name": "north alley",
+        "entry": [
+          720,
+          30
+        ],
+        "spread": [
+          1,
+          0
+        ]
+      },
+      {
+        "id": "south",
+        "name": "south alley",
+        "entry": [
+          720,
+          1130
+        ],
+        "spread": [
+          1,
+          0
+        ]
+      }
+    ],
+    "patterns": [
+      [
+        "east"
+      ],
+      [
+        "west"
+      ],
+      [
+        "north",
+        "east"
+      ],
+      [
+        "south",
+        "west"
+      ],
+      [
+        "east",
+        "west",
+        "north",
+        "south"
+      ]
+    ]
+  },
   "barricades": [
     {"id":"home_west","name":"Home block west barricade","rect":[72,480,16,200],"center":[80,580],"site":[128,580],"requires":["home","library"]},
     {"id":"home_east","name":"Home block east barricade","rect":[632,480,16,200],"center":[640,580],"site":[592,580],"requires":["home","library"]},
@@ -53,9 +138,9 @@
     {"id":"garden_east","name":"Garden block east barricade","rect":[1352,480,16,200],"center":[1360,580],"site":[1312,580],"requires":["garden","garage"]}
   ],
   "properties": [
-    {"id":"home","name":"01 / HOME","rect":[80,80,560,400],"building":[180,150,350,155],"gate":[360,480],"site":[360,350],"post":[360,452],"neighbors":["garden","library"],"reward":"Home stockpile","zombies":[]},
-    {"id":"garden","name":"02 / GARDEN HOUSE","rect":[800,80,560,400],"building":[900,150,350,155],"gate":[1080,480],"site":[1080,350],"post":[1080,452],"neighbors":["home","garage"],"reward":"Food garden","zombies":[[980,365],[1170,380],[1080,430]]},
-    {"id":"library","name":"03 / LIBRARY","rect":[80,680,560,400],"building":[180,870,350,155],"gate":[360,680],"site":[360,800],"post":[360,710],"neighbors":["home","garage"],"reward":"Rescue Paige","zombies":[[260,760],[460,780],[360,735]]},
-    {"id":"garage","name":"04 / GARAGE","rect":[800,680,560,400],"building":[900,870,350,155],"gate":[1080,680],"site":[1080,800],"post":[1080,710],"neighbors":["garden","library"],"reward":"Tools and armour cache","zombies":[[990,760],[1160,760],[1080,830],[1220,820]]}
+    {"id":"home","name":"01 / HOME","rect":[80,80,560,400],"building":[180,150,350,155],"gate":[360,480],"site":[360,350],"post":[360,452],"neighbors":["garden","library"],"reward":"Home stockpile","reinforcements":[],"zombies":[]},
+    {"id":"garden","name":"02 / GARDEN HOUSE","rect":[800,80,560,400],"building":[900,150,350,155],"gate":[1080,480],"site":[1080,350],"post":[1080,452],"neighbors":["home","garage"],"reward":"Food garden","reinforcements":[[870,350],[940,440],[1220,440],[1300,350]],"zombies":[[980,365],[1170,380],[1080,430]]},
+    {"id":"library","name":"03 / LIBRARY","rect":[80,680,560,400],"building":[180,870,350,155],"gate":[360,680],"site":[360,800],"post":[360,710],"neighbors":["home","garage"],"reward":"Rescue Paige","reinforcements":[[150,760],[220,820],[500,820],[570,750]],"zombies":[[260,760],[460,780],[360,735]]},
+    {"id":"garage","name":"04 / GARAGE","rect":[800,680,560,400],"building":[900,870,350,155],"gate":[1080,680],"site":[1080,800],"post":[1080,710],"neighbors":["garden","library"],"reward":"Tools and armour cache","reinforcements":[[870,750],[940,820],[1260,750],[1300,830],[1080,730],[1190,820]],"zombies":[[990,760],[1160,760],[1080,830],[1220,820]]}
   ]
 }

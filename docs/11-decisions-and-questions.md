@@ -14,6 +14,7 @@
 | D08 | Keep gameplay information sparse; remove the persistent bottom panel and place details in pause | User feedback after basic combat/territory playtest, 28 October 2026 |
 | D09 | After taking both properties, barricade the street from both directions; dismantle temporary defences to reclaim materials as the front moves | User request after a further game playtest, 28 October 2026 |
 | D10 | Direct survivors individually, such as Mara gardening and Paige working at the workshop while the player guards | User request after recruiting Paige, 28 October 2026 |
+| D11 | Increase resident numbers, recurring raids and attack directions so each territory gain feels fought for | User feedback that zombies are not a threat, 28 October 2026 |
 
 The initial request produced this design package. The subsequent request explicitly authorises starting the game using another neighboring project as a template and adopting `../godot_toolkit`. The initial runtime and evidence are recorded in [PROGRESS.md](PROGRESS.md); the design is still broader than the implementation.
 
@@ -30,6 +31,12 @@ These are implementation defaults chosen to begin the requested work, not additi
 ## Road defence engineering defaults, 28 October 2026
 
 The current map treats home/library and garden/garage as facing pairs. Each pair unlocks two authored road sockets. Build cost 8, work 8 seconds; removal 4 seconds; undamaged salvage 6, reduced proportionally by damage. These quantities and the facing-pair interpretation are implementation defaults, not separately user-selected balance. G assigns one survivor to a physical inside post. Structures remain vulnerable, and no safe-corridor claim is implied.
+
+## Pressure engineering defaults, 28 October 2026
+
+The first street now has 7 garden residents, 7 library residents and 10 garage residents. The first migration enters at 45 active seconds. A 12-second radio warning names its origins. The repeating sequence is east; west; north + east; south + west; all four edges. Initial waves have 4 zombies, adding 2 per claimed property beyond home, up to 10. Intervals start at 65 seconds and fall by 8 seconds per additional property (41 at full ownership, configured floor 40). These are tuning defaults in `data/street.json`, awaiting human balance review.
+
+Migrations enter at authored map edges and physically travel to the closest claimed property entrance; alley groups join the road before crossing to a property. Nearby people can divert them. The total living population is capped at 36; excess arrivals are skipped, rather than queued into a sudden backlog. Residents stay defeated. Save schema 5 preserves the wave clock, warning and travel phase; older saves keep claimed yards cleared and get 65 active seconds of preparation. Noise, territorial loss and a final reclamation objective remain future work.
 
 ## Proposed defaults used across this package
 

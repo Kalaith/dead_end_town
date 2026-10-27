@@ -1,4 +1,6 @@
 extends RefCounted
+const Pressure = preload("res://scripts/sim/pressure.gd")
+const PressureState = preload("res://scripts/core/pressure_state.gd")
 const RoadState = preload("res://scripts/core/road_state.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
@@ -6,23 +8,23 @@ const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "workshop", "roadworks"]
+const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "workshop", "roadworks", "pressure"]
 var catalog: Dictionary
 var store: RefCounted
 
 
 func _init(data: Dictionary, path: String = "user://street.json") -> void:
 	catalog = data
-	store = JsonSave.new(path, 4, valid)
+	store = JsonSave.new(path, 5, valid)
 	store.migrate = migrate
 	store.schema_key = "schema_version"
 	store.block_on_damage = true
 
 
 func snapshot(world: RefCounted) -> Dictionary:
-	var result: Dictionary = {"schema_version": 4, "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
+	var result: Dictionary = {"schema_version": 5, "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
 	for key: String in STATE_KEYS:
-		result[key] = world.get(key).duplicate(true) if key in ["workshop", "roadworks"] else world.get(key)
+		result[key] = world.get(key).duplicate(true) if key in ["workshop", "roadworks", "pressure"] else world.get(key)
 	for a: Dictionary in world.survivors:
 		result.survivors.append(_encode_actor(a))
 	for z: Dictionary in world.zombies:
@@ -45,12 +47,12 @@ func _decode_actor(a: Dictionary) -> Dictionary:
 
 
 func restore(raw: Dictionary) -> RefCounted:
-	var data: Dictionary = migrate(raw) if raw.get("schema_version") in [1, 2, 3] else raw
+	var data: Dictionary = migrate(raw) if raw.get("schema_version") in [1, 2, 3, 4] else raw
 	if not valid(data):
 		return null
 	var world := World.new(catalog)
 	for key: String in STATE_KEYS:
-		world.set(key, int(data[key]) if key in ["materials", "food", "downs"] else (data[key].duplicate(true) if key in ["workshop", "roadworks"] else data[key]))
+		world.set(key, int(data[key]) if key in ["materials", "food", "downs"] else (data[key].duplicate(true) if key in ["workshop", "roadworks", "pressure"] else data[key]))
 	world.properties = data.properties.duplicate(true)
 	world.player = _decode_actor(data.player)
 	world.aim = world.player.facing
@@ -66,10 +68,10 @@ func restore(raw: Dictionary) -> RefCounted:
 
 
 func valid(data: Dictionary) -> bool:
-	if not Rules.integer_in(data.get("schema_version"), 4, 4):
+	if not Rules.integer_in(data.get("schema_version"), 5, 5):
 		return false
 	for key: String in STATE_KEYS:
-		if key in ["workshop", "roadworks"]:
+		if key in ["workshop", "roadworks", "pressure"]:
 			continue
 		if key in ["approach", "garden_started", "garden_done", "repair_reserved"]:
 			if not data.get(key) is bool:
@@ -125,21 +127,7 @@ func valid(data: Dictionary) -> bool:
 		return false
 	if data.player.id != "you":
 		return false
-	var expected_zombies: Dictionary = {}
-	var index: int = 0
-	for p: Dictionary in catalog.properties:
-		for spawn: Array in p.zombies:
-			expected_zombies["z%d" % index] = {"home": p.id, "raid": false}
-			index += 1
-	if data.approach:
-		for i: int in range(3):
-			expected_zombies["raid%d" % i] = {"home": "street", "raid": true}
-	if data.zombies.size() != expected_zombies.size():
-		return false
-	for z: Dictionary in data.zombies:
-		if not expected_zombies.has(z.id) or expected_zombies[z.id].home != z.home or expected_zombies[z.id].raid != z.raid:
-			return false
-	return true
+	return PressureState.valid(data, catalog)
 
 
 func _valid_actor(a: Variant, max_health: float) -> bool:
@@ -164,7 +152,7 @@ func _valid_actor(a: Variant, max_health: float) -> bool:
 
 
 func migrate(data: Dictionary) -> Dictionary:
-	if not Rules.integer_in(data.get("schema_version"), 1, 3):
+	if not Rules.integer_in(data.get("schema_version"), 1, 4):
 		return {}
 	var upgraded: Dictionary = data.duplicate(true)
 	var version: int = int(upgraded.schema_version)
@@ -174,6 +162,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	if version <= 2:
 		upgraded.roadworks = Roadworks.initial(catalog)
 		upgraded.road_job = ""
+	if version == 4:
+		return _upgrade_pressure(upgraded)
 	if upgraded.get("mara_site") not in ["garden", "garage"] or not upgraded.get("road_job") is String:
 		return {}
 	if not upgraded.get("player") is Dictionary or not upgraded.get("survivors") is Array or not upgraded.get("zombies") is Array:
@@ -188,8 +178,7 @@ func migrate(data: Dictionary) -> Dictionary:
 			a.job = upgraded.road_job
 	upgraded.erase("mara_site")
 	upgraded.erase("road_job")
-	upgraded.schema_version = 4
-	return upgraded if valid(upgraded) else {}
+	return _upgrade_pressure(upgraded)
 
 
 func _valid_workshop(data: Dictionary) -> bool:
@@ -224,3 +213,28 @@ func _valid_task(a: Dictionary, data: Dictionary) -> bool:
 		"Roadwork":
 			return data.get("roadworks") is Dictionary and data.roadworks.has(a.job)
 	return a.job == ""
+
+
+func _upgrade_pressure(data: Dictionary) -> Dictionary:
+	if not data.get("zombies") is Array or not data.get("properties") is Dictionary or not data.get("approach") is bool or not Rules.finite(data.get("elapsed")):
+		return {}
+	# Preserve old residents and cleared yards. Only previously unclaimed yards gain occupants.
+	var fresh := World.new(catalog)
+	var ids: Array[String] = []
+	for z: Variant in data.zombies:
+		if not z is Dictionary or not z.get("id") is String:
+			return {}
+		ids.append(z.id)
+	for z: Dictionary in fresh.zombies:
+		if z.id.begins_with("resident_") and not ids.has(z.id):
+			if not data.properties.get(z.home) is Dictionary or not data.properties[z.home].get("claimed") is bool:
+				return {}
+			if data.properties[z.home].claimed:
+				z.hp = 0.0
+			data.zombies.append(_encode_actor(z))
+	data.pressure = Pressure.initial(catalog)
+	data.pressure.wave = 1 if data.approach else 0
+	# Loading old progress gives a preparation interval, never an immediate overdue wave.
+	data.pressure.next = float(data.elapsed) + float(catalog.pressure.interval_seconds)
+	data.schema_version = 5
+	return data if valid(data) else {}

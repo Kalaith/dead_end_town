@@ -1,5 +1,11 @@
 # Zombies, noise, and expansion pressure
 
+## Current street implementation, 28 October 2026
+
+Following feedback that zombies are not a threat, the greybox has 24 residents across its three reclaimable properties and recurring edge migrations. Waves start at 45 active seconds with a 12-second directional radio warning. A five-wave cycle introduces east, west, north/east, south/west and four-edge attacks. Each extra claimed property adds two migrants and removes eight seconds from the next interval: 4–10 zombies every 65–41 seconds, capped at 36 living zombies across the map.
+
+Migrants travel through physical entrances and barricades toward the nearest claimed property, and pursue nearby people. North/south groups use the central alleys to reach the road. Defeated resident populations remain cleared; migration is the source of renewed pressure. Claimed properties are not automatically lost when a zombie enters. This is a deterministic pressure loop, not the noise/event system described below. Values and wave routes live in `data/street.json`. See [PROGRESS.md](PROGRESS.md) for verification and limits.
+
 ## Threat inhabitants
 
 Residents occupy buildings and yards until disturbed. Wanderers move through streets and openings. Hordes are travelling groups that can redirect toward substantial activity. These are behaviour roles, not necessarily three distinct monster species.

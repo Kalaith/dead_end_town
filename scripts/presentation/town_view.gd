@@ -19,6 +19,11 @@ func _draw() -> void:
 			var shade: float = float((x * 7 + y * 13) % 23) / 300.0
 			draw_rect(Rect2(x + 2, y + 2, 28, 28), Color(0.16 + shade, 0.22 + shade, 0.18 + shade))
 	draw_rect(Rect2(0, 500, 1440, 160), Color("353e3e"))
+	# The two exposed alleys feed the road between the property blocks.
+	draw_rect(Rect2(660, 0, 120, 500), Color("45473d"))
+	draw_rect(Rect2(660, 660, 120, 500), Color("45473d"))
+	_text(Vector2(665, 120), "NORTH", 15, Color("ada47b"))
+	_text(Vector2(665, 1040), "SOUTH", 15, Color("ada47b"))
 	draw_rect(Rect2(0, 500, 1440, 7), Color("7b8174"))
 	draw_rect(Rect2(0, 653, 1440, 7), Color("7b8174"))
 	for x: int in range(0, 1440, 100):

@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authored content is validated before the simulation starts.
+const PressureState = preload("res://scripts/core/pressure_state.gd")
 const RoadState = preload("res://scripts/core/road_state.gd")
 const JsonIO = preload("res://addons/hatchery/core/json_io.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
@@ -49,9 +50,12 @@ static func problems(data: Dictionary) -> Array[String]:
 			for neighbor: Variant in p.neighbors:
 				if not ids.has(neighbor):
 					errors.append("Unknown property neighbor.")
-		if rules.list(p, "zombies"):
-			for pos: Variant in p.zombies:
+		for key: String in ["zombies", "reinforcements"]:
+			if not rules.list(p, key):
+				continue
+			for pos: Variant in p[key]:
 				if not Rules.is_vec2(pos):
 					errors.append("Invalid zombie position.")
+	PressureState.content(data, errors)
 	RoadState.content(data, errors)
 	return errors

@@ -10,6 +10,8 @@ func tour() -> void:
 	await seconds(7.2)
 	await shot("home")
 	game.paused = true
+	# Keep the facility fixtures focused; capture_pressure.gd exercises live raids.
+	game.world.pressure.next = 1000.0
 	game.world.player.pos = Vector2(1080, 400)
 	for z: Dictionary in game.world.zombies:
 		if z.home == "garden":
@@ -46,6 +48,10 @@ func tour() -> void:
 	game.world.survivors[1].pos = Vector2(1110, 800)
 	game.world.interact()
 	game.world.working = false
+	if not game.world.workshop.equipped:
+		push_error("Armour presentation fixture failed to fit Paige's set.")
+		quit(1)
+		return
 	game.paused = false
 	await seconds(0.8)
 	await shot("armour")
@@ -59,6 +65,7 @@ func _road_tour(game: Node) -> void:
 	# A separate fixture stages defensive construction without touching a save.
 	game.paused = true
 	game.world = World.new(game.world.catalog)
+	game.world.pressure.next = 1000.0
 	game.view.world = game.world
 	for z: Dictionary in game.world.zombies:
 		z.hp = 0.0
