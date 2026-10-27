@@ -2,6 +2,7 @@ extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
 const Routes = preload("res://scripts/sim/routes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
+const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
 var catalog: Dictionary
 var balance: Dictionary
@@ -27,11 +28,14 @@ var alert: String = "SAFE"
 var downs: int = 0
 var workshop: Dictionary = Workshop.initial()
 var mara_site: String = "garden"
+var roadworks: Dictionary
+var road_job: String = ""
 
 
 func _init(data: Dictionary) -> void:
 	catalog = data
 	balance = data.balance
+	roadworks = Roadworks.initial(data)
 	materials = int(balance.starting_materials)
 	food = int(balance.starting_food)
 	player = actor("you", "You", Vector2(360, 365), float(balance.player_health))
@@ -54,7 +58,11 @@ static func actor(id: String, label: String, pos: Vector2, hp: float) -> Diction
 
 
 func rebuild_routes() -> void:
-	routes.rebuild(catalog.properties, properties, Routes.point(catalog.bounds))
+	var defences: Array[Rect2] = []
+	for d: Dictionary in catalog.barricades:
+		if Roadworks.active(roadworks[d.id]):
+			defences.append(Routes.rectangle(d.rect))
+	routes.rebuild(catalog.properties, properties, Routes.point(catalog.bounds), defences)
 
 
 func definition(id: String) -> Dictionary:
@@ -81,6 +89,7 @@ func step(dt: float) -> void:
 	Combat.step(self, dt)
 	_work(dt)
 	Workshop.step(self, dt)
+	Roadworks.step(self, dt)
 	if not approach and elapsed >= float(balance.approach_seconds):
 		approach = true
 		for i: int in range(3):
@@ -123,6 +132,9 @@ func connected(id: String) -> bool:
 
 
 func context() -> String:
+	var defence: Dictionary = Roadworks.nearby(self)
+	if not defence.is_empty():
+		return Roadworks.context(self, defence)
 	for p: Dictionary in catalog.properties:
 		if player.pos.distance_to(Routes.point(p.gate)) < 76:
 			if float(properties[p.id].gate_hp) <= 0:
@@ -146,6 +158,10 @@ func context() -> String:
 
 
 func interact() -> void:
+	var defence: Dictionary = Roadworks.nearby(self)
+	if not defence.is_empty():
+		Roadworks.interact(self, defence)
+		return
 	for p: Dictionary in catalog.properties:
 		var state: Dictionary = properties[p.id]
 		if player.pos.distance_to(Routes.point(p.gate)) < 76:
@@ -215,6 +231,7 @@ func claim(id: String) -> bool:
 
 
 func order(value: String) -> void:
+	road_job = ""
 	for a: Dictionary in survivors:
 		a.order = value
 		a.anchor = a.pos if value == "Hold" else player.pos
@@ -222,6 +239,11 @@ func order(value: String) -> void:
 
 
 func assign_mara() -> void:
+	var defence: Dictionary = Roadworks.nearby(self)
+	if not defence.is_empty():
+		Roadworks.assign(self, defence)
+		return
+	road_job = ""
 	var near_garage: bool = player.pos.distance_to(Routes.point(definition("garage").site)) < 85
 	if Workshop.unfinished(self) and (near_garage or not (garden_started and not garden_done)):
 		mara_site = "garage"
@@ -270,3 +292,7 @@ func _work(dt: float) -> void:
 		if harvest >= float(balance.food_seconds):
 			harvest -= float(balance.food_seconds)
 			food += 2
+
+
+func post_road_guard() -> void:
+	Roadworks.post_guard(self)

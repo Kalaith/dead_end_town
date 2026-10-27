@@ -1,6 +1,7 @@
 extends RefCounted
 ## One walkability model for player collision and AI routes. No scene nodes.
 var walls: Array[Rect2] = []
+var road_walls: Array[Rect2] = []
 var grid := AStarGrid2D.new()
 var bounds := Vector2(1440, 1160)
 const CELL: float = 20.0
@@ -15,7 +16,8 @@ static func rectangle(value: Array) -> Rect2:
 	return Rect2(float(value[0]), float(value[1]), float(value[2]), float(value[3]))
 
 
-func rebuild(definitions: Array, properties: Dictionary, size: Vector2) -> void:
+func rebuild(definitions: Array, properties: Dictionary, size: Vector2, defences: Array[Rect2] = []) -> void:
+	road_walls = defences
 	bounds = size
 	walls.clear()
 	for p: Dictionary in definitions:
@@ -45,7 +47,7 @@ func rebuild(definitions: Array, properties: Dictionary, size: Vector2) -> void:
 func walkable(pos: Vector2) -> bool:
 	if not Rect2(Vector2(RADIUS, RADIUS), bounds - Vector2.ONE * RADIUS * 2).has_point(pos):
 		return false
-	for wall: Rect2 in walls:
+	for wall: Rect2 in walls + road_walls:
 		if wall.grow(RADIUS).has_point(pos):
 			return false
 	return true
@@ -74,8 +76,11 @@ func waypoint(from: Vector2, to: Vector2) -> Vector2:
 	return path[1] if path.size() > 1 else to
 
 
-func line_clear(from: Vector2, to: Vector2) -> bool:
-	for wall: Rect2 in walls:
+func line_clear(from: Vector2, to: Vector2, over_low_barriers: bool = false) -> bool:
+	var obstacles: Array[Rect2] = walls.duplicate()
+	if not over_low_barriers:
+		obstacles.append_array(road_walls)
+	for wall: Rect2 in obstacles:
 		if Geometry2D.segment_intersects_segment(from, to, wall.position, Vector2(wall.end.x, wall.position.y)) != null:
 			return false
 		if Geometry2D.segment_intersects_segment(from, to, Vector2(wall.end.x, wall.position.y), wall.end) != null:

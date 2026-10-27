@@ -1,5 +1,6 @@
 extends Node2D
 ## Original procedural greybox art. No imported game assets.
+const RoadView = preload("res://scripts/presentation/road_view.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 var world: RefCounted
 var font: Font = ThemeDB.fallback_font
@@ -25,6 +26,7 @@ func _draw() -> void:
 	_text(Vector2(640, 625), "DEAD END / EAST ROAD", 16, Color("858f85"))
 	for p: Dictionary in world.catalog.properties:
 		_property(p)
+	RoadView.paint(self, world, font)
 	# Characters are sorted by their feet, including bodies on the ground.
 	var actors: Array = [world.player] + world.survivors + world.zombies
 	actors.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.pos.y < b.pos.y)

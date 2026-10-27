@@ -1,4 +1,5 @@
 extends "res://addons/hatchery/testing/capture_runner.gd"
+const World = preload("res://scripts/sim/world.gd")
 
 func tour() -> void:
 	var game: Node = await open_scene("res://scenes/town.tscn")
@@ -51,3 +52,56 @@ func tour() -> void:
 	game.command("menu")
 	await frames(3)
 	await shot("planning")
+	await _road_tour(game)
+
+
+func _road_tour(game: Node) -> void:
+	# A separate fixture stages defensive construction without touching a save.
+	game.paused = true
+	game.world = World.new(game.world.catalog)
+	game.view.world = game.world
+	for z: Dictionary in game.world.zombies:
+		z.hp = 0.0
+	for id: String in ["library", "garden", "garage"]:
+		game.world.claim(id)
+	game.world.properties.home.open = true
+	game.world.rebuild_routes()
+	for index: int in [0, 1]:
+		game.world.player.pos = game.world.routes.point(game.world.catalog.barricades[index].site)
+		game.world.interact()
+		game.world.working = true
+		for i: int in range(162):
+			game.world.step(0.05)
+		game.world.working = false
+		game.world.post_road_guard()
+	game.world.player.pos = Vector2(360, 580)
+	for i: int in range(160):
+		game.world.step(0.05)
+	game.paused = false
+	await seconds(0.8)
+	await shot("street_barricades")
+	game.paused = true
+	game.world.player.pos = Vector2(592, 580)
+	game.world.interact()
+	game.world.working = true
+	for i: int in range(40):
+		game.world.step(0.05)
+	game.paused = false
+	await seconds(0.4)
+	await shot("street_salvage")
+	game.paused = true
+	game.world.working = true
+	for i: int in range(42):
+		game.world.step(0.05)
+	game.world.player.pos = Vector2(1312, 580)
+	game.world.interact()
+	for i: int in range(162):
+		game.world.step(0.05)
+	game.world.working = false
+	game.world.post_road_guard()
+	game.world.player.pos = Vector2(1080, 580)
+	for i: int in range(160):
+		game.world.step(0.05)
+	game.paused = false
+	await seconds(0.8)
+	await shot("street_frontier")

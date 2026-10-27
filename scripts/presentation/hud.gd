@@ -1,4 +1,5 @@
 extends Control
+const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const UiKit = preload("res://addons/hatchery/ui/ui_kit.gd")
 const Palette = preload("res://addons/hatchery/ui/palette.gd")
 signal requested(command: String)
@@ -63,14 +64,14 @@ func _build_menu() -> void:
 	menu.add_child(column)
 	pause_title = kit.heading("ONE STREET. A PLACE TO BEGIN.", 24)
 	column.add_child(pause_title)
-	column.add_child(kit.label("Mara guards home while you reclaim the street.\nRepair the gate, clear a yard, then secure its porch.\nThe library holds Paige; the garage holds tools and armour.\nThe whole street stays active while you are away.", 16))
+	column.add_child(kit.label("Mara guards home while you reclaim the street.\nRepair the gate, clear a yard, then secure its porch.\nThe library holds Paige; the garage holds tools and armour.\nClaim facing properties to barricade their road from both ends.", 16))
 	objective = kit.label("", 17, Color("dfb36e"))
 	column.add_child(objective)
 	supplies = kit.label("", 16)
 	column.add_child(supplies)
 	roster = kit.label("", 16)
 	column.add_child(roster)
-	column.add_child(kit.label("WASD / arrows  Move     Mouse  Aim     Click / Space  Swing\nE  Interact     Hold R  Work     F  Assign Mara to local work / guard\n1  Follow     2  Hold     3  Engage     4  Return home     Esc / Tab  Pause", 15))
+	column.add_child(kit.label("WASD / arrows  Move     Mouse  Aim     Click / Space  Swing\nE  Interact     Hold R  Work     F  Assign Mara     G  Post road guard\n1  Follow     2  Hold     3  Engage     4  Return home     Esc / Tab  Pause", 15))
 	first_button = kit.button("Begin", func() -> void: requested.emit("resume"), true)
 	column.add_child(first_button)
 	var row := HBoxContainer.new()
@@ -86,7 +87,10 @@ func _build_menu() -> void:
 
 func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	stats.text = "HEALTH %d     HOME / %s" % [int(world.player.hp), world.alert]
-	stats.modulate = Color("e7dfc9") if world.alert == "SAFE" else Color("ffac82")
+	for d: Dictionary in world.catalog.barricades:
+		if Roadworks.active(world.roadworks[d.id]) and Roadworks.danger(world, d):
+			stats.text = "HEALTH %d     STREET / THREATENED" % int(world.player.hp)
+	stats.modulate = Color("e7dfc9") if world.alert == "SAFE" and not stats.text.contains("THREATENED") else Color("ffac82")
 	objective.text = "NEXT / " + _goal(world)
 	supplies.text = "STOCKPILE / %d materials     %d food" % [world.materials, world.food]
 	context_label.text = world.context()

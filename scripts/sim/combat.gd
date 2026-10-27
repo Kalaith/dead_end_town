@@ -1,4 +1,5 @@
 extends RefCounted
+const Roadworks = preload("res://scripts/sim/roadworks.gd")
 ## Spatial combat and bounded AI. Every actor stays active off camera.
 
 static func danger(world: RefCounted, pos: Vector2, radius: float) -> bool:
@@ -18,7 +19,7 @@ static func strike(world: RefCounted, attacker: Dictionary, direction: Vector2) 
 		var offset: Vector2 = z.pos - attacker.pos
 		if float(z.hp) <= 0 or offset.length() > float(world.balance.attack_reach):
 			continue
-		if direction.dot(offset.normalized()) < 0.2 or not world.routes.line_clear(attacker.pos, z.pos):
+		if direction.dot(offset.normalized()) < 0.2 or not world.routes.line_clear(attacker.pos, z.pos, true):
 			continue
 		z.hp = maxf(0, float(z.hp) - float(world.balance.melee_damage))
 		z.flash = 0.18
@@ -58,15 +59,17 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 	var best: float = 150 if a.order != "Engage" else 220
 	for z: Dictionary in world.zombies:
 		var distance: float = a.pos.distance_to(z.pos)
-		if float(z.hp) > 0 and distance < best and z.pos.distance_to(anchor) < 180 and world.routes.line_clear(a.pos, z.pos):
+		if float(z.hp) > 0 and distance < best and z.pos.distance_to(anchor) < 180 and world.routes.line_clear(a.pos, z.pos, true):
 			target = z
 			best = distance
 	if not target.is_empty():
 		a.activity = "Defending"
 		if best < float(world.balance.attack_reach):
 			strike(world, a, a.pos.direction_to(target.pos))
-		elif a.order != "Guard" or target.pos.y < 465:
+		elif a.order not in ["Guard", "Roadguard"] or (a.order == "Guard" and target.pos.y < 465):
 			_walk(world, a, target.pos, dt, _survivor_speed(world, a))
+		elif a.order == "Roadguard" and a.pos.distance_to(anchor) > 4:
+			_walk(world, a, anchor, dt, _survivor_speed(world, a))
 		return
 	# A low barricade allows a gate guard to hit the attacker leaning over it.
 	if a.order == "Guard" and not world.properties.home.open:
@@ -79,12 +82,12 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.cooldown = float(world.balance.attack_cooldown)
 				a.activity = "Holding the barricade"
 				return
-	if a.order == "Build" and danger(world, anchor, 170):
+	if a.order in ["Build", "Roadwork"] and danger(world, anchor, 170):
 		anchor = Vector2(360, 350)
 		a.activity = "Sheltering - work preserved"
 	else:
-		a.activity = ("Working " + world.mara_site) if a.order == "Build" else a.order
-	if a.pos.distance_to(anchor) > 24:
+		a.activity = ("Working " + world.mara_site) if a.order == "Build" else ("Road defence work" if a.order == "Roadwork" else a.order)
+	if a.pos.distance_to(anchor) > (4.0 if a.order == "Roadguard" else 24.0):
 		var old: Vector2 = a.pos
 		_walk(world, a, anchor, dt, _survivor_speed(world, a))
 		if old.is_equal_approx(a.pos):
@@ -105,10 +108,12 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 	var best: float = float(world.balance.awareness)
 	for a: Dictionary in [world.player] + world.survivors:
 		var distance: float = z.pos.distance_to(a.pos)
-		if float(a.hp) > 0 and distance < best and world.routes.line_clear(z.pos, a.pos):
+		if float(a.hp) > 0 and distance < best and world.routes.line_clear(z.pos, a.pos, true):
 			target = a
 			best = distance
 	if not target.is_empty():
+		if Roadworks.intercept(world, z, target.pos, dt):
+			return
 		if best < 29 and float(z.cooldown) <= 0:
 			target.hp = maxf(0, float(target.hp) - incoming_damage(world, target, z.pos))
 			target.flash = 0.18
@@ -120,6 +125,8 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 		var gate := Vector2(360, 500)
 		if world.properties.home.open or float(world.properties.home.gate_hp) <= 0:
 			gate = Vector2(360, 350)
+		if Roadworks.intercept(world, z, gate, dt):
+			return
 		if z.pos.distance_to(gate) < 30 and float(z.cooldown) <= 0 and float(world.properties.home.gate_hp) > 0 and not world.properties.home.open:
 			world.properties.home.gate_hp = maxf(0, float(world.properties.home.gate_hp) - float(world.balance.gate_damage))
 			z.cooldown = float(world.balance.zombie_cooldown)

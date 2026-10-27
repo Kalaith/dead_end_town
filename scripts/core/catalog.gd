@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authored content is validated before the simulation starts.
+const RoadState = preload("res://scripts/core/road_state.gd")
 const JsonIO = preload("res://addons/hatchery/core/json_io.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 
@@ -51,4 +52,5 @@ static func problems(data: Dictionary) -> Array[String]:
 			for pos: Variant in p.zombies:
 				if not Rules.is_vec2(pos):
 					errors.append("Invalid zombie position.")
+	RoadState.content(data, errors)
 	return errors

@@ -79,6 +79,8 @@ func _unhandled_input(event: InputEvent) -> void:
 					world.order("Engage")
 				KEY_4:
 					world.order("Home")
+				KEY_G:
+					world.post_road_guard()
 				KEY_F:
 					world.assign_mara()
 	if not paused and event.is_action_pressed("interact"):
