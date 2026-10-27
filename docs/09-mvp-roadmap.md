@@ -2,7 +2,7 @@
 
 ## Current state
 
-An initial playable greybox street was implemented on 28 October 2026. M0 has a pinned engine, controls, map and camera; portions of M1–M7 demonstrate melee, squad orders, home defence, claims, shared work, rescue and persistence. No complete milestone acceptance gate or human playtest is claimed. See [PROGRESS.md](PROGRESS.md) for implemented behavior and evidence. The table below remains the target acceptance roadmap; estimates should follow observed play.
+An initial playable greybox street was implemented on 28 October 2026. M0 has a pinned engine, controls, map and camera; portions of M1–M7 demonstrate melee, squad orders, home defence, claims, shared work, rescue and persistence. The user subsequently human-playtested basic zombie combat and territory capture. Garage restoration and a first visible armour/shield set are now implemented, and the persistent bottom panel is removed. Full milestone acceptance gates and human review of the new progression remain open. See [PROGRESS.md](PROGRESS.md) for implemented behavior and evidence. The table below remains the target acceptance roadmap; estimates should follow observed play.
 
 ## MVP content budget: proposed
 

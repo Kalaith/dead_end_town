@@ -25,12 +25,19 @@
     "food_seconds": 20,
     "approach_seconds": 60,
     "starting_materials": 18,
-    "starting_food": 8
+    "starting_food": 8,
+    "workshop_cost": 10,
+    "workshop_seconds": 16,
+    "armour_cost": 12,
+    "armour_seconds": 18,
+    "armour_damage_multiplier": 0.5,
+    "armour_speed_multiplier": 0.8,
+    "shield_damage_multiplier": 0.5
   },
   "properties": [
     {"id":"home","name":"01 / HOME","rect":[80,80,560,400],"building":[180,150,350,155],"gate":[360,480],"site":[360,350],"post":[360,452],"neighbors":["garden","library"],"reward":"Home stockpile","zombies":[]},
     {"id":"garden","name":"02 / GARDEN HOUSE","rect":[800,80,560,400],"building":[900,150,350,155],"gate":[1080,480],"site":[1080,350],"post":[1080,452],"neighbors":["home","garage"],"reward":"Food garden","zombies":[[980,365],[1170,380],[1080,430]]},
     {"id":"library","name":"03 / LIBRARY","rect":[80,680,560,400],"building":[180,870,350,155],"gate":[360,680],"site":[360,800],"post":[360,710],"neighbors":["home","garage"],"reward":"Rescue Paige","zombies":[[260,760],[460,780],[360,735]]},
-    {"id":"garage","name":"04 / GARAGE","rect":[800,680,560,400],"building":[900,870,350,155],"gate":[1080,680],"site":[1080,800],"post":[1080,710],"neighbors":["garden","library"],"reward":"Tools and materials","zombies":[[990,760],[1160,760],[1080,830],[1220,820]]}
+    {"id":"garage","name":"04 / GARAGE","rect":[800,680,560,400],"building":[900,870,350,155],"gate":[1080,680],"site":[1080,800],"post":[1080,710],"neighbors":["garden","library"],"reward":"Tools and armour cache","zombies":[[990,760],[1160,760],[1080,830],[1220,820]]}
   ]
 }

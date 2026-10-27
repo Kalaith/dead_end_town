@@ -60,7 +60,7 @@ func _process(dt: float) -> void:
 	var target := Vector2(clampf(world.player.pos.x, 640, 800), clampf(world.player.pos.y - 40, 360, 800))
 	camera.position = camera.position.lerp(target, 1.0 - exp(-dt * 8))
 	view.queue_redraw()
-	hud.refresh(world, paused)
+	hud.refresh(world, paused, dt)
 
 
 func _unhandled_input(event: InputEvent) -> void:

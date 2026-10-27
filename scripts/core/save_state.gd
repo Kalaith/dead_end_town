@@ -2,23 +2,25 @@ extends RefCounted
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
+const Workshop = preload("res://scripts/sim/workshop.gd")
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs"]
+const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "workshop", "mara_site"]
 var catalog: Dictionary
 var store: RefCounted
 
 
 func _init(data: Dictionary, path: String = "user://street.json") -> void:
 	catalog = data
-	store = JsonSave.new(path, 1, valid)
+	store = JsonSave.new(path, 2, valid)
+	store.migrate = migrate
 	store.schema_key = "schema_version"
 	store.block_on_damage = true
 
 
 func snapshot(world: RefCounted) -> Dictionary:
-	var result: Dictionary = {"schema_version": 1, "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
+	var result: Dictionary = {"schema_version": 2, "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
 	for key: String in STATE_KEYS:
-		result[key] = world.get(key)
+		result[key] = world.get(key).duplicate(true) if key == "workshop" else world.get(key)
 	for a: Dictionary in world.survivors:
 		result.survivors.append(_encode_actor(a))
 	for z: Dictionary in world.zombies:
@@ -40,12 +42,13 @@ func _decode_actor(a: Dictionary) -> Dictionary:
 	return result
 
 
-func restore(data: Dictionary) -> RefCounted:
+func restore(raw: Dictionary) -> RefCounted:
+	var data: Dictionary = migrate(raw) if raw.get("schema_version") == 1 else raw
 	if not valid(data):
 		return null
 	var world := World.new(catalog)
 	for key: String in STATE_KEYS:
-		world.set(key, int(data[key]) if key in ["materials", "food", "downs"] else data[key])
+		world.set(key, int(data[key]) if key in ["materials", "food", "downs"] else (data[key].duplicate(true) if key == "workshop" else data[key]))
 	world.properties = data.properties.duplicate(true)
 	world.player = _decode_actor(data.player)
 	world.survivors.clear()
@@ -60,9 +63,11 @@ func restore(data: Dictionary) -> RefCounted:
 
 
 func valid(data: Dictionary) -> bool:
-	if not Rules.integer_in(data.get("schema_version"), 1, 1):
+	if not Rules.integer_in(data.get("schema_version"), 2, 2):
 		return false
 	for key: String in STATE_KEYS:
+		if key in ["workshop", "mara_site"]:
+			continue
 		if key in ["approach", "garden_started", "garden_done", "repair_reserved"]:
 			if not data.get(key) is bool:
 				return false
@@ -71,6 +76,8 @@ func valid(data: Dictionary) -> bool:
 	for key: String in ["materials", "food", "downs"]:
 		if not Rules.whole(data[key]):
 			return false
+	if not _valid_workshop(data):
+		return false
 	if not data.get("properties") is Dictionary or data.properties.size() != 4:
 		return false
 	for p: Dictionary in catalog.properties:
@@ -105,6 +112,8 @@ func valid(data: Dictionary) -> bool:
 	if data.garden_started and not data.properties.garden.claimed:
 		return false
 	if data.garden_done and float(data.garden_progress) < float(catalog.balance.work_seconds):
+		return false
+	if (data.workshop.started and not data.properties.garage.claimed) or (data.workshop.equipped and not data.properties.library.claimed):
 		return false
 	if data.player.id != "you":
 		return false
@@ -142,3 +151,34 @@ func _valid_actor(a: Variant, max_health: float) -> bool:
 		if not Rules.finite(a.get(key)) or float(a[key]) < 0:
 			return false
 	return float(a.hp) <= max_health
+
+
+func migrate(data: Dictionary) -> Dictionary:
+	if not Rules.integer_in(data.get("schema_version"), 1, 1):
+		return {}
+	var upgraded: Dictionary = data.duplicate(true)
+	upgraded.schema_version = 2
+	upgraded.workshop = Workshop.initial()
+	upgraded.mara_site = "garden"
+	return upgraded if valid(upgraded) else {}
+
+
+func _valid_workshop(data: Dictionary) -> bool:
+	if data.get("mara_site") not in ["garden", "garage"] or not data.get("workshop") is Dictionary:
+		return false
+	var state: Dictionary = data.workshop
+	for key: String in ["started", "done", "armour_started", "armour_done", "equipped"]:
+		if not state.get(key) is bool:
+			return false
+	for entry: Array in [["progress", "workshop_seconds", "started", "done"], ["armour_progress", "armour_seconds", "armour_started", "armour_done"]]:
+		if not Rules.finite(state.get(entry[0])):
+			return false
+		var progress: float = float(state[entry[0]])
+		var duration: float = float(catalog.balance[entry[1]])
+		if progress < 0 or progress > duration or (progress > 0 and not state[entry[2]]):
+			return false
+		if state[entry[3]] and (not state[entry[2]] or progress < duration):
+			return false
+	if (state.armour_started and not state.done) or (state.equipped and not state.armour_done):
+		return false
+	return true

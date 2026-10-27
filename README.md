@@ -2,7 +2,7 @@
 
 Reclaim a zombie-infested town, one property at a time, with a small group of survivors who work and fight together.
 
-**Status: first playable greybox prototype, 28 October 2026.** A continuous four-property street now runs in Godot 4.7.2 with melee combat, Mara's home defence, connected property claims, a shared garden construction job, Paige's rescue, and manual save/load. This is an early foundation, not the complete MVP. See [progress and verification](docs/PROGRESS.md) for the exact boundary.
+**Status: first playable greybox prototype, 28 October 2026.** A continuous four-property street now runs in Godot 4.7.2 with melee combat, Mara's home defence, connected property claims, a shared garden construction job, Paige's rescue, manual save/load, garage restoration and Paige’s first iron armour and shield. This is an early foundation, not the complete MVP. See [progress and verification](docs/PROGRESS.md) for the exact boundary.
 
 Prepared 28 October 2026 from the [Game concept development conversation](chatgpt-conversation://6ae0fba7-c8a4-83ec-9e38-b9d8b951a9ac) and the accompanying project request.
 
@@ -26,12 +26,16 @@ Alternatively, import `project.godot` in Godot and run the project. The opening 
 | E | Open/close a nearby gate; secure a cleared porch; start garden; recover at home |
 | Hold R | Repair the home gate or contribute garden work |
 | 1 / 2 / 3 / 4 | Team Follow / Hold / Engage / Return home and guard |
-| F | Assign Mara to an unfinished garden, otherwise home guard |
+| F | Assign Mara to nearby unfinished workshop work, otherwise garden work or home guard |
 | Esc / Tab | Pause all simulation and open the menu |
 
 Start by approaching the home gate, holding R to repair it, then opening it with E. Cross east into the garden yard, clear its three shamblers and press E at the marked porch. Press E again to reserve garden materials, then hold R or assign Mara with F. Keep home access open for her route. A closed gate reports blocked work. The library across the road rescues Paige; the garage adds tools and materials. All actors stay active while off camera. One authored three-zombie approach arrives from the east road after 60 active seconds.
 
-The prototype uses original procedural greybox drawing. Buildings have solid footprints with porch interactions; there are no explorable interiors yet. No audio, firearm, armour, workshop production, food consumption, general job board, physical inter-property integration, recurring hordes or final campaign ending is implemented.
+After securing the garage, press E at its porch to commit 10 materials to restoring its workshop. Hold R or assign Mara with F. Once complete, E commits 12 materials to restoring its cached iron armour and shield. Finish that work, bring rescued Paige to the bench with Follow (1), then press E to fit the single set. Iron armour halves incoming damage and reduces her movement speed by 20%; the shield halves the remaining damage from the front. No healing or remote equipment swap is granted.
+
+The persistent bottom panel has been removed. Health and home alerts stay visible; nearby interactions and brief messages appear when relevant. Pause with Esc/Tab for the next objective, stockpile, team status, equipment and controls. Existing schema-1 saves migrate to schema 2 when loaded, preserving their street and leaving the new workshop work unstarted.
+
+The prototype uses original procedural greybox drawing. Buildings have solid footprints with porch interactions; there are no explorable interiors yet. No audio, firearm, general equipment inventory or recipes, food consumption, general job board, physical inter-property integration, recurring hordes or final campaign ending is implemented.
 
 ## Project template and toolkit
 
@@ -47,7 +51,7 @@ $godot = 'C:/Program Files/Godot/Godot_v4.7.2-stable_win64_console.exe'
 ./Run.ps1 -GameArgs @('--script','res://tools/capture.gd','--','--size=1280x720','--no-save')
 ```
 
-The capture tour stages example states without writing a gameplay save. Its images are in `docs/verification/`. Headless scenarios and staged captures do not establish human combat feel or browser/device support.
+The capture tour stages example states without writing a gameplay save. Its images are in `docs/verification/`. The user has human-playtested basic zombie combat and territory capture. Headless scenarios and staged captures do not establish the feel of the new workshop/equipment or browser/device support.
 
 ## The game
 

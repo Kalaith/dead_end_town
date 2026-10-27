@@ -11,6 +11,7 @@
 | D05 | High-level growth mainly through key items and equipment | Latest progression direction |
 | D06 | Rescue a D&D-fan librarian who may eventually wear full iron armour against a wave | User's Page/Paige example |
 | D07 | Document connected property reclamation, home defence, jobs, production, rewards, pressure, and Godot implementation | Current project request |
+| D08 | Keep gameplay information sparse; remove the persistent bottom panel and place details in pause | User feedback after basic combat/territory playtest, 28 October 2026 |
 
 The initial request produced this design package. The subsequent request explicitly authorises starting the game using another neighboring project as a template and adopting `../godot_toolkit`. The initial runtime and evidence are recorded in [PROGRESS.md](PROGRESS.md); the design is still broader than the implementation.
 

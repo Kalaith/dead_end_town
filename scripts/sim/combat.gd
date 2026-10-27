@@ -29,6 +29,8 @@ static func strike(world: RefCounted, attacker: Dictionary, direction: Vector2) 
 static func step(world: RefCounted, dt: float) -> void:
 	for a: Dictionary in world.survivors:
 		if float(a.hp) <= 0:
+			if a.activity != "Down - rest at home to recover":
+				world.note(a.name + " is down. Rest at the safe home porch to recover the team.")
 			a.activity = "Down - rest at home to recover"
 			continue
 		_survivor(world, a, dt)
@@ -51,7 +53,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 		"Follow", "Engage":
 			anchor = world.player.pos + Vector2(-38, 24)
 		"Build":
-			anchor = world.routes.point(world.definition("garden").site)
+			anchor = world.routes.point(world.definition(world.mara_site).site)
 	var target: Dictionary = {}
 	var best: float = 150 if a.order != "Engage" else 220
 	for z: Dictionary in world.zombies:
@@ -64,7 +66,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 		if best < float(world.balance.attack_reach):
 			strike(world, a, a.pos.direction_to(target.pos))
 		elif a.order != "Guard" or target.pos.y < 465:
-			_walk(world, a, target.pos, dt, float(world.balance.survivor_speed))
+			_walk(world, a, target.pos, dt, _survivor_speed(world, a))
 		return
 	# A low barricade allows a gate guard to hit the attacker leaning over it.
 	if a.order == "Guard" and not world.properties.home.open:
@@ -81,10 +83,10 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 		anchor = Vector2(360, 350)
 		a.activity = "Sheltering - work preserved"
 	else:
-		a.activity = "Working garden" if a.order == "Build" else a.order
+		a.activity = ("Working " + world.mara_site) if a.order == "Build" else a.order
 	if a.pos.distance_to(anchor) > 24:
 		var old: Vector2 = a.pos
-		_walk(world, a, anchor, dt, float(world.balance.survivor_speed))
+		_walk(world, a, anchor, dt, _survivor_speed(world, a))
 		if old.is_equal_approx(a.pos):
 			a.activity = "Route blocked - check gate"
 	elif a.order == "Home":
@@ -108,7 +110,7 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 			best = distance
 	if not target.is_empty():
 		if best < 29 and float(z.cooldown) <= 0:
-			target.hp = maxf(0, float(target.hp) - float(world.balance.zombie_damage))
+			target.hp = maxf(0, float(target.hp) - incoming_damage(world, target, z.pos))
 			target.flash = 0.18
 			z.cooldown = float(world.balance.zombie_cooldown)
 		elif best > 26 and float(z.cooldown) < 0.7:
@@ -126,3 +128,17 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 				world.note("HOME / Gate breached. Return to defend and rebuild.")
 		else:
 			_walk(world, z, gate, dt, float(world.balance.zombie_speed))
+
+
+static func _survivor_speed(world: RefCounted, a: Dictionary) -> float:
+	var factor: float = float(world.balance.armour_speed_multiplier) if a.id == "paige" and world.workshop.equipped else 1.0
+	return float(world.balance.survivor_speed) * factor
+
+
+static func incoming_damage(world: RefCounted, target: Dictionary, source: Vector2) -> float:
+	var damage: float = float(world.balance.zombie_damage)
+	if target.id == "paige" and world.workshop.equipped:
+		damage *= float(world.balance.armour_damage_multiplier)
+		if target.facing.dot(target.pos.direction_to(source)) > 0.2:
+			damage *= float(world.balance.shield_damage_multiplier)
+	return damage

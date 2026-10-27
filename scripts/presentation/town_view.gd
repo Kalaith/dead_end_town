@@ -80,8 +80,7 @@ func _property(p: Dictionary) -> void:
 	if p.id == "library" and not state.claimed:
 		_text(site + Vector2(30, 0), "Paige is sheltering inside", 14, CREAM)
 	if p.id == "garage":
-		for i: int in range(3):
-			draw_rect(Rect2(rect.end.x - 100 + i * 20, site.y + 32, 17, 25), Color("8b7752"))
+		_workshop(site)
 	if state.claimed:
 		draw_line(site + Vector2(48, -10), site + Vector2(48, 35), CREAM, 3)
 		draw_colored_polygon(PackedVector2Array([site + Vector2(49, -10), site + Vector2(75, -10), site + Vector2(49, 8)]), TEAL)
@@ -140,6 +139,8 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 	draw_rect(Rect2(pos + Vector2(-10, -10), Vector2(20, 4)), body.darkened(0.3))
 	draw_circle(pos + Vector2(0, -29), 8, Color("9caa73") if zombie else Color("d7b08b"))
 	draw_arc(pos + Vector2(0, -29), 8, PI, TAU, 8, INK, 5)
+	if not zombie and a.id == "paige" and world.workshop.equipped:
+		_armour(pos, a.facing)
 	var direction: Vector2 = a.facing
 	if not zombie:
 		draw_line(pos + Vector2(10, -15), pos + Vector2(10, -15) + direction * 27, Color("c7b68e"), 5)
@@ -164,3 +165,40 @@ func _meter(pos: Vector2, width: float, fraction: float, color: Color) -> void:
 
 func _text(pos: Vector2, text: String, size: int, color: Color) -> void:
 	draw_string(font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, color)
+
+
+func _workshop(site: Vector2) -> void:
+	var state: Dictionary = world.workshop
+	var bench: Vector2 = site + Vector2(84, 10)
+	draw_rect(Rect2(bench + Vector2(-5, -4), Vector2(80, 32)), INK)
+	draw_rect(Rect2(bench, Vector2(70, 18)), Color("ab8860") if state.done else Color("655b4b"))
+	for x: float in [4, 60]:
+		draw_line(bench + Vector2(x, 18), bench + Vector2(x, 30), Color("847b66"), 5)
+	if state.done:
+		draw_line(bench + Vector2(10, 6), bench + Vector2(28, 6), CREAM, 4)
+		draw_circle(bench + Vector2(31, 6), 5, Color("a9b7b5"))
+	if world.properties.garage.claimed and not state.equipped:
+		# The unique recovered set remains physically visible until fitted.
+		draw_rect(Rect2(bench + Vector2(39, -3), Vector2(18, 23)), Color("c1d1d0") if state.armour_done else Color("837f71"))
+		draw_arc(bench + Vector2(48, -6), 7, PI, TAU, 12, CREAM, 3)
+	if state.started and not state.done:
+		_meter(site + Vector2(-60, 36), 120, float(state.progress) / float(world.balance.workshop_seconds), TEAL)
+		_text(site + Vector2(-60, 63), "RESTORING BENCH", 14, CREAM)
+	elif state.armour_started and not state.armour_done:
+		_meter(site + Vector2(-60, 36), 120, float(state.armour_progress) / float(world.balance.armour_seconds), TEAL)
+		_text(site + Vector2(-60, 63), "RESTORING ARMOUR", 14, CREAM)
+	elif state.done:
+		_text(site + Vector2(-60, 63), "WORKSHOP READY", 14, TEAL)
+
+
+func _armour(pos: Vector2, facing: Vector2) -> void:
+	draw_rect(Rect2(pos + Vector2(-11, -22), Vector2(22, 20)), Color("b7c8ca"))
+	draw_line(pos + Vector2(0, -20), pos + Vector2(0, -4), Color("718c92"), 3)
+	draw_line(pos + Vector2(-13, -21), pos + Vector2(13, -21), CREAM, 4)
+	draw_arc(pos + Vector2(0, -29), 10, PI, TAU, 12, Color("b7c8ca"), 5)
+	# Keep Paige's purple scarf and face visible through the iron silhouette.
+	draw_line(pos + Vector2(-8, -22), pos + Vector2(8, -22), Color("b7a0c8"), 4)
+	var shield: Vector2 = pos + facing * 17 + Vector2(-8, -12)
+	draw_circle(shield, 12, INK)
+	draw_circle(shield, 10, Color("a8babe"))
+	draw_line(shield + Vector2(-7, 0), shield + Vector2(7, 0), CREAM, 3)

@@ -8,11 +8,13 @@ var objective: Label
 var context_label: Label
 var radio: Label
 var roster: Label
+var supplies: Label
 var menu: PanelContainer
 var menu_status: Label
 var pause_title: Label
 var first_button: Button
-var minimap: Control
+var last_message: String = ""
+var message_seconds: float = 0.0
 
 
 func _ready() -> void:
@@ -26,32 +28,23 @@ func _ready() -> void:
 	palette.line = Color("3a534c")
 	kit = UiKit.new(palette)
 	theme = kit.theme()
-	var header: PanelContainer = _panel(Vector2(16, 16), Vector2(1248, 96))
-	var stack := VBoxContainer.new()
-	header.add_child(stack)
-	var row := HBoxContainer.new()
-	stack.add_child(row)
-	row.add_child(kit.heading("DEAD END TOWN", 26))
-	row.add_spacer(false)
-	stats = kit.label("", 17)
-	row.add_child(stats)
+	var header: PanelContainer = _panel(Vector2(16, 16), Vector2(440, 48))
+	stats = kit.label("", 18)
+	header.add_child(stats)
 	var pause: Button = kit.button("Pause / Esc", func() -> void: requested.emit("menu"))
-	pause.custom_minimum_size = Vector2(130, 34)
-	row.add_child(pause)
-	objective = kit.label("", 16)
-	stack.add_child(objective)
-	var bottom: PanelContainer = _panel(Vector2(16, 566), Vector2(1248, 138))
-	var lower := VBoxContainer.new()
-	lower.add_theme_constant_override("separation", 5)
-	bottom.add_child(lower)
-	context_label = kit.label("", 18, Color("dfb36e"))
-	lower.add_child(context_label)
-	roster = kit.label("", 15)
-	lower.add_child(roster)
-	radio = kit.label("", 14, Color("a4c5b3"))
-	lower.add_child(radio)
-	lower.add_child(kit.label("WASD / arrows  Move     Mouse  Aim     Click / Space  Swing     E  Interact     Hold R  Work", 14))
-	lower.add_child(kit.label("1  Follow     2  Hold     3  Engage     4  Return home     F  Mara: garden / guard     Tab  Planning pause", 14))
+	pause.position = Vector2(1134, 16)
+	pause.size = Vector2(130, 42)
+	add_child(pause)
+	context_label = kit.label("", 17, Color("dfb36e"))
+	context_label.position = Vector2(20, 78)
+	add_child(context_label)
+	radio = kit.label("", 16, Color("c6e5cd"))
+	radio.position = Vector2(20, 672)
+	radio.size = Vector2(1240, 36)
+	radio.add_theme_color_override("font_shadow_color", Color("142426"))
+	radio.add_theme_constant_override("shadow_offset_x", 2)
+	radio.add_theme_constant_override("shadow_offset_y", 2)
+	add_child(radio)
 	_build_menu()
 
 
@@ -64,15 +57,21 @@ func _panel(pos: Vector2, extent: Vector2) -> PanelContainer:
 
 
 func _build_menu() -> void:
-	menu = _panel(Vector2(355, 155), Vector2(570, 365))
+	menu = _panel(Vector2(240, 66), Vector2(800, 588))
 	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 10)
+	column.add_theme_constant_override("separation", 12)
 	menu.add_child(column)
 	pause_title = kit.heading("ONE STREET. A PLACE TO BEGIN.", 24)
 	column.add_child(pause_title)
-	var explanation: Label = kit.label("Mara guards home while you reclaim the street.\nRepair the gate. Clear the garden yard. Secure its porch,\nthen plant food. The library holds Paige; the garage holds tools.\n\nThe whole street stays active while you are away.", 16)
-	column.add_child(explanation)
-	first_button = kit.button("Open the gate / Begin", func() -> void: requested.emit("resume"), true)
+	column.add_child(kit.label("Mara guards home while you reclaim the street.\nRepair the gate, clear a yard, then secure its porch.\nThe library holds Paige; the garage holds tools and armour.\nThe whole street stays active while you are away.", 16))
+	objective = kit.label("", 17, Color("dfb36e"))
+	column.add_child(objective)
+	supplies = kit.label("", 16)
+	column.add_child(supplies)
+	roster = kit.label("", 16)
+	column.add_child(roster)
+	column.add_child(kit.label("WASD / arrows  Move     Mouse  Aim     Click / Space  Swing\nE  Interact     Hold R  Work     F  Assign Mara to local work / guard\n1  Follow     2  Hold     3  Engage     4  Return home     Esc / Tab  Pause", 15))
+	first_button = kit.button("Begin", func() -> void: requested.emit("resume"), true)
 	column.add_child(first_button)
 	var row := HBoxContainer.new()
 	column.add_child(row)
@@ -81,33 +80,59 @@ func _build_menu() -> void:
 		var button: Button = kit.button(entry[0], func() -> void: requested.emit(command))
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(button)
-	menu_status = kit.label("Early playable prototype / keyboard and mouse / no audio yet", 14)
+	menu_status = kit.label("Playable greybox / keyboard and mouse / no audio yet", 14)
 	column.add_child(menu_status)
 
 
-func refresh(world: RefCounted, paused: bool) -> void:
-	stats.text = "HEALTH %d     MATERIALS %d     FOOD %d     HOME / %s" % [int(world.player.hp), world.materials, world.food, world.alert]
-	var goal: String = "01 / Repair home gate with R, then open it with E and head east."
-	if float(world.properties.home.gate_hp) >= float(world.balance.gate_health) or world.properties.home.open:
-		goal = "02 / Clear the garden yard east of home, then secure its marked porch with E."
-	if world.properties.garden.claimed:
-		goal = "03 / Start the garden with E. Hold R to build, or assign Mara with F."
-	if world.garden_done:
-		goal = "04 / Cross the road: rescue Paige at the library or recover the garage tools."
-	if world.garden_done and world.properties.library.claimed and world.properties.garage.claimed:
-		goal = "STREET RECLAIMED / Garden growing. Paige rescued. Tools recovered. Keep your home defended."
-	objective.text = ("PLANNING PAUSED / " if paused else "NEXT / ") + goal
+func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
+	stats.text = "HEALTH %d     HOME / %s" % [int(world.player.hp), world.alert]
+	stats.modulate = Color("e7dfc9") if world.alert == "SAFE" else Color("ffac82")
+	objective.text = "NEXT / " + _goal(world)
+	supplies.text = "STOCKPILE / %d materials     %d food" % [world.materials, world.food]
 	context_label.text = world.context()
+	context_label.visible = not paused and not context_label.text.is_empty()
 	var people := PackedStringArray()
 	for a: Dictionary in world.survivors:
-		people.append("%s [%d] / %s" % [a.name, int(a.hp), a.activity])
-	roster.text = "TEAM / " + "     |     ".join(people)
-	radio.text = "RADIO / " + (world.messages.back() if not world.messages.is_empty() else "Quiet street.")
+		var equipment: String = "Iron armour + shield" if a.id == "paige" and world.workshop.equipped else "Bat / everyday clothes"
+		people.append("%s [%d] / %s / %s" % [a.name, int(a.hp), a.activity, equipment])
+	roster.text = "TEAM / " + "\n".join(people)
+	var latest: String = world.messages.back() if not world.messages.is_empty() else ""
+	if latest != last_message:
+		last_message = latest
+		message_seconds = 7.0
+	if not paused:
+		message_seconds = maxf(0.0, message_seconds - dt)
+	radio.text = latest
+	radio.visible = not paused and message_seconds > 0 and not latest.is_empty()
 	menu.visible = paused
+
+
+func _goal(world: RefCounted) -> String:
+	if world.workshop.equipped:
+		return "Paige equipped. Use 4 to send the team home to guard."
+	if world.workshop.armour_done:
+		if not world.properties.library.claimed:
+			return "Rescue Paige at the library, then bring her to the workshop."
+		return "Bring Paige to the workshop; E fits her armour and shield."
+	if world.workshop.armour_started:
+		return "Restore the armour with R or assign Mara with F at the garage."
+	if world.workshop.done:
+		return "Start restoring the cached armour at the garage bench with E."
+	if world.workshop.started:
+		return "Restore the workshop with R or assign Mara with F at the garage."
+	if world.properties.garage.claimed:
+		return "Restore the workshop at the garage porch with E."
+	if world.garden_done:
+		return "Rescue Paige at the library and recover the garage tools."
+	if world.properties.garden.claimed:
+		return "Start the garden with E, then hold R or assign Mara with F."
+	if float(world.properties.home.gate_hp) >= float(world.balance.gate_health) or world.properties.home.open:
+		return "Clear the garden east of home; secure its marked porch with E."
+	return "Repair the home gate with R, then open it with E and head east."
 
 
 func show_menu(intro: bool = false) -> void:
 	menu.visible = true
 	pause_title.text = "ONE STREET. A PLACE TO BEGIN." if intro else "THE STREET IS PAUSED"
-	first_button.text = "Open the gate / Begin" if intro else "Return to the street"
+	first_button.text = "Begin" if intro else "Return to the street"
 	first_button.grab_focus()

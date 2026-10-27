@@ -18,8 +18,10 @@ static func problems(data: Dictionary) -> Array[String]:
 	rules.schema_version(data, 1)
 	rules.vec2(data, "bounds")
 	if rules.object(data, "balance"):
-		for key: String in ["step", "player_speed", "survivor_speed", "zombie_speed", "player_health", "survivor_health", "zombie_health", "melee_damage", "zombie_damage", "attack_reach", "attack_cooldown", "zombie_cooldown", "awareness", "gate_health", "gate_damage", "gate_repair_cost", "gate_repair_rate", "claim_materials", "garden_cost", "work_seconds", "food_seconds", "approach_seconds", "starting_materials", "starting_food"]:
+		for key: String in ["step", "player_speed", "survivor_speed", "zombie_speed", "player_health", "survivor_health", "zombie_health", "melee_damage", "zombie_damage", "attack_reach", "attack_cooldown", "zombie_cooldown", "awareness", "gate_health", "gate_damage", "gate_repair_cost", "gate_repair_rate", "claim_materials", "garden_cost", "work_seconds", "food_seconds", "approach_seconds", "starting_materials", "starting_food", "workshop_cost", "workshop_seconds", "armour_cost", "armour_seconds"]:
 			rules.number_between(data.balance, key, 0.001, 10000.0)
+		for key: String in ["armour_damage_multiplier", "armour_speed_multiplier", "shield_damage_multiplier"]:
+			rules.number_between(data.balance, key, 0.01, 1.0)
 	if not rules.list(data, "properties", false):
 		return errors
 	var ids: Array = rules.unique_ids(data.properties)

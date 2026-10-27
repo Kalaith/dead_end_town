@@ -2,6 +2,7 @@ extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
 const Routes = preload("res://scripts/sim/routes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
+const Workshop = preload("res://scripts/sim/workshop.gd")
 var catalog: Dictionary
 var balance: Dictionary
 var properties: Dictionary = {}
@@ -24,6 +25,8 @@ var aim := Vector2.DOWN
 var working: bool = false
 var alert: String = "SAFE"
 var downs: int = 0
+var workshop: Dictionary = Workshop.initial()
+var mara_site: String = "garden"
 
 
 func _init(data: Dictionary) -> void:
@@ -77,6 +80,7 @@ func step(dt: float) -> void:
 	player.facing = aim
 	Combat.step(self, dt)
 	_work(dt)
+	Workshop.step(self, dt)
 	if not approach and elapsed >= float(balance.approach_seconds):
 		approach = true
 		for i: int in range(3):
@@ -131,12 +135,14 @@ func context() -> String:
 				return "%s / Clear %d remaining shamblers" % [p.name, remaining(p.id)]
 			if not properties[p.id].claimed:
 				return "E / Secure %s and recover %s" % [p.name, p.reward]
+			if p.id == "garage":
+				return Workshop.context(self)
 			if p.id == "garden" and not garden_done:
 				return "E / Start garden (8 materials)   |   R / Help build   |   F / Assign Mara"
 			if p.id == "garden":
 				return "Food garden operational / +2 food every 20 safe seconds"
 			return "%s secured / %s recovered" % [p.name, p.reward]
-	return "Clear the next yard. E interacts at gates and the marked porch."
+	return ""
 
 
 func interact() -> void:
@@ -168,6 +174,8 @@ func interact() -> void:
 				return
 			if not state.claimed:
 				claim(p.id)
+			elif p.id == "garage":
+				Workshop.interact(self)
 			elif p.id == "garden" and not garden_started:
 				if materials < int(balance.garden_cost):
 					note("Garden needs 8 materials.")
@@ -195,7 +203,7 @@ func claim(id: String) -> bool:
 	materials += int(balance.claim_materials)
 	if id == "garage":
 		materials += 12
-		note("Garage recovered: tools and 12 extra materials. Workshop restoration comes next.")
+		note("Garage recovered: tools, cached armour and 12 extra materials. Restore the workshop here with E.")
 	elif id == "library":
 		var paige: Dictionary = actor("paige", "Paige", Routes.point(definition(id).site) + Vector2(35, 0), float(balance.survivor_health))
 		paige.order = "Follow"
@@ -214,7 +222,13 @@ func order(value: String) -> void:
 
 
 func assign_mara() -> void:
-	if garden_started and not garden_done:
+	var near_garage: bool = player.pos.distance_to(Routes.point(definition("garage").site)) < 85
+	if Workshop.unfinished(self) and (near_garage or not (garden_started and not garden_done)):
+		mara_site = "garage"
+		survivors[0].order = "Build"
+		note("Mara assigned to workshop. Home has no guard while she works.")
+	elif garden_started and not garden_done:
+		mara_site = "garden"
 		survivors[0].order = "Build"
 		note("Mara assigned to garden. The gate has no guard while she works.")
 	else:
@@ -241,7 +255,7 @@ func _work(dt: float) -> void:
 		var site: Vector2 = Routes.point(definition("garden").site)
 		var executor: bool = working and player.pos.distance_to(site) < 85
 		for a: Dictionary in survivors:
-			if a.order == "Build" and float(a.hp) > 0 and a.pos.distance_to(site) < 40:
+			if a.order == "Build" and mara_site == "garden" and float(a.hp) > 0 and a.pos.distance_to(site) < 40:
 				executor = true
 		if executor and not Combat.danger(self, site, 170) and connected("garden"):
 			garden_progress = minf(float(balance.work_seconds), garden_progress + dt)
@@ -249,7 +263,7 @@ func _work(dt: float) -> void:
 				garden_done = true
 				note("Food garden ready. A harvest arrives every 20 safe seconds.")
 				for a: Dictionary in survivors:
-					if a.order == "Build":
+					if a.order == "Build" and mara_site == "garden":
 						a.order = "Guard"
 	if garden_done and not Combat.danger(self, Routes.point(definition("garden").site), 230):
 		harvest += dt
