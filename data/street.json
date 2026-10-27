@@ -12,6 +12,7 @@
     "melee_damage": 30,
     "zombie_damage": 9,
     "attack_reach": 76,
+    "attack_cone_dot": 0.2,
     "attack_cooldown": 0.48,
     "zombie_cooldown": 1.2,
     "awareness": 230,

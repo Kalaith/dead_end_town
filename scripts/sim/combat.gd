@@ -12,6 +12,9 @@ static func danger(world: RefCounted, pos: Vector2, radius: float) -> bool:
 static func strike(world: RefCounted, attacker: Dictionary, direction: Vector2) -> void:
 	if float(attacker.cooldown) > 0 or float(attacker.hp) <= 0:
 		return
+	if direction.is_zero_approx():
+		direction = attacker.facing
+	direction = direction.normalized()
 	attacker.cooldown = float(world.balance.attack_cooldown)
 	attacker.swing = 0.18
 	attacker.facing = direction
@@ -19,7 +22,7 @@ static func strike(world: RefCounted, attacker: Dictionary, direction: Vector2) 
 		var offset: Vector2 = z.pos - attacker.pos
 		if float(z.hp) <= 0 or offset.length() > float(world.balance.attack_reach):
 			continue
-		if direction.dot(offset.normalized()) < 0.2 or not world.routes.line_clear(attacker.pos, z.pos, true):
+		if direction.dot(offset.normalized()) < float(world.balance.attack_cone_dot) or not world.routes.line_clear(attacker.pos, z.pos, true):
 			continue
 		z.hp = maxf(0, float(z.hp) - float(world.balance.melee_damage))
 		z.flash = 0.18
@@ -99,7 +102,8 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 
 static func _walk(world: RefCounted, a: Dictionary, target: Vector2, dt: float, speed: float) -> void:
 	var next: Vector2 = target if world.routes.line_clear(a.pos, target) else world.routes.waypoint(a.pos, target)
-	a.facing = a.pos.direction_to(next)
+	if float(a.swing) <= 0:
+		a.facing = a.pos.direction_to(next)
 	a.pos = world.routes.move(a.pos, next, speed * dt)
 
 

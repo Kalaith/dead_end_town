@@ -128,6 +128,7 @@ func _garden(rect: Rect2, site: Vector2) -> void:
 
 func _actor(a: Dictionary, zombie: bool) -> void:
 	var pos: Vector2 = a.pos
+	var direction: Vector2 = a.facing
 	if float(a.hp) <= 0:
 		draw_line(pos - Vector2(12, 0), pos + Vector2(12, 0), Color("575e4d") if zombie else RUST, 9)
 		return
@@ -139,18 +140,30 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 	draw_line(pos + Vector2(5, -3), pos + Vector2(6, 3), INK, 5)
 	draw_rect(Rect2(pos + Vector2(-10, -22), Vector2(20, 20)), body)
 	draw_rect(Rect2(pos + Vector2(-10, -10), Vector2(20, 4)), body.darkened(0.3))
-	draw_circle(pos + Vector2(0, -29), 8, Color("9caa73") if zombie else Color("d7b08b"))
-	draw_arc(pos + Vector2(0, -29), 8, PI, TAU, 8, INK, 5)
+	_head(pos + Vector2(0, -29), direction, zombie)
 	if not zombie and a.id == "paige" and world.workshop.equipped:
 		_armour(pos, a.facing)
-	var direction: Vector2 = a.facing
 	if not zombie:
-		draw_line(pos + Vector2(10, -15), pos + Vector2(10, -15) + direction * 27, Color("c7b68e"), 5)
+		var grip: Vector2 = pos + Vector2(0, -14) + direction * 12
+		draw_line(grip, grip + direction * 27, Color("c7b68e"), 5)
+		draw_circle(grip, 3, Color("d7b08b"))
 		_text(pos + Vector2(-16, -49), a.name, 13, CREAM)
 	if float(a.swing) > 0:
-		draw_arc(pos, 65, direction.angle() - 0.8, direction.angle() + 0.8, 18, CREAM, 3)
+		var half_angle: float = acos(float(world.balance.attack_cone_dot))
+		draw_arc(pos, float(world.balance.attack_reach), direction.angle() - half_angle, direction.angle() + half_angle, 24, CREAM, 3)
 	if float(a.hp) < (float(world.balance.zombie_health) if zombie else 100.0):
 		_meter(pos + Vector2(-15, 10), 30, float(a.hp) / (float(world.balance.zombie_health) if zombie else 100.0), RUST)
+
+
+func _head(center: Vector2, direction: Vector2, zombie: bool) -> void:
+	var skin := Color("9caa73") if zombie else Color("d7b08b")
+	draw_circle(center, 8, skin)
+	# Hair sits behind the gaze, rather than making every head face down.
+	draw_arc(center, 8, direction.angle() + PI / 2, direction.angle() + PI * 1.5, 12, INK, 5)
+	var side := Vector2(-direction.y, direction.x)
+	for sign: float in [-1.0, 1.0]:
+		draw_circle(center + direction * 4 + side * sign * 3, 1.3, INK)
+	draw_circle(center + direction * 8, 2, skin.lightened(0.15))
 
 
 func _ellipse(center: Vector2, radius: Vector2, color: Color) -> void:

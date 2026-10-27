@@ -53,6 +53,7 @@ func restore(raw: Dictionary) -> RefCounted:
 		world.set(key, int(data[key]) if key in ["materials", "food", "downs"] else (data[key].duplicate(true) if key in ["workshop", "roadworks"] else data[key]))
 	world.properties = data.properties.duplicate(true)
 	world.player = _decode_actor(data.player)
+	world.aim = world.player.facing
 	world.survivors.clear()
 	world.zombies.clear()
 	for a: Dictionary in data.survivors:

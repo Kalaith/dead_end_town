@@ -85,7 +85,7 @@ func step(dt: float) -> void:
 			a[key] = maxf(0.0, float(a[key]) - dt)
 	var travel: Vector2 = move_input * float(balance.player_speed) * dt
 	player.pos = routes.move(player.pos, player.pos + travel, travel.length())
-	player.facing = aim
+	face_aim()
 	Combat.step(self, dt)
 	_work(dt)
 	Workshop.step(self, dt)
@@ -109,6 +109,11 @@ func step(dt: float) -> void:
 
 func attack() -> void:
 	Combat.strike(self, player, aim)
+
+
+func face_aim() -> void:
+	if float(player.swing) <= 0 and not aim.is_zero_approx():
+		player.facing = aim.normalized()
 
 
 func remaining(id: String) -> int:

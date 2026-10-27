@@ -4,6 +4,7 @@ const World = preload("res://scripts/sim/world.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
 const View = preload("res://scripts/presentation/town_view.gd")
 const Hud = preload("res://scripts/presentation/hud.gd")
+const PlayerControls = preload("res://scripts/presentation/player_controls.gd")
 var world: RefCounted
 var save_state: RefCounted
 var view: Node2D
@@ -12,6 +13,7 @@ var hud: Control
 var paused: bool = true
 var accumulator: float = 0.0
 var storage_enabled: bool = true
+var controls := PlayerControls.new()
 
 
 func _ready() -> void:
@@ -48,22 +50,29 @@ func _process(dt: float) -> void:
 		return
 	if not paused:
 		world.move_input = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-		world.aim = world.player.pos.direction_to(get_global_mouse_position())
 		world.working = Input.is_action_pressed("work")
 		accumulator += minf(dt, 0.2)
 		var step: float = float(world.balance.step)
 		while accumulator >= step:
 			world.step(step)
 			accumulator -= step
-		if Input.is_action_pressed("attack"):
-			world.attack()
 	var target := Vector2(clampf(world.player.pos.x, 640, 800), clampf(world.player.pos.y - 40, 360, 800))
 	camera.position = camera.position.lerp(target, 1.0 - exp(-dt * 8))
+	if not paused:
+		# Use the current camera transform and actor position, including on frames
+		# shorter than one fixed step, before accepting an attack.
+		camera.force_update_scroll()
+		world.aim = controls.direction(world.move_input, get_global_mouse_position() - world.player.pos, world.aim, Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT), Input.is_physical_key_pressed(KEY_SPACE))
+		world.face_aim()
+		if Input.is_action_pressed("attack"):
+			world.attack()
 	view.queue_redraw()
 	hud.refresh(world, paused, dt)
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not paused:
+		controls.observe(event)
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode in [KEY_ESCAPE, KEY_TAB]:
 			command("menu")
@@ -104,6 +113,7 @@ func command(value: String) -> void:
 				hud.menu_status.text = "No saved street yet." if save_state.store.last_error.is_empty() else save_state.store.last_error
 			else:
 				world = save_state.restore(data)
+				controls = PlayerControls.new()
 				view.world = world
 				accumulator = 0
 				hud.menu_status.text = "Street restored. Resume when ready."
@@ -112,6 +122,7 @@ func command(value: String) -> void:
 				hud.menu_status.text = save_state.store.last_error
 				return
 			world = World.new(world.catalog)
+			controls = PlayerControls.new()
 			view.world = world
 			accumulator = 0
 			hud.menu_status.text = "New street ready. Your saved street is preserved until you save."
