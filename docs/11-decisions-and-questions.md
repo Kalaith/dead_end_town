@@ -12,7 +12,17 @@
 | D06 | Rescue a D&D-fan librarian who may eventually wear full iron armour against a wave | User's Page/Paige example |
 | D07 | Document connected property reclamation, home defence, jobs, production, rewards, pressure, and Godot implementation | Current project request |
 
-The current request authorises a documentation directory. It does not establish that gameplay, exports, art, or technical systems have been implemented.
+The initial request produced this design package. The subsequent request explicitly authorises starting the game using another neighboring project as a template and adopting `../godot_toolkit`. The initial runtime and evidence are recorded in [PROGRESS.md](PROGRESS.md); the design is still broader than the implementation.
+
+## Initial engineering defaults, 28 October 2026
+
+- Q01: installed Godot 4.7.2 standard editor, Compatibility, desktop first. Web and Windows exports remain to configure and verify.
+- Q02: original procedural top-down greybox at 1280x720, small authored four-property map. Final art and animation budget remain open.
+- Q03: keyboard/mouse first, WASD/arrows, mouse aim and bat attack. Remapping, controller and touch remain future work.
+- Q04: Esc/Tab pauses all authoritative simulation. No offline progression.
+- Q14: prototype defeat returns the protagonist home at full health and preserves the street, jobs and discoveries. Downed companions recover by resting at the safe home porch. This forgiving prototype rule still needs a playtest.
+
+These are implementation defaults chosen to begin the requested work, not additional confirmed creative commitments. The open-question table remains the broader review agenda.
 
 ## Proposed defaults used across this package
 

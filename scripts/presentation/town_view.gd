@@ -64,14 +64,14 @@ func _property(p: Dictionary) -> void:
 		if not state.claimed:
 			draw_line(window.position, window.end, Color("9b8764"), 6)
 	draw_rect(Rect2(building.get_center().x - 18, building.end.y - 48, 36, 48), Color("263536"))
-	_text(building.position + Vector2(10, 115), p.name, 18, CREAM)
+	_text(building.position + Vector2(10, 48), p.name, 18, CREAM)
 	_fence(rect, gate, state, accent)
 	# A clear interaction marker and status words supplement colour.
 	draw_circle(site, 23, Color(0.06, 0.12, 0.12, 0.8))
 	draw_arc(site, 23, 0, TAU, 24, accent, 2)
 	_text(site + Vector2(-5, 6), "E", 18, accent)
 	var status: String = "CONNECTED" if state.claimed else ("CLEAR / SECURE AT PORCH" if world.remaining(p.id) == 0 else "%d SHAMBLERS" % world.remaining(p.id))
-	_text(Vector2(rect.position.x + 18, rect.position.y + 32), status, 15, accent)
+	_text(Vector2(rect.position.x + 18, rect.position.y + (245 if gate.y == rect.end.y else 55)), status, 15, accent)
 	if p.id == "home":
 		_meter(gate + Vector2(-44, 20), 88, float(state.gate_hp) / float(world.balance.gate_health), accent)
 		_text(gate + Vector2(-40, 46), "%s / %d" % ["OPEN" if state.open else "GATE", int(state.gate_hp)], 13, CREAM)

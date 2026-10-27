@@ -109,3 +109,126 @@ func check_same_commands_produce_same_snapshot():
 		b.step(0.05)
 	var save := SaveState.new(data)
 	return "Fixed-step run differs" if save.snapshot(a) != save.snapshot(b) else ""
+
+
+func check_builder_physically_reaches_garden_and_reports_closed_gate():
+	var w := World.new(Catalog.read())
+	for z: Dictionary in w.zombies:
+		z.hp = 0.0
+	w.claim("garden")
+	w.player.pos = Vector2(1080, 350)
+	w.interact()
+	w.assign_mara()
+	for i: int in range(60):
+		w.step(0.05)
+	if w.survivors[0].activity != "Route blocked - check gate":
+		return "Closed home gate did not report blocked work: %s at %s" % [w.survivors[0].activity, w.survivors[0].pos]
+	w.properties.home.open = true
+	w.rebuild_routes()
+	for i: int in range(600):
+		w.step(0.05)
+	return "Mara failed to physically reach and build the garden" if not w.garden_done else ""
+
+
+func check_breach_opens_physical_route_and_repair_resumes_once():
+	var w := World.new(Catalog.read())
+	w.survivors[0].hp = 0.0
+	w.player.pos = Vector2(1080, 350)
+	for i: int in range(2400):
+		w.step(0.05)
+	if float(w.properties.home.gate_hp) > 0 or not w.routes.walkable(Vector2(360, 480)):
+		return "Breach did not open collision."
+	for z: Dictionary in w.zombies:
+		z.hp = 0.0
+	w.player.pos = Vector2(360, 440)
+	w.working = true
+	w.step(0.05)
+	var stock: int = w.materials
+	w.working = false
+	var save := SaveState.new(w.catalog)
+	var loaded: RefCounted = save.restore(JSON.parse_string(JSON.stringify(save.snapshot(w))))
+	loaded.working = true
+	for i: int in range(150):
+		loaded.step(0.05)
+	if loaded.materials != stock or float(loaded.properties.home.gate_hp) != float(loaded.balance.gate_health):
+		return "Interrupted repair charged twice or failed to resume."
+	return ""
+
+
+func check_save_store_recovers_previous_valid_street():
+	var w := World.new(Catalog.read())
+	var path: String = "user://checks/street_roundtrip.json"
+	for suffix: String in ["", ".bak", ".tmp", ".corrupt"]:
+		if FileAccess.file_exists(path + suffix):
+			DirAccess.remove_absolute(path + suffix)
+	var save := SaveState.new(w.catalog, path)
+	if not save.store.save_data(save.snapshot(w)):
+		return save.store.last_error
+	w.materials += 4
+	if not save.store.save_data(save.snapshot(w)):
+		return save.store.last_error
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	file.store_string("interrupted")
+	file.close()
+	var data: Dictionary = save.store.load_data()
+	if not save.store.recovered or data.is_empty() or int(data.materials) != 18:
+		return "Did not recover previous valid street."
+	if not save.store.save_data(data) or not FileAccess.file_exists(path + ".corrupt"):
+		return "Could not preserve damaged snapshot while saving recovered street."
+	for suffix: String in ["", ".bak", ".tmp", ".corrupt"]:
+		if FileAccess.file_exists(path + suffix):
+			DirAccess.remove_absolute(path + suffix)
+	return ""
+
+
+func check_playable_garden_loop_through_movement_combat_and_interaction():
+	var w := World.new(Catalog.read())
+	if not _travel(w, Vector2(360, 430)):
+		return "Cannot approach home gate."
+	w.working = true
+	for i: int in range(60):
+		w.step(0.05)
+	w.working = false
+	w.interact()
+	if not w.properties.home.open:
+		return "Cannot open repaired gate."
+	if not _travel(w, Vector2(1080, 350)):
+		return "Cannot traverse continuous street into garden."
+	for i: int in range(120):
+		_fight(w)
+		w.step(0.05)
+	if w.remaining("garden") != 0:
+		return "Cannot clear garden through normal melee commands."
+	w.interact()
+	if not w.properties.garden.claimed:
+		return "Cannot claim cleared garden at porch."
+	w.interact()
+	w.working = true
+	for i: int in range(260):
+		w.step(0.05)
+	if not w.garden_done or w.downs != 0:
+		return "Garden loop cannot finish without a defeat."
+	return ""
+
+
+func _travel(w: RefCounted, destination: Vector2) -> bool:
+	for i: int in range(800):
+		if w.player.pos.distance_to(destination) < 8:
+			w.move_input = Vector2.ZERO
+			return true
+		var next: Vector2 = w.routes.waypoint(w.player.pos, destination)
+		w.move_input = w.player.pos.direction_to(next)
+		_fight(w)
+		w.step(0.05)
+	w.move_input = Vector2.ZERO
+	return false
+
+
+func _fight(w: RefCounted) -> void:
+	var distance: float = 230
+	for z: Dictionary in w.zombies:
+		var next: float = w.player.pos.distance_to(z.pos)
+		if float(z.hp) > 0 and next < distance:
+			distance = next
+			w.aim = w.player.pos.direction_to(z.pos)
+	w.attack()

@@ -69,6 +69,8 @@ func waypoint(from: Vector2, to: Vector2) -> Vector2:
 	if grid.is_point_solid(start) or grid.is_point_solid(end):
 		return from
 	var path: PackedVector2Array = grid.get_point_path(start, end)
+	if path.is_empty():
+		return from
 	return path[1] if path.size() > 1 else to
 
 

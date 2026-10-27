@@ -2,7 +2,7 @@
 
 ## Current state
 
-Documentation only. No milestone below is implemented, tested, or complete. Estimates should follow a greybox spike and an agreed platform and asset budget; this package does not promise dates.
+An initial playable greybox street was implemented on 28 October 2026. M0 has a pinned engine, controls, map and camera; portions of M1–M7 demonstrate melee, squad orders, home defence, claims, shared work, rescue and persistence. No complete milestone acceptance gate or human playtest is claimed. See [PROGRESS.md](PROGRESS.md) for implemented behavior and evidence. The table below remains the target acceptance roadmap; estimates should follow observed play.
 
 ## MVP content budget: proposed
 

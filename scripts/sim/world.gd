@@ -133,6 +133,9 @@ func context() -> String:
 				return "E / Secure %s and recover %s" % [p.name, p.reward]
 			if p.id == "garden" and not garden_done:
 				return "E / Start garden (8 materials)   |   R / Help build   |   F / Assign Mara"
+			if p.id == "garden":
+				return "Food garden operational / +2 food every 20 safe seconds"
+			return "%s secured / %s recovered" % [p.name, p.reward]
 	return "Clear the next yard. E interacts at gates and the marked porch."
 
 

@@ -48,4 +48,4 @@ The architecture is a project-specific proposal informed by these APIs; the refe
 
 ## Package verification boundary
 
-File existence, readable content, and internal links can be checked for this package. There is no runtime to import, export, playtest, or benchmark yet. Future reports should distinguish documentation checks, automated system checks, and actual gameplay observations.
+The original package was documentation only. A runtime was added on 28 October 2026. Its import, automated scenarios and windowed capture evidence are recorded separately from human gameplay observations in [PROGRESS.md](PROGRESS.md). Export, browser/device behavior and human playtesting remain unverified.

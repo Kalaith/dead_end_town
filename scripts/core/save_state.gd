@@ -80,6 +80,8 @@ func valid(data: Dictionary) -> bool:
 		for key: String in ["claimed", "looted", "open"]:
 			if not state.get(key) is bool:
 				return false
+		if state.claimed != state.looted:
+			return false
 		if not Rules.finite(state.get("gate_hp")) or float(state.gate_hp) < 0 or float(state.gate_hp) > float(catalog.balance.gate_health):
 			return false
 	if not data.properties.home.claimed or not _valid_actor(data.get("player"), float(catalog.balance.player_health)):
@@ -100,6 +102,26 @@ func valid(data: Dictionary) -> bool:
 		return false
 	if float(data.garden_progress) > float(catalog.balance.work_seconds) or (data.garden_done and not data.garden_started):
 		return false
+	if data.garden_started and not data.properties.garden.claimed:
+		return false
+	if data.garden_done and float(data.garden_progress) < float(catalog.balance.work_seconds):
+		return false
+	if data.player.id != "you":
+		return false
+	var expected_zombies: Dictionary = {}
+	var index: int = 0
+	for p: Dictionary in catalog.properties:
+		for spawn: Array in p.zombies:
+			expected_zombies["z%d" % index] = {"home": p.id, "raid": false}
+			index += 1
+	if data.approach:
+		for i: int in range(3):
+			expected_zombies["raid%d" % i] = {"home": "street", "raid": true}
+	if data.zombies.size() != expected_zombies.size():
+		return false
+	for z: Dictionary in data.zombies:
+		if not expected_zombies.has(z.id) or expected_zombies[z.id].home != z.home or expected_zombies[z.id].raid != z.raid:
+			return false
 	return true
 
 

@@ -87,6 +87,9 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 		_walk(world, a, anchor, dt, float(world.balance.survivor_speed))
 		if old.is_equal_approx(a.pos):
 			a.activity = "Route blocked - check gate"
+	elif a.order == "Home":
+		a.order = "Guard"
+		a.activity = "Guard"
 
 
 static func _walk(world: RefCounted, a: Dictionary, target: Vector2, dt: float, speed: float) -> void:

@@ -2,7 +2,7 @@
 
 ## Status and baseline
 
-This is an implementation plan, not existing code. Use a supported Godot 4 release with GDScript and top-down 2D as the working direction. Pin the exact version, renderer, desktop target, and export requirements at M0. No installed engine version or device performance has been inspected for this documentation task.
+The original implementation proposal below describes the intended architecture, not a claim that every system exists. The first runtime now uses the installed Godot 4.7.2 standard editor, Compatibility renderer, desktop keyboard/mouse and a 1280x720 viewport. `scenes/town.tscn` wires `scripts/presentation/` to the authoritative pure fixed-step model in `scripts/sim/`. `scripts/core/` validates JSON content and maps saves through the shared toolkit. See [PROGRESS.md](PROGRESS.md) for current limitations; export requirements and device performance remain unverified.
 
 The official references linked below were checked on 28 October 2026. Stable documentation may move; use the version-specific equivalent once the engine is pinned.
 
@@ -25,10 +25,10 @@ scripts/
 data/
   properties/ equipment/ recipes/ survivors/
 assets/
-tests/
+tools/                       # headless scenario scripts; no test addons
 ```
 
-This tree is proposed; these runtime files are not part of the current documentation package.
+This larger tree is proposed. The first runtime uses one wired town scene, a procedural `town_view.gd`, and `data/street.json`. Separate actor scenes, tile art, facilities, equipment and general job managers remain future work.
 
 ## Scene responsibilities
 

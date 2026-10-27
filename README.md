@@ -2,9 +2,52 @@
 
 Reclaim a zombie-infested town, one property at a time, with a small group of survivors who work and fight together.
 
-**Status: design and planning only.** This directory contains a Markdown game-design package, not a playable Godot project. There is no `project.godot`, executable, commissioned art, or implemented simulation yet.
+**Status: first playable greybox prototype, 28 October 2026.** A continuous four-property street now runs in Godot 4.7.2 with melee combat, Mara's home defence, connected property claims, a shared garden construction job, Paige's rescue, and manual save/load. This is an early foundation, not the complete MVP. See [progress and verification](docs/PROGRESS.md) for the exact boundary.
 
 Prepared 28 October 2026 from the [Game concept development conversation](chatgpt-conversation://6ae0fba7-c8a4-83ec-9e38-b9d8b951a9ac) and the accompanying project request.
+
+## Play from source
+
+Use the installed standard Godot **4.7.2** editor, Compatibility renderer. Desktop keyboard and mouse are the initial target; the viewport is 1280x720. No installation or export is needed.
+
+```powershell
+# First checkout: recreate the ignored shared-toolkit junction.
+& ../godot_toolkit/tools/Link-Toolkit.ps1 -ProjectDir .
+./Run.ps1
+```
+
+Alternatively, import `project.godot` in Godot and run the project. The opening screen pauses the world until Begin. Saves are explicit through the pause menu and live in Godot's `user://street.json`; reopening starts a fresh preview until you choose Load saved street. New street preserves the existing on-disk save until a later Save, and archives it as `.previous` first. Incompatible or damaged saves without a usable backup block saving and show a message.
+
+| Control | Action |
+| --- | --- |
+| WASD / arrows | Move |
+| Mouse | Aim |
+| Left click / Space | Swing bat; hold to repeat |
+| E | Open/close a nearby gate; secure a cleared porch; start garden; recover at home |
+| Hold R | Repair the home gate or contribute garden work |
+| 1 / 2 / 3 / 4 | Team Follow / Hold / Engage / Return home and guard |
+| F | Assign Mara to an unfinished garden, otherwise home guard |
+| Esc / Tab | Pause all simulation and open the menu |
+
+Start by approaching the home gate, holding R to repair it, then opening it with E. Cross east into the garden yard, clear its three shamblers and press E at the marked porch. Press E again to reserve garden materials, then hold R or assign Mara with F. Keep home access open for her route. A closed gate reports blocked work. The library across the road rescues Paige; the garage adds tools and materials. All actors stay active while off camera. One authored three-zombie approach arrives from the east road after 60 active seconds.
+
+The prototype uses original procedural greybox drawing. Buildings have solid footprints with porch interactions; there are no explorable interiors yet. No audio, firearm, armour, workshop production, food consumption, general job board, physical inter-property integration, recurring hordes or final campaign ending is implemented.
+
+## Project template and toolkit
+
+The Last Hearth supplied the project structure, Compatibility configuration and toolkit workflow. Its gameplay, art, BDI agents and turn-based combat were not copied. Dead End Town has its own pure fixed-step rules in `scripts/sim/` and presentation in `scripts/presentation/`.
+
+`../godot_toolkit` is linked at the ignored `addons/hatchery` junction. Runtime code uses its `JsonIO`, `DataRules`, `JsonSave`, `Palette` and `UiKit`; developer tools use the shared parse, scenario and capture runners. The shared toolkit itself was not modified. The standard publishing wrappers are present but have no configured destination or export presets; nothing has been published.
+
+```powershell
+$godot = 'C:/Program Files/Godot/Godot_v4.7.2-stable_win64_console.exe'
+& $godot --headless --path . --script res://tools/parse_all.gd
+& $godot --headless --path . --script res://tools/sim_checks.gd
+& $godot --headless --editor --path . --quit
+./Run.ps1 -GameArgs @('--script','res://tools/capture.gd','--','--size=1280x720','--no-save')
+```
+
+The capture tour stages example states without writing a gameplay save. Its images are in `docs/verification/`. Headless scenarios and staged captures do not establish human combat feel or browser/device support.
 
 ## The game
 
