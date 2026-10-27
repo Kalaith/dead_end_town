@@ -50,9 +50,7 @@ static func step(world: RefCounted) -> void:
 		var z: Dictionary = world.actor("wave%d_%s_%d" % [int(world.pressure.wave), route_id, i], "Shambler", pos, float(world.balance.zombie_health))
 		z.home = "street"
 		z.raid = true
-		z.lane_reached = route_id in ["east", "west"]
-		# Each entry attacks the nearest claimed entrance, exposing the expanded line.
-		z.anchor = Routes.point(target_property(world, pos).gate)
+		# Spawn at a real edge; the same random wandering applies to every zombie.
 		world.zombies.append(z)
 	if size > 0:
 		world.note("RADIO / Shamblers entering from %s." % route_names(world))
@@ -75,17 +73,6 @@ static func entry_position(data: Dictionary, entries: Array, size: int, index: i
 	var route_count: int = (size - 1 - index % entries.size()) / entries.size() + 1
 	var offset: float = (float(rank) - float(route_count - 1) * 0.5) * float(data.pressure.spawn_spacing)
 	return Routes.point(route.entry) + Routes.point(route.spread) * offset
-
-
-static func target_property(world: RefCounted, pos: Vector2) -> Dictionary:
-	var nearest: Dictionary = world.definition("home")
-	var distance: float = INF
-	for p: Dictionary in world.catalog.properties:
-		var next: float = pos.distance_to(Routes.point(p.gate))
-		if world.properties[p.id].claimed and next < distance:
-			nearest = p
-			distance = next
-	return nearest
 
 
 static func route_names(world: RefCounted) -> String:

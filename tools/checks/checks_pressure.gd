@@ -44,7 +44,7 @@ func check_raids_warn_recur_and_use_every_edge_without_teleporting() -> String:
 	return "Not all four origins used" if origins.size() != 4 else ""
 
 
-func check_expansion_increases_size_frequency_and_exposes_new_entrances() -> String:
+func check_expansion_increases_size_frequency_and_spreads_edge_arrivals() -> String:
 	var w: RefCounted = _expanded()
 	w.pressure.wave = 4
 	w.approach = true
@@ -106,9 +106,9 @@ func check_warned_raid_reload_is_deterministic_and_rejects_bad_state() -> String
 	raw = save.snapshot(w)
 	for z: Dictionary in raw.zombies:
 		if z.raid:
-			z.anchor = [123, 123]
+			z.roam_angle = "bad"
 			if save.valid(raw):
-				return "Invalid raid target accepted."
+				return "Invalid migrant wandering state accepted."
 			break
 	return ""
 
@@ -143,30 +143,21 @@ func check_real_schema_four_migration_preserves_cleared_territory_and_legacy_rai
 	return ""
 
 
-func check_alley_raids_reach_and_damage_both_frontier_barricades() -> String:
+func check_alley_migrants_wander_without_a_fixed_road_destination() -> String:
 	var w: RefCounted = _expanded()
-	w.player.pos = Vector2(1080, 800)
-	for a: Dictionary in w.survivors:
-		a.hp = 0.0
-	for id: String in ["home_east", "garden_west"]:
-		w.roadworks[id].phase = "ready"
-		w.roadworks[id].progress = float(w.balance.barricade_seconds)
-		w.roadworks[id].hp = float(w.balance.barricade_health)
-	w.rebuild_routes()
 	w.pressure.wave = 4
 	w.approach = true
 	w.elapsed = float(w.pressure.next)
 	Pressure.step(w)
-	# Only the actual north/south migrants test alley travel and interception.
+	var starts: Dictionary = {}
 	for z: Dictionary in w.zombies:
-		if z.raid and not (z.id.contains("_north_") or z.id.contains("_south_")):
-			z.hp = 0.0
-	w.pressure.next = w.elapsed + 1000
-	for i: int in range(1200):
+		if z.raid and (z.id.contains("_north_") or z.id.contains("_south_")):
+			starts[z.id] = z.pos
+	for i: int in range(100):
 		w.step(0.05)
-	for id: String in ["home_east", "garden_west"]:
-		if float(w.roadworks[id].hp) >= float(w.balance.barricade_health):
-			return "Alley raid failed to physically reach and damage %s: %s" % [id, w.zombies.filter(func(z: Dictionary) -> bool: return z.raid and z.hp > 0)]
+	for z: Dictionary in w.zombies:
+		if starts.has(z.id) and z.pos.distance_to(starts[z.id]) < 5:
+			return "Alley migrant did not wander away from its spawn."
 	return ""
 
 

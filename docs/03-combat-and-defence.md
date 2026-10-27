@@ -6,6 +6,10 @@ Proposed action set: move, aim, attack, dodge, interact, and issue squad orders.
 
 Start with a readable melee weapon and a slow basic zombie. Wind-up, reach, impact, stagger, recovery, and crowd spacing matter before weapon variety. Heavy armour improves protection and stagger resistance but should have a visible mobility tradeoff. Exact stamina, dodge invulnerability, friendly fire, and weapon durability rules are open.
 
+## Implemented basic melee, 28 October 2026
+
+Each basic bat swing hits one living zombie: the nearest valid target within reach, forward cone and clear attack line. Damage, stagger and knockback apply only to that target. Survivors use the same basic single-target melee. No current weapon grants cleaving; broader attacks remain a possible future equipment distinction.
+
 ## Squad
 
 The conversation proposed one controlled character with up to three companions. Prove one companion first; the MVP target is up to two. Companion count is a tuning choice, not a requirement to recruit a large population.

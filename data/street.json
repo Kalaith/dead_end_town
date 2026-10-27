@@ -4,6 +4,9 @@
   "balance": {
     "step": 0.05,
     "territory_fall_seconds": 8,
+    "roam_seed": 38171,
+    "roam_turn_min": 0.8,
+    "roam_turn_max": 2.8,
     "player_speed": 190,
     "survivor_speed": 145,
     "zombie_speed": 47,
@@ -16,7 +19,6 @@
     "attack_cone_dot": 0.2,
     "attack_cooldown": 0.48,
     "zombie_cooldown": 1.2,
-    "awareness": 230,
     "gate_health": 160,
     "gate_damage": 7,
     "gate_repair_cost": 3,
@@ -48,8 +50,6 @@
     "barricade_stand_offset": 30
   },
   "pressure": {
-    "alley_join": [720, 580],
-    "join_radius": 24,
     "warning_seconds": 12,
     "interval_seconds": 65,
     "claim_interval_reduction": 8,

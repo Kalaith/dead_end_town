@@ -123,14 +123,14 @@ func check_raiders_attack_road_barricades_from_both_directions_and_breach() -> S
 			a.hp = 0.0
 		w.player.pos = Vector2(360, 350)
 		var z: Dictionary = w.zombies[0]
-		z.pos = Vector2(20 if index == 0 else 700, 580)
+		z.pos = Vector2(100 if index == 0 else 620, 580)
 		z.hp = 60.0
 		z.raid = true
 		var id: String = w.catalog.barricades[index].id
-		_advance(w, 4.0)
+		_press(w, z, Vector2.LEFT if index == 0 else Vector2.RIGHT, 4.0)
 		if float(w.roadworks[id].hp) >= 180 or w.roadworks[id].phase != "ready":
 			return "Raider did not attack the %s barricade." % id
-		_advance(w, 35.0)
+		_press(w, z, Vector2.LEFT if index == 0 else Vector2.RIGHT, 35.0)
 		if w.roadworks[id].phase != "empty" or not w.routes.walkable(w.routes.point(w.catalog.barricades[index].center)):
 			return "Destroyed %s failed to reopen collision." % id
 	return ""
@@ -181,10 +181,10 @@ func check_road_guards_route_hold_posts_survive_reload_and_leave_removed_line() 
 		if a.order != "Roadguard" or a.pos.distance_to(a.anchor) > 5:
 			return "Guard failed to physically reach a road post: %s" % a
 	var z: Dictionary = loaded.zombies[0]
-	z.pos = Vector2(700, 580)
+	z.pos = Vector2(670, 580)
 	z.hp = 60.0
 	z.raid = true
-	_advance(loaded, 8.0)
+	_press(loaded, z, Vector2.LEFT, 8.0)
 	if float(z.hp) > 0 or not Roadworks.active(loaded.roadworks.home_east):
 		return "Road guard failed to hold an actual approach."
 	loaded.player.pos = Vector2(592, 580)
@@ -228,3 +228,11 @@ func check_expansion_moves_defensive_line_and_legacy_saves_migrate() -> String:
 	bad = save.snapshot(w)
 	bad.roadworks.home_west.phase = "empty"
 	return "Inconsistent defence phase accepted" if save.valid(bad) else ""
+
+
+func _press(w: RefCounted, z: Dictionary, direction: Vector2, seconds: float) -> void:
+	# Stage repeated random-direction contact to verify damage and breach collision.
+	for i: int in range(int(ceil(seconds / 0.05))):
+		z.roam_angle = direction.angle()
+		z.roam_left = 1.0
+		w.step(0.05)

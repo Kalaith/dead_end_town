@@ -2,15 +2,17 @@
 
 ## Current street implementation, 28 October 2026
 
-Following feedback that zombies are not a threat, the greybox has 24 residents across its three reclaimable properties and recurring edge migrations. Waves start at 45 active seconds with a 12-second directional radio warning. A five-wave cycle introduces east, west, north/east, south/west and four-edge attacks. Each extra claimed property adds two migrants and removes eight seconds from the next interval: 4–10 zombies every 65–41 seconds, capped at 36 living zombies across the map.
+Following feedback that zombies are not a threat, the greybox has 24 residents across its three reclaimable properties and recurring edge migrations. Waves start at 45 active seconds with a 12-second directional radio warning. A five-wave cycle introduces east, west, north/east, south/west and four-edge attacks. Each extra claimed property adds two migrants and removes eight seconds from the next interval: 4Ã¢â‚¬â€œ10 zombies every 65Ã¢â‚¬â€œ41 seconds, capped at 36 living zombies across the map.
 
-Migrants travel through physical entrances and barricades toward the nearest claimed property, and pursue nearby people. North/south groups use the central alleys to reach the road. Defeated resident populations remain cleared; migration is the source of renewed pressure. Claimed properties are not automatically lost when a zombie enters. This is a deterministic pressure loop, not the noise/event system described below. Values and wave routes live in `data/street.json`. See [PROGRESS.md](PROGRESS.md) for verification and limits.
+All zombies now wander independently, including residents, edge arrivals and occupiers after a property falls. Random headings last 0.8â€“2.8 seconds; collision triggers another choice. They have no people, porch, road-junction or property destination and never pursue. They bite only on physical contact and damage a closed gate or built road barricade when wandering into it. Walls still block movement. Lost yards remain places to wander through, rather than rally points. Defeated residents stay cleared; new zombies still arrive at physical map edges under the existing budget. Eight seconds of unopposed occupation inside a claimed yard causes loss.
+
+The world owns a seeded RandomNumberGenerator; save schema 7 preserves its full integer state as text plus each actor's heading and remaining turn clock. The same seed and commands reproduce the same motion; loading resumes the random sequence. Values live in `data/street.json`. See [PROGRESS.md](PROGRESS.md) for verification and limits. The noise/pursuit ideas below are earlier proposals, superseded by the user's current direction that all zombie movement should be aimless.
 
 ## Threat inhabitants
 
 Residents occupy buildings and yards until disturbed. Wanderers move through streets and openings. Hordes are travelling groups that can redirect toward substantial activity. These are behaviour roles, not necessarily three distinct monster species.
 
-Begin with one slow zombie archetype. Its readable states are idle, wander, investigate, pursue, attack, stagger, and defeated. Zombies need a reachable target or last-known sound location. They should attack an obstruction only when it plausibly separates them from a target.
+The current slow archetype wanders, bites on contact, bumps defences, staggers when struck and falls when defeated. Investigation, pursuit and sound destinations are outside the current movement rule.
 
 ## Noise events
 

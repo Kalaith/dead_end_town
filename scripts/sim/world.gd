@@ -7,6 +7,7 @@ const Routes = preload("res://scripts/sim/routes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
+var roam_rng := RandomNumberGenerator.new()
 var catalog: Dictionary
 var balance: Dictionary
 var properties: Dictionary = {}
@@ -37,6 +38,7 @@ var roadworks: Dictionary
 func _init(data: Dictionary) -> void:
 	catalog = data
 	balance = data.balance
+	roam_rng.seed = int(balance.roam_seed)
 	roadworks = Roadworks.initial(data)
 	pressure = Pressure.initial(data)
 	materials = int(balance.starting_materials)
@@ -58,7 +60,7 @@ func _init(data: Dictionary) -> void:
 
 
 static func actor(id: String, label: String, pos: Vector2, hp: float) -> Dictionary:
-	return {"id": id, "name": label, "pos": pos, "hp": hp, "cooldown": 0.0, "flash": 0.0, "swing": 0.0, "facing": Vector2.DOWN, "order": "Follow", "job": "", "anchor": pos, "activity": "Ready"}
+	return {"id": id, "name": label, "pos": pos, "hp": hp, "cooldown": 0.0, "flash": 0.0, "swing": 0.0, "facing": Vector2.DOWN, "order": "Follow", "job": "", "anchor": pos, "activity": "Ready", "roam_angle": 0.0, "roam_left": 0.0}
 
 
 func rebuild_routes() -> void:

@@ -15,6 +15,7 @@
 | D09 | After taking both properties, barricade the street from both directions; dismantle temporary defences to reclaim materials as the front moves | User request after a further game playtest, 28 October 2026 |
 | D10 | Direct survivors individually, such as Mara gardening and Paige working at the workshop while the player guards | User request after recruiting Paige, 28 October 2026 |
 | D11 | Increase resident numbers, recurring raids and attack directions so each territory gain feels fought for | User feedback that zombies are not a threat, 28 October 2026 |
+| D14 | All zombies wander randomly without a fixed destination; basic player melee hits one zombie per swing | User feedback about stationary occupiers and overly strong attacks, 28 October 2026 |
 | D13 | Undefended buildings fall quickly to zombie occupation; physical security buys time | User feedback that zombies cannot retake territory, 28 October 2026 |
 | D12 | Remove map status/count/reward text and reveal Paige only when rescued | User requests less screen text and discovery without spoilers, 28 October 2026 |
 
@@ -38,11 +39,15 @@ The current map treats home/library and garden/garage as facing pairs. Each pair
 
 The first street now has 7 garden residents, 7 library residents and 10 garage residents. The first migration enters at 45 active seconds. A 12-second radio warning names its origins. The repeating sequence is east; west; north + east; south + west; all four edges. Initial waves have 4 zombies, adding 2 per claimed property beyond home, up to 10. Intervals start at 65 seconds and fall by 8 seconds per additional property (41 at full ownership, configured floor 40). These are tuning defaults in `data/street.json`, awaiting human balance review.
 
-Migrations enter at authored map edges and physically travel to the closest claimed property entrance; alley groups join the road before crossing to a property. Nearby people can divert them. The total living population is capped at 36; excess arrivals are skipped, rather than queued into a sudden backlog. Residents stay defeated. Save schema 5 preserves the wave clock, warning and travel phase; older saves keep claimed yards cleared and get 65 active seconds of preparation. Noise and a final reclamation objective remain future work. Territory loss is implemented below.
+Migrations enter at authored map edges and now wander randomly like residents. The earlier nearest-property destination, mandatory alley-to-road travel and pursuit have been superseded by D14. The total living population is capped at 36; excess arrivals are skipped, rather than queued into a sudden backlog. Residents stay defeated. Save schema 5 preserves the wave clock, warning and travel phase; older saves keep claimed yards cleared and get 65 active seconds of preparation. Noise and a final reclamation objective remain future work. Territory loss is implemented below.
 
 ## Territory loss default, 28 October 2026
 
-Eight active seconds of unopposed living zombie occupation inside a claimed yard causes loss, including home. A living player or survivor inside contests it; downed actors do not. Existing walls, gates and road defences protect by blocking entry, without granting an abstract immunity bonus. Warning messages and a draining porch bar precede loss. Previously looted sites can be cleared and reclaimed without repeated rewards, rescues or construction charges. Facilities require restored home connectivity. Save schema 6 preserves occupation and discovery separately from ownership, migrating schemas 1â€“5. The eight-second value is initial tuning awaiting human review.
+Eight active seconds of unopposed living zombie occupation inside a claimed yard causes loss, including home. A living player or survivor inside contests it; downed actors do not. Existing walls, gates and road defences protect by blocking entry, without granting an abstract immunity bonus. Warning messages and a draining porch bar precede loss. Previously looted sites can be cleared and reclaimed without repeated rewards, rescues or construction charges. Facilities require restored home connectivity. Save schema 6 preserves occupation and discovery separately from ownership, migrating schemas 1ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ5. The eight-second value is initial tuning awaiting human review.
+
+## Wandering and melee defaults, 28 October 2026
+
+All shamblers choose independent random headings every 0.8–2.8 active seconds and turn again if blocked. No person, entrance or occupation point supplies a movement goal. They bite on contact and damage gates/barricades they bump into. The seeded generator and heading clocks persist in schema 7, with migration from schemas 1–6. Basic melee hits the nearest legal zombie once per swing; surviving enemies in the same cone are untouched. These movement intervals are initial tuning; no future weapon or cleave upgrade is implemented.
 
 ## Proposed defaults used across this package
 
@@ -68,10 +73,10 @@ These defaults allow useful prototyping without implying that the user approved 
 | Q01 | Exact Godot release, renderer, and desktop target? | M0 | Inspect local tooling and export requirements; pin one version |
 | Q02 | Tile scale, view angle, animation detail, asset budget? | M0 | Test a greybox street and one readable equipment silhouette |
 | Q03 | Keyboard/mouse only or controller from the start? | M0 | Pick primary input; preserve remapping and command accessibility |
-| Q04 | Can construction/orders pause action? | M1ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œM2 | Test full pause for planning against live action clarity |
+| Q04 | Can construction/orders pause action? | M1ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“M2 | Test full pause for planning against live action clarity |
 | Q05 | Stamina, dodge rules, friendly fire, weapon durability? | M1 | Add only what improves small melee encounters |
 | Q06 | Can control switch between survivors? | M2 | Fixed protagonist first; do not assume possession or multiplayer |
-| Q07 | Companion cap and guard coverage for a tiny roster? | M2ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œM3 | One companion first, then test two; routine home attacks must be manageable |
+| Q07 | Companion cap and guard coverage for a tiny roster? | M2ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“M3 | One companion first, then test two; routine home attacks must be manageable |
 | Q08 | What precisely turns a contested property into lost territory? | M4 | Implemented: eight seconds of unopposed physical occupation with a warning; tune after playtest |
 | Q09 | What qualifies a road corridor as safely connected? | M4 | Authored crossings with explicit access and exposed boundaries |
 | Q10 | Cancellation salvage, repair batch costs, reserve limits? | M5 | Check resource conservation and player understanding |

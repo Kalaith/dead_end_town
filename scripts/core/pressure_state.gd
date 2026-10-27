@@ -9,8 +9,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	if not rules.object(data, "pressure"):
 		return
 	var config: Dictionary = data.pressure
-	rules.vec2(config, "alley_join")
-	for key: String in ["warning_seconds", "interval_seconds", "claim_interval_reduction", "minimum_interval", "spawn_spacing", "join_radius"]:
+	for key: String in ["warning_seconds", "interval_seconds", "claim_interval_reduction", "minimum_interval", "spawn_spacing"]:
 		rules.number_between(config, key, 1, 1000)
 	for key: String in ["base_size", "claim_size", "maximum_size", "living_cap"]:
 		if not Rules.integer_in(config.get(key), 1, 100):
@@ -58,8 +57,8 @@ static func _valid_geometry(data: Dictionary, errors: Array[String]) -> void:
 		residents += p.zombies.size() + p.reinforcements.size()
 	var routes := Routes.new()
 	routes.rebuild(data.properties, states, Routes.point(data.bounds))
-	if not routes.walkable(Routes.point(data.pressure.alley_join)) or residents > int(data.pressure.living_cap):
-		errors.append("Invalid alley junction or resident population exceeds cap.")
+	if residents > int(data.pressure.living_cap):
+		errors.append("Resident population exceeds cap.")
 	for p: Dictionary in data.properties:
 		for pos: Array in p.zombies + p.reinforcements:
 			if not routes.walkable(Routes.point(pos)) or not Routes.rectangle(p.rect).has_point(Routes.point(pos)):
@@ -103,8 +102,6 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 		if z.id in ["raid0", "raid1", "raid2"]:
 			continue
 		var parts: PackedStringArray = z.id.split("_")
-		if not z.get("lane_reached") is bool:
-			return false
 		if parts.size() != 3 or not parts[0].begins_with("wave") or not parts[0].substr(4).is_valid_int() or not parts[2].is_valid_int():
 			return false
 		var wave: int = int(parts[0].substr(4))
@@ -112,11 +109,5 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 			return false
 		var pattern: Array = catalog.pressure.patterns[wave % catalog.pressure.patterns.size()]
 		if parts[1] != pattern[int(parts[2]) % pattern.size()]:
-			return false
-		var target_found: bool = false
-		for p: Dictionary in catalog.properties:
-			if z.anchor == p.gate and data.properties[p.id].looted:
-				target_found = true
-		if not target_found:
 			return false
 	return seen.size() == residents.size() and migrants <= int(catalog.pressure.living_cap) and living <= int(catalog.pressure.living_cap)

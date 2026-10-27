@@ -1,5 +1,5 @@
 extends RefCounted
-const Roadworks = preload("res://scripts/sim/roadworks.gd")
+const Wandering = preload("res://scripts/sim/wandering.gd")
 ## Spatial combat and bounded AI. Every actor stays active off camera.
 
 static func danger(world: RefCounted, pos: Vector2, radius: float) -> bool:
@@ -18,16 +18,22 @@ static func strike(world: RefCounted, attacker: Dictionary, direction: Vector2) 
 	attacker.cooldown = float(world.balance.attack_cooldown)
 	attacker.swing = 0.18
 	attacker.facing = direction
+	var target: Dictionary = {}
+	var nearest: float = INF
 	for z: Dictionary in world.zombies:
 		var offset: Vector2 = z.pos - attacker.pos
 		if float(z.hp) <= 0 or offset.length() > float(world.balance.attack_reach):
 			continue
 		if direction.dot(offset.normalized()) < float(world.balance.attack_cone_dot) or not world.routes.line_clear(attacker.pos, z.pos, true):
 			continue
-		z.hp = maxf(0, float(z.hp) - float(world.balance.melee_damage))
-		z.flash = 0.18
-		z.cooldown = maxf(float(z.cooldown), 0.45)
-		z.pos = world.routes.move(z.pos, z.pos + direction * 18, 18)
+		if offset.length_squared() < nearest:
+			nearest = offset.length_squared()
+			target = z
+	if not target.is_empty():
+		target.hp = maxf(0, float(target.hp) - float(world.balance.melee_damage))
+		target.flash = 0.18
+		target.cooldown = maxf(float(target.cooldown), 0.45)
+		target.pos = world.routes.move(target.pos, target.pos + direction * 18, 18)
 
 
 static func step(world: RefCounted, dt: float) -> void:
@@ -119,52 +125,21 @@ static func _walk(world: RefCounted, a: Dictionary, target: Vector2, dt: float, 
 
 
 static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
+	# Bite only someone physically within reach. People never set movement goals.
 	var target: Dictionary = {}
-	var best: float = float(world.balance.awareness)
+	var best: float = 29.0
 	for a: Dictionary in [world.player] + world.survivors:
 		var distance: float = z.pos.distance_to(a.pos)
-		if float(a.hp) > 0 and distance < best and world.routes.line_clear(z.pos, a.pos, true):
+		if float(a.hp) > 0 and distance < best and world.routes.line_clear(z.pos, a.pos):
 			target = a
 			best = distance
-	if not target.is_empty():
-		if Roadworks.intercept(world, z, target.pos, dt):
-			return
-		if best < 29 and float(z.cooldown) <= 0:
-			target.hp = maxf(0, float(target.hp) - incoming_damage(world, target, z.pos))
-			target.flash = 0.18
-			z.cooldown = float(world.balance.zombie_cooldown)
-		elif best > 26 and float(z.cooldown) < 0.7:
-			_walk(world, z, target.pos, dt, float(world.balance.zombie_speed))
+	if not target.is_empty() and float(z.cooldown) <= 0:
+		target.hp = maxf(0.0, float(target.hp) - incoming_damage(world, target, z.pos))
+		target.flash = 0.18
+		z.cooldown = float(world.balance.zombie_cooldown)
 		return
-	if z.raid:
-		# Alley migrants physically reach the road before choosing a street crossing.
-		# This also makes road barricade interception use the actual approach lane.
-		if z.id.begins_with("wave") and not z.lane_reached:
-			var join: Vector2 = world.routes.point(world.catalog.pressure.alley_join)
-			if z.pos.distance_to(join) > float(world.catalog.pressure.join_radius):
-				_walk(world, z, join, dt, float(world.balance.zombie_speed))
-				return
-			z.lane_reached = true
-		var property: Dictionary = world.definition("home")
-		if z.id.begins_with("wave"):
-			for p: Dictionary in world.catalog.properties:
-				if world.routes.point(p.gate).is_equal_approx(z.anchor):
-					property = p
-		var state: Dictionary = world.properties[property.id]
-		var gate: Vector2 = world.routes.point(property.gate)
-		gate.y += 20 if float(property.gate[1]) > float(property.rect[1]) else -20
-		if state.open or float(state.gate_hp) <= 0:
-			gate = world.routes.point(property.site)
-		if Roadworks.intercept(world, z, gate, dt):
-			return
-		if z.pos.distance_to(gate) < 30 and float(z.cooldown) <= 0 and float(state.gate_hp) > 0 and not state.open:
-			state.gate_hp = maxf(0, float(state.gate_hp) - float(world.balance.gate_damage))
-			z.cooldown = float(world.balance.zombie_cooldown)
-			if float(state.gate_hp) <= 0:
-				world.rebuild_routes()
-				world.note(property.name + " / Gate breached. Defend and rebuild.")
-		else:
-			_walk(world, z, gate, dt, float(world.balance.zombie_speed))
+	if float(z.cooldown) < 0.7:
+		Wandering.step(world, z, dt)
 
 
 static func _survivor_speed(world: RefCounted, a: Dictionary) -> float:

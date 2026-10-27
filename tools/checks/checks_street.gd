@@ -70,17 +70,18 @@ func check_work_handoff_and_save_roundtrip_preserve_materials():
 	return ""
 
 
-func check_home_guard_defends_while_player_is_away():
+func check_home_guard_defends_local_contact_while_player_is_away() -> String:
 	var w := World.new(Catalog.read())
 	w.player.pos = Vector2(1080, 350)
-	for i: int in range(2200):
-		w.step(0.05)
-	var living: int = 0
 	for z: Dictionary in w.zombies:
-		if z.raid and float(z.hp) > 0:
-			living += 1
-	if not w.approach or living != 0 or float(w.properties.home.gate_hp) <= 0 or float(w.survivors[0].hp) <= 0:
-		return "Guard failed to hold routine approach while player was elsewhere."
+		z.hp = 0.0
+	var attacker: Dictionary = w.zombies[0]
+	attacker.hp = 60.0
+	attacker.pos = Vector2(360, 496)
+	for i: int in range(40):
+		w.step(0.05)
+	if float(attacker.hp) > 0 or float(w.properties.home.gate_hp) <= 0 or float(w.survivors[0].hp) <= 0:
+		return "Guard failed to hold a local contact while player was elsewhere."
 	return ""
 
 
@@ -134,7 +135,14 @@ func check_breach_opens_physical_route_and_repair_resumes_once():
 	var w := World.new(Catalog.read())
 	w.survivors[0].hp = 0.0
 	w.player.pos = Vector2(1080, 350)
-	for i: int in range(2400):
+	for z: Dictionary in w.zombies:
+		z.hp = 0.0
+	var attacker: Dictionary = w.zombies[0]
+	attacker.hp = 60.0
+	attacker.pos = Vector2(360, 496)
+	for i: int in range(600):
+		attacker.roam_angle = -PI / 2
+		attacker.roam_left = 1.0
 		w.step(0.05)
 	if float(w.properties.home.gate_hp) > 0 or not w.routes.walkable(Vector2(360, 480)):
 		return "Breach did not open collision."
@@ -194,9 +202,22 @@ func check_playable_garden_loop_through_movement_combat_and_interaction():
 		return "Cannot open repaired gate."
 	if not _travel(w, Vector2(1080, 350)):
 		return "Cannot traverse continuous street into garden."
-	for i: int in range(120):
+	# Seek scattered occupants instead of waiting for them to pursue the player.
+	for i: int in range(2400):
+		var nearest: float = INF
+		var target: Vector2 = w.player.pos
+		for z: Dictionary in w.zombies:
+			if float(z.hp) > 0 and w.routes.rectangle(w.definition("garden").rect).has_point(z.pos) and w.player.pos.distance_to(z.pos) < nearest:
+				nearest = w.player.pos.distance_to(z.pos)
+				target = z.pos
+		w.move_input = w.player.pos.direction_to(w.routes.waypoint(w.player.pos, target)) if nearest > 45 else Vector2.ZERO
 		_fight(w)
 		w.step(0.05)
+		if w.remaining("garden") == 0:
+			break
+	w.move_input = Vector2.ZERO
+	if not _travel(w, Vector2(1080, 350)):
+		return "Cannot return to cleared garden porch."
 	if w.remaining("garden") != 0:
 		return "Cannot clear garden through normal melee commands."
 	w.interact()

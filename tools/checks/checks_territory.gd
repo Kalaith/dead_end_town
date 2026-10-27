@@ -105,26 +105,20 @@ func check_schema_five_migration_and_occupation_validation() -> String:
 	return "Missing occupation tuning accepted" if Catalog.problems(data).is_empty() else ""
 
 
-func check_raiders_physically_breach_and_capture_an_unattended_property() -> String:
+func check_wanderer_contact_breaches_gate_then_can_occupy_property() -> String:
 	var w: RefCounted = _street()
 	w.properties.garden.open = false
 	w.rebuild_routes()
 	var z: Dictionary = w.zombies[0]
 	z.hp = 60.0
-	z.raid = true
-	z.id = "wave0_east_0"
-	z.home = "street"
-	z.lane_reached = true
-	z.anchor = Vector2(1080, 480)
-	z.pos = Vector2(1080, 510)
-	for i: int in range(100):
-		w.step(0.05)
-	if not w.properties.garden.claimed or float(w.properties.garden.occupation) != 0:
-		return "Intact gate failed to protect property."
-	for i: int in range(1000):
+	z.pos = Vector2(1080, 500)
+	# Contact headings are staged to check physical breach independently of luck.
+	for i: int in range(750):
+		z.roam_angle = -PI / 2 if z.pos.y > 400 else 0.0
+		z.roam_left = 1.0
 		w.step(0.05)
 	if w.properties.garden.claimed or float(w.properties.garden.gate_hp) > 0:
-		return "Real attacker did not breach, enter and capture."
+		return "Repeated wanderer contact did not breach, enter and capture."
 	return ""
 
 

@@ -15,14 +15,14 @@ var store: RefCounted
 
 func _init(data: Dictionary, path: String = "user://street.json") -> void:
 	catalog = data
-	store = JsonSave.new(path, 6, valid)
+	store = JsonSave.new(path, 7, valid)
 	store.migrate = migrate
 	store.schema_key = "schema_version"
 	store.block_on_damage = true
 
 
 func snapshot(world: RefCounted) -> Dictionary:
-	var result: Dictionary = {"schema_version": 6, "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
+	var result: Dictionary = {"schema_version": 7, "roam_rng_state": str(world.roam_rng.state), "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
 	for key: String in STATE_KEYS:
 		result[key] = world.get(key).duplicate(true) if key in ["workshop", "roadworks", "pressure"] else world.get(key)
 	for a: Dictionary in world.survivors:
@@ -47,12 +47,13 @@ func _decode_actor(a: Dictionary) -> Dictionary:
 
 
 func restore(raw: Dictionary) -> RefCounted:
-	var data: Dictionary = migrate(raw) if raw.get("schema_version") in [1, 2, 3, 4, 5] else raw
+	var data: Dictionary = migrate(raw) if raw.get("schema_version") in [1, 2, 3, 4, 5, 6] else raw
 	if not valid(data):
 		return null
 	var world := World.new(catalog)
 	for key: String in STATE_KEYS:
 		world.set(key, int(data[key]) if key in ["materials", "food", "downs"] else (data[key].duplicate(true) if key in ["workshop", "roadworks", "pressure"] else data[key]))
+	world.roam_rng.state = int(data.roam_rng_state)
 	world.properties = data.properties.duplicate(true)
 	world.player = _decode_actor(data.player)
 	world.aim = world.player.facing
@@ -68,7 +69,9 @@ func restore(raw: Dictionary) -> RefCounted:
 
 
 func valid(data: Dictionary) -> bool:
-	if not Rules.integer_in(data.get("schema_version"), 6, 6):
+	if not Rules.integer_in(data.get("schema_version"), 7, 7):
+		return false
+	if not data.get("roam_rng_state") is String or str(int(data.roam_rng_state)) != data.roam_rng_state:
 		return false
 	for key: String in STATE_KEYS:
 		if key in ["workshop", "roadworks", "pressure"]:
@@ -152,14 +155,20 @@ func _valid_actor(a: Variant, max_health: float) -> bool:
 	for key: String in ["hp", "cooldown", "flash", "swing"]:
 		if not Rules.finite(a.get(key)) or float(a[key]) < 0:
 			return false
+	if not Rules.finite(a.get("roam_angle")) or absf(float(a.roam_angle)) > PI:
+		return false
+	if not Rules.finite(a.get("roam_left")) or float(a.roam_left) < 0 or float(a.roam_left) > float(catalog.balance.roam_turn_max):
+		return false
 	return float(a.hp) <= max_health
 
 
 func migrate(data: Dictionary) -> Dictionary:
-	if not Rules.integer_in(data.get("schema_version"), 1, 5):
+	if not Rules.integer_in(data.get("schema_version"), 1, 6):
 		return {}
 	var upgraded: Dictionary = data.duplicate(true)
 	var version: int = int(upgraded.schema_version)
+	if version == 6:
+		return _upgrade_roaming(upgraded)
 	if version == 5:
 		return _upgrade_territory(upgraded)
 	if version == 1:
@@ -254,4 +263,19 @@ func _upgrade_territory(data: Dictionary) -> Dictionary:
 			return {}
 		p.occupation = 0.0
 	data.schema_version = 6
+	return _upgrade_roaming(data)
+
+
+func _upgrade_roaming(data: Dictionary) -> Dictionary:
+	if not data.get("player") is Dictionary or not data.get("survivors") is Array or not data.get("zombies") is Array:
+		return {}
+	for a: Variant in [data.player] + data.survivors + data.zombies:
+		if not a is Dictionary:
+			return {}
+		a.roam_angle = 0.0
+		a.roam_left = 0.0
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(catalog.balance.roam_seed)
+	data.roam_rng_state = str(rng.state)
+	data.schema_version = 7
 	return data if valid(data) else {}
