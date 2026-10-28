@@ -218,7 +218,7 @@ func _context() -> String:
 			if p.id == "garage":
 				return Workshop.context(self)
 			if p.id == "garden" and not garden_done:
-				return "R Build   F Assign" if garden_started else "E Garden · %d materials" % int(balance.garden_cost)
+				return "R Build   F Assign" if garden_started else WorkOrders.cost_prompt(self, "Garden", ["garden"], int(balance.garden_cost))
 			if p.id == "garden":
 				return "R Tend   F Assign"
 			return ""

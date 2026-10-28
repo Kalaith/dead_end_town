@@ -120,3 +120,13 @@ static func prioritise(world: RefCounted, socket: String, value: bool) -> bool:
 				other.priority = false
 	order.priority = value
 	return true
+
+
+static func cost_prompt(world: RefCounted, label: String, requires: Array, cost: int) -> String:
+	var field: bool = false
+	for id: String in requires:
+		field = field or not world.safe_connected(id)
+	var text: String = "%s · E Commit field supplies · %d materials" % [label, cost] if field else "E %s · %d materials" % [label, cost]
+	if world.materials - cost < int(world.production.material_reserve):
+		text += " · uses reserve"
+	return text

@@ -58,7 +58,7 @@ static func context(world: RefCounted, d: Dictionary) -> String:
 		return "Secure both yards"
 	match s.phase:
 		"empty":
-			return "E Barricade · %d materials" % int(world.balance.barricade_cost)
+			return WorkOrders.cost_prompt(world, "Barricade", d.requires, int(world.balance.barricade_cost))
 		"building":
 			if float(s.progress) >= float(world.balance.barricade_seconds) and _occupied(world, Routes.rectangle(d.rect)):
 				return "Clear work area"

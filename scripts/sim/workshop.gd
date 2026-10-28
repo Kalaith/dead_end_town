@@ -1,5 +1,6 @@
 extends RefCounted
 ## The garage's first equipment chain: committed work and one physical loadout.
+const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Restoration = preload("res://scripts/sim/restoration.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
@@ -19,11 +20,11 @@ static func context(world: RefCounted) -> String:
 	if not safe(world):
 		return "Clear nearby threats"
 	if not state.started:
-		return "E Workshop · %d materials" % int(world.balance.workshop_cost)
+		return WorkOrders.cost_prompt(world, "Workshop", ["garage"], int(world.balance.workshop_cost))
 	if not state.done:
 		return "R Restore   F Assign"
 	if not state.armour_started:
-		return "E Restore gear · %d materials" % int(world.balance.armour_cost)
+		return WorkOrders.cost_prompt(world, "Restore gear", ["garage"], int(world.balance.armour_cost))
 	if not state.armour_done and not world.safe_connected("garage"):
 		return "Secure home route"
 	if not state.armour_done:

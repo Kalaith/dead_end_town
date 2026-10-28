@@ -45,7 +45,7 @@ static func context(world: RefCounted, d: Dictionary) -> String:
 		return "Secure both yards"
 	var s: Dictionary = world.passages[d.id]
 	if not s.started:
-		return "E Passage · %d materials" % int(world.balance.passage_cost)
+		return WorkOrders.cost_prompt(world, "Passage", d.requires, int(world.balance.passage_cost))
 	if not s.done:
 		return "R Build   E Cancel (+%d)   F Assign" % int(WorkOrders.refund(WorkOrders.current(world, "passage:" + str(d.id))).get("materials", 0))
 	if float(s.hp) <= 0:
@@ -55,6 +55,8 @@ static func context(world: RefCounted, d: Dictionary) -> String:
 
 
 static func interact(world: RefCounted, d: Dictionary) -> void:
+	if float(world.player.hp) <= 0 or nearby(world).get("id") != d.id:
+		return
 	var s: Dictionary = world.passages[d.id]
 	if not s.done and s.started:
 		cancel(world, "passage:" + str(d.id))

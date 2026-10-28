@@ -1,4 +1,5 @@
 extends "res://addons/hatchery/testing/capture_runner.gd"
+const World = preload("res://scripts/sim/world.gd")
 const RoadChecks = preload("res://tools/checks/checks_road_orders.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const RestorationChecks = preload("res://tools/checks/checks_restoration.gd")
@@ -10,6 +11,19 @@ const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 func tour() -> void:
 	var game: Node = await open_scene("res://scenes/town.tscn")
 	game.save_state.store.enabled = false
+	game.set_process(false)
+	game.world = World.new(game.world.catalog)
+	for z: Dictionary in game.world.zombies:
+		z.hp = 0.0
+	game.world.claim("garden")
+	game.world.player.pos = Vector2(600, 400)
+	game.world.materials = 6
+	game.world.messages.clear()
+	game.view.world = game.world
+	game.view.queue_redraw()
+	game.hud.refresh(game.world, false)
+	await frames(3)
+	await shot("field_supplies")
 	game.world = Checks.prepared()
 	Neighbourhood.step(game.world, 2.0)
 	game.world.properties.garden.claimed = false

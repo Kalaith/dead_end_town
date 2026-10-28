@@ -134,3 +134,27 @@ func check_ellis_default_home_return_uses_shelter_without_guard_duty() -> String
 	w.order("Follow")
 	w.order("Home")
 	return "Home return erased Ellis's configured work" if ellis.order != "Ammo" or ellis.duty.role != "ammo" else ""
+
+
+func check_field_project_shows_commitment_and_rejects_remote_or_downed_approval() -> String:
+	var w := World.new(Catalog.read())
+	for z: Dictionary in w.zombies:
+		z.hp = 0.0
+	w.claim("garden")
+	w.player.pos = Vector2(600, 400)
+	w.materials = 6
+	if not w.context().contains("Commit field supplies") or not w.context().contains("uses reserve"):
+		return "Field approval hides its committed supplies or reserve warning."
+	var d: Dictionary = w.catalog.passages[0]
+	w.player.pos = Vector2(360, 350)
+	Neighbourhood.interact(w, d)
+	if w.passages.north.started or w.materials != 6:
+		return "Remote field approval spent stock."
+	w.player.pos = Vector2(600, 400)
+	w.player.hp = 0.0
+	Neighbourhood.interact(w, d)
+	if w.passages.north.started or w.materials != 6:
+		return "Downed field approval spent stock."
+	w.player.hp = 100.0
+	Neighbourhood.interact(w, d)
+	return "Valid field commitment failed" if not w.passages.north.started or w.materials != 2 else ""

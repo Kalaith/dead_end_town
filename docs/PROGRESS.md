@@ -460,3 +460,10 @@ Evidence:
 
 - New rescues and migrated older default duties send Ellis to the home shelter when the team returns, instead of his rescue porch. Follow remains tactical, an explicitly configured Ammo duty resumes normally, and he never receives guard duty.
 - All 128 simulation scenarios pass, including the older-save default-home return and configured-work preservation regression. No visual rules changed; the preceding duty tour remains the staged UI evidence. Human input/feel remains unverified.
+
+
+## 28 October 2026: explicit field supplies and reserve warnings
+
+- Nearby construction approval now distinguishes protected stock access from an explicit field-supply commitment and warns when the shown cost uses the material reserve. Passage approval rejects downed or remote callers; paused cancellation remains available separately.
+- All 129 scenarios pass, all 86 scripts load, and the headless editor/import passes. The work-order capture tour stages and verifies field_supplies.png at 1280x720; inspected the contextual cost/field/reserve line. No persistent HUD counter or confirmation dialogue was added.
+- The shared-order foundation now supports the map/content expansion. Work-board location/assignment access will use the known-town overview in G02; routine maintenance and food-target refinements remain with their facility/economy owners. Full-game scope is not complete.
