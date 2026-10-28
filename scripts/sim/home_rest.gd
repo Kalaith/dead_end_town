@@ -1,4 +1,5 @@
 extends RefCounted
+const Carrying = preload("res://scripts/sim/carrying.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
@@ -9,7 +10,7 @@ static func initial() -> Dictionary:
 
 
 static func present(world: RefCounted, a: Dictionary) -> bool:
-	return a.id != world.carry.patient and Routes.rectangle(world.definition("home").rect).has_point(a.pos) and world.routes.walkable(a.pos)
+	return not Carrying.carried(world, a.id) and Routes.rectangle(world.definition("home").rect).has_point(a.pos) and world.routes.walkable(a.pos)
 
 
 static func safe(world: RefCounted) -> bool:

@@ -4,22 +4,21 @@ const Equipment = preload("res://scripts/sim/equipment.gd")
 const Tasks = preload("res://scripts/sim/tasks.gd")
 signal assigned(survivor_id: String, task: String)
 var rows: Dictionary = {}
-var option_signature: String = ""
 
 
 func refresh(world: RefCounted) -> void:
-	var signature: String = JSON.stringify(Tasks.options(world))
-	var changed: bool = signature != option_signature
-	option_signature = signature
 	for a: Dictionary in world.survivors:
 		var choices: Array[Dictionary] = Tasks.options(world, a)
 		var fresh: bool = not rows.has(a.id)
 		if fresh:
 			_create_row(a.id)
 		var row: Dictionary = rows[a.id]
+		var signature: String = JSON.stringify(choices)
+		var changed: bool = row.get("signature", "") != signature
+		row.signature = signature
 		var equipment: String = Equipment.description(world, a)
 		row.status.text = "%s / %d health / %s" % [a.name, int(a.hp), equipment]
-		if a.activity not in ["Ready", "Follow", "Hold", "Guard", "Home"]:
+		if a.activity not in ["Ready", "Follow", "Hold", "Guard", "Home"] and not str(a.activity).begins_with("Heading to "):
 			row.status.text += "\n" + str(a.activity)
 		var picker: OptionButton = row.picker
 		picker.disabled = float(a.hp) <= 0
@@ -57,7 +56,7 @@ func _create_row(id: String) -> void:
 	var status := Label.new()
 	status.custom_minimum_size = Vector2(400, 48)
 	status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	status.add_theme_font_size_override("font_size", 14)
+	status.add_theme_font_size_override("font_size", 18)
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	container.add_child(status)
 	var picker := OptionButton.new()

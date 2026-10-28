@@ -16,7 +16,7 @@ static func danger(world: RefCounted, pos: Vector2, radius: float) -> bool:
 
 
 static func strike(world: RefCounted, attacker: Dictionary, direction: Vector2) -> void:
-	if Firearms.civilian(attacker) or (attacker.id == "you" and not str(world.carry.patient).is_empty()):
+	if Firearms.civilian(attacker) or (attacker.id == "you" and not str(world.carry.patient).is_empty()) or (world.rescue_jobs.has(attacker.id) and world.rescue_jobs[attacker.id].phase == "carry"):
 		return
 	if float(attacker.cooldown) > 0 or float(attacker.hp) <= 0:
 		return
@@ -52,7 +52,8 @@ static func step(world: RefCounted, dt: float) -> void:
 				world.note(a.name + " is down. Carry them to a clear shelter.")
 			a.activity = "Down - carry to shelter"
 			continue
-		_survivor(world, a, dt)
+		if a.order != "Rescue":
+			_survivor(world, a, dt)
 	for z: Dictionary in world.zombies:
 		if float(z.hp) > 0:
 			_zombie(world, z, dt)

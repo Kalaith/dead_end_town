@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const CompanionRescue = preload("res://scripts/sim/companion_rescue.gd")
 const Medicine = preload("res://scripts/sim/medicine.gd")
 const RecoverySalvage = preload("res://scripts/sim/recovery_salvage.gd")
 const Defeat = preload("res://scripts/sim/defeat.gd")
@@ -47,6 +48,7 @@ var medicine: int = 0
 var medicine_production: Dictionary
 var clinic: Dictionary = Clinic.initial()
 var rescue_intro: String = ""
+var rescue_jobs: Dictionary = {}
 var elapsed: float = 0.0
 var approach: bool = false
 var pressure: Dictionary
@@ -146,7 +148,9 @@ func step(dt: float) -> void:
 	face_aim()
 	Exploration.update(self)
 	Jobs.step(self, dt)
+	CompanionRescue.step(self, dt)
 	Combat.step(self, dt)
+	CompanionRescue.sync(self)
 	if float(player.hp) <= 0:
 		Defeat.begin(self)
 		return
@@ -167,6 +171,7 @@ func step(dt: float) -> void:
 	working = player_work
 	Pressure.step(self)
 	Carrying.sync(self)
+	CompanionRescue.sync(self)
 	SliceObjective.step(self, dt)
 	var next_alert: String = "SAFE"
 	for z: Dictionary in zombies:
@@ -379,6 +384,8 @@ func claim(id: String) -> bool:
 
 func order(value: String) -> void:
 	for a: Dictionary in survivors:
+		if a.order == "Rescue":
+			continue
 		if value == "Home":
 			Jobs.resume(self, a)
 		else:

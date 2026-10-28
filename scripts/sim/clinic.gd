@@ -1,4 +1,5 @@
 extends RefCounted
+const Carrying = preload("res://scripts/sim/carrying.gd")
 const Medicine = preload("res://scripts/sim/medicine.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
@@ -51,7 +52,7 @@ static func patient(world: RefCounted) -> Dictionary:
 	var distance: float = INF
 	for a: Dictionary in [world.player] + world.survivors:
 		var next: float = a.pos.distance_to(site(world))
-		if a.id == world.carry.patient or float(a.hp) >= full_health(world, a) or next >= 70:
+		if Carrying.carried(world, a.id) or float(a.hp) >= full_health(world, a) or next >= 70:
 			continue
 		if next < distance or (is_equal_approx(next, distance) and str(a.id) < str(selected.get("id", ""))):
 			selected = a
@@ -107,7 +108,7 @@ static func step(world: RefCounted, dt: float) -> void:
 		if float(a.hp) >= full_health(world, a):
 			world.clinic.patients.erase(id)
 			continue
-		if a.id == world.carry.patient or a.pos.distance_to(site(world)) >= 70:
+		if Carrying.carried(world, a.id) or a.pos.distance_to(site(world)) >= 70:
 			continue
 		Medicine.block(world, "Treat present patients first")
 		var paid: Dictionary = world.clinic.patients[id]

@@ -17,7 +17,7 @@ static func nearby(world: RefCounted) -> Dictionary:
 	var distance: float = float(world.balance.carry_range)
 	for a: Dictionary in world.survivors:
 		var next: float = a.pos.distance_to(world.player.pos)
-		if float(a.hp) > 0 or a.id == world.carry.patient or next > distance or not world.routes.line_clear(world.player.pos, a.pos):
+		if float(a.hp) > 0 or carried(world, a.id) or next > distance or not world.routes.line_clear(world.player.pos, a.pos):
 			continue
 		if next < distance or chosen.is_empty() or str(a.id) < str(chosen.id):
 			chosen = a
@@ -112,3 +112,20 @@ static func context(world: RefCounted) -> String:
 	if float(world.carry.progress) > 0:
 		return "Carry %s · %d%%" % [a.name, int(100 * float(world.carry.progress) / float(world.balance.carry_seconds))]
 	return "Hold E Carry " + str(a.name)
+
+
+static func carrier(world: RefCounted, patient: String) -> String:
+	if world.carry.patient == patient:
+		return "you"
+	for id: String in world.rescue_jobs:
+		if world.rescue_jobs[id].phase == "carry" and world.rescue_jobs[id].patient == patient:
+			return id
+	return ""
+
+
+static func carried(world: RefCounted, patient: String) -> bool:
+	return not carrier(world, patient).is_empty()
+
+
+static func burdened(world: RefCounted, id: String) -> bool:
+	return occupied(world) if id == "you" else world.rescue_jobs.has(id) and world.rescue_jobs[id].phase == "carry"

@@ -25,7 +25,7 @@ The protagonist is fixed. At most two recruited survivors have Follow/Engage exp
 | Guard post | Hold a physical inside position and alternate dodge point | 100-pixel leash; no chase beyond the defended line |
 | Work | Execute eligible job at approved site | Preserve assignment through shelter; never self-authorise expansion |
 
-Whole-team shortcuts affect recruited, standing non-carried survivors. Ellis maps Engage to Hold and Return home/Guard to shelter; no indirect command may bypass the prohibition. A downed person keeps assignment but cannot execute it. Explicit individual orders do not change anyone else.
+Whole-team shortcuts affect recruited, standing non-carried survivors. Ellis maps Engage to Hold and Return home/Guard to shelter; no indirect command may bypass the prohibition. A downed person keeps assignment but cannot execute it. Explicit individual orders do not change anyone else. Whole-team tactical shortcuts leave an active rescue transport intact; individual reassignment cancels it and puts the casualty down at the carrier’s current position.
 
 On target death or invalidity, reevaluate within the existing order boundary. Companions do not loot, claim, chase across town, spend medicine or approve new buildings. A blocked order shows one reason and keeps a safe anchor. Formation uses distinct offsets so people do not overlap at a narrow gate.
 
@@ -58,7 +58,7 @@ Alerts use visual/text plus audio, deduplicate by incident and escalate only on 
 
 Health reaches zero → downed, never dead/infected. Zombies ignore downed people as attack/occupation-contest targets. Recruited people remain in the roster and meal count. Equipment stays attached and cannot be stolen or duplicated.
 
-At a locally clear casualty, hold E for 2 seconds to lift one person. The player cannot shoot/swing while carrying; movement ×0.7, armour/slow still apply. E at a clear held shelter places the casualty there. A standing companion may be ordered to carry if both are reachable and clear; it then uses a safe route and occupies no other work slot. If no route exists, report Blocked and keep the person in place. Carrying is limited to one casualty per carrier.
+At a locally clear casualty, hold E for 2 seconds to lift one person. The player cannot shoot/swing while carrying; movement ×0.7, armour/slow still apply. E at a clear held shelter places the casualty there. A standing companion may be ordered to carry if both are reachable and clear; it then uses a safe route and occupies no other work slot. If no route exists, report Blocked and keep the person in place. Carrying is limited to one casualty per carrier. Companion rescue chooses the nearer available treatment shelter: clear home, or a clear restored clinic with Medicine. Approach and transport both need a protected route; already sheltered people need care rather than a redundant rescue. A blocked route retains the transport and previous duty, with bounded retries.
 
 Safe home rest: spend 2 Food once and 15 active seconds to recover all people physically at home to at least 50 health. Optional additional 2 Food/15 seconds heals those present to full. Clinic treatment spends 1 Medicine per person, 10 work seconds, restores full health and revives; patient and worker must be present and facility operational. The player can provide clinic work using R. No treatment can complete while its danger condition is active.
 

@@ -1,4 +1,5 @@
 extends RefCounted
+const CompanionRescue = preload("res://scripts/sim/companion_rescue.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
@@ -91,6 +92,7 @@ static func recover(world: RefCounted) -> bool:
 	if not world.defeat_pending:
 		return false
 	var d: Dictionary = destination(world)
+	CompanionRescue.cancel_all(world)
 	if d.emergency:
 		relocate(world, d.point)
 	var spots: Array[Vector2] = positions(world, d.point)

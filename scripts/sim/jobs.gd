@@ -25,6 +25,8 @@ static func current(catalog: Dictionary, a: Dictionary) -> String:
 			return "passage:" + str(a.job)
 		"Roadwork":
 			return "work:" + str(a.job)
+		"Rescue":
+			return "rescue:" + str(a.job)
 		"Repair":
 			return "repair:" + str(a.job)
 		"Idle":
@@ -41,7 +43,7 @@ static func current(catalog: Dictionary, a: Dictionary) -> String:
 
 
 static func temporary(task: String) -> bool:
-	return task.begins_with("work:") or task.begins_with("passage:") or task.begins_with("repair:")
+	return task.begins_with("rescue:") or task.begins_with("work:") or task.begins_with("passage:") or task.begins_with("repair:")
 
 
 static func remember(world: RefCounted, a: Dictionary, task: String) -> void:
@@ -220,6 +222,8 @@ static func _choose(world: RefCounted, a: Dictionary) -> String:
 
 static func _needed(world: RefCounted, a: Dictionary) -> bool:
 	var task: String = current(world.catalog, a)
+	if task.begins_with("rescue:"):
+		return world.rescue_jobs.has(a.id)
 	for order: Dictionary in world.orders.sites.values():
 		if WorkOrders.pending(order) and _task(order) == task:
 			return true
@@ -251,7 +255,7 @@ static func step(world: RefCounted, dt: float) -> void:
 			for z: Dictionary in world.zombies:
 				if float(z.hp) > 0 and z.pos.distance_to(a.anchor) < 170:
 					a.duty.clear_left = float(world.balance.work_clear_seconds)
-		if a.duty.temporary and not _needed(world, a):
+		if a.duty.temporary and (a.order == "Idle" or not _needed(world, a)):
 			finish(world, a)
 		if a.order == "Idle" and a.duty.role in ["garden", "garage", "clinic"]:
 			var approved: bool = world.clinic.started if a.duty.role == "clinic" else world.garden_started if a.duty.role == "garden" else world.workshop.started

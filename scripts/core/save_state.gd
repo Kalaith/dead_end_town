@@ -1,4 +1,5 @@
 extends RefCounted
+const CompanionRescueState = preload("res://scripts/core/companion_rescue_state.gd")
 const MedicineState = preload("res://scripts/core/medicine_state.gd")
 const Medicine = preload("res://scripts/sim/medicine.gd")
 const RecoverySalvageState = preload("res://scripts/core/recovery_salvage_state.gd")
@@ -38,11 +39,11 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 27
+const SCHEMA: int = 28
 ## Saved world fields that are collections and are copied, not shared.
-const COPIED_KEYS: Array[String] = ["medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
+const COPIED_KEYS: Array[String] = ["rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["medicine_production", "recovery_salvage", "defeat_pending", "carry", "home_rest", "clinic", "rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
+const STATE_KEYS: Array[String] = ["rescue_jobs", "medicine_production", "recovery_salvage", "defeat_pending", "carry", "home_rest", "clinic", "rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
 var catalog: Dictionary
 var store: RefCounted
 
@@ -120,7 +121,7 @@ func valid(data: Dictionary) -> bool:
 	if not data.get("roam_rng_state") is String or str(int(data.roam_rng_state)) != data.roam_rng_state:
 		return false
 	for key: String in STATE_KEYS:
-		if key in ["medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "rescue_intro", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
+		if key in ["rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "rescue_intro", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
 			continue
 		if key == "gate_repair_target":
 			if not data.get("properties") is Dictionary or not data.properties.has(data.get(key)):
@@ -167,7 +168,7 @@ func valid(data: Dictionary) -> bool:
 			return false
 		if z.has("kind") and (not z.kind is String or not catalog.zombies.types.has(z.kind) or float(z.hp) > ZombieTypes.health(catalog, z.kind)):
 			return false
-	if not RosterState.valid(data, catalog) or not DiscoveryState.valid(data, catalog) or not ClinicState.valid(data, catalog) or not RecoveryState.valid(data, catalog) or not RecoverySalvageState.valid(data, catalog) or not MedicineState.valid(data):
+	if not RosterState.valid(data, catalog) or not DiscoveryState.valid(data, catalog) or not ClinicState.valid(data, catalog) or not RecoveryState.valid(data, catalog) or not RecoverySalvageState.valid(data, catalog) or not MedicineState.valid(data) or not CompanionRescueState.valid(data, catalog):
 		return false
 	if float(data.garden_progress) > float(catalog.balance.work_seconds) or (data.garden_done and not data.garden_started):
 		return false
@@ -195,7 +196,7 @@ func _valid_actor(a: Variant, max_health: float) -> bool:
 	for key: String in ["id", "name", "activity"]:
 		if not Rules.nonempty(a.get(key)):
 			return false
-	if a.get("order") not in ["Guard", "Follow", "Hold", "Engage", "Home", "Build", "Roadwork", "Roadguard", "Garden", "Workshop", "Passage", "Ammo", "Idle", "Repair", "Clinic"]:
+	if a.get("order") not in ["Guard", "Follow", "Hold", "Engage", "Home", "Build", "Roadwork", "Roadguard", "Garden", "Workshop", "Passage", "Ammo", "Idle", "Repair", "Clinic", "Rescue"]:
 		return false
 	for key: String in VECTOR_KEYS:
 		if not Rules.is_vec2(a.get(key)):
@@ -219,6 +220,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 27:
+		return _upgrade_companion_rescue(upgraded)
 	if version == 26:
 		return _upgrade_medicine(upgraded)
 	if version == 25:
@@ -313,6 +316,8 @@ func _valid_task(a: Dictionary, data: Dictionary) -> bool:
 	match a.order:
 		"Repair":
 			return data.properties.has(a.job) and data.properties[a.job].looted
+		"Rescue":
+			return data.get("rescue_jobs") is Dictionary and data.rescue_jobs.has(a.id) and data.rescue_jobs[a.id] is Dictionary and a.job == data.rescue_jobs[a.id].get("patient")
 		"Clinic":
 			return a.job == "clinic" and data.clinic.started and data.properties.clinic.looted
 		"Ammo":
@@ -612,5 +617,11 @@ func _upgrade_recovery_salvage(data: Dictionary) -> Dictionary:
 
 func _upgrade_medicine(data: Dictionary) -> Dictionary:
 	data.medicine_production = Medicine.initial(catalog)
+	data.schema_version = 27
+	return _upgrade_companion_rescue(data)
+
+
+func _upgrade_companion_rescue(data: Dictionary) -> Dictionary:
+	data.rescue_jobs = {}
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}
