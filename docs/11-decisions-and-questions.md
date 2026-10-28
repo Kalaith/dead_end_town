@@ -44,7 +44,7 @@ Migrations enter at authored map edges and now wander randomly like residents. T
 
 ## Territory loss default, 28 October 2026
 
-Eight active seconds of unopposed living zombie occupation inside a claimed yard causes loss, including home. A living player or survivor inside contests it; downed actors do not. Existing walls, gates and road defences protect by blocking entry, without granting an abstract immunity bonus. Warning messages and a draining porch bar precede loss. Previously looted sites can be cleared and reclaimed without repeated rewards, rescues or construction charges. Facilities require restored home connectivity. Save schema 6 preserves occupation and discovery separately from ownership, migrating schemas 1ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ5. The eight-second value is initial tuning awaiting human review.
+Eight active seconds of unopposed living zombie occupation inside a claimed yard causes loss, including home. A living player or survivor inside contests it; downed actors do not. Existing walls, gates and road defences protect by blocking entry, without granting an abstract immunity bonus. Warning messages and a draining porch bar precede loss. Previously looted sites can be cleared and reclaimed without repeated rewards, rescues or construction charges. Facilities require restored home connectivity. Save schema 6 preserves occupation and discovery separately from ownership, migrating schemas 1–5. The eight-second value is initial tuning awaiting human review.
 
 ## Wandering and melee defaults, 28 October 2026
 
@@ -74,10 +74,10 @@ These defaults allow useful prototyping without implying that the user approved 
 | Q01 | Exact Godot release, renderer, and desktop target? | M0 | Inspect local tooling and export requirements; pin one version |
 | Q02 | Tile scale, view angle, animation detail, asset budget? | M0 | Test a greybox street and one readable equipment silhouette |
 | Q03 | Keyboard/mouse only or controller from the start? | M0 | Pick primary input; preserve remapping and command accessibility |
-| Q04 | Can construction/orders pause action? | M1ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“M2 | Test full pause for planning against live action clarity |
+| Q04 | Can construction/orders pause action? | M1–M2 | Test full pause for planning against live action clarity |
 | Q05 | Stamina, dodge rules, friendly fire, weapon durability? | M1 | Add only what improves small melee encounters |
 | Q06 | Can control switch between survivors? | M2 | Fixed protagonist first; do not assume possession or multiplayer |
-| Q07 | Companion cap and guard coverage for a tiny roster? | M2ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“M3 | One companion first, then test two; routine home attacks must be manageable |
+| Q07 | Companion cap and guard coverage for a tiny roster? | M2–M3 | One companion first, then test two; routine home attacks must be manageable |
 | Q08 | What precisely turns a contested property into lost territory? | M4 | Implemented: eight seconds of unopposed physical occupation with a warning; tune after playtest |
 | Q09 | What qualifies a road corridor as safely connected? | M4 | Authored crossings with explicit access and exposed boundaries |
 | Q10 | Cancellation salvage, repair batch costs, reserve limits? | M5 | Check resource conservation and player understanding |

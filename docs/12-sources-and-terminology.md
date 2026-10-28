@@ -2,7 +2,7 @@
 
 ## Design source
 
-Primary reference: [Game concept development](chatgpt-conversation://6ae0fba7-c8a4-83ec-9e38-b9d8b951a9ac), conversation ID `6ae0fba7-c8a4-83ec-9e38-b9d8b951a9ac`. Read through the available conversation connector on 28 October 2026.
+Primary reference: the "Game concept development" conversation (not a resolvable link), conversation ID `6ae0fba7-c8a4-83ec-9e38-b9d8b951a9ac`. Read through the available conversation connector on 28 October 2026.
 
 The returned history included the user's explicit continuous-world choice, hybrid-construction request, librarian example, small cooperative survivor direction, high-level key-item progression, and request to make a local project. The latest project request supplies the required topic coverage and exact folder name.
 
@@ -12,7 +12,7 @@ The available history contained five turn groups and reported no older page. The
 
 User decisions take precedence over assistant suggestions. Later simplification of survivor growth takes precedence over earlier activity-skill brainstorming. New rules supplied to make systems coherent are labelled as proposed defaults at the package level and, where consequential, in the individual documents.
 
-The prior assistant's statement about handing work off is not evidence that files or gameplay existed. This package documents design and planning only. No source images were downloaded or treated as supplied assets; image-query placeholders in the discussion do not establish an approved art direction.
+The prior assistant's statement about handing work off is not evidence that files or gameplay existed. The original package documented design and planning only; implementation status now lives in [PROGRESS.md](PROGRESS.md). No source images were downloaded or treated as supplied assets; image-query placeholders in the discussion do not establish an approved art direction.
 
 ## Official technical references
 

@@ -32,7 +32,9 @@ The routing check found and fixed a no-path fallback that made a blocked survivo
 
 ## Milestone boundary and next work
 
-M0 is implemented technically; traversal scale and readability still need human review. M1Ã¢â‚¬â€œM7 have initial examples, not completed acceptance gates. M8 is not complete. This prototype is shorter and much narrower than the proposed 20Ã¢â‚¬â€œ30 minute slice.
+> Historical (first playable). Several "still absent" items below were built in later sections: recurring pressure, territory loss and recovery, food upkeep, transferable equipment and a slice ending. Use the latest sections and the review at the end for the current boundary.
+
+M0 is implemented technically; traversal scale and readability still need human review. M1–M7 have initial examples, not completed acceptance gates. M8 is not complete. This prototype is shorter and much narrower than the proposed 20–30 minute slice.
 
 The user has since confirmed a human playtest of basic combat and territory capture; see the feedback and development step below. Next, replace graph-only adjacency with explicit secured road crossings and exposed-boundary accounting, extend repair and work to general sockets, and review combat/crowd separation and the new equipment in human play.
 
@@ -123,7 +125,7 @@ The user says the slice is going well but zombies are not threatening. They requ
 - Replaced the single three-zombie approach with recurring, deterministic migrations. The first enters at 45 active seconds. A 12-second directional radio warning and temporary countdown use the existing sparse HUD. Patterns cycle east; west; north + east; south + west; all four edges. The north/south alleys are now visually marked.
 - Waves have 4 zombies plus 2 per extra claimed property, capped at 10. Intervals are 65 seconds minus 8 per extra property: 41 at full ownership (configured floor 40). The 36-living-zombie cap includes residents; arrivals beyond the available budget are skipped. Defeated migrants are pruned on subsequent arrivals so saves and actor storage remain bounded. Cleared residents never respawn.
 - Migrants physically enter at the map edges and target the nearest claimed entrance, exposing newly acquired ground. Nearby people can divert them. Alley groups join the road before choosing a crossing. Physical barricades intercept them; gates can be breached. Street alerts also cover zombies inside claimed yards. A clear home gate no longer announces that all routine work can resume.
-- Balance, population, edge routes, formations and cadence are validated JSON content. The simulation owns all timing; pause stops the clock. Save schema 5 records the wave clock, warning, destination and alley travel phase. Schemas 1Ã¢â‚¬â€œ4 migrate while preserving claims, resources, people, work and legacy attackers. Claimed yards stay clear; unclaimed yards gain the new residents. Older runs get 65 active seconds of preparation before recurring pressure.
+- Balance, population, edge routes, formations and cadence are validated JSON content. The simulation owns all timing; pause stops the clock. Save schema 5 records the wave clock, warning, destination and alley travel phase. Schemas 1–4 migrate while preserving claims, resources, people, work and legacy attackers. Claimed yards stay clear; unclaimed yards gain the new residents. Older runs get 65 active seconds of preparation before recurring pressure.
 
 ### Verification and limits
 
@@ -148,7 +150,7 @@ The user reports that zombies cannot reclaim territory and requests rapid loss w
 
 - Claimed yards, including home, now fall after eight active seconds of living zombie occupation without a standing friendly actor inside. Absence alone never causes loss. Closed gates and built road barricades physically delay entry; zombies must breach or walk through an opening. Living defenders or removal of the last occupant reset occupation. Downed people do not protect control.
 - A brief overrun warning and draining porch bar precede loss. Lost properties lower their flags and return to dark/boarded windows. Pause objectives direct recovery; home loss shows in the compact HUD. Clear occupants and press E at the porch to reclaim. Existing work, improvements, equipment, surviving barricades, rescued survivors and discoveries persist; resources and rescues cannot be farmed by recapturing. Lost or home-disconnected facilities pause.
-- Save schema 6 separates permanent discoveries from present ownership and stores occupation progress. Schemas 1â€“5 migrate without changing supplies or discoveries. Saves accept lost home, built facilities and surviving road defences on lost ground, plus migrant targets whose properties fell.
+- Save schema 6 separates permanent discoveries from present ownership and stores occupation progress. Schemas 1–5 migrate without changing supplies or discoveries. Saves accept lost home, built facilities and surviving road defences on lost ground, plus migrant targets whose properties fell.
 - All 48 headless scenarios pass, including six new occupation checks: entry versus outside threats, living/downed defenders, warning interruption, partial-occupation reload, unique reward/work preservation on recapture, lost-home recovery, schema-5 migration/malformed occupation, physical gate breach and takeover, and surviving defence/raid target persistence. Parse and headless editor/import checks pass.
 - Ran the windowed toolkit capture runner through Run.ps1 at 1280x720 and inspected property_overrun.png, property_lost.png and property_reclaimed.png. These are staged fixtures demonstrating warning, loss and restored ownership, not human playtesting or balance acceptance. No audio/device/export checks, toolkit edits, deployment or publication. Safe road corridor modelling and broader campaign territory behaviour remain open.
 
@@ -236,3 +238,38 @@ Evidence:
 - All 56 scripts load; Godot 4.7.2 headless editor/import and file/function size checks pass.
 - Ran Run.ps1 with capture_pursuit.gd through the toolkit runner at 1280x720 and inspected pursuit_spotted.png and pursuit_approach.png. The staged zombie initially faces away, then advances toward the stationary player during two seconds of windowed simulation, with an assertion checking its movement and facing.
 - These are automated and staged windowed checks. Human input, combat feel and balance acceptance remain unverified. No installation, toolkit edits, exports, deployment or publication.
+
+
+
+## 28 October 2026: project review (structure, toolkit, size, code)
+
+A cleanup pass before further work. No gameplay behaviour was changed. This section records findings; open follow-ups are in [TODO.md](TODO.md).
+
+### Size limits
+
+- Largest files: `scripts/sim/world.gd` 365 lines, `scripts/core/save_state.gd` 337, `data/street.json` 322, `tools/checks/checks_street.gd` 269, `docs/PROGRESS.md` about 270. No script, scene, data or doc file approaches 800 lines and no function approaches 400.
+- `world.gd` and `save_state.gd` are the files to watch; both are the hub for every new system. Split them before they pass about 600 lines (see TODO).
+
+### Structure against the shared standard
+
+- Matches: `AGENTS.md` and `README.md` are the only root markdown; `.editorconfig`, `.gitattributes`, `Run.ps1`, `publish.ps1` and `publish-itch.ps1` are identical to `godot_toolkit/templates/`; `addons/hatchery` is an ignored junction and `Sync-Project.ps1 -DryRun` reports it already linked; `docs/`, `docs/verification/` and `tools/` carry `.gdignore`; verification images are flat `<label>.png`; there is no `tests/` directory; checks are headless scripts under `tools/`.
+- `.gitignore` differs from the toolkit template only by the local-probe note and the `addons/hatchery/` entry.
+- Intentional gaps: no `publish.json`, `export_presets.cfg` or `assets/` (procedural greybox art, no destination chosen). The publish wrappers cannot run until `publish.json` exists.
+- Deviation: design docs are numbered `01` to `12` rather than a single `GAME_DESIGN.md`. Kept, since the README links to each.
+
+### Toolkit use
+
+Used: `JsonIO`, `DataRules`, `JsonSave` (staged writes, backup recovery, migration hook), `Palette`, `UiKit`, and the parse, check and capture runners (all captures land in `docs/verification/`). Not used, and candidates when the matching feature arrives: `Balance`/`DotTable` (balance is a hand-read dictionary), `TextCatalog` (player-facing strings are hard-coded in GDScript), `KeyBindings`/`SettingsStore`/`SettingsPanel` (inputs are fixed in `project.godot`, and the number keys and Space are polled by key code), `Shapes` (the 70 `draw_*` calls in `town_view.gd`), `ScreenSwitcher`/`Focus` (the menu is one overlay). None is a defect today.
+
+### Code findings
+
+- Simulation purity holds: no `randi`, `randf`, `Time` or `OS` in `scripts/sim` or `scripts/core`. Wandering uses the owned `roam_rng`, whose state is saved. `OS` appears once in presentation (the `--no-save` flag).
+- Hard-coded values that belong in `data/street.json`: the garage bonus of 12 materials and the 0.65 starting home-gate health factor (`world.gd`), the home alert radius and centre, player and Mara start positions, and prompt text that restates costs ("3 materials", "8 materials") and will drift from `gate_repair_cost` and `garden_cost`.
+- `assign_mara()` is a compatibility entry point for old scenarios; live controls do not use it.
+- `save_state.gd` repeats the deep-copy key list in `snapshot` and `restore` and writes the schema number 11 in two places. A single constant would prevent drift when schema 12 lands. Migration of schemas 1 to 10 is one chain that will keep growing.
+- Actor and state dictionaries are typed only at their signatures, not their fields. A typed actor class would help but is a large change.
+- Documentation: mojibake in the README, `PROGRESS.md`, `07` and `11` was repaired, unresolvable `chatgpt-conversation://` links were removed, and stale statements in `10`, `12` and the first-playable section of this file were marked. The README still mixes controls, rule explanations and release-note prose (see TODO).
+
+### Verification of this pass
+
+Static review and file measurement only. The parse, simulation and editor checks were not re-run for this documentation-only change; the latest recorded results are in the preceding section.
