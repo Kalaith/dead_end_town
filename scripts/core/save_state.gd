@@ -1,4 +1,5 @@
 extends RefCounted
+const Routes = preload("res://scripts/sim/routes.gd")
 const Production = preload("res://scripts/sim/production.gd")
 const WorkOrderState = preload("res://scripts/core/work_order_state.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
@@ -22,7 +23,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 14
+const SCHEMA: int = 15
 ## Saved world fields that are dictionaries and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -210,6 +211,8 @@ func migrate(data: Dictionary) -> Dictionary:
 		return {}
 	var upgraded: Dictionary = data.duplicate(true)
 	var version: int = int(upgraded.schema_version)
+	if version == 14:
+		return _upgrade_passage_orders(upgraded)
 	if version == 13:
 		return _upgrade_production(upgraded)
 	if version == 12:
@@ -422,5 +425,23 @@ func _upgrade_production(data: Dictionary) -> Dictionary:
 		for a: Variant in data.survivors:
 			if a is Dictionary and a.get("order") == "Ammo":
 				data.production.mode = "repeat"
+	data.schema_version = 14
+	return _upgrade_passage_orders(data)
+
+
+func _upgrade_passage_orders(data: Dictionary) -> Dictionary:
+	if not data.get("passages") is Dictionary or not data.get("orders") is Dictionary or not data.orders.get("sites") is Dictionary or not Rules.integer_in(data.orders.get("sequence"), 0, 1000000000):
+		return {}
+	for d: Dictionary in catalog.passages:
+		var s: Variant = data.passages.get(d.id)
+		if not s is Dictionary or not s.get("started") is bool or not s.get("done") is bool:
+			return {}
+		if s.started and not s.done:
+			if not Rules.finite(s.get("progress")):
+				return {}
+			data.orders.sequence = int(data.orders.sequence) + 1
+			var order: Dictionary = WorkOrders.record(int(data.orders.sequence), "passage:" + str(d.id), d.id, Neighbourhood.recipe(catalog), Routes.point(d.sites[0]))
+			order.work_done = float(s.progress)
+			data.orders.sites[order.socket] = order
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

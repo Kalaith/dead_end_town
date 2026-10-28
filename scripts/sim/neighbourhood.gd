@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authored passages and protected street crossings, separate from ownership.
+const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 
@@ -44,7 +45,7 @@ static func context(world: RefCounted, d: Dictionary) -> String:
 	if not s.started:
 		return "E Passage · %d materials" % int(world.balance.passage_cost)
 	if not s.done:
-		return "R Build   E Cancel   F Assign"
+		return "R Build   E Cancel (+%d)   F Assign" % int(WorkOrders.refund(WorkOrders.current(world, "passage:" + str(d.id))).get("materials", 0))
 	if float(s.hp) <= 0:
 		return "R Rebuild · %d materials" % int(world.balance.gate_repair_cost)
 	var repair: String = "   R Repair · %d materials" % int(world.balance.gate_repair_cost) if float(s.hp) < float(world.balance.gate_health) else ""
@@ -54,22 +55,15 @@ static func context(world: RefCounted, d: Dictionary) -> String:
 static func interact(world: RefCounted, d: Dictionary) -> void:
 	var s: Dictionary = world.passages[d.id]
 	if not s.done and s.started:
-		world.materials += int(floor(float(world.balance.passage_cost) * (1.0 - float(s.progress) / float(world.balance.passage_seconds))))
-		world.passages[d.id] = initial(world.catalog)[d.id]
-		for a: Dictionary in world.survivors:
-			if a.order == "Passage" and a.job == d.id:
-				a.order = "Hold" if a.id == "ellis" else "Home"
-				a.job = ""
-		world.note("Passage cancelled. Unused materials returned; existing fences remain.")
+		cancel(world, "passage:" + str(d.id))
 		return
 	if not safe_work(world, d):
 		world.note("Secure both yards and clear the passage before working its gate.")
 		return
 	if not s.started:
-		if world.materials < int(world.balance.passage_cost):
+		if not WorkOrders.approve(world, "passage:" + str(d.id), d.id, recipe(world.catalog), world.player.pos):
 			world.note("Not enough materials for a fenced passage.")
 			return
-		world.materials -= int(world.balance.passage_cost)
 		s.started = true
 		world.note("Passage approved. R builds it; F assigns a worker. Yard fences stay until completion.")
 	elif float(s.hp) > 0:
@@ -103,48 +97,81 @@ static func openings(world: RefCounted) -> Array[Rect2]:
 	return result
 
 
+static func recipe(catalog: Dictionary) -> Dictionary:
+	return {"id": "passage", "kind": "construction", "inputs": {"materials": int(catalog.balance.passage_cost)}, "outputs": {}, "seconds": float(catalog.balance.passage_seconds)}
+
+
+static func cancel(world: RefCounted, socket: String) -> bool:
+	if not socket.begins_with("passage:"):
+		return false
+	var id: String = socket.trim_prefix("passage:")
+	if not world.passages.has(id) or not WorkOrders.cancel(world, socket):
+		return false
+	world.passages[id] = initial(world.catalog)[id]
+	for a: Dictionary in world.survivors:
+		if a.order == "Passage" and a.job == id:
+			a.order = "Hold" if a.id == "ellis" else "Home"
+			a.job = ""
+	world.note("Passage cancelled. Materials returned.")
+	return true
+
+
+static func _occupied(world: RefCounted, d: Dictionary) -> bool:
+	for a: Dictionary in [world.player] + world.survivors + world.zombies:
+		# Downed people still occupy the footprint; dead zombies do not.
+		if a.has("raid") and float(a.hp) <= 0:
+			continue
+		for raw: Array in d.rails + [d.gate]:
+			if Routes.rectangle(raw).grow(Routes.RADIUS).has_point(a.pos):
+				return true
+	return false
+
+
 static func step(world: RefCounted, dt: float) -> void:
 	for d: Dictionary in world.catalog.passages:
 		var s: Dictionary = world.passages[d.id]
-		if not s.started or not safe_work(world, d):
+		var socket: String = "passage:" + str(d.id)
+		if not s.started:
 			continue
-		var executor: bool = world.working and nearby(world).get("id") == d.id
+		if not safe_work(world, d):
+			WorkOrders.block(world, socket, "Reclaim site" if not owned(world, d) else "Clear nearby threats")
+			continue
+		var executor: String = "you" if world.working and nearby(world).get("id") == d.id and float(world.player.hp) > 0 else ""
 		for a: Dictionary in world.survivors:
-			if a.order == "Passage" and a.job == d.id and float(a.hp) > 0:
+			if executor == "you":
+				break
+			if a.order == "Passage" and a.job == d.id and float(a.hp) > 0 and not a.activity.begins_with("Sheltering"):
 				for site: Array in d.sites:
-					if a.pos.distance_to(Routes.point(site)) < 40:
-						executor = true
-		if not executor:
+					if a.pos.distance_to(Routes.point(site)) < 40 and (executor.is_empty() or str(a.id) < executor):
+						executor = a.id
+		if executor.is_empty():
+			WorkOrders.block(world, socket, "Need worker at site")
 			continue
 		if not s.done:
-			s.progress = minf(float(world.balance.passage_seconds), float(s.progress) + dt)
-			if float(s.progress) >= float(world.balance.passage_seconds):
-				# Rails and the closed new gate cannot appear through a living actor.
-				var occupied: bool = false
-				for a: Dictionary in [world.player] + world.survivors + world.zombies:
-					if float(a.hp) <= 0:
-						continue
-					for raw: Array in d.rails + [d.gate]:
-						if Routes.rectangle(raw).grow(Routes.RADIUS).has_point(a.pos):
-							occupied = true
-				if not occupied:
-					s.done = true
-					s.hp = float(world.balance.gate_health)
-					world.rebuild_routes()
-					world.note("Fenced passage ready. E opens its gate; the yards now have a direct route.")
-		elif float(s.hp) < float(world.balance.gate_health):
-			if not s.repair_reserved:
-				if world.materials < int(world.balance.gate_repair_cost):
-					continue
-				world.materials -= int(world.balance.gate_repair_cost)
-				s.repair_reserved = true
-			var broken: bool = float(s.hp) <= 0
-			s.hp = minf(float(world.balance.gate_health), float(s.hp) + dt * float(world.balance.gate_repair_rate))
-			if broken:
-				s.open = true
+			var completed: bool = WorkOrders.advance(world, socket, executor, dt, not _occupied(world, d))
+			s.progress = float(WorkOrders.current(world, socket).work_done)
+			if completed:
+				s.done = true
+				s.hp = float(world.balance.gate_health)
 				world.rebuild_routes()
-			if float(s.hp) >= float(world.balance.gate_health):
-				s.repair_reserved = false
+				world.note("Passage ready. E opens the gate.")
+		elif float(s.hp) < float(world.balance.gate_health):
+			_repair(world, s, dt)
+
+
+static func _repair(world: RefCounted, s: Dictionary, dt: float) -> void:
+	if not s.repair_reserved:
+		if world.materials < int(world.balance.gate_repair_cost):
+			return
+		world.materials -= int(world.balance.gate_repair_cost)
+		s.repair_reserved = true
+	var broken: bool = float(s.hp) <= 0
+	s.hp = minf(float(world.balance.gate_health), float(s.hp) + dt * float(world.balance.gate_repair_rate))
+	if broken:
+		s.open = true
+		world.rebuild_routes()
+	if float(s.hp) >= float(world.balance.gate_health):
+		s.repair_reserved = false
 
 
 static func bump(world: RefCounted, z: Dictionary, intended: Vector2) -> bool:

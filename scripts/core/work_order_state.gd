@@ -15,29 +15,57 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 		return false
 	var ids: Array[String] = []
 	for socket: Variant in ledger.sites:
-		if socket != "munitions" or not data.properties.munitions.looted:
-			return false
 		var order: Variant = ledger.sites[socket]
-		if not order is Dictionary or not _valid_order(order, catalog):
+		if not order is Dictionary or not _valid_order(order, catalog) or not _valid_site(order, data, catalog):
 			return false
 		if int(order.sequence) > int(ledger.sequence) or ids.has(order.id) or order.socket != socket:
 			return false
 		ids.append(order.id)
+	for id: String in data.passages:
+		var state: Dictionary = data.passages[id]
+		if state.started and not state.done and not ledger.sites.has("passage:" + id):
+			return false
 	return true
+
+
+static func _valid_site(o: Dictionary, data: Dictionary, catalog: Dictionary) -> bool:
+	if o.recipe == "bullets":
+		return o.socket == "munitions" and o.target == "munitions" and data.properties.munitions.looted
+	for d: Dictionary in catalog.passages:
+		if o.socket != "passage:" + str(d.id) or o.target != d.id:
+			continue
+		var state: Dictionary = data.passages[d.id]
+		if o.phase in ["approved", "working", "blocked"]:
+			if not state.started or state.done or float(state.progress) != float(o.work_done):
+				return false
+		elif o.phase == "completed":
+			if not state.done:
+				return false
+		elif state.started:
+			return false
+		return true
+	return false
 
 
 static func _valid_order(o: Dictionary, catalog: Dictionary) -> bool:
 	if not Rules.integer_in(o.get("sequence"), 1, 1000000000) or o.get("id") != "work_%d" % int(o.sequence):
 		return false
-	if o.get("recipe") != "bullets" or o.get("kind") != "production" or o.get("target") != "munitions":
+	if o.get("recipe") not in ["bullets", "passage"]:
+		return false
+	var production: bool = o.recipe == "bullets"
+	if o.get("kind") != ("production" if production else "construction"):
 		return false
 	if o.get("phase") not in ["approved", "working", "blocked", "completed", "cancelled", "destroyed"]:
 		return false
-	if not _bundle(o.get("inputs"), "materials", int(catalog.firearm.material_cost)):
+	if not _bundle(o.get("inputs"), "materials", int(catalog.firearm.material_cost if production else catalog.balance.passage_cost)):
 		return false
-	if not _bundle(o.get("outputs"), "bullets", int(catalog.firearm.batch_bullets)):
+	if not o.get("outputs") is Dictionary:
 		return false
-	if not Rules.finite(o.get("work_required")) or float(o.work_required) != float(catalog.firearm.craft_seconds):
+	if production and not _bundle(o.outputs, "bullets", int(catalog.firearm.batch_bullets)):
+		return false
+	if not production and not o.outputs.is_empty():
+		return false
+	if not Rules.finite(o.get("work_required")) or float(o.work_required) != float(catalog.firearm.craft_seconds if production else catalog.balance.passage_seconds):
 		return false
 	if not Rules.finite(o.get("work_done")) or float(o.work_done) < 0 or float(o.work_done) > float(o.work_required):
 		return false

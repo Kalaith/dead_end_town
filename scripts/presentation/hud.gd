@@ -1,4 +1,5 @@
 extends Control
+const ConstructionMenu = preload("res://scripts/presentation/construction_menu.gd")
 const ProductionMenu = preload("res://scripts/presentation/production_menu.gd")
 const LiveStatus = preload("res://scripts/presentation/live_status.gd")
 const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
@@ -10,6 +11,7 @@ const UiKit = preload("res://addons/hatchery/ui/ui_kit.gd")
 const Palette = preload("res://addons/hatchery/ui/palette.gd")
 const TeamOrders = preload("res://scripts/presentation/team_orders.gd")
 signal production_requested(mode: String, target: int, reserve: int)
+signal work_cancelled(socket: String)
 signal production_cancelled
 signal requested(command: String)
 signal equipment_requested(actor_id: String, slot: String, item_id: String)
@@ -17,6 +19,7 @@ signal assignment_requested(survivor_id: String, task: String)
 var sections: Dictionary = {}
 var section_buttons: Dictionary = {}
 var section: String = "Street"
+var construction_menu: VBoxContainer
 var work_menu: VBoxContainer
 var kit: RefCounted
 var live_status: Control
@@ -121,6 +124,9 @@ func _build_menu() -> void:
 	equipment_menu = EquipmentMenu.new()
 	sections.Loadouts.add_child(equipment_menu)
 	equipment_menu.chosen.connect(func(id: String, slot: String, item: String) -> void: equipment_requested.emit(id, slot, item))
+	construction_menu = ConstructionMenu.new()
+	sections.Work.add_child(construction_menu)
+	construction_menu.cancelled.connect(func(socket: String) -> void: work_cancelled.emit(socket))
 	work_menu = ProductionMenu.new()
 	sections.Work.add_child(work_menu)
 	work_menu.configured.connect(func(mode: String, target: int, reserve: int) -> void: production_requested.emit(mode, target, reserve))
@@ -174,8 +180,10 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	if paused:
 		routes_status.text = Neighbourhood.summary(world)
 		routes_status.visible = not routes_status.text.is_empty()
-		section_buttons.Work.visible = world.properties.munitions.looted
-		if section == "Work" and not world.properties.munitions.looted:
+		section_buttons.Work.visible = world.properties.munitions.looted or ConstructionMenu.available(world)
+		construction_menu.refresh(world)
+		work_menu.visible = world.properties.munitions.looted
+		if section == "Work" and not section_buttons.Work.visible:
 			show_section("Street")
 		work_menu.refresh(world)
 		team_orders.refresh(world)

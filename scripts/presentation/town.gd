@@ -1,4 +1,6 @@
 extends Node2D
+const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
+const ConstructionMenu = preload("res://scripts/presentation/construction_menu.gd")
 const Production = preload("res://scripts/sim/production.gd")
 const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
@@ -42,6 +44,7 @@ func _ready() -> void:
 	hud.requested.connect(command)
 	hud.production_requested.connect(configure_production)
 	hud.production_cancelled.connect(cancel_production)
+	hud.work_cancelled.connect(cancel_work)
 	hud.assignment_requested.connect(assign_survivor)
 	hud.equipment_requested.connect(equip)
 	hud.show_menu(true)
@@ -123,7 +126,7 @@ func command(value: String) -> void:
 			hud.menu_status.text = world.messages.back()
 			hud.refresh(world, paused)
 		"work":
-			if world.properties.munitions.looted:
+			if world.properties.munitions.looted or ConstructionMenu.available(world):
 				paused = true
 				hud.refresh(world, true)
 				hud.show_menu()
@@ -187,4 +190,10 @@ func configure_production(mode: String, target: int, reserve: int) -> void:
 func cancel_production() -> void:
 	if Production.cancel(world):
 		hud.menu_status.text = "Batch cancelled"
+		hud.refresh(world, paused)
+
+
+func cancel_work(socket: String) -> void:
+	if Neighbourhood.cancel(world, socket):
+		hud.menu_status.text = "Passage cancelled"
 		hud.refresh(world, paused)

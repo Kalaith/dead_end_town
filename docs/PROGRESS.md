@@ -383,3 +383,18 @@ Evidence:
 - All 101 simulation scenarios pass. Five production cases cover once/repeat/resume, mid-batch target/stop, reserve/spend/cancellation, unsafe-route reload/resume, discovery and schema-13 migration/invalid policies. Schema-12 partial-batch and lower historical fixtures still pass.
 - All 71 scripts load; Godot 4.7.2 headless editor/import passes. Windowed production capture exercises the connected mode/target controls and asserts stopped output at target. Inspected work_board.png, work_target_met.png and the simplified planning.png at 1280x720. Refreshed firearm and equipment captures for the separated pages.
 - This remains staged simulation/input/visual verification, not human balance or usability acceptance. G01 construction/repair migration and primary-role resumption remain incomplete; full campaign and release work remain ahead. No toolkit change, installation, export or publication.
+
+
+## 28 October 2026: G01 passage orders and occupied-footprint safety
+
+Implementation:
+- Passage construction now commits and advances through the shared ledger, with one effective executor, explicit block reasons and once-only completion/cancellation. Its existing passage fields are a validated projection for compatibility; saves reject drift or a missing pending ledger record.
+- Player/AI handoff, target loss/reclaim and blocked final work retain the paid bundle. Construction cancellation now follows the full-game 25%-at-full-work loss formula instead of the old production-style refund. Repair is still the legacy implementation and is not claimed migrated here.
+- New rails/gates wait for both standing and downed people to clear their footprint; dead zombies do not obstruct construction. A completed work bar cannot produce collision through a downed survivor.
+- J/Work is available for approved passages before bullet discovery. It shows only pending known construction, progress, commitment, one block and exact cancellation return. The bullet form remains hidden before discovery. Cancellation is a simulation command.
+- Schema 15 creates prepaid records for schema-14 and earlier unfinished passages without charging again. Completed legacy passages remain completed.
+
+Evidence:
+- All 106 simulation scenarios pass, including five new passage-ledger cases: player/AI/loss/reload takeover, downed final-tick footprint, exact once-only refund, concurrent sites/shared rate and schema-14 migration/projection rejection.
+- All 74 scripts load and the Godot 4.7.2 headless editor/import passes. The windowed work-order tour checks hidden undiscovered bullet UI and the actual cancellation button; inspected passage_work_board.png and passage_work_blocked.png at 1280x720.
+- These are staged automated/input/visual checks. Human playtesting, full-game balance and release verification remain outstanding. Next G01 work: remaining construction/restoration, bounded repairs, primary roles/resumption and queue policy. No toolkit edits, installations, exports or publication.

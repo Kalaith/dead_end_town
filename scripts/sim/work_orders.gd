@@ -51,7 +51,7 @@ static func block(world: RefCounted, socket: String, reason: String) -> void:
 		order.executor = ""
 
 
-static func advance(world: RefCounted, socket: String, executor: String, dt: float) -> bool:
+static func advance(world: RefCounted, socket: String, executor: String, dt: float, completion_allowed: bool = true) -> bool:
 	var order: Dictionary = current(world, socket)
 	if not pending(order) or executor.is_empty() or dt <= 0:
 		return false
@@ -60,6 +60,9 @@ static func advance(world: RefCounted, socket: String, executor: String, dt: flo
 	order.phase = "working"
 	order.work_done = minf(float(order.work_required), float(order.work_done) + dt)
 	if float(order.work_done) < float(order.work_required):
+		return false
+	if not completion_allowed:
+		block(world, socket, "Clear work area")
 		return false
 	# Output and terminal flag change in the same simulation command, before a save can run.
 	for stock: String in order.outputs:
