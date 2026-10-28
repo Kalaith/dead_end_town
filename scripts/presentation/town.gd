@@ -1,4 +1,5 @@
 extends Node2D
+const Roster = preload("res://scripts/sim/roster.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Repairs = preload("res://scripts/sim/repairs.gd")
@@ -21,6 +22,7 @@ var view: Node2D
 var camera: Camera2D
 var hud: Control
 var paused: bool = true
+var resume_after_rescue: bool = false
 var accumulator: float = 0.0
 var completion_shown: bool = false
 var storage_enabled: bool = true
@@ -47,6 +49,7 @@ func _ready() -> void:
 	hud = Hud.new()
 	canvas.add_child(hud)
 	hud.requested.connect(command)
+	hud.rescue_requested.connect(dismiss_rescue)
 	hud.production_requested.connect(configure_production)
 	hud.production_cancelled.connect(cancel_production)
 	hud.work_cancelled.connect(cancel_work)
@@ -67,6 +70,10 @@ func _ready() -> void:
 func _process(dt: float) -> void:
 	if world == null:
 		return
+	if not world.rescue_intro.is_empty():
+		if not paused:
+			resume_after_rescue = true
+		paused = true
 	if not paused:
 		world.move_input = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 		world.working = Input.is_action_pressed("work")
@@ -75,6 +82,10 @@ func _process(dt: float) -> void:
 		while accumulator >= step:
 			world.step(step)
 			accumulator -= step
+			if not world.rescue_intro.is_empty():
+				resume_after_rescue = true
+				paused = true
+				break
 	var target := Vector2(clampf(world.player.pos.x, 640, float(world.catalog.bounds[0]) - 640), clampf(world.player.pos.y - 40, 360, 800))
 	camera.position = camera.position.lerp(target, 1.0 - exp(-dt * 8))
 	if not paused:
@@ -130,6 +141,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func command(value: String) -> void:
+	if not world.rescue_intro.is_empty() and value in ["resume", "menu", "team", "work", "town", "watch"]:
+		paused = true
+		hud.refresh(world, true)
+		return
 	match value:
 		"watch":
 			SliceObjective.start(world)
@@ -232,3 +247,10 @@ func assign_work(socket: String, id: String) -> void:
 	var okay: bool = Jobs.assign_order(world, socket, id)
 	hud.menu_status.text = "" if okay else world.messages.back()
 	hud.refresh(world, paused)
+
+
+func dismiss_rescue(task: String) -> void:
+	if Roster.dismiss(world, task):
+		paused = not resume_after_rescue
+		resume_after_rescue = false
+		hud.refresh(world, paused)

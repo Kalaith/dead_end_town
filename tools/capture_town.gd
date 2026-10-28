@@ -7,7 +7,7 @@ func tour() -> void:
 	game.save_state.store.enabled = false
 	game.set_process(false)
 	game.world.messages.clear()
-	for entry: Array in [["clinic", "market_row_shells"], ["hall", "civic_block_shells"], ["relay", "east_works_shells"]]:
+	for entry: Array in [["greenhouse", "market_row_shells"], ["hall", "civic_block_shells"], ["relay", "east_works_shells"]]:
 		var p: Dictionary = game.world.definition(entry[0])
 		game.world.player.pos = game.world.routes.point(p.site)
 		Exploration.update(game.world)

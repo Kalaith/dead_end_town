@@ -11,7 +11,8 @@
       "offset": [
         0,
         0
-      ]
+      ],
+      "intro": ""
     },
     {
       "id": "paige",
@@ -23,7 +24,8 @@
       "offset": [
         35,
         0
-      ]
+      ],
+      "intro": ""
     },
     {
       "id": "ellis",
@@ -35,7 +37,21 @@
       "offset": [
         35,
         0
-      ]
+      ],
+      "intro": ""
+    },
+    {
+      "id": "june",
+      "name": "June",
+      "site": "clinic",
+      "order": "Hold",
+      "duty": "home",
+      "line": "June joins the team.",
+      "offset": [
+        35,
+        0
+      ],
+      "intro": "I kept the medicine safe.\nLet's get this place working."
     }
   ]
 }

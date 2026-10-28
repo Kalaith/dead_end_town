@@ -38,5 +38,19 @@ static func recruit(world: RefCounted, id: String) -> bool:
 	if d.is_empty() or d.site == "home" or not world.properties[d.site].looted or not person(world, id).is_empty():
 		return false
 	_create(world, d, Routes.point(world.definition(d.site).site) + Routes.point(d.offset))
+	if not str(d.intro).is_empty():
+		world.rescue_intro = id
 	world.note(d.line)
+	return true
+
+
+static func dismiss(world: RefCounted, task: String) -> bool:
+	var d: Dictionary = definition(world.catalog, world.rescue_intro)
+	if d.is_empty() or task not in ["hold", "follow", "home"]:
+		return false
+	if task == "home" and not world.safe_connected(d.site):
+		return false
+	if not world.assign_survivor(d.id, task, false):
+		return false
+	world.rescue_intro = ""
 	return true

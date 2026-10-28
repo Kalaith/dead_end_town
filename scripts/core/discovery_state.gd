@@ -7,11 +7,15 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	for p: Dictionary in data.properties:
 		if not p.has("search"):
 			continue
-		if p.id != "hardware" or not p.available or not p.search is Dictionary:
+		if p.id not in ["hardware", "clinic"] or not p.available or not p.search is Dictionary:
 			errors.append("Search rewards need an implemented site.")
 			continue
 		if not Rules.integer_in(p.search.get("materials"), 0, 1000):
 			errors.append("Search materials must be a bounded whole amount.")
+		if not Rules.integer_in(p.search.get("medicine"), 0, 1000):
+			errors.append("Search medicine must be a bounded whole amount.")
+		if p.search.get("survivor") != ("june" if p.id == "clinic" else ""):
+			errors.append("Search needs its implemented rescue identity.")
 		rules.text(p.search, "line")
 
 

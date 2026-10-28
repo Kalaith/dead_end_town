@@ -1,5 +1,6 @@
 extends RefCounted
 ## New properties separate local search rewards from their connected first claim.
+const Roster = preload("res://scripts/sim/roster.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
 
@@ -17,5 +18,8 @@ static func search(world: RefCounted, id: String) -> bool:
 	world.properties[id].looted = true
 	world.materials += int(p.search.materials)
 	world.food += int(p.food_cache)
+	world.medicine += int(p.search.medicine)
+	if not str(p.search.survivor).is_empty():
+		Roster.recruit(world, p.search.survivor)
 	world.note(p.search.line)
 	return true

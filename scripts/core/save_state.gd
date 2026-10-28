@@ -29,11 +29,11 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 21
+const SCHEMA: int = 22
 ## Saved world fields that are collections and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
+const STATE_KEYS: Array[String] = ["rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
 var catalog: Dictionary
 var store: RefCounted
 
@@ -77,7 +77,7 @@ func restore(raw: Dictionary) -> RefCounted:
 		return null
 	var world := World.new(catalog)
 	for key: String in STATE_KEYS:
-		world.set(key, int(data[key]) if key in ["materials", "food", "downs"] else (data[key].duplicate(true) if key in COPIED_KEYS else data[key]))
+		world.set(key, int(data[key]) if key in ["materials", "food", "medicine", "downs"] else (data[key].duplicate(true) if key in COPIED_KEYS else data[key]))
 	world.production.target = int(data.production.target)
 	world.production.material_reserve = int(data.production.material_reserve)
 	world.orders.sequence = int(data.orders.sequence)
@@ -110,7 +110,7 @@ func valid(data: Dictionary) -> bool:
 	if not data.get("roam_rng_state") is String or str(int(data.roam_rng_state)) != data.roam_rng_state:
 		return false
 	for key: String in STATE_KEYS:
-		if key in ["seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
+		if key in ["rescue_intro", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
 			continue
 		if key == "gate_repair_target":
 			if not data.get("properties") is Dictionary or not data.properties.has(data.get(key)):
@@ -121,7 +121,7 @@ func valid(data: Dictionary) -> bool:
 				return false
 		elif not Rules.finite(data.get(key)) or float(data[key]) < 0:
 			return false
-	for key: String in ["materials", "food", "downs"]:
+	for key: String in ["materials", "food", "medicine", "downs"]:
 		if not Rules.whole(data[key]):
 			return false
 	if not _valid_workshop(data):
@@ -209,6 +209,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 21:
+		return _upgrade_clinic_search(upgraded)
 	if version == 20:
 		return _upgrade_discoveries(upgraded)
 	if version == 19:
@@ -538,6 +540,24 @@ func _upgrade_discoveries(data: Dictionary) -> Dictionary:
 	var fresh := World.new(catalog)
 	for z: Dictionary in fresh.zombies:
 		if z.home == "hardware" and z.id not in ids:
+			data.zombies.append(_encode_actor(z))
+	data.schema_version = 21
+	return _upgrade_clinic_search(data)
+
+
+func _upgrade_clinic_search(data: Dictionary) -> Dictionary:
+	if not data.get("zombies") is Array:
+		return {}
+	data.medicine = 0
+	data.rescue_intro = ""
+	var ids: Array[String] = []
+	for z: Variant in data.zombies:
+		if not z is Dictionary or not z.get("id") is String:
+			return {}
+		ids.append(z.id)
+	var fresh := World.new(catalog)
+	for z: Dictionary in fresh.zombies:
+		if z.home == "clinic" and z.id not in ids:
 			data.zombies.append(_encode_actor(z))
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

@@ -1,4 +1,5 @@
 extends Control
+const RescueMenu = preload("res://scripts/presentation/rescue_menu.gd")
 const ConstructionMenu = preload("res://scripts/presentation/construction_menu.gd")
 const ProductionMenu = preload("res://scripts/presentation/production_menu.gd")
 const LiveStatus = preload("res://scripts/presentation/live_status.gd")
@@ -10,6 +11,7 @@ const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const UiKit = preload("res://addons/hatchery/ui/ui_kit.gd")
 const Palette = preload("res://addons/hatchery/ui/palette.gd")
 const TeamOrders = preload("res://scripts/presentation/team_orders.gd")
+signal rescue_requested(task: String)
 signal production_requested(mode: String, target: int, reserve: int)
 signal work_prioritised(socket: String, value: bool)
 signal work_cancelled(socket: String)
@@ -33,6 +35,7 @@ var radio: Label
 var team_orders: VBoxContainer
 var supplies: Label
 var menu: PanelContainer
+var rescue_menu: PanelContainer
 var watch_button: Button
 var equipment_menu: VBoxContainer
 var town_map: VBoxContainer
@@ -78,6 +81,9 @@ func _ready() -> void:
 	radio.add_theme_constant_override("shadow_offset_y", 2)
 	add_child(radio)
 	_build_menu()
+	rescue_menu = RescueMenu.new()
+	add_child(rescue_menu)
+	rescue_menu.chosen.connect(func(task: String) -> void: rescue_requested.emit(task))
 
 
 func _panel(pos: Vector2, extent: Vector2) -> PanelContainer:
@@ -181,6 +187,8 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	watch_button.disabled = not SliceObjective.readiness(world).is_empty()
 	watch_button.tooltip_text = SliceObjective.readiness(world)
 	supplies.text = "STOCKPILE / %d materials     %d food\n%s" % [world.materials, world.food, Provisions.summary(world)]
+	if world.properties.clinic.looted:
+		supplies.text += "\n%d medicine" % world.medicine
 	context_label.text = world.context()
 	context_label.visible = not paused and not context_label.text.is_empty()
 	if paused:
@@ -202,7 +210,8 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 		message_seconds = maxf(0.0, message_seconds - dt)
 	radio.text = latest
 	radio.visible = not paused and message_seconds > 0 and not latest.is_empty()
-	menu.visible = paused
+	rescue_menu.refresh(world)
+	menu.visible = paused and world.rescue_intro.is_empty()
 
 
 func _goal(world: RefCounted) -> String:

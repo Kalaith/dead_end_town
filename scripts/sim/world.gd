@@ -37,6 +37,8 @@ var zombies: Array[Dictionary] = []
 var routes := Routes.new()
 var materials: int
 var food: int
+var medicine: int = 0
+var rescue_intro: String = ""
 var elapsed: float = 0.0
 var approach: bool = false
 var pressure: Dictionary

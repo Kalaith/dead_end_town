@@ -55,7 +55,9 @@
       "zombies": [],
       "search": {
         "materials": 32,
-        "line": "Hardware tools and a long spear recovered."
+        "line": "Hardware tools and a long spear recovered.",
+        "medicine": 0,
+        "survivor": ""
       }
     },
     {
@@ -101,8 +103,8 @@
     {
       "id": "clinic",
       "core": true,
-      "available": false,
-      "food_cache": 0,
+      "available": true,
+      "food_cache": 4,
       "name": "Clinic",
       "rect": [
         2960,
@@ -133,10 +135,29 @@
         "hardware",
         "greenhouse"
       ],
-      "reward": "Unfinished development content",
-      "reinforcements": [],
+      "reward": "Medical supplies and a survivor",
+      "reinforcements": [
+        [
+          3090,
+          355
+        ],
+        [
+          3310,
+          385
+        ],
+        [
+          3430,
+          430
+        ]
+      ],
       "hidden_zombies": 0,
-      "zombies": []
+      "zombies": [],
+      "search": {
+        "materials": 12,
+        "medicine": 12,
+        "survivor": "june",
+        "line": "Medical supplies recovered."
+      }
     },
     {
       "id": "allotment",

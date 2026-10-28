@@ -33,7 +33,7 @@ func tour() -> void:
 		Exploration.update(game.world)
 	game.hud.refresh(game.world, true)
 	game.hud.town_map.sites.clinic.pressed.emit()
-	if game.hud.town_map.selected != "clinic" or not game.hud.town_map.detail.text.contains("Unfinished"):
+	if game.hud.town_map.selected != "clinic" or not game.hud.town_map.detail.text.contains("Unsecured"):
 		push_error("Connected map selection failed")
 		quit(1)
 		return
