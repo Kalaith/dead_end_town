@@ -1,5 +1,6 @@
 extends Node2D
 ## Original procedural greybox art. No imported game assets.
+const GreenhouseView = preload("res://scripts/presentation/greenhouse_view.gd")
 const FieldMedicine = preload("res://scripts/sim/field_medicine.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
@@ -82,23 +83,26 @@ func _property(p: Dictionary) -> void:
 	for i: int in range(7):
 		var pos: Vector2 = site.lerp(gate, float(i) / 6.0)
 		draw_line(pos + Vector2(-16, 0), pos + Vector2(16, 0), Color("79745d"), 2)
-	# Drop shadow, timber siding, roof planes and boarded windows.
-	draw_rect(Rect2(building.position + Vector2(8, 12), building.size), Color(0, 0, 0, 0.25))
-	draw_rect(building, Color("5d6557") if state.claimed else Color("626052"))
-	for y: int in range(int(building.position.y) + 10, int(building.end.y), 12):
-		draw_line(Vector2(building.position.x, y), Vector2(building.end.x, y), Color("454d43"), 2)
-	var roof := Rect2(building.position - Vector2(10, 12), Vector2(building.size.x + 20, 92))
-	draw_rect(roof, Color("394b4b") if p.id in ["home", "library"] else Color("604d42"))
-	for x: int in range(int(roof.position.x), int(roof.end.x), 26):
-		draw_line(Vector2(x, roof.position.y), Vector2(x, roof.end.y), Color("243638"), 2)
-	draw_line(roof.position, Vector2(roof.end.x, roof.position.y), accent.darkened(0.35), 5)
-	for x: float in [building.position.x + 35, building.end.x - 75]:
-		var window := Rect2(x, building.end.y - 52, 40, 30)
-		draw_rect(window.grow(3), INK)
-		draw_rect(window, Color("cdb46b") if state.claimed else Color("253538"))
-		if not state.claimed:
-			draw_line(window.position, window.end, Color("9b8764"), 6)
-	draw_rect(Rect2(building.get_center().x - 18, building.end.y - 48, 36, 48), Color("263536"))
+	if p.id == "greenhouse":
+		GreenhouseView.building(self, building)
+	else:
+		# Drop shadow, timber siding, roof planes and boarded windows.
+		draw_rect(Rect2(building.position + Vector2(8, 12), building.size), Color(0, 0, 0, 0.25))
+		draw_rect(building, Color("5d6557") if state.claimed else Color("626052"))
+		for y: int in range(int(building.position.y) + 10, int(building.end.y), 12):
+			draw_line(Vector2(building.position.x, y), Vector2(building.end.x, y), Color("454d43"), 2)
+		var roof := Rect2(building.position - Vector2(10, 12), Vector2(building.size.x + 20, 92))
+		draw_rect(roof, Color("394b4b") if p.id in ["home", "library"] else Color("604d42"))
+		for x: int in range(int(roof.position.x), int(roof.end.x), 26):
+			draw_line(Vector2(x, roof.position.y), Vector2(x, roof.end.y), Color("243638"), 2)
+		draw_line(roof.position, Vector2(roof.end.x, roof.position.y), accent.darkened(0.35), 5)
+		for x: float in [building.position.x + 35, building.end.x - 75]:
+			var window := Rect2(x, building.end.y - 52, 40, 30)
+			draw_rect(window.grow(3), INK)
+			draw_rect(window, Color("cdb46b") if state.claimed else Color("253538"))
+			if not state.claimed:
+				draw_line(window.position, window.end, Color("9b8764"), 6)
+		draw_rect(Rect2(building.get_center().x - 18, building.end.y - 48, 36, 48), Color("263536"))
 	_fence(rect, gate, state, accent)
 	# Only nearby porches need a prompt; ownership is visible in flags and windows.
 	if p.available and world.player.pos.distance_to(site) < 85 and not Carrying.occupied(world) and Carrying.nearby(world).is_empty():
@@ -110,6 +114,8 @@ func _property(p: Dictionary) -> void:
 			draw_line(site + Vector2(-92, 16 + i * 7), site + Vector2(-48, 16 + i * 7), Color("ab8860"), 5)
 	if p.id == "home":
 		_meter(gate + Vector2(-44, 20), 88, float(state.gate_hp) / float(world.balance.gate_health), accent)
+	if p.id == "greenhouse":
+		GreenhouseView.beds(self, world, site)
 	if p.id == "garden":
 		_garden(rect, site)
 	if p.id == "munitions" and state.claimed:
@@ -198,6 +204,9 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 	draw_rect(Rect2(pos + Vector2(-10, -22), Vector2(20, 20)), body)
 	draw_rect(Rect2(pos + Vector2(-10, -10), Vector2(20, 4)), body.darkened(0.3))
 	_head(pos + Vector2(0, -29), direction, zombie)
+	if not zombie and a.id == "oliver":
+		draw_rect(Rect2(pos + Vector2(-9, -40), Vector2(18, 9)), Color("698e50"))
+		draw_line(pos + Vector2(-14, -31), pos + Vector2(14, -31), Color("9dceb3"), 3)
 	if not zombie and Equipment.protected(world, a):
 		_armour(pos, a.facing)
 	if not zombie and Equipment.shielded(world, a):

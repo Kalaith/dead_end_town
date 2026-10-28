@@ -1,5 +1,6 @@
 extends RefCounted
 ## Persistent duties and temporary work. Guard/follower orders never join this queue.
+const FoodGrowing = preload("res://scripts/sim/food_growing.gd")
 const Medicine = preload("res://scripts/sim/medicine.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
@@ -17,6 +18,8 @@ static func current(catalog: Dictionary, a: Dictionary) -> String:
 			return "garden"
 		"Workshop", "Build":
 			return a.job
+		"Greenhouse":
+			return "greenhouse"
 		"Clinic":
 			return "clinic"
 		"Ammo":
@@ -74,7 +77,7 @@ static func resume(world: RefCounted, a: Dictionary) -> void:
 	a.duty.temporary = false
 	a.duty.return_task = ""
 	if not world.assign_survivor(a.id, task, false):
-		if task in ["garden", "garage", "ammo", "clinic"]:
+		if task in ["garden", "garage", "ammo", "clinic", "greenhouse"]:
 			a.order = "Idle"
 			a.job = ""
 			a.anchor = a.pos
@@ -100,11 +103,13 @@ static func abort(world: RefCounted, a: Dictionary) -> void:
 
 
 static func food_target(world: RefCounted) -> int:
-	return (world.survivors.size() + 1) * 2 + int(world.balance.food_target_buffer)
+	return FoodGrowing.target(world)
 
 
 static func _task(order: Dictionary) -> String:
 	match order.recipe:
+		"greenhouse":
+			return "greenhouse"
 		"clinic":
 			return "clinic"
 		"garden":
@@ -213,8 +218,10 @@ static func _choose(world: RefCounted, a: Dictionary) -> String:
 	if not candidates.is_empty():
 		return candidates[0].task
 	if a.duty.role == "general":
-		if world.garden_done and world.safe_connected("garden") and world.food < food_target(world):
-			return "garden"
+		for id: String in ["greenhouse", "garden"]:
+			var occupied: bool = world.survivors.any(func(other: Dictionary) -> bool: return other.id != a.id and float(other.hp) > 0 and other.job == id and other.order in ["Garden", "Greenhouse"])
+			if not occupied and FoodGrowing.needed(world, id) and world.safe_connected(id):
+				return id
 		if (world.production.mode == "once" or (world.production.mode == "repeat" and int(world.firearms.bullets) < int(world.production.target))) and world.properties.munitions.looted and world.safe_connected("munitions"):
 			return "ammo"
 		if world.clinic.done and world.safe_connected("clinic") and Medicine.needed(world):
@@ -240,8 +247,10 @@ static func _needed(world: RefCounted, a: Dictionary) -> bool:
 	if task.begins_with("repair:"):
 		var s: Dictionary = world.properties.get(task.trim_prefix("repair:"), {})
 		return not s.is_empty() and float(s.gate_hp) < float(world.balance.gate_health)
+	if task == "greenhouse":
+		return world.greenhouse.started and (not world.greenhouse.done or (a.duty.return_task == "general" and FoodGrowing.needed(world, task)))
 	if task == "garden":
-		return world.garden_started and (not world.garden_done or (a.duty.return_task == "general" and world.food < food_target(world)))
+		return world.garden_started and (not world.garden_done or (a.duty.return_task == "general" and FoodGrowing.needed(world, task)))
 	if task == "clinic" and a.duty.return_task == "general":
 		return Medicine.needed(world)
 	if task == "ammo":
@@ -255,14 +264,14 @@ static func step(world: RefCounted, dt: float) -> void:
 		a.duty.clear_left = maxf(0.0, float(a.duty.clear_left) - dt)
 		if float(a.hp) <= 0:
 			continue
-		if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo", "Clinic"]:
+		if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo", "Clinic", "Greenhouse"]:
 			for z: Dictionary in world.zombies:
 				if float(z.hp) > 0 and z.pos.distance_to(a.anchor) < 170:
 					a.duty.clear_left = float(world.balance.work_clear_seconds)
 		if a.duty.temporary and (a.order == "Idle" or not _needed(world, a)):
 			finish(world, a)
-		if a.order == "Idle" and a.duty.role in ["garden", "garage", "clinic"]:
-			var approved: bool = world.clinic.started if a.duty.role == "clinic" else world.garden_started if a.duty.role == "garden" else world.workshop.started
+		if a.order == "Idle" and a.duty.role in ["garden", "garage", "clinic", "greenhouse"]:
+			var approved: bool = world.greenhouse.started if a.duty.role == "greenhouse" else world.clinic.started if a.duty.role == "clinic" else world.garden_started if a.duty.role == "garden" else world.workshop.started
 			if approved:
 				world.assign_survivor(a.id, a.duty.role, false)
 		if a.order != "Idle" or a.duty.role not in ["builder", "general"] or a.duty.retry > 0:

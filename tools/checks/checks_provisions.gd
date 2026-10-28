@@ -11,7 +11,7 @@ const EquipmentChecks = preload("res://tools/checks/checks_equipment.gd")
 func check_meals_consume_for_the_current_roster_without_hunger_damage() -> String:
 	var w := World.new(Catalog.read())
 	w.food = 8
-	w.provisions.clock = 59.99
+	w.provisions.clock = float(w.balance.meal_seconds) - 0.01
 	Provisions.step(w, 0.05)
 	if w.food != 6:
 		return "Starting team meal did not consume two food."
@@ -19,12 +19,12 @@ func check_meals_consume_for_the_current_roster_without_hunger_damage() -> Strin
 		z.hp = 0.0
 	w.claim("library")
 	w.food = 8
-	w.provisions.clock = 59.99
+	w.provisions.clock = float(w.balance.meal_seconds) - 0.01
 	Provisions.step(w, 0.05)
 	if w.food != 5:
 		return "Rescued person did not join the shared meal."
 	w.food = 0
-	w.provisions.clock = 59.99
+	w.provisions.clock = float(w.balance.meal_seconds) - 0.01
 	var hp: float = w.player.hp
 	Provisions.step(w, 0.05)
 	for i: int in range(100):
@@ -100,10 +100,10 @@ func check_food_caches_are_unique_and_food_clock_reloads_without_offline_drain()
 	w.claim("garden")
 	if w.food != before:
 		return "Reclaiming duplicated food."
-	w.provisions.clock = 59.99
+	w.provisions.clock = float(w.balance.meal_seconds) - 0.01
 	var save := SaveState.new(w.catalog)
 	var loaded: RefCounted = save.restore(JSON.parse_string(JSON.stringify(save.snapshot(w))))
-	if loaded == null or loaded.food != w.food or not is_equal_approx(loaded.provisions.clock, 59.99):
+	if loaded == null or loaded.food != w.food or not is_equal_approx(loaded.provisions.clock, float(w.balance.meal_seconds) - 0.01):
 		return "Food clock or stock changed merely by loading."
 	Provisions.step(w, 0.05)
 	Provisions.step(loaded, 0.05)
@@ -119,7 +119,7 @@ func check_provisions_migrate_and_reject_invalid_clocks() -> String:
 	var upgraded: Dictionary = save.migrate(old)
 	if upgraded.is_empty() or upgraded.food != old.food or upgraded.provisions.clock != 0 or upgraded.provisions.hungry:
 		return "Migration consumed food or immediately penalised an existing run."
-	for mutation: Dictionary in [{"clock": -1}, {"clock": 60}, {"hungry": true, "clock": 1}, {"harvested": 0.5}, {"warned": "bad"}]:
+	for mutation: Dictionary in [{"clock": -1}, {"clock": float(w.balance.meal_seconds)}, {"hungry": true, "clock": 1}, {"harvested": 0.5}, {"warned": "bad"}]:
 		var raw: Dictionary = save.snapshot(w)
 		raw.provisions.merge(mutation, true)
 		if save.valid(raw):

@@ -8,6 +8,8 @@ const RecoverySalvage = preload("res://scripts/sim/recovery_salvage.gd")
 const RecoveryState = preload("res://scripts/core/recovery_state.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
 const HomeRest = preload("res://scripts/sim/home_rest.gd")
+const GreenhouseState = preload("res://scripts/core/greenhouse_state.gd")
+const Greenhouse = preload("res://scripts/sim/greenhouse.gd")
 const ClinicState = preload("res://scripts/core/clinic_state.gd")
 const Clinic = preload("res://scripts/sim/clinic.gd")
 const DiscoveryState = preload("res://scripts/core/discovery_state.gd")
@@ -40,11 +42,11 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 30
+const SCHEMA: int = 31
 ## Saved world fields that are collections and are copied, not shared.
-const COPIED_KEYS: Array[String] = ["field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
+const COPIED_KEYS: Array[String] = ["growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "defeat_pending", "carry", "home_rest", "clinic", "rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
+const STATE_KEYS: Array[String] = ["growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "defeat_pending", "carry", "home_rest", "clinic", "rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
 var catalog: Dictionary
 var store: RefCounted
 
@@ -122,7 +124,7 @@ func valid(data: Dictionary) -> bool:
 	if not data.get("roam_rng_state") is String or str(int(data.roam_rng_state)) != data.roam_rng_state:
 		return false
 	for key: String in STATE_KEYS:
-		if key in ["field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "rescue_intro", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
+		if key in ["growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "rescue_intro", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
 			continue
 		if key == "gate_repair_target":
 			if not data.get("properties") is Dictionary or not data.properties.has(data.get(key)):
@@ -136,6 +138,8 @@ func valid(data: Dictionary) -> bool:
 	for key: String in ["materials", "food", "medicine", "downs"]:
 		if not Rules.whole(data[key]):
 			return false
+	if not GreenhouseState.valid(data, catalog):
+		return false
 	if not _valid_workshop(data):
 		return false
 	if not data.get("properties") is Dictionary or data.properties.size() != catalog.properties.size():
@@ -197,7 +201,7 @@ func _valid_actor(a: Variant, max_health: float) -> bool:
 	for key: String in ["id", "name", "activity"]:
 		if not Rules.nonempty(a.get(key)):
 			return false
-	if a.get("order") not in ["Guard", "Follow", "Hold", "Engage", "Home", "Build", "Roadwork", "Roadguard", "Garden", "Workshop", "Passage", "Ammo", "Idle", "Repair", "Clinic", "Rescue", "Field"]:
+	if a.get("order") not in ["Guard", "Follow", "Hold", "Engage", "Home", "Build", "Roadwork", "Roadguard", "Garden", "Workshop", "Passage", "Ammo", "Idle", "Repair", "Clinic", "Greenhouse", "Rescue", "Field"]:
 		return false
 	for key: String in VECTOR_KEYS:
 		if not Rules.is_vec2(a.get(key)):
@@ -221,6 +225,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 30:
+		return _upgrade_greenhouse_work(upgraded)
 	if version == 29:
 		return _upgrade_greenhouse_search(upgraded)
 	if version == 28:
@@ -325,6 +331,8 @@ func _valid_task(a: Dictionary, data: Dictionary) -> bool:
 			return a.job == "you" or data.survivors.any(func(person: Dictionary) -> bool: return person.id == a.job)
 		"Rescue":
 			return data.get("rescue_jobs") is Dictionary and data.rescue_jobs.has(a.id) and data.rescue_jobs[a.id] is Dictionary and a.job == data.rescue_jobs[a.id].get("patient")
+		"Greenhouse":
+			return a.job == "greenhouse" and data.greenhouse.started and data.properties.greenhouse.looted
 		"Clinic":
 			return a.job == "clinic" and data.clinic.started and data.properties.clinic.looted
 		"Ammo":
@@ -656,5 +664,17 @@ func _upgrade_greenhouse_search(data: Dictionary) -> Dictionary:
 	for z: Dictionary in fresh.zombies:
 		if z.home == "greenhouse" and z.id not in ids:
 			data.zombies.append(_encode_actor(z))
+	data.schema_version = 30
+	return _upgrade_greenhouse_work(data)
+
+
+func _upgrade_greenhouse_work(data: Dictionary) -> Dictionary:
+	data.greenhouse = Greenhouse.initial()
+	data.growing = {"garden": false, "greenhouse": false}
+	if not Rules.finite(data.get("harvest")) or not data.get("provisions") is Dictionary or not Rules.finite(data.provisions.get("clock")):
+		return {}
+	# Preserve the fraction of the old 20-second harvest and 60-second meal clocks.
+	data.harvest = float(data.harvest) / 20.0 * float(catalog.balance.food_seconds)
+	data.provisions.clock = float(data.provisions.clock) / 60.0 * float(catalog.balance.meal_seconds)
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

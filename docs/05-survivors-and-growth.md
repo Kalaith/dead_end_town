@@ -1,6 +1,6 @@
 # Named survivors and equipment-led growth
 
-Final full game roster: the protagonist and eight named survivors. Four people exist in the present slice: player, Mara, Paige, Ellis. June, Oliver, Theo, Nia and Rowan are future content. No random recruits, relationship system, classes, XP, activity skills or survivor level-ups.
+Final full game roster: the protagonist and eight named survivors. Six people exist in the present slice: player, Mara, Paige, Ellis, June and Oliver. Theo, Nia and Rowan are future content. No random recruits, relationship system, classes, XP, activity skills or survivor level-ups.
 
 ## Roster
 

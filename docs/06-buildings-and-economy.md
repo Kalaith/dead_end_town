@@ -1,6 +1,6 @@
 # Buildings, supplies and community economy
 
-Full game values. [15](15-property-catalogue.md) owns finite property rewards; [16](16-equipment-and-recipes.md) owns costs/work outputs. Current slice meals are 60 seconds and garden cycles 20 seconds; the campaign deliberately retunes both as below. These are design choices, not changes already made.
+Full game values. [15](15-property-catalogue.md) owns finite property rewards; [16](16-equipment-and-recipes.md) owns costs/work outputs. The runtime now implements 120-second meals, two-Food/45-second garden cycles and four-Food/60-second greenhouse cycles with physical growers and food targets. Later facilities and upgrades below remain design until recorded in PROGRESS.md.
 
 ## Resource ledger
 

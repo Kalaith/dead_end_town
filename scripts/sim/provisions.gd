@@ -23,7 +23,7 @@ static func step(world: RefCounted, dt: float) -> void:
 		s.hungry = false
 		s.warned = false
 		s.clock = 0.0
-		world.note("A shared meal restores normal work. The garden keeps everyone supplied.")
+		world.note("A shared meal restores normal work. Growers can resume normal work.")
 	if not s.hungry:
 		s.clock += dt
 		if float(s.clock) >= float(world.balance.meal_seconds):
@@ -37,7 +37,7 @@ static func step(world: RefCounted, dt: float) -> void:
 				world.note("Food shortage. Work slows until there is a shared meal; nobody loses health to hunger.")
 	if world.food < cost and not s.warned:
 		s.warned = true
-		world.note("Food running low. Tend the connected garden before the next shared meal.")
+		world.note("Food running low. Tend connected food beds before the next shared meal.")
 	elif world.food >= cost:
 		s.warned = false
 

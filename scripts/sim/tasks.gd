@@ -26,6 +26,8 @@ static func options(world: RefCounted, a: Dictionary = {}) -> Array[Dictionary]:
 	]
 	if world.properties.munitions.claimed:
 		result.append({"id": "ammo", "label": "Craft bullets (%d materials / %d bullets)" % [int(world.catalog.firearm.material_cost), int(world.catalog.firearm.batch_bullets)]})
+	if world.properties.greenhouse.claimed:
+		result.append({"id": "greenhouse", "label": "Greenhouse: restore and tend"})
 	if world.properties.clinic.claimed:
 		result.append({"id": "clinic", "label": "Clinic"})
 	if world.properties.garden.claimed:
@@ -70,6 +72,8 @@ static func unavailable(world: RefCounted, task: String, a: Dictionary = {}) -> 
 	match task:
 		"home", "follow", "hold", "engage", "builder", "general":
 			return ""
+		"greenhouse":
+			return "Approve greenhouse restoration first" if not world.greenhouse.started else ""
 		"clinic":
 			return "Approve clinic restoration first" if not world.clinic.started else ""
 		"ammo":
@@ -123,6 +127,10 @@ static func assign(world: RefCounted, id: String, task: String, announce: bool =
 		"builder", "general":
 			a.order = "Idle"
 			a.anchor = a.pos
+		"greenhouse":
+			a.order = "Greenhouse"
+			a.job = "greenhouse"
+			a.anchor = Routes.point(world.definition("greenhouse").site)
 		"clinic":
 			a.order = "Clinic"
 			a.job = "clinic"

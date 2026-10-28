@@ -1,6 +1,7 @@
 extends Node2D
 const Medicine = preload("res://scripts/sim/medicine.gd")
 const Defeat = preload("res://scripts/sim/defeat.gd")
+const Greenhouse = preload("res://scripts/sim/greenhouse.gd")
 const Clinic = preload("res://scripts/sim/clinic.gd")
 const Roster = preload("res://scripts/sim/roster.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
@@ -258,7 +259,7 @@ func cancel_production() -> void:
 
 
 func cancel_work(socket: String) -> void:
-	if Clinic.cancel(world, socket) or Neighbourhood.cancel(world, socket) or Restoration.cancel(world, socket) or Roadworks.cancel(world, socket) or Repairs.cancel(world, socket):
+	if Greenhouse.cancel(world, socket) or Clinic.cancel(world, socket) or Neighbourhood.cancel(world, socket) or Restoration.cancel(world, socket) or Roadworks.cancel(world, socket) or Repairs.cancel(world, socket):
 		hud.menu_status.text = "Work cancelled"
 		hud.refresh(world, paused)
 

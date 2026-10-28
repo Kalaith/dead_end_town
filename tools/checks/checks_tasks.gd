@@ -43,8 +43,12 @@ func check_two_survivors_physically_work_different_jobs_while_player_guards() ->
 		return "A survivor worked remotely instead of reaching their own site."
 	if w.materials != stock or w.player.pos != Vector2(360, 445):
 		return "Assignment spent more materials or moved the guarding player."
+	# Keep the longer campaign harvest isolated from the separate raid acceptance cases.
+	w.pressure.next = w.elapsed + 90.0
+	w.food = 4
+	w.growing.garden = false
 	var food: int = w.food
-	_advance(w, 20.0)
+	_advance(w, float(w.balance.food_seconds) + 0.1)
 	if w.food <= food:
 		return "Assigned gardener did not produce food after building the beds."
 	w.assign_survivor("paige", "follow")

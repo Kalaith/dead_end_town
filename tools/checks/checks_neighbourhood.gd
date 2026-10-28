@@ -140,6 +140,7 @@ func check_alternate_safe_route_survives_lost_corner_and_restores_production() -
 	w.passages.north.open = false
 	w.properties.garage.claimed = false
 	w.rebuild_routes()
+	w.food = 4
 	var clock: float = w.harvest
 	_advance(w, 2)
 	if w.harvest != clock:

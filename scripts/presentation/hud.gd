@@ -5,6 +5,7 @@ const ConstructionMenu = preload("res://scripts/presentation/construction_menu.g
 const ProductionMenu = preload("res://scripts/presentation/production_menu.gd")
 const LiveStatus = preload("res://scripts/presentation/live_status.gd")
 const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
+const FoodGrowing = preload("res://scripts/sim/food_growing.gd")
 const Provisions = preload("res://scripts/sim/provisions.gd")
 const EquipmentMenu = preload("res://scripts/presentation/equipment_menu.gd")
 const TownMap = preload("res://scripts/presentation/town_map.gd")
@@ -202,6 +203,7 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	supplies.text = "STOCKPILE / %d materials     %d food\n%s" % [world.materials, world.food, Provisions.summary(world)]
 	if world.properties.clinic.looted:
 		supplies.text += "\n%d medicine" % world.medicine
+	supplies.text += "\n" + FoodGrowing.summary(world)
 	context_label.text = world.context()
 	context_label.visible = not paused and not context_label.text.is_empty()
 	if paused:

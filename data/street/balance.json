@@ -26,7 +26,7 @@
     "home_alert_radius": 180,
     "scout_range": 640,
     "timber_materials": 10,
-    "meal_seconds": 60,
+    "meal_seconds": 120,
     "recovery_food": 2,
     "food_yield": 2,
     "shortage_work_rate": 0.6,
@@ -63,7 +63,7 @@
     "claim_materials": 6,
     "garden_cost": 8,
     "work_seconds": 12,
-    "food_seconds": 20,
+    "food_seconds": 45,
     "approach_seconds": 45,
     "starting_materials": 18,
     "starting_food": 8,
@@ -112,6 +112,10 @@
     "field_medicine_cost": 1,
     "field_seconds": 3,
     "field_heal": 40,
-    "field_range": 70
+    "field_range": 70,
+    "greenhouse_cost": 16,
+    "greenhouse_seconds": 24,
+    "greenhouse_food_seconds": 60,
+    "greenhouse_yield": 4
   }
 }

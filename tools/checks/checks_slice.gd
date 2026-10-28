@@ -1,4 +1,5 @@
 extends RefCounted
+const Provisions = preload("res://scripts/sim/provisions.gd")
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
@@ -138,10 +139,13 @@ func check_complete_street_builds_from_authored_supplies_without_free_structures
 		w.interact()
 		if not w.passages[d.id].done or not w.passages[d.id].open:
 			return "Cannot build and open passage."
+	# Consume cache surplus through actual shared meals so the food target needs harvests.
+	while w.food > 6:
+		Provisions.step(w, float(w.balance.meal_seconds))
 	w.player.pos = Vector2(1080, 350)
 	w.interact()
 	w.working = true
-	_advance(w, 53)
+	_advance(w, float(w.balance.work_seconds) + 2 * float(w.balance.food_seconds) + 0.1)
 	w.working = false
 	if not w.garden_done or w.provisions.harvested < 4:
 		return "Real garden labour failed to produce objective food."

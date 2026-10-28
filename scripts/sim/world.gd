@@ -7,6 +7,8 @@ const RecoverySalvage = preload("res://scripts/sim/recovery_salvage.gd")
 const Defeat = preload("res://scripts/sim/defeat.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
 const HomeRest = preload("res://scripts/sim/home_rest.gd")
+const FoodGrowing = preload("res://scripts/sim/food_growing.gd")
+const Greenhouse = preload("res://scripts/sim/greenhouse.gd")
 const Clinic = preload("res://scripts/sim/clinic.gd")
 const Discoveries = preload("res://scripts/sim/discoveries.gd")
 const Roster = preload("res://scripts/sim/roster.gd")
@@ -47,6 +49,8 @@ var materials: int
 var food: int
 var medicine: int = 0
 var medicine_production: Dictionary
+var growing: Dictionary = FoodGrowing.initial()
+var greenhouse: Dictionary = Greenhouse.initial()
 var clinic: Dictionary = Clinic.initial()
 var rescue_intro: String = ""
 var rescue_jobs: Dictionary = {}
@@ -170,6 +174,8 @@ func step(dt: float) -> void:
 	_work(work_dt)
 	Workshop.step(self, work_dt)
 	Clinic.step(self, work_dt)
+	FoodGrowing.step(self, work_dt)
+	Greenhouse.step(self, work_dt)
 	Firearms.step(self, work_dt)
 	Roadworks.step(self, work_dt)
 	working = player_work
@@ -278,6 +284,8 @@ func _context() -> String:
 				return "E Search"
 			if not properties[p.id].claimed:
 				return "E Secure"
+			if p.id == "greenhouse":
+				return Greenhouse.context(self)
 			if p.id == "clinic":
 				return Clinic.context(self)
 			if p.id == "munitions":
@@ -287,7 +295,7 @@ func _context() -> String:
 			if p.id == "garden" and not garden_done:
 				return "R Build   F Assign" if garden_started else WorkOrders.cost_prompt(self, "Garden", ["garden"], int(balance.garden_cost))
 			if p.id == "garden":
-				return "R Tend   F Assign"
+				return "R Tend · %d%%   F Assign" % int(100 * harvest / float(balance.food_seconds))
 			return ""
 	return ""
 
@@ -327,6 +335,8 @@ func interact() -> void:
 				Discoveries.search(self, p.id)
 			elif not state.claimed:
 				claim(p.id)
+			elif p.id == "greenhouse":
+				Greenhouse.approve(self)
 			elif p.id == "clinic":
 				if clinic.done:
 					Clinic.treat(self)
@@ -437,12 +447,7 @@ func _work(dt: float) -> void:
 			for a: Dictionary in survivors:
 				if a.order in ["Build", "Garden"] and a.job == "garden":
 					Jobs.finish(self, a)
-	if garden_done and garden_tended() and safe_connected("garden") and not Combat.danger(self, Routes.point(definition("garden").site), 230):
-		harvest += dt
-		if harvest >= float(balance.food_seconds):
-			harvest -= float(balance.food_seconds)
-			food += int(balance.food_yield)
-			provisions.harvested += int(balance.food_yield)
+
 
 
 func post_road_guard() -> void:

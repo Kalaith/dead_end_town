@@ -123,6 +123,16 @@
         "output": "medicine",
         "count": "medicine_batch",
         "kind": "production"
+      },
+      {
+        "id": "greenhouse",
+        "name": "Greenhouse",
+        "source": "balance",
+        "cost": "greenhouse_cost",
+        "seconds": "greenhouse_seconds",
+        "output": "",
+        "count": "",
+        "kind": "construction"
       }
     ]
   }
