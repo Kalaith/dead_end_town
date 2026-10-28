@@ -1,51 +1,64 @@
-# Sources and terminology
+# Sources, precedence and terminology
 
-## Design source
+## Basis and authority
 
-Primary reference: the "Game concept development" conversation (not a resolvable link), conversation ID `6ae0fba7-c8a4-83ec-9e38-b9d8b951a9ac`. Read through the available conversation connector on 28 October 2026.
+The original concept conversation supplied continuous-world reclamation, hybrid construction, a small cooperative cast, item-led growth and Paige's librarian-to-armoured-defender example. Historical conversation ID: `6ae0fba7-c8a4-83ec-9e38-b9d8b951a9ac`. This is a traceability identifier, not a resolvable public link. The full original history is not re-read or claimed to be reproduced here.
 
-The returned history included the user's explicit continuous-world choice, hybrid-construction request, librarian example, small cooperative survivor direction, high-level key-item progression, and request to make a local project. The latest project request supplies the required topic coverage and exact folder name.
+Subsequent local implementation and user playtests established the current slice and refinements recorded in [11](11-decisions-and-questions.md) and [PROGRESS.md](PROGRESS.md). The 28 October 2026 user request authorises this one-hour documentation-only expansion and making the remaining decisions. This revision is a cohesive build design, not a transcript of individually approved numerical values.
 
-The available history contained five turn groups and reported no older page. The long construction answer was truncated by the connector at 20,000 characters. This package uses the visible material and does not claim access to the missing ending or an earlier original pitch. It is a cohesive design synthesis, not a verbatim transcript.
+Current README, JSON, simulation modules, recent Git history and progress records were inspected to distinguish existing behaviour from future design. No external research, existing game's content or generated image is required to invent this campaign. The Last Hearth supplies layout/tooling ancestry only; its BDI, recruitment and turn-based rules do not apply.
 
-## Precedence and interpretation
+## Precedence and ownership
 
-User decisions take precedence over assistant suggestions. Later simplification of survivor growth takes precedence over earlier activity-skill brainstorming. New rules supplied to make systems coherent are labelled as proposed defaults at the package level and, where consequential, in the individual documents.
+User instructions override the design. AGENTS.md owns engineering/workflow rules. 01 and 11 own creative scope/decisions. Owning system documents specify behaviour; catalogues 14–16 own numerical content; 13 owns topology/finale; 17 owns acceptance examples. README explains the **current runtime**, and PROGRESS records actual evidence. Design does not prove implementation; implementation drift does not silently revise the design.
 
-The prior assistant's statement about handing work off is not evidence that files or gameplay existed. The original package documented design and planning only; implementation status now lives in [PROGRESS.md](PROGRESS.md). No source images were downloaded or treated as supplied assets; image-query placeholders in the discussion do not establish an approved art direction.
+When a number changes, update its owning table and affected worked examples in the same change. Avoid appending a contradictory rule to the end of an older document. Historical PROGRESS entries remain history, explicitly superseded by later evidence. TODO points to next implementation work, not a second competing design.
 
-## Official technical references
-
-Checked 28 October 2026:
-
-- [Godot: Using TileMaps](https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html) — tile layers and their rendering, collision, and navigation roles.
-- [Godot: Using NavigationObstacles](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationobstacles.html) — distinction between avoidance and navigation baking.
-- [Godot: Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — basic persistence and serialisation workflow.
-
-The architecture is a project-specific proposal informed by these APIs; the references do not validate its performance or gameplay outcomes. Pin version-specific references when choosing the engine release.
+Earlier activity skill tracks, XP, eight-to-twelve-person colonies, possessional character switching, museum-exclusive original armour and unresolved alternative endings are superseded. This game has eight people total, fixed protagonist, optional second museum set and the relief-signal ending.
 
 ## Glossary
 
-| Term | Meaning in this package |
+| Term | Meaning |
 | --- | --- |
-| Continuous world | Home, expeditions, enemies, and work share persistent space and time |
-| Property | Authored reclaimable parcel containing a building, yard, and entrances |
-| Cleared | Immediate occupants defeated without guaranteed settlement integration |
-| Secured | Claimed property connected to the home settlement |
-| Operational | Currently safe, reachable, and sufficiently supplied to provide its facility benefit |
-| Connected component | Properties linked to home through valid physical passages |
-| Perimeter | Exposed physical boundary of that connected settlement, including holes and corridors |
-| Breach | A physical entry route opened through a defended boundary |
-| Discovery | Recovered person, knowledge, key item, or equipment reward |
-| Key item | Important discovery unlocking a capability rather than an ordinary consumed supply |
-| Facility | Functional property improvement that performs work while operational |
-| Work order | Persistent authorised task with a target, progress, resources, and worker reservation |
-| Worker lease | Temporary exclusive claim on execution of a job |
-| Material reservation | Stock committed to an approved order and excluded from available resources |
-| Readiness | Advisory explanation of defence coverage and known risks |
-| Pressure | Threat arising from occupants, noise, routes, and migration |
-| MVP | Smallest playable slice that demonstrates the central promise |
+| Active second | Authoritative unpaused simulation time; no wall-clock/offline progression |
+| Property/parcel | One authored yard/building, stable ID, search/claim points and sockets |
+| Cleared | No living hostile or unresolved initial occupant at site |
+| Searched | Finite once-only discoveries/rewards have committed |
+| Held/claimed | Owned until physical unopposed occupation completes |
+| Ownership-connected | Held adjacency chain to held home, without implying safe travel |
+| Safely connected | Real protected traversable clear route to home |
+| Secured | Held and safely connected, shorthand rather than extra saved level |
+| Operational | Facility restored/intact, held, locally safe and safely connected |
+| Passage | Paid enclosed same-row link through formerly separate fences |
+| Crossing | Facing-property road link protected at both boundary lines |
+| Boundary line | Shared road barrier separating adjacent column corridors |
+| Perimeter | Actual exposed boundary including rear routes, concavities and holes |
+| Breach | A real opening where protection has broken or been left open |
+| Occupation | Eight-second unopposed zombie presence leading to ownership loss |
+| Discovery/key | Permanent once-recovered knowledge/item flag, not repeated input stock |
+| Equipment instance | One uniquely owned recovered/crafted item |
+| Stock | Fungible Materials, Food, Bullets, Shells or Medicine available to spend |
+| Bundle/reservation | Inputs removed from available stock and committed to one order |
+| Field project | Player-present prepaid construction at a disconnected held site |
+| Work order | Approved target, recipe, progress, bundle and completion record |
+| Executor lease | Temporary assignment to advance a site; not ownership of its materials |
+| Role | Persistent work/defence policy; not a class or skill level |
+| Follower | One of at most two recruited people assigned to expedition Follow/Engage |
+| Resident | Authored initial zombie, never respawned after defeat |
+| Migrant | Zombie entering from a real edge in a scheduled event |
+| Kind | Enemy statistics/special behaviour, independent of resident/migrant role |
+| Threat cost | Internal composition budget; no XP/level or player reward |
+| Notice | Nearby-person priority at 240 pixels |
+| Noise | Short-lived spatial event attracting existing enemies |
+| Teaching encounter | First readable introduction enabling later routine special templates |
+| Readiness | Explained prerequisites/defence assessment, not an abstract battle resolver |
+| Slice watch | Existing optional four-yard 60-second demonstration objective |
+| Relief watch | Full game finite 360-second signal defence with three waves |
+| Core site | One of 18 properties required for finale readiness |
+| Optional site | One of six useful properties never required by the core dependency chain |
+| Emergency foothold | Explicit non-productive recovery shelter west of home |
+| Grandfathered overage | Existing migrated actors retained above the normal admission cap |
 
-## Package verification boundary
+## Verification boundary
 
-The original package was documentation only. A runtime was added on 28 October 2026. Its import, automated scenarios and windowed capture evidence are recorded separately from human gameplay observations in [PROGRESS.md](PROGRESS.md). Export, browser/device behavior and human playtesting remain unverified.
+This documentation revision may be verified for links, IDs, counts, budgets, numerical examples and internal consistency. It cannot verify gameplay, art, audio, hardware performance, save migrations not yet written or exports. The user's positive slice report is human evidence about the slice; it is not a completed full game playtest.

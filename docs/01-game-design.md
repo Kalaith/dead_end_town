@@ -1,63 +1,95 @@
-# Game design
+# Dead End Town: full game design
 
-## Vision
+Design baseline: 28 October 2026. This package specifies the game to build after the working street slice. **It is design, not an implementation or verification claim.** The user authorised making the remaining design decisions. Numerical values are implementation starting values with explicit playtest gates, rather than measured balance.
 
-Dead End Town is a small-scale action and territory-reclamation game. The player personally fights for buildings, then turns them into a connected community with the help of a few named survivors. The town's changing appearance records that work: boarded windows become defended entrances, abandoned yards become gardens, and separate houses become a shared neighbourhood.
+## The promise
 
-The emotional arc is from being trapped in one home to confidently opening its gate. Paige, rescued while overwhelmed by zombies in a library, can eventually stand in iron armour at that same gate and hold a wave. Her transformation comes from the equipment and opportunities the group recovers.
+Reclaim a recognisable town with a handful of people you learn to trust. Personally fight for a property, connect it to home, and turn its discoveries into better food, equipment, routes and defences. Leave useful people holding the line while you go farther. Eventually open the town's relief signal and prove that the community can keep its streets.
 
-## Confirmed foundations
+The emotional progression is trapped → capable → connected → dependable. Paige, rescued from the library, can become the armoured defender who keeps the next rescue route open. Ellis contributes without ever being made to fight. Buildings and equipment, rather than experience points, make these changes possible.
 
-1. One continuous world, selected as the NEARBY approach. Expeditions happen down the street rather than in separate mission instances.
-2. Hybrid construction. The player and AI survivors can both build and repair.
-3. A small, meaningful cast. Survivors represent a cooperating community rather than a large simulated population.
-4. High-level growth through buildings, discoveries, key items, and equipment.
-5. Humans work together. Relationship drama, betrayals, and colony-management overhead are outside the intended focus.
+## Foundations
 
-## Design pillars
+1. One continuous, authored top-down world; no expedition instances, combat turns or loading barriers between districts.
+2. One fixed player protagonist and cooperative named AI survivors. Single player only.
+3. Physical defence: gates, fences, barricades, sightlines and actual defenders decide outcomes on and off camera.
+4. Separate clearance, claim, safe connection and facility operation. Ownership never creates free walls.
+5. Hybrid construction at authored sockets. Player and survivors share paid work and progress.
+6. Equipment, discoveries and facilities create growth. No XP, classes, activity grind or research tree.
+7. Small community, understandable automation, sparse live HUD and fully paused planning.
+8. Recoverable setbacks. No permanent survivor death, infection countdown, interpersonal conflict or hunger damage.
 
-**Fight for a place you can recognise.** A claimed property should change routes, safety, available work, or equipment. Avoid interchangeable buildings that only add tiny percentage bonuses.
+## Locked release scope
 
-**Trust the people at home.** Guards hold useful positions, workers respond sensibly to danger, and routine tasks resume without fresh orders. Automation should be understandable enough that leaving feels like a decision rather than a gamble against AI mistakes.
+| Area | Full game decision |
+| --- | --- |
+| Format | Godot 4.7.2, Compatibility, desktop keyboard/mouse, 1280×720 reference view |
+| Campaign | One authored town, 24 properties in four six-property districts |
+| Duration target | 2–3 hours for a first core campaign; 2.5–4 with optional sites; 1–2 on replay |
+| People | Protagonist plus seven named survivors; player plus at most two followers |
+| Enemies | Eight zombie kinds; six additions beyond the current Shambler and Brute |
+| Construction | Existing buildings, fixed improvement/fortification sockets, no freeform walls |
+| Economy | Materials, Food, Bullets, Shells and Medicine; unique key items and equipment |
+| Combat | Melee, pistol, shotgun, frontal passive shields; no stamina/dodge/reload/durability subsystem |
+| Ending | Restore the relief signal and defend three approaches for a finite six-minute watch |
+| After victory | Explicit ending, completion save and optional continued reclamation |
+| Presentation | Grounded stylised 2D; readable silhouettes and visible work; no gore dependency |
+| Shipping boundary | Local desktop release first; exports and distribution require separate user direction |
 
-**Make progress visible.** Weapons, protection, repairs, crops, and opened internal walkways appear in the world. Menus explain changes; they should not be the only place changes exist.
+The duration is a content and pacing target, not permission to stretch work timers. Completion requires 18 named core properties; six optional properties offer alternatives, supplies and equipment. Taking every property is an optional final accomplishment, not a victory prerequisite.
 
-**Keep strategy close to action.** Choosing a target property changes what the squad does next. Placing a gate changes how combat unfolds. Finding welding tools creates a reason to restore the garage.
+## Core loop and decisions
 
-## Core loop
+Review readiness and one or two active jobs. Choose a nearby reward or route. Set the home defence and expedition loadouts. Fight, fall back, search and rescue in continuous space. Bring discoveries into use, secure the route and move the defensive front. A stronger community opens a harder landmark.
 
-1. Review nearby threats, defence readiness, squad equipment, and one or two important work orders.
-2. Choose a reachable target with a reward the community needs.
-3. Leave through the gate with companions; fight, retreat, or approach quietly.
-4. Clear the site and recover supplies, a survivor, or a key discovery.
-5. Decide whether to withdraw with loot or connect and secure the property.
-6. Build the useful improvement, assign work, and adjust the perimeter.
-7. Use the new capability to reach a more ambitious target.
+Useful decisions recur: rescue versus equipment first; a compact boundary versus a valuable exposed site; quiet melee versus ammunition and noise; a mobile ally versus an armoured post; materials for a new capability versus repairs. Quiet intervals let the player enjoy the change, rather than generating compulsory chores.
 
-The loop is continuous and interruptible. An incoming attack can turn exploration into a retreat, while a quiet interval can let the player finish a barricade personally.
+Every property must change at least one of equipment, production, route geometry, rescue capacity or campaign readiness. Ordinary houses may offer finite supplies and a shorter perimeter; no building exists only for a tiny passive percentage bonus.
 
-## Main decisions
+## Campaign arc
 
-- Which adjacent property is worth the risk and additional perimeter?
-- Who comes on the expedition, and who protects home?
-- Is quiet melee worth the danger, or should we use a noisy gun?
-- Should we spend materials on repairs, expansion, or a facility?
-- Can the latest discovery change a survivor's role or open a new route?
+| Act | District | Main change | Demonstration |
+| --- | --- | --- | --- |
+| I: Keep a street | Hearth Street, existing six sites | Food, workshop, Paige, Ellis and ammunition | Original neighbourhood watch becomes an optional teaching milestone |
+| II: Make it dependable | Market Row | Clinic, renewable salvage, food surplus, June and Oliver | Two defenders keep routine attacks manageable while the player visits another block |
+| III: Choose how to fight | Civic Block | Reinforced defences, specialist equipment, Theo and radio forecast | Mixed enemies reward preparation and two viable approaches |
+| IV: Open the signal | East Works | Power, water, relay and relief assembly | Prepare three physical fronts and begin a deliberate final defence |
 
-## Proposed format
+Districts are geographic progression, not level gates. Players can scout and loot far ahead at personal risk. Claims need held adjacency; productive facilities need safe home connection. No invisible wall requires an act-complete flag. Finale dependencies and the exact map are in [Campaign and map](13-campaign-and-map.md).
 
-Single-player, top-down 2D action with one directly controlled protagonist and AI companions. A compact authored town is the starting map direction. Target desktop first; final engine version, controls, visual resolution, and export platforms remain open. Cooperative survivors describe AI teamwork and tone, not confirmed online multiplayer.
+## What persists and what can be lost
 
-Use a forgiving recovery model for the first prototype: incapacitation and temporary loss of facilities create setbacks. Permanent survivor death, infection timers, and irreversible equipment destruction are not MVP defaults.
+Cleared residents remain dead. Searches, rescues and key discoveries never repeat. Equipment remains unique and cannot be permanently destroyed. Gates, barricades and facility health can be damaged. Zombies can occupy and take claimed property; operational facilities pause while unsafe or disconnected. Work, prepaid inputs, food clocks, warnings and enemy intent survive saving.
 
-## Campaign shape
+All clocks stop in menus and while closed. Recoveries preserve campaign progress; defeat is a setback in territory and preparation, never a requirement to start a new campaign. Details are authoritative in [Combat](03-combat-and-defence.md) and [Construction](04-construction-and-jobs.md).
 
-Illustrative progression: home survival → connected houses → library and garden → functioning workshop → stronger equipment and perimeter → district landmark → final reclamation objective. This is a dependency web, not a mandatory building order. Any location physically reached can be looted; operational benefits still require control and prerequisites.
+## Scope exclusions
 
-Town hall, a radio tower, or a final infestation could anchor the ending. The final victory condition is open. A successful ending should demonstrate a viable community rather than require exterminating an endlessly replenished zombie population.
+No multiplayer, procedural town generator, driveable vehicles, multiple storeys, day/night survival schedule, hunger deaths, permanent deaths, infection cures, relationship meters, betrayals, population recruitment, armour wear, loot rarity rolls, ammunition calibres, fuel deliveries, electrical wiring or distributed warehouse simulation. Building interiors are shallow open-front ground-floor rooms sharing the outdoor simulation, not separate maps.
 
-## Scope boundaries
+No new system may enter by implication from a building name. A waterworks unlocks one visible town improvement; it does not create pipe placement. A depot supplies salvage, not a transport fleet.
 
-The design does not require detailed sleep schedules, individual ration allocation, relationship meters, betrayal events, skill trees, procedural family histories, or a manufacturing chain for minor components. Food, injuries, ammunition, and materials support expedition choices with a small number of clear decisions.
+## How to build from this package
 
-Optional systems must earn their cost by improving action, reclamation, trusted autonomy, or visible growth. If a feature mainly creates management screens, defer it.
+Read this document and the [decision register](11-decisions-and-questions.md), then the owning system document. Use [release milestones](09-mvp-roadmap.md) in dependency order. Implement only the current milestone's effects in runtime JSON; future design entries stay in Markdown until their commands and validation exist. Acceptance scenarios specify required outcomes, not an instruction to mirror implementation in tests.
+
+| Owner | Contents |
+| --- | --- |
+| [02 World and territory](02-world-and-territory.md) | Claims, safe routes, boundaries, shallow interiors, losses |
+| [03 Combat and defence](03-combat-and-defence.md) | Attacks, orders, guards, casualty recovery |
+| [04 Construction and jobs](04-construction-and-jobs.md) | Transactions, queue, autonomy, repair and cancellation |
+| [05 Survivors and growth](05-survivors-and-growth.md) | Final cast, rescues, roles and dialogue constraints |
+| [06 Buildings and economy](06-buildings-and-economy.md) | Resources, production, reserves, recovery safeguards |
+| [07 Zombies and pressure](07-zombies-and-pressure.md) | Sensing, noise, migration scheduling and fairness |
+| [08 Experience](08-experience-and-presentation.md) | Tutorial, screens, art, audio, accessibility |
+| [09 Roadmap](09-mvp-roadmap.md) | Ordered implementation slices and release gates |
+| [10 Godot implementation](10-godot-implementation.md) | Authoritative state, schemas and engineering contracts |
+| [11 Decisions](11-decisions-and-questions.md) | Settled choices, rationale and tuning authority |
+| [12 Terminology](12-sources-and-terminology.md) | Sources, precedence and consistent vocabulary |
+| [13 Campaign and map](13-campaign-and-map.md) | Adjacency, objectives, finale and continuation |
+| [14 Zombie catalogue](14-zombie-catalogue.md) | Eight kinds, tells, attacks, counters and encounter budgets |
+| [15 Property catalogue](15-property-catalogue.md) | All 24 sites, unique rewards, improvements and encounters |
+| [16 Equipment and recipes](16-equipment-and-recipes.md) | Items, costs, prerequisites and production ledger |
+| [17 Acceptance and balance](17-acceptance-and-balance.md) | Reproducible scenarios, economy examples and playtest gates |
+
+[PROGRESS.md](PROGRESS.md) is the record of implementation and actual evidence. [TODO.md](TODO.md) is the immediate work queue. Neither a design decision nor the user's positive slice feedback proves a full campaign feature is implemented.

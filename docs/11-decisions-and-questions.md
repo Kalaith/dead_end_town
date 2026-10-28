@@ -1,116 +1,107 @@
-# Decisions and open questions
+# Decisions and tuning register
 
-## Confirmed direction
+Baseline: 28 October 2026. The user reports that the slice is working well and authorises one hour of documentation-only expansion, including making design decisions. The full game choices here are **design decisions made under that authority**, not additional user playtest results. Changes to these decisions must update their owning documents.
 
-| ID | Decision | Basis |
+## User foundations retained
+
+| ID | Decision | Origin |
 | --- | --- | --- |
-| D01 | Everything happens in one continuous world | User selected NEARBY |
-| D02 | Player and AI survivors can both build and repair | User selected hybrid construction |
-| D03 | Few named survivors with meaningful identities | User described them as few and symbolic |
-| D04 | Survivors cooperate; avoid interpersonal drama and colony-sim scope | Latest survivor-management direction |
-| D05 | High-level growth mainly through key items and equipment | Latest progression direction |
-| D06 | Rescue a D&D-fan librarian who may eventually wear full iron armour against a wave | User's Page/Paige example |
-| D07 | Document connected property reclamation, home defence, jobs, production, rewards, pressure, and Godot implementation | Current project request |
-| D08 | Keep gameplay information sparse; remove the persistent bottom panel and place details in pause | User feedback after basic combat/territory playtest, 28 October 2026 |
-| D09 | After taking both properties, barricade the street from both directions; dismantle temporary defences to reclaim materials as the front moves | User request after a further game playtest, 28 October 2026 |
-| D10 | Direct survivors individually, such as Mara gardening and Paige working at the workshop while the player guards | User request after recruiting Paige, 28 October 2026 |
-| D11 | Increase resident numbers, recurring raids and attack directions so each territory gain feels fought for | User feedback that zombies are not a threat, 28 October 2026 |
-| D15 | Implement physical neighbourhood integration, equipment choices, useful food and a clear slice objective, then return for user testing | User implementation request, 28 October 2026 |
-| D14 | All zombies wander when idle; nearby living people override wandering; basic player melee hits one zombie per swing | User feedback about stationary occupiers and overly strong attacks, 28 October 2026 |
-| D13 | Undefended buildings fall quickly to zombie occupation; physical security buys time | User feedback that zombies cannot retake territory, 28 October 2026 |
-| D12 | Remove map status/count/reward text and reveal Paige only when rescued | User requests less screen text and discovery without spoilers, 28 October 2026 |
+| D01 | One continuous world | User selected NEARBY |
+| D02 | Player and survivors both build and repair | Hybrid construction request |
+| D03 | Few named, meaningful survivors | Small symbolic cooperative community |
+| D04 | Cooperative tone, no relationship drama or colony micromanagement | Survivor-management direction |
+| D05 | Equipment and key discoveries drive growth | Simplification of earlier skill ideas |
+| D06 | Paige is a D&D enthusiast rescued from the library and can become an iron-armoured defender | User's librarian example |
+| D07 | Reclamation, defence, jobs, production, rewards and pressure belong in the game | Original design coverage |
+| D08 | Sparse live HUD; details in pause | Human slice feedback |
+| D09 | Build temporary road defences from both directions and reclaim materials as the front advances | Human slice feedback |
+| D10 | Individual assignments support different jobs simultaneously | Mara gardening/Paige workshop example |
+| D11 | Residents and recurring multidirectional attacks make territory worth fighting for | Human slice feedback |
+| D12 | Do not reveal unsearched rewards or Paige before rescue | Discovery/presentation feedback |
+| D13 | Unopposed zombies can physically take yards, including home | Territory-loss feedback |
+| D14 | Nearby people override zombie wandering; basic melee hits one target | Movement/combat clarification |
+| D15 | Physical integration, equipment, useful food and a slice objective | Completed implementation request |
+| D16 | An eastern house gives a gun with exactly six bullets through a survivor who never fights or guards | Ellis expansion request |
+| D17 | Another building unlocks survivor bullet crafting | Ammunition workshop request |
+| D18 | Expand documentation into a design usable for the remaining game and make choices along the way | Current request |
 
-The initial request produced this design package. The subsequent request explicitly authorises starting the game using another neighboring project as a template and adopting `../godot_toolkit`. The initial runtime and evidence are recorded in [PROGRESS.md](PROGRESS.md); the design is still broader than the implementation.
+## Full game decisions
 
-## Initial engineering defaults, 28 October 2026
-
-- Q01: installed Godot 4.7.2 standard editor, Compatibility, desktop first. Web and Windows exports remain to configure and verify.
-- Q02: original procedural top-down greybox at 1280x720, small authored four-property map. Final art and animation budget remain open.
-- Q03: keyboard/mouse first, WASD/arrows, mouse aim and bat attack. Remapping, controller and touch remain future work.
-- Q04: Esc/Tab pauses all authoritative simulation. No offline progression.
-- Q14: prototype defeat returns the protagonist home at full health and preserves the street, jobs and discoveries. Downed companions recover by resting at the safe home porch. This forgiving prototype rule still needs a playtest.
-
-These are implementation defaults chosen to begin the requested work, not additional confirmed creative commitments. The open-question table remains the broader review agenda.
-
-## Road defence engineering defaults, 28 October 2026
-
-The current map treats home/library and garden/garage as facing pairs. Each pair unlocks two authored road sockets. Build cost 8, work 8 seconds; removal 4 seconds; undamaged salvage 6, reduced proportionally by damage. These quantities and the facing-pair interpretation are implementation defaults, not separately user-selected balance. G assigns one survivor to a physical inside post. Structures remain vulnerable, and no safe-corridor claim is implied.
-
-## Pressure engineering defaults, 28 October 2026
-
-The first street now has 7 garden residents, 7 library residents and 10 garage residents. The first migration enters at 45 active seconds. A 12-second radio warning names its origins. The repeating sequence is east; west; north + east; south + west; all four edges. Initial waves have 4 zombies, adding 2 per claimed property beyond home, up to 10. Intervals start at 65 seconds and fall by 8 seconds per additional property (41 at full ownership, configured floor 40). These are tuning defaults in `data/street.json`, awaiting human balance review.
-
-Migrations enter at authored map edges and now wander randomly like residents. The earlier nearest-property destination and mandatory alley-to-road travel have been superseded by D14; local pursuit overrides idle wandering. The total living population is capped at 36; excess arrivals are skipped, rather than queued into a sudden backlog. Residents stay defeated. Save schema 5 preserves the wave clock, warning and travel phase; older saves keep claimed yards cleared and get 65 active seconds of preparation. Noise and a final reclamation objective remain future work. Territory loss is implemented below.
-
-## Territory loss default, 28 October 2026
-
-Eight active seconds of unopposed living zombie occupation inside a claimed yard causes loss, including home. A living player or survivor inside contests it; downed actors do not. Existing walls, gates and road defences protect by blocking entry, without granting an abstract immunity bonus. Warning messages and a draining porch bar precede loss. Previously looted sites can be cleared and reclaimed without repeated rewards, rescues or construction charges. Facilities require restored home connectivity. Save schema 6 preserves occupation and discovery separately from ownership, migrating schemas 1–5. The eight-second value is initial tuning awaiting human review.
-
-## Wandering and melee defaults, 28 October 2026
-
-All shamblers choose independent random headings every 0.8–2.8 active seconds and turn again if blocked. The nearest living player or survivor within 240 pixels takes priority immediately and supplies a local movement goal, even through an unfinished wander heading. Downed people are ignored. Zombies head directly toward that person, with physical collision and bump damage against blocking defences; they do not find routes around walls. When nobody is in range, idle wandering resumes. Entrances and occupation points are not fixed destinations. They bite on contact and damage gates/barricades they bump into. The seeded generator and heading clocks persist in schema 7, with migration from schemas 1–6. Basic melee hits the nearest legal zombie once per swing; surviving enemies in the same cone are untouched. These movement intervals are initial tuning; no future weapon or cleave upgrade is implemented.
-
-## Proposed defaults used across this package
-
-| ID | Working choice | Reason to start here |
-| --- | --- | --- |
-| P01 | Single-player top-down 2D, Godot 4, GDScript | Small enough to prototype continuous action and AI |
-| P02 | Authored street with four functional properties | Tests route and reward variety without full-town content |
-| P03 | Home-rooted connected graph plus physical edge/entrance data | Makes ownership and perimeter explainable |
-| P04 | Snapped construction sockets | Limits trapped actors and invalid layouts |
-| P05 | One active executor per work site initially | Simplifies correct shared progress and accounting |
-| P06 | Materials, Food, Ammunition first | Keeps economy small |
-| P07 | Incapacitation and recoverable territory setbacks | Supports experimentation with a small cast |
-| P08 | No offline progression | Prevents unseen losses while closed |
-| P09 | Fully active MVP street; tiers only after profiling | Preserves reliable defence before optimisation |
-| P10 | Paige is the working spelling | Matches current request and most prior development |
-
-These defaults allow useful prototyping without implying that the user approved every numerical or technical detail.
-
-## Open questions, ordered by when they matter
-
-| ID | Question | Resolve by | Recommended starting point / evidence |
+| ID | Settled choice | Rationale | Owner |
 | --- | --- | --- | --- |
-| Q01 | Exact Godot release, renderer, and desktop target? | M0 | Inspect local tooling and export requirements; pin one version |
-| Q02 | Tile scale, view angle, animation detail, asset budget? | M0 | Test a greybox street and one readable equipment silhouette |
-| Q03 | Keyboard/mouse only or controller from the start? | M0 | Pick primary input; preserve remapping and command accessibility |
-| Q04 | Can construction/orders pause action? | M1–M2 | Test full pause for planning against live action clarity |
-| Q05 | Stamina, dodge rules, friendly fire, weapon durability? | M1 | Add only what improves small melee encounters |
-| Q06 | Can control switch between survivors? | M2 | Fixed protagonist first; do not assume possession or multiplayer |
-| Q07 | Companion cap and guard coverage for a tiny roster? | M2–M3 | One companion first, then test two; routine home attacks must be manageable |
-| Q08 | What precisely turns a contested property into lost territory? | M4 | Implemented: eight seconds of unopposed physical occupation with a warning; tune after playtest |
-| Q09 | What qualifies a road corridor as safely connected? | M4 | Authored crossings with explicit access and exposed boundaries |
-| Q10 | Cancellation salvage, repair batch costs, reserve limits? | M5 | Check resource conservation and player understanding |
-| Q11 | Food upkeep, injuries, shortage consequences? | M6 | Forgiving warnings before severe penalties; no detailed need simulation |
-| Q12 | Final spelling Page or Paige and final roster? | Before character art | Paige working name; retain only distinct useful characters |
-| Q13 | Armour source, restoration prerequisites, equipment tradeoffs? | M6 | One cache and workshop recipe; test shield/armour readability |
-| Q14 | Protagonist defeat, rescue, and reload policy? | Before M7 | Choose recoverable checkpoint/rescue rules and verify persistence |
-| Q15 | Map-edge influx, horde frequency, eventual victory? | M7 / campaign design | Establish calm intervals and a sustainable ending |
-| Q16 | Full-game property count, playtime, final named-survivor count? | After M8 | Derive from content cost and slice playtests |
-| Q17 | Multiple floors, vehicles, day/night, permadeath, multiplayer? | Post-MVP | Defer unless the core loop proves a specific need |
+| F01 | One authored 24-property town; four districts of six | Enough distinct rewards without procedural content debt | 13, 15 |
+| F02 | 18 core sites and six optional sites; 2–3 hour core first-run target | Clear finish without compulsory map exhaustion | 13 |
+| F03 | Protagonist plus Mara, Paige, Ellis, June, Oliver, Theo, Nia | Seven identities with room for home defence and production | 05 |
+| F04 | Fixed protagonist; maximum two followers | Readable action and people left at home | 03, 05 |
+| F05 | Ellis never fights or guards; all others use compatible equipment | Preserve requested identity without class locks | 05, 16 |
+| F06 | Shambler, Brute, Runner, Screecher, Armoured, Crawler, Spitter, Breaker | Each changes a concrete combat/defence decision | 14 |
+| F07 | No stamina, invulnerable dodge, active block, friendly fire, durability or magazine reload | Keep direct accessible action | 03 |
+| F08 | Melee, firearm, body, off-hand/tool loadout slots | Unique ownership and legible equipment | 16 |
+| F09 | Materials, Food, Bullets, Shells, Medicine | Decisions without a minor-component chain | 06 |
+| F10 | Meal every 120 active seconds, one Food/person; shortage slows work to 60% | Less food supervision; no hunger damage | 06 |
+| F11 | No general carrying inventory or distributed warehouse simulation | Physical routes without hauling chores | 06 |
+| F12 | Shared stock usable by safely connected facilities; field projects explicitly prepaid | Define remote construction | 04, 06 |
+| F13 | Eight-second unopposed occupation loss; contested yards immediately pause work | Retain physical territory loss | 02 |
+| F14 | Ownership adjacency permits claim; safe connection permits production | Avoid requiring paid passages before claim | 02 |
+| F15 | Noise attracts existing actors/migrants; never creates an instant population | Quiet play alters routes without punishment spawning | 07 |
+| F16 | Bounded pressure scheduler, no endless per-claim interval reduction | Competent defence makes expansion manageable | 07 |
+| F17 | Shallow open-front ground-floor rooms, shared simulation | Interiors without instances or floor complexity | 02 |
+| F18 | No permadeath/infection; casualty pickup and emergency recovery | Preserve small cast and recoverability | 03 |
+| F19 | Equipment/key items cannot be permanently lost; rewards never repeat | Growth survives territory setbacks | 05, 16 |
+| F20 | Player-approved six-minute relief watch with three physical fronts | Ending demonstrates a functioning community | 13 |
+| F21 | Failed finale retains world progress and allows deliberate retry | Repair and prepare without campaign restart | 13 |
+| F22 | All planning/settings pause; no offline progression | Consistent clock boundary | 08, 10 |
+| F23 | Three manual slots, rotating autosave and chapter recovery saves | Protect longer campaigns | 10 |
+| F24 | Stylised original 2D, 32-pixel base tile, layered equipment | Bounded art pipeline and recognisable cast | 08 |
+| F25 | Desktop keyboard/mouse with remapping/accessibility | Finish a defined input/platform target | 08, 09 |
+| F26 | No installs, toolkit edits, deployment or publication in design work | Project boundary | 09, 10 |
 
-## Earlier ideas superseded or constrained
+Numbers are chosen starting values and may change through recorded tuning without reopening the creative foundations. An unmade asset or unperformed export test is implementation work, not an unresolved design decision.
 
-Earlier discussion suggested activity-trained skills, four ability tracks, experience-based confidence, and survivor-specific progression. The later user direction simplifies growth to key discoveries and equipment. Do not implement hidden grind or class prerequisites from the earlier brainstorm.
+## Earlier Q01–Q17 resolved
 
-Eight to twelve survivors, one controlled character plus three companions, museum armour, final town-hall reclamation, and distant simulation tiers were suggestions. They are reference possibilities rather than locked scope.
+| Earlier question | Resolution |
+| --- | --- |
+| Q01 engine/platform | Godot 4.7.2 Compatibility, desktop; already used by slice |
+| Q02 art/scale | F24; procedural greybox until visual-pipeline milestone |
+| Q03 input | Keyboard/mouse, remapping required; controller/touch deferred |
+| Q04 pause | F22; all planning paused |
+| Q05 combat extras | F07 |
+| Q06 switching | F04; fixed protagonist |
+| Q07 companion/home coverage | Two followers; up to five others for work and defence |
+| Q08 property loss | F13 |
+| Q09 safe corridor | Held endpoints, actual route, required protection, no local hostile |
+| Q10 cancellation/reserves | Formula/defaults in 04 |
+| Q11 food/injuries | F10/F18 |
+| Q12 names/roster | Paige final spelling; F03; no duplicate grower or Evelyn/Lena |
+| Q13 armour | Existing garage cache stays; museum gives another specialised set |
+| Q14 defeat/load | F18/F23 |
+| Q15 influx/victory | F15/F16/F20 |
+| Q16 size | F01/F02/F03 |
+| Q17 large systems | Exclusions in 01; no hidden dependency |
 
-## Maintaining the package
+## Slice compatibility and supersession
 
-When a choice is resolved, record the date, rationale, and affected documents here, then update the owning system document. Avoid leaving contradictory rules in a later appendix. Record implementation and test results separately once work begins; a design statement is not evidence that a feature works.
+The runtime currently has six properties, four people including the protagonist, two enemy kinds, 60-second meals, one pistol, one home save, schema 12 and the original four-yard watch. Baseline checked against current JSON and simulation sources for this documentation pass. Historical evidence stays in [PROGRESS.md](PROGRESS.md).
 
+This design does not change the game today. Future milestones deliberately change meals, pressure, recovery, safe production requirements, capabilities and saves. Existing IDs `home`, `garden`, `library`, `garage`, `residence`, `munitions`, `shambler`, `brute` stay stable. Old saves retain discoveries, unique items and earned slice completion; new campaign objectives start unearned.
 
-## Expanded slice defaults, 28 October 2026
+The garage iron, shield and sword stay there. Moving them exclusively to the museum would erase the slice's defining progression. The future museum supplies distinct additional items.
 
-The requested four systems are implemented for the current authored street. Physical integration uses paid, fenced yard passages and explicitly protected street crossings; productive workers use safe routes. Any actor can equip the unique recovered crowbar, sword, iron and shield at the connected workshop. Shared meals cost one food per person every 60 active seconds; shortage reduces work to 60%, with no hunger injury. Recovery costs two food. Three finite timber caches provide ten materials each, including for migrated runs.
+This revision replaces conflicting generations of prototype proposals with one full game contract. Runtime source, rather than historical copied numbers, owns what the slice does today.
 
-The slice objective is **A street worth keeping**: all four clear, held yards physically connected to home, four food actually harvested, restored equipment deployed, everyone standing and one meal reserved, then 60 active seconds of neighbourhood watch started at home. Setbacks restart the watch; completion remains earned during continued play. This is an implementation default for testing, not the final campaign ending. Values and encounter feel await user feedback. Schema 11 preserves the new states and migrates previous saves.
+## Tuning and change control
 
+Implementers may adjust numerical balance within a milestone gate, recording values, reason and evidence. Automated fixtures do not establish human balance acceptance. Content cuts, new resource systems or a different ending require a deliberate design revision.
 
-## Firearm and ammunition expansion, 28 October 2026
+| Area | Initial target | Evidence before locking |
+| --- | --- | --- |
+| Food/work | Two growers sustain eight people with margin | 15-minute full-roster run including interruptions |
+| Defence | Two equipped defenders hold routine approaches | Three observed off-camera trials, inspect routes and health |
+| Freedom | 3–5 minutes away during stable midgame | Human session; count forced returns |
+| Enemy readability | Tell recognised by second encounter | Human explanation; no unavoidable first hit |
+| Economy | Core path plus repairs affordable without optional loot | Ledger and command-driven scenario in 17 |
+| Duration | 2–3 core hours without arbitrary waiting | Complete first-time human run; cut padding if too long |
+| Performance | 60 fps target with 96 living enemies/full town | Measure on recorded reference machine |
 
-User direction: add two buildings; one rescues a survivor who gives the player a gun with exactly six bullets, never fights zombies and cannot guard. The other unlocks survivor bullet crafting.
-
-Implementation defaults: east house and ammunition workshop extend the street east, with Ellis as the noncombatant. Right mouse fires a 90-damage, 620-pixel single-target ray every 0.65 seconds; fences, buildings and closed gates stop it, low road barriers do not. No reload magazine, sound or noise response yet. Melee remains available without ammunition. Ellis refuses personal guard/engage assignments; group Home sends Ellis to shelter and group Engage holds position. Nearby danger triggers shelter rather than attacks, including during work. Weapon fitting is unavailable to Ellis; protective equipment remains available.
-
-Claiming the workshop unlocks an F assignment for any survivor. A worker must physically reach its porch, the workshop must have ownership connectivity to home and a clear local yard, and each shared 15-second batch reserves two materials once for six bullets. Multiple workers do not multiply output. Hunger slows work; interruptions preserve progress and reserved materials. These costs and combat values live in validated firearm content and await human balance review. New fenced passages connect both eastern yards to the previous block. The original four-property watch objective remains available; the two new yards are additional progression. Population cap rises from 36 to 48 for the larger map and to accommodate living residents added to an old save near its former cap. Schema 12 preserves gun/bullets/crafting and migrates earlier streets with the new sites unclaimed, leaving earned completion intact.
+No foundational creative question blocks the next milestone. Balance, assets, reference hardware and release validation remain work to perform.

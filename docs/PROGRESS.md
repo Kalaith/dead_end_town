@@ -296,3 +296,25 @@ Evidence:
 - All 63 project/tool scripts load; Godot 4.7.2 headless editor/import completes without errors. File and function size limits and git diff whitespace checks pass.
 - Ran Run.ps1 with capture_firearms.gd at 1280x720 through the toolkit runner. The scripted real mouse-input path fires right click and asserts damage and ammo; the connected F selector issues the crafting order and asserts Ellis's disabled guard/engage choices. Inspected east_house_rescue.png, pistol_shot.png, bullet_workshop.png and bullet_orders.png. These are staged windowed input/UI/visual checks, not human playtesting or full-run balance acceptance.
 - No toolkit changes, installations, exports, deployment or publication. Human combat feel, full expanded-street difficulty and save compatibility with a real user run remain unverified beyond the automated fixtures.
+
+
+## 28 October 2026: full game design expansion (documentation only)
+
+User direction: the slice is working well; spend one hour expanding game design documentation into a build reference, including more zombies, buildings and survivors, and make design decisions along the way. This is positive user feedback about the slice, not evidence that the full game exists.
+
+Design work:
+- Replaced the earlier open-ended proposals with a coherent full game specification: 24 authored properties in four districts, 18 core/six optional sites, seven named survivors plus the protagonist, eight zombie kinds and a finite relief-signal ending. Target core first run is 2–3 hours; optional exploration adds time without mandatory padding.
+- Kept the original six property IDs, Mara at home, Paige's garage armour route, Ellis's no-combat/no-guard capability, pistol/six-bullet gift, bullet-workshop unlock and optional original slice watch. Defined future migration boundaries without claiming a save schema change.
+- Added complete campaign/topology, zombie, property, equipment/recipe and acceptance/balance catalogues (13–17). Each new zombie has a tell, counter, attack phases, limits and persistence requirements; every property has finite rewards, encounter composition and purpose.
+- Resolved roster, food/resources, direct shared-stock logistics, safe production, jobs/refunds/reserves, recovery, noise, pressure templates, interiors, art/input/accessibility and ending/retry/continuation. Roadmap G01–G10 sequences implementation and evidence gates.
+- Updated the reading map and immediate work queue. Current runtime behaviour is still the six-property slice described in README; no game code/data, original art, captures, toolkit or project settings changed.
+
+Documentation verification is recorded in the follow-up audit entry. No Godot parse/simulation/editor runs, visual captures, human playtest, audio, performance, export, deployment or publication is claimed for this documentation change. Existing game evidence remains in the preceding implementation entries.
+
+
+### Documentation audit: initial complete specification
+
+- Read-only checks pass for local Markdown links, table column counts, 24 property IDs, 18 core sites, 12 map columns, a continuous core northern route, 34 parcel links and the 89-resident manifest.
+- Recomputed core finite supply: 272 searched Materials + 102 first-claim + 30 timber + 18 starting = 422. The worked preparation plan spends 361 and leaves 61, including the required 12-Material launch reserve. Core finite Food/Bullets/Shells/Medicine are 61/48/8/22 before starting stock/production.
+- All tracked/unignored GDScript, scene, JSON and Markdown files remain below 800 lines; measured largest file is world.gd at 386. Largest detected top-level function span is 83 lines. Markdown tables and git diff whitespace checks pass.
+- Review corrected the Market-stage subtotal to 20 Materials and removed a provisional optional-building route dependency. No runtime verification was run for these documentation changes.

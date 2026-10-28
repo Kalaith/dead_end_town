@@ -70,18 +70,23 @@ You can also open `project.godot` in the editor. Headless checks and the staged 
 
 | Document | Purpose |
 | --- | --- |
-| [Game design](docs/01-game-design.md) | Vision, pillars, core loop, scope |
+| [Game design](docs/01-game-design.md) | Full game specification and reading map; start here |
 | [World and territory](docs/02-world-and-territory.md) | Claims, connections, loss and recovery |
 | [Combat and home defence](docs/03-combat-and-defence.md) | Player actions, squad orders, defence |
 | [Construction and jobs](docs/04-construction-and-jobs.md) | Shared work, jobs, interruptions |
-| [Survivors and growth](docs/05-survivors-and-growth.md) | Cast, equipment, Paige |
+| [Survivors and growth](docs/05-survivors-and-growth.md) | Seven named survivors, rescue contracts and roles |
 | [Buildings and economy](docs/06-buildings-and-economy.md) | Rewards, unlock chains, production |
 | [Zombies and pressure](docs/07-zombies-and-pressure.md) | Wandering, pursuit, raids |
 | [Experience and presentation](docs/08-experience-and-presentation.md) | Opening, interface, accessibility |
-| [MVP roadmap](docs/09-mvp-roadmap.md) | Milestones, playtest route, deferred scope |
+| [Release roadmap](docs/09-mvp-roadmap.md) | Ordered slices from the working street to the full game |
 | [Godot implementation](docs/10-godot-implementation.md) | Architecture, data, persistence |
-| [Decisions and questions](docs/11-decisions-and-questions.md) | Confirmed direction and open choices |
+| [Decisions](docs/11-decisions-and-questions.md) | User foundations, resolved full game choices and tuning gates |
 | [Sources and terminology](docs/12-sources-and-terminology.md) | Sources, precedence, glossary |
+| [Campaign and map](docs/13-campaign-and-map.md) | 24-property topology, core path, finite relief-signal ending |
+| [Zombie catalogue](docs/14-zombie-catalogue.md) | Eight kinds, tells, attacks, counters and composition limits |
+| [Property catalogue](docs/15-property-catalogue.md) | Every building, reward, encounter and improvement |
+| [Equipment and recipes](docs/16-equipment-and-recipes.md) | Unique items, costs, work and prerequisites |
+| [Acceptance and balance](docs/17-acceptance-and-balance.md) | Funding/food examples, scenarios and human playtest gates |
 | [Progress](docs/PROGRESS.md) · [TODO](docs/TODO.md) | What is built and verified, and what is next |
 
-Read the game design first, then the decisions register. Numbers in the design docs are proposed defaults unless marked confirmed; the design documents describe intended scope, while `PROGRESS.md` records what exists.
+The full game design targets 24 properties, eight zombie kinds and seven survivors plus the player, with a core campaign and a finite relief-signal ending. It is documentation for future implementation; the runtime described above remains the six-property slice. Design numbers are chosen starting values with validation gates, while `PROGRESS.md` records what exists and was actually checked.

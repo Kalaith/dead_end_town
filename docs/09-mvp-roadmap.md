@@ -1,66 +1,60 @@
-# MVP roadmap and validation
+# From working slice to full game
 
-## Current state
+The original M0–M8 framework is historical. A playable six-site slice now exists; the user reports it works well. The full campaign is designed here, not implemented by this pass. Each G milestone below is a future buildable slice with its own checks, visual inspection and immediate commit under AGENTS.md. Do not batch the whole campaign into one implementation change.
 
-The four-property greybox now includes physical yard passages and protected crossings, individual work orders, transferable recovered weapons/protection, shared meals and food-funded recovery, recurring aimless arrivals, occupation/loss/reclaiming, and explicit save/load. The neighbourhood-watch objective provides a slice finish: connect and supply the four yards, deploy restored gear, then hold readiness for 60 active seconds. This is implemented scope, not acceptance of every roadmap proposal below. See [PROGRESS.md](PROGRESS.md) for evidence and limits. The user has playtested earlier combat/territory iterations; these new systems await another human session.
+## Baseline to preserve
 
-## MVP content budget: proposed
+Six property IDs, protagonist/Mara/Paige/Ellis, Brute/Shambler, physical passages/road barriers, individual roles, shared project work, meals/recovery, unique equipment, pistol/bullets, production interruptions, original watch, schema-12 saves. Current sources and the latest [PROGRESS.md](PROGRESS.md) entries own exact implementation detail.
 
-One continuous small street with four functional properties: home, garden house, library, garage. Include connecting streets and a test boundary approach route. Use a protagonist, one starting companion, and Paige; generic debug actors can exercise additional jobs without expanding the shipped roster. Allow up to two AI expedition companions after one is proven.
+Preserve old discoveries and earned watch completion. A positive slice report does not validate future content, audio, exports or every recovery edge case. Do not revise the shared toolkit or install anything as part of game expansion.
 
-One basic zombie, melee combat, one firearm, a shield, basic and heavy protection, barricades, gate, guard post, garden, workshop, and three resources. Use one armour cache to demonstrate the long-term equipment idea without building a full museum. Target a repeatable 20–30 minute slice, with the armour setup optionally accelerated for demonstrations.
+## Ordered delivery gates
 
-## Milestones
+| Milestone | Buildable scope | Dependencies | Done when |
+| --- | --- | --- | --- |
+| G01: reliable common orders | General work records, idempotent bundles, blocked reasons, role resumption, reserves | Current slice | Handoff/cancel/loss/reload conservation scenarios pass; existing slice still plays |
+| G02: campaign skeleton | Full 24-site geometry, 34 links, shared road lines, core route, known map | G01 | All sites reachable; no optional dependency; migrate original six without changed rewards |
+| G03: sustainable Market Row | June/Oliver, clinic/greenhouse, full food rates, recovery salvage | G02 | Six-person loop sustains food; no material/medical softlock; people work physically |
+| G04: mobile/attention threats | Runner, Screecher, noise and campaign migration scheduler | G03 | Telegraph/counter/reload checks; quiet/loud encounter visibly differs; home time remains useful |
+| G05: Civic choices | Theo, station/radio/hall, shotgun, riot gear, Armoured and Crawler | G04 | Flank/plate/shotgun rules, forecasts, two-follower limit and route choices work |
+| G06: late-game pressure | Nia, salvage/pump/power, Spitter, Breaker, guard alternate positions | G05 | Siege tell can be evaded; pool displaces guard; eight-person economy survives interruptions |
+| G07: relief ending | Relay/assembly, three posts, readiness, finite waves, failure/retry/continue | G06 | Full core campaign completes; no skipped arrivals or duplicate completion on reload |
+| G08: optional properties | Grocer, allotment, diner, firehall, museum, school and extra gear | G07 | Optional sites add routes/equipment and remain unnecessary to win |
+| G09: production presentation | Modular art, interiors, layered gear, audio, remapping, accessibility | Art pilot can precede G03; final content after G08 | All states/tells/screens inspected with real input at fixed scale |
+| G10: release candidate | Save slots/recovery, full balance/performance pass, desktop packaging | G09 | Acceptance in 17, real complete human run and platform checks recorded |
 
-| Stage | Deliverable | Acceptance gate |
-| --- | --- | --- |
-| M0: foundation | Pin engine/platform, greybox street, controls, camera | Traversal and scale feel readable; engine project opens cleanly |
-| M1: action | Player melee, basic zombie, damage, stagger | Small fights are readable and repeatable; no collision traps |
-| M2: squad | One companion, Follow/Hold/Engage/Return home | Obeys leashes, handles blocked routes, holds a doorway |
-| M3: home | Physical barriers, gate, guard, local alerts | Guard holds a routine approach while player is elsewhere |
-| M4: reclamation | Clear/claim distinction, graph, connected perimeter | Two properties integrate correctly; internal fence remains physical |
-| M5: hybrid work | Blueprint, resource reservations, interruption/resume | Player-to-AI handoff preserves progress and charges once |
-| M6: progression | Garden, garage restoration, Paige rescue, equipment | Discoveries create usable capabilities and visible change |
-| M7: continuity | Save/load, defeat recovery, controlled noise/migration | No lost/duplicated items, workers, jobs, or zombie groups after reload |
-| M8: slice review | Opening, feedback, performance pass | New players understand the loop and choose another property voluntarily |
+G02 includes greybox shells for optional sites, but their loot/equipment/facilities arrive at G08. Until then, they are explicitly unavailable content in development builds and cannot hold hidden mandatory rewards. G07 must be winnable without G08. No ship milestone can leave unimplemented optional promises in player-facing UI.
 
-Dependencies matter: do not optimise a distant combat simulator before physical defence works. Save schemas should be considered from M0, with integrated round-trip checks before content expansion.
+## Recommended implementation slices
 
-## Required scenario checks
+G01: extract order ledger → migrate existing constructions → repeating production/targets → reserves/board → preserve legacy save coverage. Do not simultaneously replace all combat dictionaries and UI.
 
-1. **Away from home:** leave one guard with a viable barricade and observe a real approach. The guard attacks, workers shelter, an alert reports changes, and ordinary work resumes.
-2. **Breach recovery:** deliberately weaken the gate. Verify physical entry, retreat, paused production, and a practical recovery route.
-3. **Connection edge cases:** claim an L-shaped group, leave an infected hole, block a corridor, and restore it. Exposed edges and work eligibility must match the layout.
-4. **Construction accounting:** start personally, hand off, interrupt, cancel, and reload at each phase. No duplicate costs, outputs, or reservations.
-5. **Progression:** rescue Paige, recover tools and armour, restore equipment, and equip it. No XP requirement or duplicate unique reward.
-6. **Noise:** compare quiet melee and gunfire from the same initial world state. Attraction follows positions and events.
-7. **Persistence:** save during work, combat, and a disconnected route. Restore states and reconcile routes before resuming simulation.
-8. **Blocked autonomy:** close a route, remove a target, or incapacitate a worker. The order reports a reason and does not stall all jobs.
+G02: new map/parcel definitions → shared-line ownership/migration → north-chain passages → protected crossings/alternate routes → fog/known overview. Prove two adjacent shared lines before extending all twelve columns.
 
-Use automated checks for graph rules, material conservation, unique item ownership, job transitions, and save migrations. Use in-engine playtests for combat feel, path following, readable alerts, and trust in defence. An import or parse check is not a gameplay test.
+G03: general rescue actor records → June/clinic → casualty carrying/recovery → Oliver/greenhouse → meal retune and safeguard. Keep Ellis capability checks as regression coverage in every order change.
 
-## Playtest observations
+G04–G06: introduce one enemy mechanic at a time with its tell/counter, then its first encounter, then routine-template eligibility. Make guard displacement before deploying Spitters to defended routes. Keep raw statistics in content and behaviour in simulation.
 
-Record time spent away before a forced return, alert frequency, avoidable AI casualties, blocked-job duration, resource shortages, and whether the next property choice feels different. Ask the player to explain a new unlock in their own words. These observations guide tuning; numerical success thresholds should be set after a baseline session.
+G07: readiness query → start transaction → fixed attempt events → pause/load → outage grace/failure → emergency recovery → success/ending/continue. Verify failure as carefully as victory.
 
-## Deferred until the loop works
+G09: art/audio can progress as independent asset work, but system acceptance uses original procedural art until the art pilot passes. Do not delay a working gameplay commit for unfinished cosmetic assets.
 
-Full town generation, multiplayer, vehicles, multi-floor combat, freeform construction, advanced logistics, day/night threats, special zombie families, permanent death, deep survival needs, and large rosters. Distant simulation tiers are conditional on profiling, not a prerequisite for a four-property street.
+## Save and migration strategy
 
-## Production workstreams
+Add only fields needed by the current slice. Do not reserve a guessed “final schema”. Every schema change migrates from supported historical saves and keeps a fixture for original schema 12 plus the immediate predecessor. Preserve existing lower-version migration coverage. Unknown future versions fail clearly.
 
-Design: resolve the next milestone's open questions and maintain the building reward table. Engineering: protect state ownership, navigation, and accounting invariants. Art: establish tile scale and one survivor/equipment pipeline before producing the cast. Audio: make attacks, work, and warnings distinct. QA: maintain reproducible world seeds or authored scenarios and label what was actually tested.
+Long-campaign manual/auto slots can arrive before G10 once the save owner is ready. Introduce recovery saves before human full-campaign testing, not after someone loses a two-hour run. Migration writes a new backup only after validation; it never replaces the user's only valid old file on a failed load.
 
-After M8, decide whether to expand the map, improve combat, or cut systems based on observed play. Reaching the milestone means the promise is demonstrated, not that a commercial release is ready.
+## Review gates and scope control
 
+At each major milestone run parse, simulation scenarios and headless editor/import using installed Godot. Use windowed captures for changed visuals/input and inspect them. Check file/function sizes and whitespace. No test frameworks/addons or `tests/` directory.
 
-## Current playtest handoff, 28 October 2026
+Record implementation, automated evidence, staged visual evidence, human observations and remaining uncertainty separately in PROGRESS. A scripted perfect-economy run proves accounting, not a fair campaign. Each working slice is committed immediately; finish with clean Git status. No pushing/publication unless requested.
 
-Run from source with Run.ps1. A fresh street best demonstrates the discovery sequence; schema 1–10 saves also migrate to 11. No export is needed.
+If scope or pacing misses the target, first shorten travel/work repetition, reduce redundant waves and cut optional facility variations. Preserve all seven named identities, the core route, meaningful counters, trusted home defence and the finite ending. Do not fill time with slower crafting or larger hit-point numbers. Reassess the 2–3-hour core target after a complete first-time run.
 
-- Reclaim a yard, collect its timber with Q, approve and build a side passage with E/R, then open its gate. Check that people use it and closing it reports paused production when no alternate route exists.
-- Restore the workshop and choose loadouts with F while both people are at the bench. Compare the fast bat, slower crowbar, two-target sword, iron mobility penalty and independent frontal shield.
-- Leave someone tending the connected garden. Check whether meals and two-food recovery give the garden a useful role without forcing constant management.
-- Follow the paused next objective, start the neighbourhood watch at home, and work toward the slice-complete screen. Losing a yard, route, person or food reserve interrupts the watch; recovery should make restarting practical.
+## Release acceptance boundary
 
-Report any blocked routes, unclear prerequisites, material shortages, frequent forced returns, or equipment choice that feels obviously dominant. Timing and difficulty are tuning questions for this playtest. Firearms, audio, interiors, full-campaign content and deferred systems remain outside this handoff.
+Required: no blocking progression/corrupt save issues; unique ownership conserved; valid recovery from home loss and full defeat; all eight tells legible; 18-core path funded; meals manageable; routine defence trusted; final attempt reloadable in every phase; complete ending/continuation; remapped keyboard/mouse and enlarged UI; measured full-town frame time; verified intended local desktop build.
+
+Reference device and supported desktop OS list are recorded during packaging based on real available hardware, not inferred from the development editor. Web, gamepad, touch, storefront publishing and deployment remain outside this release target unless separately requested.

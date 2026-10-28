@@ -1,81 +1,72 @@
-# Hybrid construction, survivor jobs, and work orders
+# Hybrid construction and work orders
 
-## One shared work site
+Full game contract. Player and AI contribute to the same paid site. [16](16-equipment-and-recipes.md) is the numerical recipe owner; [06](06-buildings-and-economy.md) owns stocks and reserves. Current slice orders are narrower than the general board designed here.
 
-The player places a blueprint at a valid socket. A work order tracks material commitments and completed labour. The player can work directly, leave at partial progress, and let a survivor finish. Switching workers never resets progress or charges the cost again.
+## Placement and approval
 
-Illustrative fence upgrade: four Materials and two Metal, with the first slice using Materials alone. At 60% labour the player leaves; the assigned builder completes the remainder. This is one project, not separate player and AI crafting systems.
+Every project occupies an authored compatible socket: parcel passage, road boundary, alley mouth, gate upgrade, garden bed or existing facility fixture. No arbitrary walls/houses or terrain editing. Preview footprint, protected side, stand point, completed collision, cost, work duration, unlock and cancellation return.
 
-## Placement rules
+Approval requires a standing player in interaction range, target held and locally clear, socket compatible, known recipe, sufficient available inputs and no conflicting order. Confirm E once; hold R works. F opens the paused board and can approve an already discovered socket only when the player is at it. New expansion, demolition, facility restoration and upgrades always require explicit player approval.
 
-- Snap barricades, gates, and reinforcements to authored edges or openings.
-- Place garden beds, storage, and workbenches in designated property slots.
-- Require ownership, safe access, compatible ground, and an unlocked recipe.
-- Reject blocked exits and unreachable work positions; preview the reason.
-- Revalidate on completion because another structure or a breach may have changed access.
+Inputs come from shared home stock. A disconnected but held site permits a **field project** only while the player is present: show “Commit field supplies” and move the full bundle from stock to that site atomically. This is an explicit logistics abstraction consistent with direct search deposits; no backpack or repeated trip home. Survivors cannot remotely approve field projects. They may finish already-paid work if the player leads them there and the local work position is safe.
 
-Blueprints have no completed collision benefit. A mid-build barrier should not trap a worker when its collision activates. Reserve a valid stand position and check exits at the final build step.
+Routine productive recipes never use field approval and require safe home connection. This permits first passages/defences without a claim/connection cycle, while preventing new remote spending by an isolated worker. Existing prepaid projects migrate without another charge.
 
-## Current road-barricade contract, 28 October 2026
+## State and accounting
 
-Four authored sockets implement temporary defences for the two facing-property pairs. E approves an 8-material commitment; R or either survivor assigned through F contributes one shared 8-second work rate. Blueprints have no collision. Completion waits if a living actor occupies the footprint. Nearby threats pause construction, repair and removal. Assigned survivors route to the inside work position and shelters when threatened.
+States: `approved`, `working`, `blocked`, `completed`, `cancelled`, `destroyed`. Approved inputs leave available stock immediately and enter the unique order's committed bundle. There is no second debit when a worker arrives. Reservation means this committed bundle; do not maintain a second spendable reservation ledger.
 
-E on a built barrier approves removal, with current salvage displayed before work. R/F contributes 4 seconds while collision stays active; completion refunds once and opens the road. A full-health barrier returns 6 materials; damaged salvage is `floor(6 * health / 180)`. Cancelling removal keeps the barrier and pays nothing. Cancelling a blueprint before work returns all 8; later cancellation returns `floor(8 * lerp(1, 0.75, labour_fraction))`. A breached barrier pays no salvage.
+Order fields: stable ID, recipe/socket/target IDs, phase, input bundle, work required/completed, assigned role/person, executor lease, stand position, priority, blocked reason, completion/output flags and salvage paid. Blueprint collision is absent. Partial work never adds partial health protection.
 
-Repairs commit 3 materials once for a fill toward 180 health at 24 health/second. Interruption/reload preserves that commitment. An explicit removal order discards any remaining repair commitment; it never refunds it separately. Road-work completion returns only its assigned workers home. G is a separate guard assignment, preferring a survivor without an existing road post; repairs preserve the guard assignment. Schema 4 stores all phases, labour, health, repair commitments, individual work destinations and guard anchors. These values are initial balance defaults.
+One effective work rate per site, regardless of workers. Player takeover temporarily releases the AI executor, preserving the actor's primary role; leaving releases it back. Multiple sites progress concurrently. A downed/sheltering/reassigned executor loses its lease but does not lose the bundle. Stable priority ties use approval sequence then order ID.
 
-## Construction families
+Before completion revalidate ownership, local safety, socket, route/field eligibility and occupied footprint. If collision would trap a living/downed/carried actor, wait with “Clear the work area”. Do not push actors through walls. Apply structure/output exactly once, mark order complete and only then expose it to UI. Save/load at the completion tick cannot repeat the grant.
 
-Fortifications delay and channel enemies: barricades, gates, reinforced entrances, guard posts. Property improvements support ordinary homes: gardens, storage, basic workbenches, accommodation. Facility upgrades depend on suitable captured buildings: a working garage, medical room, or greenhouse.
+## Cancellation, removal and repair
 
-Whole new houses, terrain sculpting, and unrestricted walls are deferred. Restoring existing places keeps building rewards valuable and reduces navigation risk.
+Before any work, cancelling an unbuilt blueprint returns its entire bundle. After work, construction/restoration returns `floor(input_count × (1 - 0.25 × work_fraction))` for each fungible input; unique prerequisite items were never consumed and remain discovered. The completed object cannot also pay this refund. For production batches, cancellation returns `floor(input_count × (1 - work_fraction))`; partial medical treatment never refunds consumed inputs. Show exact return before confirmation.
 
-## Resource and labour contract
+Demolition/removal is a separate explicit order. Collision remains until its final tick. Undamaged removable structures return 75% of build Materials rounded down; multiply by current health/max health before rounding if damaged. Reinforcement cost is included only if its recipe is explicitly salvageable. Facilities cannot be dismantled after restoration; they can be repaired or paused, avoiding accidental destruction of mandatory discoveries.
 
-Proposed MVP: reserve the full material cost from available home stock at job creation; deduct it into the work site's committed bundle when construction begins. Available stock excludes reservations. Only one labour executor holds the site at a time in the first implementation; player takeover releases the AI assignment while retaining the bundle and progress.
+Breached structures retain socket identity and become rebuildable; their destruction pays no salvage. Destroyed blueprints pay no automatic refund. Cancelled/removal/destroyed paths share one finalization guard, so no double return. Removing a structure cancels any attached repair order without a second refund.
 
-Cancellation before work begins releases the reservation. Cancellation after work begins returns unused committed materials; consumed materials follow the recipe's salvage rule, shown before cancellation. A destroyed work site cannot refund the same bundle again. Repairs use bounded repair batches so interrupted work cannot repeatedly consume a full repair cost.
+Repair is a bounded committed batch: 3 Materials restores up to 120 health at 24 health/second. A damaged facility uses 4 Materials for up to 200 health at 20/second. Stop at max; unused healing capacity is lost, not held for future damage. Pay once, retain remaining capacity/progress through interruption, and never bill the same repair again after load. A breached gate needs the gate-rebuild recipe rather than a repair to an absent collider.
 
-Visible collection and carrying are simple animations tied to reachable storage and work routes. They must not create another inventory ledger. Later multi-worker cooperation can share progress using explicit worker slots, but is unnecessary for the first proof.
+## Job policy
 
-## Survivor assignments
+Each survivor has a primary role and optional selected site. Guard/follower assignments are exclusive; they do not compete with general work. The player approves at most eight pending non-production projects at a time; completed and blocked history does not count after acknowledged. No general infinite work queue.
 
-| Assignment | Main work | Safe fallback |
+| Priority | Eligible task | Limit |
 | --- | --- | --- |
-| Guard | Hold post and respond locally | Nearby maintenance within post coverage |
-| Builder | Build, repair, carry own materials | Safe salvage or idle at home |
-| Grower | Tend and harvest | General work in safe territory |
-| Mechanic | Restore equipment and operate workshop | General repair |
-| Medic | Treatment at an operational site | Indoor general work |
-| General worker | Eligible safe tasks by priority | Shelter or rest |
-| Expedition | Follow squad commands | No autonomous settlement job selection |
+| 1 | Immediate shelter/casualty transport | Safety first; no unsafe rescue charge |
+| 2 | Approved critical repair at a defended line below 40% | Work from safe side only |
+| 3 | Player-prioritised approved project | One flagged priority project per site |
+| 4 | Role's approved construction/restoration or batch | Match prerequisites and physical route |
+| 5 | Routine role production/maintenance | Stock cap/reserve applies |
+| 6 | General safe work or idle | Never scavenge infected space autonomously |
 
-Do not require a separate hauler. Scavenging is permitted only at explicitly safe sites inside the connected perimeter. Clearing a distant house does not authorise an unescorted worker expedition.
+Builder: approved construction then permitted repairs. Grower: selected garden/greenhouse/allotment. Mechanic: approved equipment, then bullet/shell production if selected. Medic: queued present patients then selected medicine batches. General worker: critical safe repair, priority project, food below target, explicit production order, then idle. No need for a separate hauler.
 
-## Implemented individual orders, 28 October 2026
+The policy does not commandeer someone already on a different explicit role. A grower keeps tending while another person restores the clinic. Completing one project releases its lease, retains primary role and looks for the next permitted task. One-off orders can explicitly return to previous role.
 
-F opens paused orders with one selector per recruited survivor. Garden and Workshop are persistent roles: gardeners build approved beds and then tend food; workshop workers complete approved bench/armour work and wait at the bench. Follow, Hold, Engage and Home guard can also be assigned individually. Existing road work and guard posts appear when relevant. An unavailable project is disabled and explains its prerequisite through its tooltip. Downed survivors cannot be reassigned until recovered.
+## Repeating production and stock targets
 
-Roles do not reserve or spend materials: project approval remains the E transaction. Everyone can take either role, two sites can progress concurrently, and multiple people at one site still contribute one combined work rate. Partial progress survives switching workers. Completing a workshop job never clears the garden assignment. Garden production now requires a present gardener or player tending; an untended garden keeps its harvest clock but does not advance it. These are current prototype rules, separate from the broader proposed job queue below.
+Production has three modes: one batch, repeat to target, stopped. Default bullet target 24, shell target 8, medicine target 8; food target is two meals plus four recovery Food. Check available output plus committed pending output before starting another batch; otherwise multiple stations can overshoot. Finish a prepaid batch even if the target is lowered; do not erase its work. All repeat modes respect the reserves in 06.
 
-Danger suspends the affected site's work and survivors retain their assignments while sheltering, then return when it clears. Gates remain physical and blocked routes report their reason. Individual assignments leave other people untouched; the explicit whole-team shortcuts 1-4 override all jobs. Schema-1/2/3 saves migrate old work targets into the appropriate actor records. Legacy one-off Build orders finish and return home; newly chosen roles remain stationed.
+No instant automation of a new recipe on discovery. First use requires choosing the batch/target. Afterwards the role resumes repeat-to-target automatically after safety or supply interruptions. Lowering a reserve cannot spend anything by itself; a valid recipe still must start.
 
-## Job lifecycle
+## Danger, route loss and resumption
 
-`Available → Reserved → In progress → Completed`
+Local danger suspends labour immediately and invokes the actor's shelter policy. Pause the site, not every worker in town. Preserve completed work and input ownership. Route loss blocks a productive facility and future worker travel; a nearby player can finish a previously approved field construction project while locally safe. New batch production remains blocked until safe connectivity returns.
 
-Additional states: Interrupted, Blocked, Cancelled. Worker reservation is separate from material reservation. Store the worker lease, recipe, target, stand position, priority, labour progress, committed materials, and block reason.
-
-When danger interrupts a job, release the worker lease, preserve progress and material accounting, and make the site ineligible until safe. When a route or prerequisite is missing, block with a readable reason and retry only after a relevant change or bounded interval. When the target is destroyed, cancel or transform into an explicit reconstruction order. Never retry in a tight loop.
-
-Candidate ordering: emergency response first, then critical repair, role fit, player priority, route cost, and age. Use stable tie-breaking to avoid task oscillation. A reservation expires when its worker is unavailable; duplicate workers cannot both complete or refund one order.
-
-## Authority and autonomy
-
-Maintenance can be automatic within a visible policy: repair existing defences up to a player-set material reserve, tend crops, and finish approved construction. Expansion is player-directed: new buildings, demolition, new facilities, property claims, and major upgrades require an explicit order.
-
-Emergency repair does not justify a worker standing outside a gate in an active crowd. Safety checks outrank urgency. After an alert, survivors resume still-valid work without requiring manual reassignment.
+Retry only on relevant state changes or at a bounded one-second interval. Do not path every tick into a closed gate. A five-second clear period resumes normal work after an alert, reducing oscillation. If a target is lost, retain the order as “Reclaim site”; repairs/improvements survive unless physically destroyed. Reclaim resumes without a duplicate charge.
 
 ## Work board
 
-The board explains what the town is doing: target, assigned person, progress, priority, materials, and blocked reason. Selecting a job highlights its physical site. The normal flow is to place a blueprint in the world; the board is for oversight and correction.
+Paused board shows site, project, progress, worker/role, committed inputs, available stock, priority and one actionable block reason. Selecting a row locates its known world socket. Actions: assign, prioritize, pause repeat mode, cancel with return preview, remove with salvage preview. Unknown property facilities do not appear as locked spoilers.
+
+Commands return a structured result so the same reason appears beside the disabled button and in a brief message when state changes between preview and approval. Common reasons: need safe home route, reclaim site, clear nearby threats, need input, clear footprint, bring person to bench, incompatible item, field trip already used.
+
+## Acceptance
+
+Exercise player→AI→player handoff; two sites concurrently; several workers at one site; cancel before/after work; danger during final tick; ownership loss/reclaim; destruction versus cancellation; repair interruption; target lowered mid-batch; full board; field approval/presence validation; load before/after completion. In every case inputs = available + committed + consumed + returned, with outputs granted once. No job can heal/spend/create collision through a UI-only mutation.

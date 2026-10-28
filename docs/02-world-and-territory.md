@@ -1,66 +1,68 @@
 # Continuous world and territory
 
-## Physical layout
+Full game contract. [13](13-campaign-and-map.md) owns the 24-site topology; [15](15-property-catalogue.md) owns contents. The six-site runtime already separates ownership from protected connectivity, but does not yet implement the whole map or interiors.
 
-Properties are authored parcels containing buildings, yards, entrances, claim points, loot, and construction sockets. Streets and alleys are walkable spaces with their own threat exposure. Being adjacent on a map is insufficient: a usable connection needs a real traversable entrance or corridor.
+## Property record and independent states
 
-The home is the root of the settlement connection graph. Properties can be cleared far from home, but remote sites do not automatically join the productive settlement. A street crossing requires a designated corridor with visible defensive exposure; the player cannot claim arbitrary disconnected islands by clicking them.
+A property has a stable ID, yard polygon, building footprint, room floor, entrances, porch claim point, improvement sockets, neighbour edges and authored initial occupants. Clearance, discovery, ownership, connection and operation are separate facts.
 
-## Implemented temporary road defences, 28 October 2026
-
-The home/library pair unlocks barricades joining their west and east fence ends across the road. Garden/garage unlocks another pair. Claiming changes socket availability; it never creates free walls. Build each defence through its nearby E/R/F work interaction. A completed barricade blocks the player, companions and zombies, and shamblers attack a blocking road defence before continuing toward their target. G stations one survivor on the inside. Low barricades allow melee defence over them.
-
-To advance, dismantle an inner barricade for salvage and build at the next captured pair. Removal leaves collision active until work completes, then opens the route and pays salvage exactly once. The opposite front remains intact. Defenders on a removed or breached line return home; other posts remain assigned. This proves temporary road barriers, not all exposed parcel edges, flanking routes or safe production corridors.
-
-## Property states
-
-| State | Meaning | Player benefit |
+| Fact | Definition | Changes when |
 | --- | --- | --- |
-| Infected | Occupied or exposed to established zombie presence | Exploration and recoverable loot |
-| Cleared | Immediate occupants defeated; no secure connection established | Temporary access, no guaranteed safety |
-| Secured | Claimed, connected to home through valid passages, and locally safe at claim time | Facility and work eligibility |
+| Cleared | No living hostile in its yard/rooms and no pending initial occupant | Occupants enter, leave or die |
+| Searched | One-time search transaction committed | First successful search; never resets |
+| Held | Claimed and not lost to unopposed occupation | Claim or occupation completes |
+| Ownership-connected | Held chain through authored adjacent parcels to held home | Any ownership change |
+| Safely connected | Actual usable protected route through clear held parcels to home | Gates, structures, hostiles or geometry change |
+| Operational | Held, safely connected, locally safe, fixture intact/restored and recipe prerequisites available | Relevant condition changes |
 
-Operational status is separate: a secured property can be threatened, breached, disconnected, or damaged. A single wandering zombie does not instantly reset ownership. It makes the affected work unsafe and can lead to loss if control cannot be restored.
+The word “secured” means held and safely connected at the time being described. It is not another persistent tier. A single hostile can make production unsafe without immediately changing ownership. A destroyed gate is a breach, not automatically a lost parcel.
 
-## Claim transaction: proposed default
+## Search and claim commands
 
-The player interacts with the claim point. Validate that the property has no active hostile occupant, the connection reaches home, the entrance is usable, and a defensible boundary plan exists. Show failed conditions directly. Commit ownership, discover available facility options, recalculate exposed edges, and create only player-approved work orders.
+For the first six sites, retain the existing combined porch discovery/claim interaction for compatibility. For new sites, a clear local search may precede a claim: stand at the search point, require site clear and protagonist standing, commit finite supplies/key discoveries/rescue exactly once. No home connection is required to search. Searching does not award the claim stipend.
 
-A boundary plan may contain unfinished or damaged barricades. Claiming does not conjure walls or guarantee safety. Display exposed openings before the player confirms the claim. Blueprint completion remains physical work.
+Claim at a clear porch requires: standing player in interaction range, all initial occupants resolved, site clear, and one held adjacent site in the ownership-connected home component. The target's gate must be physically reachable, not necessarily repaired/closed. Home is the root and may be reclaimed without a neighbouring claim. Claims have no material fee and create no free structure. First claim grants the site's six-Material stipend once; recapture never repeats it.
 
-Reclaiming a lost property restores its previous improvements where they survive. Unique discoveries and rescue rewards are not granted twice.
+Show unmet conditions without revealing unknown rewards. A blueprint boundary is not safe protection. Never require a completed paid passage as a prerequisite for claiming its unheld endpoint: this would create a construction dependency cycle. Paid connection work follows a successful claim.
 
-## Connected perimeter
+## Safe route algorithm
 
-Every authored parcel edge has a stable identity, neighbours, openings, and any physical wall or gate. The exposed perimeter comprises edges separating the home-connected secured component from uncontrolled space. Include street corridors and alleys explicitly; a narrow connection has two vulnerable sides.
+Build a home-rooted graph over clear held parcels and authored link corridors. A link is eligible only if its endpoints are held, its route footprint is free of hostiles, required protection exists/intact, and its traversable entrances are open and wide enough for the actor. Also require a collision-valid path through each intervening yard/room. Ownership adjacency alone is insufficient.
 
-When two neighbouring properties become connected, their shared edge becomes internal for defence planning. Existing fences remain until opened or dismantled by a player order. Ownership never silently removes collision or gives free construction materials.
+For a same-row link: completed fenced passage, enclosing rails intact, passage gate open/intact. For a crossing: both boundary road barriers intact, both facing yard gates open/intact, no hostile in the protected road corridor. Use the shared boundary lines in 13; an inner barrier's collision can block a longer road route even though it helps a short crossing.
 
-Concave blocks, holes of infected territory, and enemy-accessible courtyards still have exposed edges. A simple rectangle around all owned properties would incorrectly mark these safe. Use authored edge relationships and actual entrance reachability.
+Choose safe paths by length with stable edge-ID ties; a longer safe route beats a shorter exposed street. Recompute eligibility on relevant changes and revalidate before a worker starts a segment. Existing travellers stop at a safe side and report the block. Never walk into a known infected yard to satisfy a work order.
 
-## Example
+Temporary closing of a gate can suspend production. All gates remain manual for this release; workers report the obstruction rather than opening the player's defence to finish a harvest. Opening an internal passage gate can restore a safe route without opening the street-facing gate.
 
-Home A connects east to house B. Their common fence stops counting as an outer defence, but still blocks travel until its gate opens. Claiming house C north of B creates an L-shaped settlement: its inner corner remains exposed. Capturing the corner property D can shorten the defended boundary and make circulation easier even if D has modest loot.
+## Exposed perimeter
 
-This makes compact expansion useful without awarding an unexplained adjacency multiplier.
+Authored edges identify adjacent parcels, street corridors, rear paths, existing fixed walls and breakable openings. Compute the boundary of the safely connected component, including infected holes, concave corners and narrow corridors. Shared edges become strategically internal, but their collision remains until an approved passage or demolition changes it.
 
-## Disconnection and loss
+Do not draw a rectangle around held land and call everything inside safe. Exposed rear routes remain exposed even if an adjacent road is blocked. Fortification sockets on alleys physically close the relevant mouth; there is no abstract “defence coverage” immunity.
 
-1. A breach opens a physical route for zombies and raises local danger. It does not automatically sever every property beyond it.
-2. A corridor becomes unsafe or blocked. New worker travel through it stops; remote facilities pause if no alternative safe route exists.
-3. Isolated survivors shelter or retreat along a verified route. They never teleport to the stockpile.
-4. A claimed property falls after eight active seconds with living zombies physically inside its yard and no standing player or survivor inside. A brief warning and draining porch bar show the occupation. Returning a living defender or clearing all occupants resets it. Closed gates and road barricades prevent occupation until attackers physically enter; downed people cannot defend. This applies to home too. Loss pauses facilities through the ownership graph; surviving improvements and discoveries remain. Clear the yard and use E at its porch to reclaim without repeated loot/rescue rewards.
-5. The player clears the route or site, restores connectivity, and repairs damage. Previously recovered knowledge and rescued survivors remain.
+The overview can show exposed openings, weak lines and routes. These are advisory. Actual actors, barriers and travel determine whether a defence holds.
 
-Disconnected stock is unavailable for new orders. For the MVP, keep the single physical stockpile at home; do not implement distributed warehouses until routing and recovery are proven.
+## Occupation and loss
 
-## World continuity
+Any living zombie inside a held parcel begins occupation if no standing player or recruited survivor is inside. Downed actors cannot contest. Eight continuous active seconds loses the parcel, home included. A standing person entering or the last zombie leaving/dying resets occupation to zero. Save the partial timer; pauses and loading consume no time.
 
-Expedition and home share a clock, threat events, and persistent identities. Camera distance must not cancel an attack or regenerate loot. Initially keep the whole small prototype active. Later simulation tiers must preserve the same outcomes and entry routes; see [Godot implementation](10-godot-implementation.md).
+At first occupation, one local alert and draining claim-marker bar show the danger. Escalate once near loss, then once on loss. Immediate local work suspension is independent of this timer. Zombies cannot occupy from outside an intact fence merely by being nearby.
 
+Loss clears ownership, not search/discovery flags, surviving buildings, equipment ownership, committed work or killed resident records. Production pauses. Reclaim through the ordinary clear/adjacent rule, with home exempt from adjacency. Restored improvements become usable when access/safety return. All disconnected parcels can remain held; they do not automatically chain-fall without physical occupation.
 
-## Implemented neighbourhood links, 28 October 2026
+If home falls, all productive operations pause. People use explicit safe hold/retreat points. Emergency recovery can rebuild a recoverable foothold; see 03. There is no requirement to teleport workers into an occupied home.
 
-Build a northern or southern fenced passage from its yard-side work positions with E, then R or a named F assignment. Completion removes the two side-fence segments, adds enclosing rails and a closed gate. E opens or closes it; R repairs it. Existing property ownership never removes fences for free. The construction costs 4 materials and takes 6 seconds; cancelling returns unused materials.
+## Shallow interiors
 
-The four-property map has four explicit links: two yard passages and two street crossings. A crossing requires both facing properties, both end barricades, open yard entrances and no living zombie in its corridor. A passage requires both properties, completed construction, an open intact gate and no corridor occupant. A home-rooted traversal excludes lost and occupied yards and can choose an alternate route. Garden food delivery requires this safe connection. Local construction remains possible before integration. Known link conditions appear in pause, with no permanent map labels.
+Ground-floor rooms are open-front spaces in the same simulation: roof fades when the player is near/inside, upper walls remain collision, no loading, no separate loot clock. One or two rooms per landmark; ordinary houses may retain a porch-only interaction. No stairs, basements, door keys, room-by-room procedural clearing or separate indoor camera.
+
+Occupants in rooms count toward parcel clearance and occupation. Windows are solid except authored broken-window entrances shown before traversal. All attacks use the same world line checks. High walls block projectiles; low barriers permit fire. An opaque roof cannot conceal an active Spitter attack warning.
+
+Navigation must provide two useful fighting approaches for clinic, school and pump, but not necessarily two complete claim routes. New interior content cannot move the existing six porch search rewards or delete old save positions. Invalid historical positions relocate to the nearest collision-valid point in the same parcel and are reported during migration.
+
+## Continuity and persistence
+
+Everything active shares the fixed simulation clock. Camera distance cannot heal a structure, cancel a raid, refresh loot or replace a fight with a score roll. Pending unactivated district residents are saved authored identities, not simulated off-camera attackers. Once activated, they stay physical until death/exit.
+
+Persist ownership, search flags, occupation timer, structure/fixture health, approved orders and unique rewards. Rebuild derived connections and route caches after load; never trust a serialized “safe” Boolean while ignoring a broken gate. Verify alternative routes, home loss/reclaim and construction collision before expanding map content.

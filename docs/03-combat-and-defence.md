@@ -1,62 +1,79 @@
-# Squad action combat and automatic home defence
+# Action combat, squad and home defence
 
-## Player actions
+Full game contract. Preserve the slice's direct movement, directional melee and separate firearm input. [14](14-zombie-catalogue.md) defines enemy attacks; [16](16-equipment-and-recipes.md) defines equipment statistics.
 
-Proposed action set: move, aim, attack, dodge, interact, and issue squad orders. Shields add a block action when equipped. One held interaction performs repairs or construction at a safe reachable work site. Combat cancels work cleanly and preserves progress.
+## Player combat
 
-Start with a readable melee weapon and a slow basic zombie. Wind-up, reach, impact, stagger, recovery, and crowd spacing matter before weapon variety. Heavy armour improves protection and stagger resistance but should have a visible mobility tradeoff. Exact stamina, dodge invulnerability, friendly fire, and weapon durability rules are open.
+WASD/arrows move; cursor aims; left click swings toward it; Space swings along movement/last facing; right click fires equipped firearm. Holding attack repeats only after cooldown. No stamina, invulnerable dodge, active block, friendly fire, durability, headshots or magazine reload. Empty ranged input spends nothing and never disables melee.
 
-## Implemented basic melee, 28 October 2026
+Every melee attack chooses living targets in reach/cone with a clear line, orders them by distance then stable actor ID, and applies at most the weapon's target count. Bat/crowbar hit one. Sword can hit two. One actor cannot receive two hits from one swing. Recovery begins on the attempted swing, including a miss. Movement remains available, with a 20% movement reduction during the visible 0.18-second swing; no root animation lock.
 
-Each basic bat swing hits one living zombie: the nearest valid target within reach, forward cone and clear attack line. Damage, stagger and knockback apply only to that target. Survivors use the same basic single-target melee. No current weapon grants cleaving; broader attacks remain a possible future equipment distinction.
+Firearms trace along the aimed shot to the first solid obstruction/valid target. Low road barriers allow fire; buildings, solid fences, high shields used as scenery and closed gates block it. Actors cannot shoot through several enemies with one pistol bullet. Shotgun behaviour is in 16. AI fires only after a valid line/range check and a lane clear of allies; the projectile does not damage allies, but neither should AI dump ammunition through them.
 
-## Squad
+Passive shield protection applies to incoming actor attacks in a 120-degree frontal arc. Body and shield multipliers multiply once; iron plus a frontal shield gives 25% incoming damage at 80% movement speed. Ground hazards use body protection only. A shield never grants rear immunity. Downed actors neither attack nor consume ammo.
 
-The conversation proposed one controlled character with up to three companions. Prove one companion first; the MVP target is up to two. Companion count is a tuning choice, not a requirement to recruit a large population.
+## Squad orders
 
-| Order | Expected behaviour | Safety constraint |
+The protagonist is fixed. At most two recruited survivors have Follow/Engage expedition membership. Assigning a third prompts a paused choice of whom to return or hold; it never silently cancels somebody's work. Ellis can occupy a follower slot for transport, but provides no combat. Emergency casualty carrying does not create another active follower.
+
+| Order | Action | Boundary/fallback |
 | --- | --- | --- |
-| Follow | Stay near the player and assist against immediate threats | Limited pursuit; avoid walking through hazards to keep formation |
-| Hold | Defend a chosen reachable position | Stay within a visible leash; use nearby cover or shield position |
-| Engage | Focus a target or a small local area | Never interpret as permission to clear the whole town |
-| Return home | Travel to a selected safe home post | Validate route and report blockage; no teleportation |
+| Follow | Stay near player and defend immediate threats | 150-pixel formation radius; pursue at most 180 from formation anchor |
+| Hold | Stay at selected reachable point, defend locally | 120-pixel leash; never chase through a gate into uncontrolled land |
+| Engage | Focus selected target or local point | 220-pixel target area; no town-wide hunt; return to anchor after target falls |
+| Return home | Use safe route, then hold selected home defence post | If no safe route, shelter at nearest reachable clear held yard and report |
+| Guard post | Hold a physical inside position and alternate dodge point | 100-pixel leash; no chase beyond the defended line |
+| Work | Execute eligible job at approved site | Preserve assignment through shelter; never self-authorise expansion |
 
-Show each order and destination beside the survivor portrait. A blocked order produces a reason and safe fallback. Companions should not independently loot an infected house or break formation to chase a distant zombie.
+Whole-team shortcuts affect recruited, standing non-carried survivors. Ellis maps Engage to Hold and Return home/Guard to shelter; no indirect command may bypass the prohibition. A downed person keeps assignment but cannot execute it. Explicit individual orders do not change anyone else.
 
-## Combat roles through equipment
+On target death or invalidity, reevaluate within the existing order boundary. Companions do not loot, claim, chase across town, spend medicine or approve new buildings. A blocked order shows one reason and keeps a safe anchor. Formation uses distinct offsets so people do not overlap at a narrow gate.
 
-A shield user holds a doorway; a firearm user supports from behind; a quick melee survivor protects a flank. Equipment changes behaviour and silhouette. Background can add flavour or a small automatic advantage, but should not lock a named survivor out of useful equipment.
+## Guards and trusted defence
 
-Reserve firing lanes, space melee allies around targets, and avoid continuous repathing for every squad member. If ranged line of sight is blocked, reposition within the order boundary or hold fire. Ammunition should not drain against a wall.
+A guard has a post, protected side, detection area, leash, primary weapon, ranged-ammo policy and retreat point. Guards prefer the nearest immediate threat attacking their line; a winding-up Screecher/Spitter in reachable range is next priority. Otherwise use nearest valid hostile. Reevaluate at bounded intervals, not every animation frame.
 
-## Home defence
+Guards can strike over low barricades within weapon reach and can fire over them. They cannot attack through solid tall gates unless a specific low attack opening is authored. Give every standard defensive line at least one legitimate inside attack position. Equipment range matters; do not grant a bat an invisible long-range hit because it is guarding.
 
-Guards are physical survivors with an assigned post, weapon, detection area, pursuit leash, and retreat destination. They attack reachable threats, defend entrances, conserve ammunition against invalid targets, and return to their post after danger passes. A guard never abandons the gate for a routine harvest order.
+At less than 30% health, a guard retreats to its safe fallback unless explicitly assigned Hold at all costs in the paused post policy. That optional policy is off by default and still cannot cause permanent death. Spitter pools trigger movement to the alternate inside position. When danger clears and health is adequate, resume the same post. Guards never abandon a line for routine harvesting.
 
-Workers have an emergency response: shelter, support a nearby defence, or treat casualties. Default builders help only when the fight reaches their local area; gardeners shelter rather than charge a horde. Small rosters need useful fallback work, not a dedicated person for every facility.
+Ranged policy defaults to melee first, shoot specials within clear range or any enemy attacking a line below 40% health. Alternatives: conserve (no automatic shots) or fire at will. Shared stock reserve of six Bullets/two Shells limits routine guard fire; an active breach can spend into that reserve and raises one alert. Player fire always uses available ammunition. No invisible guard-only ammo.
 
-## Alerts and readiness
+## Workers and local alerts
 
-| Alert | World condition | Response |
+Workers stop for hostiles within 170 pixels of themselves or their work point, a projectile telegraph covering them, or an invalid safe route. Combat-capable workers defend contact threats only while retreating; they do not charge the street. Ellis shelters without attacking. A guard's active zone does not freeze every facility in town.
+
+| Alert | Trigger | Presentation |
 | --- | --- | --- |
-| Safe | No immediate local approach or breach | Normal work and maintenance |
-| Threatened | Hostiles approach or attack a boundary | Exposed workers withdraw; guards engage |
-| Breached | Hostiles cross a defended boundary | Shelter, local defence, casualty support |
+| Approach | Warned migration or visible group nearing a line | Direction, rough size, expected route |
+| Threatened | Hostile damaging an occupied line or near work | Named place, local defenders, weak condition |
+| Breached | Enemy crosses a defended boundary | Urgent ping and concise destination |
+| Occupied | Yard starts unopposed loss clock | Local draining marker and warning |
+| Down | Person reaches zero health | Name/location and recovery action |
+| Resolved | No hostile in the alert area for 5 seconds | One clear message; resume valid work |
 
-Use local zones so one zombie at the north gate does not repeatedly stop every indoor job. Brief hysteresis prevents rapid switching between safe and threatened states.
+Alerts use visual/text plus audio, deduplicate by incident and escalate only on a meaningful change. Pause overview supplies detail. Readiness is an explanation of health, ammunition, route and coverage; it does not decide a fight mathematically.
 
-Readiness displays guard coverage, weak boundary segments, ammunition, current threats, and the squad's expected return route. It is an estimate, not a score that decides combat. Explain uncertainty when a street has not been scouted.
+## Injury and ordinary recovery
 
-Alerts identify location, structural condition, defenders, and whether the line is holding. Escalate on meaningful changes: approach, sustained damage, breach, incapacitation, resolution. Provide map pings and text as well as sound. Do not repeat a radio line every second.
+Health reaches zero → downed, never dead/infected. Zombies ignore downed people as attack/occupation-contest targets. Recruited people remain in the roster and meal count. Equipment stays attached and cannot be stolen or duplicated.
 
-## An expedition decision
+At a locally clear casualty, hold E for 2 seconds to lift one person. The player cannot shoot/swing while carrying; movement ×0.7, armour/slow still apply. E at a clear held shelter places the casualty there. A standing companion may be ordered to carry if both are reachable and clear; it then uses a safe route and occupies no other work slot. If no route exists, report Blocked and keep the person in place. Carrying is limited to one casualty per carrier.
 
-The player and Paige are at the garage. A group reaches the home gate. Mara holds inside while a builder retreats. The player can finish a short search, return immediately, or send Paige home if the route is safe. That choice is meaningful because the gate has a known condition and the defender is behaving predictably.
+Safe home rest: spend 2 Food once and 15 active seconds to recover all people physically at home to at least 50 health. Optional additional 2 Food/15 seconds heals those present to full. Clinic treatment spends 1 Medicine per person, 10 work seconds, restores full health and revives; patient and worker must be present and facility operational. The player can provide clinic work using R. No treatment can complete while its danger condition is active.
 
-The game must not manufacture this choice by spawning enemies inside home or disabling guard AI off-screen.
+Costs commit only when someone benefits and service can start; interruptions preserve paid progress. Healing a healthy team spends nothing. No automatic remote healing at the home porch. This intentionally replaces the slice's remote team-rest convenience during the recovery milestone.
 
-## Setbacks and recovery
+## Protagonist defeat and emergency foothold
 
-Proposed MVP: survivors become incapacitated and can be recovered; facilities pause when unsafe; fortifications can break. Carried supplies can be left at a marked recovery point. The protagonist's incapacitation returns play to a recoverable checkpoint or rescue state; choose the exact rule before implementing combat persistence.
+On protagonist zero health, pause before any recovery mutation. Offer Recover at foothold, Load latest valid save or Choose save. Recovery is always available, even with empty stock/all survivors down/home lost. Explain the exact consequences on the paused panel.
 
-Preserve key discoveries against accidental permanent loss. A severe defeat may cost materials, time, and territory access, but should leave a viable recovery route. If every survivor is down, offer reload from a clearly identified earlier save. Permadeath is a later difficulty discussion.
+Ordinary recovery uses the nearest clear held shelter with a safe standing location; otherwise the authored west-road emergency shelter outside home. Move protagonist there at 50 health, equipment unchanged. Recover all downed people to the same shelter at 25 health. This is an explicit rescue/time-skip exception, not normal worker travel. Preserve enemies, territory damage, discoveries and material commitments; do not advance combat or production during the transition.
+
+Grant no supplies, free repairs, search rewards or full healing. Remove hostile actors within 120 pixels of the emergency shelter by relocating them to the nearest valid **uncontrolled road** point at least 240 pixels away; preserve health, IDs and population. This relocation is disclosed as the emergency-recovery exception and never used during ordinary simulation. Suppress new migration for 90 active seconds; existing distant actors remain. If the attempt was running, it fails first.
+
+The west shelter cannot be claimed, farmed, stocked or used to satisfy finale readiness. It exists solely to prevent a home-loss softlock. A basic bat remains available to every combat-capable person. Reclaiming home, finite salvage and the renewable salvage safeguard in 06 provide a route forward without duplicating unique items.
+
+## Verification boundary
+
+Automated checks prove damage/line/cooldown rules, target counts, order capability, carrying conservation and reload behaviour. Windowed checks inspect tell readability, formation through gates, retreat, pools and alert frequency. Human play must establish combat feel and whether ordinary home defence can be trusted for 3–5 minutes. Headless success alone never establishes those qualities.

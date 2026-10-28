@@ -1,63 +1,99 @@
-# Zombies, noise, and expansion pressure
+# Zombies, sensing and pressure
 
-## Current street implementation, 28 October 2026
+Full game design. [14](14-zombie-catalogue.md) owns the eight kinds and exact attack contracts. The slice currently uses proximity pursuit, resident quotas, wandering/settling raiders, two kinds and short recurring waves. Noise, memory and the campaign scheduler below are future work.
 
-Following feedback that zombies are not a threat, the greybox has 24 residents across its three reclaimable properties and recurring edge migrations. Waves start at 45 active seconds with a 12-second directional radio warning. A five-wave cycle introduces east, west, north/east, south/west and four-edge attacks. Each extra claimed property adds two migrants and removes eight seconds from the next interval: 4–10 zombies every 65–41 seconds, capped at 36 living zombies across the map.
+## Shared behaviour priority
 
-All zombies now wander independently, including residents, edge arrivals and occupiers after a property falls. Random headings last 0.8–2.8 seconds; collision triggers another choice. The nearest living player or survivor within 240 pixels immediately overrides idle wandering. Zombies head directly toward that person, reselecting the nearest living target each step, and resume wandering when nobody is nearby. They have no fixed porch, road-junction or property destination. They bite only on physical contact and damage a closed gate or built road barricade when moving into it, including while pursuing someone. Walls still block movement. Lost yards remain places to wander through, rather than rally points. Defeated residents stay cleared; new zombies still arrive at physical map edges under the existing budget. Eight seconds of unopposed occupation inside a claimed yard causes loss.
+At each simulation decision, choose: incapacitated/dead → committed attack phase → nearest standing person in notice range → recent person position → strongest relevant noise → migrant route/settlement destination → local wandering. Committed wind-ups still cancel if their attack contract requires valid range/line and it is lost. A new nearby person overrides migration and noise immediately after a non-interruptible attack phase ends.
 
-Raiders are the exception to idle wandering. Each building has a hidden zombie quota (`hidden_zombies` in `data/street/properties.json`; home is 0). A raider heads for the nearest building whose yard holds fewer zombies than its quota (quota gates arrival only, so settled raiders are never pushed back out), provided that raider would stay there (`settle_percent`, fixed per raider and building by id so no roll is saved). Once inside a yard it would stay in, it walks to the back of the yard and then wanders near it like any resident. Raiders drift along their route with a gentle sway; only pursuit of a person is a straight line. If no building needs zombies it follows the road to a map-edge exit chosen by its id and leaves the map; defeated raiders keep their corpses. Nearby people still override all of this.
+Notice range is 240 pixels for all kinds initially. Preserve the user's nearby-person priority: walls block movement/attacks but do not prevent close proximity detection. No distant acquisition through buildings. Select the nearest standing person each simulation decision, with stable actor-ID tie break. Presentation can smooth turning but cannot retain a farther target against this rule. Explicit committed attack phases keep their telegraphed direction as specified in 14.
 
-The world owns a seeded RandomNumberGenerator; save schema 7 preserves its full integer state as text plus each actor's heading and remaining turn clock. The same seed and commands reproduce the same motion; loading resumes the random sequence. Values live in `data/street/*.json` (zombie kinds in `data/zombies.json`). See [PROGRESS.md](PROGRESS.md) for verification and limits. The noise ideas below remain earlier proposals. Current pursuit uses proximity alone, without noise, remembered destinations or route finding.
+After losing a person, investigate the last sensed position for up to 4 seconds, then resume migration/wandering. No omniscient chasing of current unseen coordinates outside notice range. Pathfinding uses actual openings. Attack a breakable obstacle only if it blocks the selected route; do not pound an irrelevant internal fence when an open gate is reachable nearby.
 
-## Threat inhabitants
+Residents wander in their home yard until attracted out by a person or noise. They never respawn. Migrants travel from authored world edges, seek eligible under-quota uncontrolled yards, settle at their rear, or leave via a physical edge if no destination is eligible. Claimed yards have target quota zero, preventing intentional settlement homing on every claimed porch. Nearby people/noise may still draw migrants into them; ordinary occupation then applies.
 
-Residents occupy buildings and yards until disturbed. Wanderers move through streets and openings. Hordes are travelling groups that can redirect toward substantial activity. These are behaviour roles, not necessarily three distinct monster species.
+Settling probabilities derive from stable actor/property IDs. Saved RNG supplies genuine wandering choices. A loss changes a yard's eligibility, never conjures replacement residents. All migrants retain origin, creation wave and destination for debugging and persistence.
 
-The current slow archetype wanders, bites on contact, bumps defences, staggers when struck and falls when defeated. Nearby-person pursuit takes priority over wandering; investigation and sound destinations remain outside the current movement rule.
+## Noise contract
 
-## Noise events
+Noise is a spatial event that influences existing living actors. It never adds population, escalates a hidden global danger meter or schedules an instant extra wave. An event records stable ID, emitter, position, radius, expiry, category and merge key. Investigation movement obeys collision and the same physical routes.
 
-Each event has a world position, category, intensity, time, lifetime, and emitter. Use qualitative UI language even if simulation values are numerical.
+| Event | Radius | Lifetime | Merge rule |
+| --- | --- | --- | --- |
+| Walking | No acoustic event | — | Nearby-person sensing handles it |
+| Melee impact | 120 px | 1.5 s | Per attacker, refresh at most twice/second |
+| Building/repair | 200 px | 2 s | One source per site; refresh once/second |
+| Pistol | 550 px | 4 s | One source per shooter over 0.5 s |
+| Shotgun | 750 px | 5 s | One source per shooter over 0.5 s |
+| Screecher | 600 px | 4 s | One per successful call; cannot initiate another call |
+| Relay launch | 900 px | 8 s | One event at start; finale population remains fixed |
 
-| Activity | Relative noise | Expected consequence |
-| --- | --- | --- |
-| Walking | Very low | Nearby awareness only |
-| Melee impact | Low | May disturb adjacent rooms or yard |
-| Hammering and repairs | Moderate | Draws attention from the nearby street |
-| Gunfire | High | Can attract several nearby groups |
-| Alarm or explosion | Very high | Can redirect a travelling horde |
+Choose the largest `radius - distance` among in-range events, then newest event and stable ID. A newer weak noise does not repeatedly flip an actor away from a nearby person. An actor investigates one event at a time. Expired events cannot attract newly spawned migrants. One ordinary building footprint between source and listener halves effective radius; do not raycast arbitrary material acoustics in the first implementation. Open-front rooms use the building's same modifier.
 
-Buildings and walls may attenuate noise later; the MVP can use distance plus room or property modifiers. Repeated hammering is a bounded sound source rather than an endlessly stacking global danger score. Zombies investigate the last sound, then search or return to wandering when it expires.
+A gunshot may draw a known yard's residents into the road. Quiet melee leaves most distant residents undisturbed. That difference is the reward for quieter play. The game does not punish every shot with a compulsory return-home raid.
 
-## Pressure with a physical explanation
+## Campaign scheduling
 
-Expansion exposes more boundary, lengthens routes, and brings the settlement closer to occupied areas. Machinery and combat can attract residents. These consequences provide escalation before any time-based difficulty curve.
+First migration no earlier than 180 active seconds or the first non-home claim plus 60 seconds, whichever is later. Prior to it, authored residents provide combat. Existing actors continue through the tutorial; no invisible invulnerability zone is required.
 
-If additional zombies migrate into the map, use authored edge routes and staged travel. Never spawn inside secured rooms or directly beside an unseen guard simply because the player is away. Record origins and destinations so attacks are explainable in debugging and visible through scouting.
+Threat band is the furthest district with a searched core site; it never decreases or scales with equipped weapons. Its template pool and budget change once per district. Do not shorten intervals with every property. Clearings and good equipment should make familiar streets safer.
 
-Map-edge inflow must have a budget and a population cap. Defeated residents remain defeated unless replacement arrives through a valid route. Distant hordes can be represented as persistent groups, but cannot teleport through an intact perimeter.
+| Band | Ordinary migration budget | Interval after last entry | Max simultaneous origins | Specials eligible |
+| --- | --- | --- | --- | --- |
+| Hearth | 5–8 | 180–240 s | 1 | Brute after garage discovery |
+| Market | 9–12 | 180–240 s | 1 | Runner, Screecher after teaching encounter |
+| Civic | 12–16 | 210–270 s | 2 | Armoured, Crawler, Spitter after teaching |
+| Works | 16–20 | 210–300 s | 2 | One rare authored Breaker template |
+| Continued town | 6–10 | 240–360 s | 1 | No Breaker |
 
-## Pacing defaults
+Choose interval/template with the owned saved RNG; select from authored templates whose costs fit the budget. At least 50% of routine threat cost is Shamblers. At most one rare Breaker migration per 12 active minutes, never until the pump teaching encounter has resolved. Finale waves override this table only during an explicit attempt.
 
-The opening gives a short protected learning window and a clearly telegraphed first approach. Later encounters alternate with time to repair, explore, and observe town growth. Background pressure should not force a return home after every cupboard search.
+On a new band, retain current scheduled event; apply the new pool to the next scheduling decision. No retroactive early spawn. After any routine entry, suppress the next entry for at least 90 seconds after the last local breach resolves. This calm timer may extend, never shorten, the existing interval. The final defence has its own fixed timetable.
 
-Do not scale every encounter directly to the player's latest weapon. A recovered shotgun or armour set must feel like progress. Harder landmarks and larger migrations provide new challenges while early streets become meaningfully safer.
+### Initial routine template pool
 
-## Example
+Roll an integer budget in the band's range, then choose uniformly among its eligible templates at or below budget. If none qualify, use that budget of Shamblers. Required-kind eligibility comes from a resolved/observed teaching encounter; ineligible templates are excluded rather than introducing a surprise kind. If a globally capped special is unavailable at admission, replace its threat cost with that many Shamblers, still subject to the living cap. Record the final admitted composition.
 
-The squad fires at residents in the garage. Nearby wanderers investigate the shots, creating a return-route threat. Home's hammering can attract a different street group. Defenders engage at the gate, generating more local noise. Each movement follows a world event; neither fight is an abstract punishment roll.
+| Template ID | Band | Composition | Threat cost |
+| --- | --- | --- | --- |
+| hearth_drift | Hearth | 5 Shamblers | 5 |
+| hearth_group | Hearth | 6 Shamblers | 6 |
+| hearth_heavy | Hearth | 4 Shamblers + 1 Brute | 7 |
+| hearth_crowd | Hearth | 8 Shamblers | 8 |
+| market_rush | Market | 7 Shamblers + 1 Runner | 9 |
+| market_call | Market | 6 Shamblers + 1 Screecher | 9 |
+| market_walk | Market | 10 Shamblers | 10 |
+| market_pair | Market | 8 Shamblers + 2 Runners | 12 |
+| civic_plate | Civic | 9 Shamblers + 1 Armoured | 12 |
+| civic_call | Civic | 9 Shamblers + 1 Screecher | 12 |
+| civic_ground | Civic | 8 Shamblers + 1 Spitter + 1 Crawler | 13 |
+| civic_fast | Civic | 8 Shamblers + 2 Runners + 1 Screecher | 15 |
+| works_heavy | Works | 10 Shamblers + 1 Brute + 1 Spitter | 16 |
+| works_mixed | Works | 10 Shamblers + 1 Armoured + 1 Screecher + 1 Runner | 18 |
+| works_siege | Works | 10 Shamblers + 1 Breaker | 18 |
+| works_rush | Works | 12 Shamblers + 4 Runners | 20 |
+| continued_walk | Continued | 6 Shamblers | 6 |
+| continued_heavy | Continued | 5 Shamblers + 1 Brute | 8 |
+| continued_rush | Continued | 6 Shamblers + 2 Runners | 10 |
 
-## Fairness checks
+Split multi-origin events round-robin across selected entries, with stable actor ordering. Avoid repeating the same sole origin more than twice if another eligible route exists. Standard random variation changes routes/intervals/composition, never enemy health. The works_siege cooldown starts on actual Breaker admission, not on a skipped capped slot.
 
-- Can the player identify where attackers approached from?
-- Did the alarm allow a meaningful response given actual travel time?
-- Can a competent home team hold routine attacks without personal intervention?
-- Does quiet play change the encounter, rather than merely delay a fixed wave?
-- Is there enough calm time to enjoy improvements and prepare again?
+## Origins, warning and movement
 
-Day/night modifiers, special infected, siege bosses, and scheduled horde nights remain open or deferred. They should not enter the MVP until the basic pressure loop works.
+Eight edge routes are mapped in [13](13-campaign-and-map.md). Choose up to two valid origins whose approach can physically reach uncontrolled road space. Never place a new entry behind a held intact perimeter. All entries remain at outer map edges and travel inward. A protected mouth can stop or deflect a group; selection does not bypass it.
 
-Zombie kinds are data: `data/zombies.json` defines each type's health, speed, damage and cooldown, and all movement and combat read them through `scripts/sim/zombie_types.gd` using the actor's optional `kind` (default Shambler). Adding a type needs a JSON entry plus a saved `kind` field on actors; behaviour differences can then branch on the kind.
+Base warning is 35 active seconds before entry. The restored radio gives 60 seconds plus kind silhouettes actually scouted on that route. Without radio the starting receiver still reports direction and approximate size; no unseen death caused by missing a mandatory warning upgrade. Warnings describe approach, not a guarantee that home is the destination.
 
-The Brute is the first non-default kind: 180 health, slower (38), bites for 18 on a 1.6 second cooldown and damages gates and barricades 2.5 times as hard. `pressure.specials` in `data/street/pressure.json` puts `count` of a kind into the first spawn slots of every raid from `from_wave` on, so the first raid already includes one. A non-default zombie stores `kind` on its actor; saves without it load as shamblers, so no schema bump was needed.
+Retain a warned event's origin/composition/time on load. Entry uses 0.5-second spacing and distinct positions. If a routine event hits the 96-living cap, admit what fits, discard the rest and schedule the next normal interval. Do not create a deferred overflow wave. The finite finale instead retains pending actors and waits for capacity; see 13.
+
+## Resident population and technical cap
+
+The 24 authored encounters in 15 total 89 living residents at new campaign creation. All are present from the start, with stable IDs and their real positions. There is no district activation spawn, pending-resident claim blocker or invisible progression gate. The 96-living cap leaves seven initial migrant slots and more as the player clears the street. Routine overflow is skipped under the rule above, never stored as a backlog.
+
+All actors stay authoritative off camera. Do not replace guards/zombies with a readiness percentage. Fully simulate the 96 cap first and optimise after profiling. Corpses can collapse into persistent defeated IDs for memory, but cannot become living again. Old-save expansion requires explicit placement of new residents outside held/visible parcels at the load boundary; its migration policy is in 10.
+
+## Fairness and debugging
+
+The player should be able to explain an attack's origin, tell and route. Debug overlays show perceived target, remembered position, noise, origin, route, pending entries and special phase. Player UI shows relevant alerts, never these implementation details.
+
+Required checks: identical seed/commands repeat migration choices; reload warning/cooldown/noise without duplicates; off-camera combat obeys identical collision; quiet and loud approaches redirect different existing actors; a capped routine event has no backlog; a capped finale retains exact finite population; recapture never repopulates a defeated resident.
