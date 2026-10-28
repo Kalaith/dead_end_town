@@ -3,16 +3,20 @@ extends RefCounted
 const Routes = preload("res://scripts/sim/routes.gd")
 const Wandering = preload("res://scripts/sim/wandering.gd")
 const EXIT_RANGE: float = 30.0
+const SETTLE_RADIUS: float = 130.0
+const BACK_INSET: float = 40.0
+const SWAY_ANGLE: float = 0.7
+const SWAY_RATE: float = 0.9
 
 
 static func step(world: RefCounted, z: Dictionary, dt: float) -> void:
 	var inside: Dictionary = _property_at(world, z.pos)
-	if not inside.is_empty() and _settles(world, z, inside):
-		Wandering.step(world, z, dt)
+	if not inside.is_empty() and _willing(world, z, inside):
+		_settle(world, z, inside, dt)
 		return
 	var need: Dictionary = _nearest_need(world, z)
 	if not need.is_empty():
-		_head_to(world, z, Routes.point(need.site), dt)
+		_approach(world, z, need, dt)
 		return
 	var exit: Vector2 = _exit(world, z)
 	if z.pos.distance_to(exit) < EXIT_RANGE:
@@ -30,17 +34,38 @@ static func sweep(world: RefCounted) -> void:
 	world.zombies = retained
 
 
+## Walk to the back of the yard, then wander within reach of it.
+static func _settle(world: RefCounted, z: Dictionary, p: Dictionary, dt: float) -> void:
+	var back: Vector2 = _back(p)
+	if z.pos.distance_to(back) > SETTLE_RADIUS and world.routes.waypoint(z.pos, back) != z.pos:
+		_head_to(world, z, back, dt)
+	else:
+		Wandering.step(world, z, dt)
+
+
+static func _approach(world: RefCounted, z: Dictionary, p: Dictionary, dt: float) -> void:
+	var site: Vector2 = Routes.point(p.site)
+	if world.routes.waypoint(z.pos, site) != z.pos:
+		_head_to(world, z, site, dt)
+	elif Routes.rectangle(p.rect).has_point(z.pos):
+		Wandering.step(world, z, dt)
+	else:
+		# Shut out by a closed gate: push at the gate so it takes the damage.
+		Wandering.advance(world, z, Routes.point(p.gate), dt)
+
+
+## Raiders drift along their path rather than ruling a straight line; only chasing is direct.
 static func _head_to(world: RefCounted, z: Dictionary, target: Vector2, dt: float) -> void:
 	var next: Vector2 = world.routes.waypoint(z.pos, target)
-	# With no open path, press straight on so closed gates take the damage.
-	Wandering.advance(world, z, target if next.is_equal_approx(z.pos) else next, dt)
+	var direction: Vector2 = z.pos.direction_to(next if not next.is_equal_approx(z.pos) else target)
+	var sway: float = sin(world.elapsed * SWAY_RATE + float(z.id.hash() % 628) / 100.0) * SWAY_ANGLE
+	Wandering.advance(world, z, z.pos + direction.rotated(sway) * 100.0, dt)
 
 
-## A building keeps its hidden quota: a raider inside stays only while the yard is not over quota.
-static func _settles(world: RefCounted, z: Dictionary, p: Dictionary) -> bool:
-	if world.remaining(p.id) > int(p.hidden_zombies):
-		return false
-	return _willing(world, z, p)
+static func _back(p: Dictionary) -> Vector2:
+	var rect: Rect2 = Routes.rectangle(p.rect)
+	var gate_top: bool = Routes.point(p.gate).y == rect.position.y
+	return Vector2(rect.get_center().x, rect.end.y - BACK_INSET if gate_top else rect.position.y + BACK_INSET)
 
 
 ## Whether this raider would stay in this building, fixed by ids so it needs no saved roll.
