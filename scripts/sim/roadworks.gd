@@ -1,5 +1,6 @@
 extends RefCounted
 ## Temporary street defences. All work, damage and salvage are authoritative.
+const Repairs = preload("res://scripts/sim/repairs.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
@@ -92,6 +93,7 @@ static func interact(world: RefCounted, d: Dictionary) -> void:
 			if not WorkOrders.approve(world, "road:" + str(d.id), d.id, WorkRecipes.recipe(world.catalog, "road_remove"), Routes.point(d.site)):
 				world.note("Finish a project before approving more work.")
 				return
+			Repairs.destroy(world, "road:" + str(d.id))
 			s.phase = "dismantling"
 			s.progress = 0.0
 			s.repair_reserved = false
@@ -164,6 +166,7 @@ static func step(world: RefCounted, dt: float) -> void:
 			continue
 		if not unlocked(world, d) or danger(world, d):
 			WorkOrders.block(world, socket, "Reclaim site" if not unlocked(world, d) else "Clear nearby threats")
+			Repairs.block(world, "road:" + str(d.id), "Reclaim site" if not unlocked(world, d) else "Clear nearby threats")
 			continue
 		var executor: String = "you" if world.working and float(world.player.hp) > 0 and world.player.pos.distance_to(Routes.point(d.center)) < float(world.balance.barricade_work_range) else ""
 		for a: Dictionary in world.survivors:
@@ -173,9 +176,10 @@ static func step(world: RefCounted, dt: float) -> void:
 				executor = a.id
 		if executor.is_empty():
 			WorkOrders.block(world, socket, "Need worker at site")
+			Repairs.block(world, "road:" + str(d.id), "Need worker at site")
 			continue
 		if s.phase == "ready":
-			_repair(world, d, s, dt)
+			_repair(world, d, s, executor, dt)
 			continue
 		var removed: bool = s.phase == "dismantling"
 		var completed: bool = WorkOrders.advance(world, socket, executor, dt, removed or not _occupied(world, Routes.rectangle(d.rect)))
@@ -203,20 +207,12 @@ static func _occupied(world: RefCounted, rect: Rect2) -> bool:
 	return false
 
 
-static func _repair(world: RefCounted, d: Dictionary, s: Dictionary, dt: float) -> void:
-	if float(s.hp) >= float(world.balance.barricade_health):
+static func _repair(world: RefCounted, d: Dictionary, s: Dictionary, executor: String, dt: float) -> void:
+	if float(s.hp) >= float(world.balance.barricade_health) and not s.repair_reserved:
 		_release(world, d.id)
 		return
-	if not s.repair_reserved:
-		if world.materials < int(world.balance.barricade_repair_cost):
-			return
-		world.materials -= int(world.balance.barricade_repair_cost)
-		s.repair_reserved = true
-	s.hp = minf(float(world.balance.barricade_health), float(s.hp) + dt * float(world.balance.barricade_repair_rate))
-	if float(s.hp) >= float(world.balance.barricade_health):
-		s.repair_reserved = false
+	if Repairs.step(world, "road:" + str(d.id), executor, dt):
 		_release(world, d.id)
-		world.note("%s repaired." % d.name)
 
 
 static func _release(world: RefCounted, id: String, remove_guard: bool = false) -> void:
@@ -266,6 +262,7 @@ static func intercept(world: RefCounted, z: Dictionary, target: Vector2, dt: flo
 			s.hp = maxf(0.0, float(s.hp) - float(world.balance.gate_damage) * ZombieTypes.stat(world.catalog, z, "breach"))
 			z.cooldown = ZombieTypes.stat(world.catalog, z, "cooldown")
 			if float(s.hp) <= 0:
+				Repairs.destroy(world, "road:" + str(chosen.id))
 				WorkOrders.cancel(world, "road:" + str(chosen.id), true)
 				world.roadworks[chosen.id] = empty()
 				_release(world, chosen.id, true)

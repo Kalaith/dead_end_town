@@ -1,4 +1,5 @@
 extends RefCounted
+const RepairState = preload("res://scripts/core/repair_state.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Production = preload("res://scripts/sim/production.gd")
@@ -24,7 +25,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 17
+const SCHEMA: int = 18
 ## Saved world fields that are dictionaries and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -212,6 +213,8 @@ func migrate(data: Dictionary) -> Dictionary:
 		return {}
 	var upgraded: Dictionary = data.duplicate(true)
 	var version: int = int(upgraded.schema_version)
+	if version == 17:
+		return _upgrade_repairs(upgraded)
 	if version == 16:
 		return _upgrade_road_orders(upgraded)
 	if version == 15:
@@ -489,5 +492,12 @@ func _upgrade_road_orders(data: Dictionary) -> Dictionary:
 			var order: Dictionary = WorkOrders.record(int(data.orders.sequence), "road:" + str(d.id), d.id, WorkRecipes.recipe(catalog, recipe_id), Routes.point(d.site))
 			order.work_done = float(s.progress)
 			data.orders.sites[order.socket] = order
+	data.schema_version = 17
+	return _upgrade_repairs(data)
+
+
+func _upgrade_repairs(data: Dictionary) -> Dictionary:
+	if not RepairState.migrate(data, catalog):
+		return {}
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

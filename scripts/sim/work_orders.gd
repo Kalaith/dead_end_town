@@ -85,7 +85,7 @@ static func refund(order: Dictionary) -> Dictionary:
 	if not pending(order):
 		return result
 	var fraction: float = float(order.work_done) / float(order.work_required)
-	var loss: float = 1.0 if order.kind == "production" else 0.25
+	var loss: float = 1.0 if order.kind in ["production", "repair"] else 0.25
 	for stock: String in order.inputs:
 		result[stock] = floori(float(order.inputs[stock]) * (1.0 - loss * fraction))
 	return result
@@ -94,7 +94,7 @@ static func refund(order: Dictionary) -> Dictionary:
 static func cancel(world: RefCounted, socket: String, destroyed: bool = false) -> bool:
 	var order: Dictionary = current(world, socket)
 	if not pending(order):
-		if destroyed and not order.is_empty() and order.phase in ["completed", "cancelled"] and order.kind == "construction":
+		if destroyed and not order.is_empty() and order.phase in ["completed", "cancelled"] and order.kind != "production":
 			order.phase = "destroyed"
 			order.output_granted = false
 			order.salvage_paid = false

@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authored passages and protected street crossings, separate from ownership.
+const Repairs = preload("res://scripts/sim/repairs.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
@@ -70,7 +71,7 @@ static func interact(world: RefCounted, d: Dictionary) -> void:
 	elif float(s.hp) > 0:
 		if s.open:
 			for a: Dictionary in [world.player] + world.survivors + world.zombies:
-				if float(a.hp) > 0 and Routes.rectangle(d.gate).grow(Routes.RADIUS).has_point(a.pos):
+				if (not a.has("raid") or float(a.hp) > 0) and Routes.rectangle(d.gate).grow(Routes.RADIUS).has_point(a.pos):
 					world.note("Passage gate occupied. Step clear before closing it.")
 					return
 		s.open = not s.open
@@ -136,6 +137,7 @@ static func step(world: RefCounted, dt: float) -> void:
 			continue
 		if not safe_work(world, d):
 			WorkOrders.block(world, socket, "Reclaim site" if not owned(world, d) else "Clear nearby threats")
+			Repairs.block(world, "passage:" + str(d.id), "Reclaim site" if not owned(world, d) else "Clear nearby threats")
 			continue
 		var executor: String = "you" if world.working and nearby(world).get("id") == d.id and float(world.player.hp) > 0 else ""
 		for a: Dictionary in world.survivors:
@@ -147,6 +149,7 @@ static func step(world: RefCounted, dt: float) -> void:
 						executor = a.id
 		if executor.is_empty():
 			WorkOrders.block(world, socket, "Need worker at site")
+			Repairs.block(world, "passage:" + str(d.id), "Need worker at site")
 			continue
 		if not s.done:
 			var completed: bool = WorkOrders.advance(world, socket, executor, dt, not _occupied(world, d))
@@ -156,23 +159,8 @@ static func step(world: RefCounted, dt: float) -> void:
 				s.hp = float(world.balance.gate_health)
 				world.rebuild_routes()
 				world.note("Passage ready. E opens the gate.")
-		elif float(s.hp) < float(world.balance.gate_health):
-			_repair(world, s, dt)
-
-
-static func _repair(world: RefCounted, s: Dictionary, dt: float) -> void:
-	if not s.repair_reserved:
-		if world.materials < int(world.balance.gate_repair_cost):
-			return
-		world.materials -= int(world.balance.gate_repair_cost)
-		s.repair_reserved = true
-	var broken: bool = float(s.hp) <= 0
-	s.hp = minf(float(world.balance.gate_health), float(s.hp) + dt * float(world.balance.gate_repair_rate))
-	if broken:
-		s.open = true
-		world.rebuild_routes()
-	if float(s.hp) >= float(world.balance.gate_health):
-		s.repair_reserved = false
+		elif float(s.hp) < float(world.balance.gate_health) or s.repair_reserved:
+			Repairs.step(world, "passage:" + str(d.id), executor, dt)
 
 
 static func bump(world: RefCounted, z: Dictionary, intended: Vector2) -> bool:
@@ -185,6 +173,7 @@ static func bump(world: RefCounted, z: Dictionary, intended: Vector2) -> bool:
 				s.hp = maxf(0, float(s.hp) - float(world.balance.gate_damage) * ZombieTypes.stat(world.catalog, z, "breach"))
 				z.cooldown = ZombieTypes.stat(world.catalog, z, "cooldown")
 				if float(s.hp) <= 0:
+					Repairs.destroy(world, "passage:" + str(d.id))
 					world.rebuild_routes()
 					world.note("Passage gate breached. Check both connected yards.")
 			return true

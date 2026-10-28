@@ -426,3 +426,17 @@ Evidence:
 - All 115 simulation scenarios pass. Four new road cases cover downed footprints/loss, damage and mid-removal JSON reload/once-only salvage, cancelled removal followed by breach, and schema-16 build/removal migration.
 - All 78 scripts load; Godot 4.7.2 headless editor/import passes. Ran the work-order and standard ten-state tours at 1280x720; inspected road_removal_board.png and street construction/removal states. The connected Keep button is asserted to preserve the barrier without payment.
 - Verification remains staged/automated, not human balance/feel acceptance. Bounded repairs, roles/resumption and queue policy remain G01 work before the full-town expansion. No toolkit edits, installations, exports or publication.
+
+
+## 28 October 2026: G01 bounded repairs and distinct gate rebuilding
+
+Implementation:
+- Property gates, passage gates and road barriers now use prepaid ledger repair batches. New repair commits three Materials for at most 120 health at 24/second; reaching max health discards unused capacity. Further damage needs a new batch, rather than banked repair credit. Lost ownership/contested yards/danger/no worker pause the same bundle.
+- A broken property/passage gate instead takes the documented seven-second rebuild: no partial gate health/collision, then full health and initially open. Both gate kinds also refuse to close through downed people.
+- Routine AI repair spending respects the configurable Materials reserve and safe home route. A physically defended line below 40% may use the critical-repair reserve exception. Manual R remains explicit spending. Demolition or breach discards attached repair without a second return.
+- Paused Work shows remaining repair capacity and exact cancellation return. No extra live HUD fields. Schema 18 migrates every older paid repair with its exact remaining full-gap capacity once; new bounded values never rebill old commitments. Repair validation/migration is in a separate core owner.
+
+Evidence:
+- All 122 simulation scenarios pass, including seven new bounded-capacity/no-banking, partial-loss/reload/reclaim, atomic rebuild, AI reserve/critical exception, demolition accounting, schema-17 prepaid migration/flag validation and downed gate-closure cases. The older breach scenario now explicitly reclaims home before starting work, as required by the full-game held-site contract.
+- All 82 scripts load; Godot 4.7.2 headless editor/import passes. Ran the standard ten-state tour and repair tour at 1280x720; inspected repair_work_board.png, gate_rebuild_work.png and gate_rebuilt.png. The connected cancel button is checked against its exact one-Material return.
+- This is staged automated/input/visual evidence, not human feel, full-game balance or release acceptance. Facility damage/repair belongs to the upcoming facility milestones; G01 roles/resumption and queue policy remain next. No toolkit edits, installations, exports or publication.

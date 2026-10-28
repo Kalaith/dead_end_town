@@ -148,6 +148,7 @@ func check_breach_opens_physical_route_and_repair_resumes_once():
 		return "Breach did not open collision."
 	for z: Dictionary in w.zombies:
 		z.hp = 0.0
+	w.claim("home")
 	w.player.pos = Vector2(360, 440)
 	w.working = true
 	w.step(0.05)

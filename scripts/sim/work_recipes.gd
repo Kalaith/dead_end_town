@@ -1,6 +1,6 @@
 extends RefCounted
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
-const IDS: Array[String] = ["bullets", "passage", "garden", "workshop", "armour", "road_build", "road_remove"]
+const IDS: Array[String] = ["bullets", "passage", "garden", "workshop", "armour", "road_build", "road_remove", "repair_line", "gate_rebuild", "legacy_repair"]
 
 
 static func definition(catalog: Dictionary, id: String) -> Dictionary:
@@ -34,7 +34,7 @@ static func content(catalog: Dictionary, errors: Array[String]) -> void:
 			continue
 		var entry: Dictionary = raw
 		rules.text(entry, "name")
-		if entry.get("source") not in ["balance", "firearm"] or entry.get("kind") not in ["construction", "production"]:
+		if entry.get("source") not in ["balance", "firearm"] or entry.get("kind") not in ["construction", "production", "repair"]:
 			errors.append("Invalid work recipe source/kind.")
 			continue
 		if not catalog.get(entry.source) is Dictionary:
@@ -48,5 +48,5 @@ static func content(catalog: Dictionary, errors: Array[String]) -> void:
 		if entry.get("id") == "bullets":
 			if entry.source != "firearm" or entry.kind != "production" or entry.get("output") != "bullets" or entry.get("count") != "batch_bullets":
 				errors.append("Bullet recipe must produce the implemented bullet batch.")
-		elif entry.get("output") != "" or entry.get("count") != "" or entry.kind != "construction" or entry.source != "balance":
+		elif entry.get("output") != "" or entry.get("count") != "" or entry.kind != ("repair" if entry.id in ["repair_line", "legacy_repair"] else "construction") or entry.source != "balance":
 			errors.append("Construction cannot invent resource outputs.")

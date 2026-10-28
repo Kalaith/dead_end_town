@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Repairs = preload("res://scripts/sim/repairs.gd")
 const Restoration = preload("res://scripts/sim/restoration.gd")
 const Production = preload("res://scripts/sim/production.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
@@ -238,7 +239,7 @@ func interact() -> void:
 				return
 			if state.open:
 				for a: Dictionary in [player] + survivors + zombies:
-					if float(a.hp) > 0 and absf(a.pos.x - float(p.gate[0])) < 60 and absf(a.pos.y - float(p.gate[1])) < 28:
+					if (not a.has("raid") or float(a.hp) > 0) and absf(a.pos.x - float(p.gate[0])) < 60 and absf(a.pos.y - float(p.gate[1])) < 28:
 						note("Gate is occupied. Step clear before closing it.")
 						return
 			state.open = not state.open
@@ -327,26 +328,11 @@ func assign_mara() -> void:
 
 func _work(dt: float) -> void:
 	for p: Dictionary in catalog.properties:
-		var state: Dictionary = properties[p.id]
-		if not working or player.pos.distance_to(Routes.point(p.gate)) >= 76 or float(state.gate_hp) >= float(balance.gate_health) or Combat.danger(self, player.pos, 90):
-			continue
-		if repair_reserved and gate_repair_target != p.id:
-			note("Finish the committed gate repair at " + definition(gate_repair_target).name + " first.")
+		Repairs.block(self, "gate:" + str(p.id), "Need worker at site")
+	for p: Dictionary in catalog.properties:
+		if working and player.pos.distance_to(Routes.point(p.gate)) < 76:
+			Repairs.step(self, "gate:" + str(p.id), "you", dt)
 			break
-		if not repair_reserved and materials >= int(balance.gate_repair_cost):
-			materials -= int(balance.gate_repair_cost)
-			repair_reserved = true
-			gate_repair_target = p.id
-		if repair_reserved:
-			var destroyed: bool = float(state.gate_hp) <= 0
-			state.gate_hp = minf(float(balance.gate_health), float(state.gate_hp) + dt * float(balance.gate_repair_rate))
-			if destroyed:
-				state.open = true
-				rebuild_routes()
-			if float(state.gate_hp) >= float(balance.gate_health):
-				repair_reserved = false
-				note(p.name + " / Gate repaired.")
-		break
 	if garden_started and not garden_done:
 		if Restoration.step(self, "garden", dt):
 			note("Garden ready. Hold R or assign a grower.")

@@ -1,4 +1,5 @@
 extends VBoxContainer
+const Repairs = preload("res://scripts/sim/repairs.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
@@ -8,7 +9,7 @@ var rows: Dictionary = {}
 
 static func available(world: RefCounted) -> bool:
 	for order: Dictionary in world.orders.sites.values():
-		if order.kind == "construction" and WorkOrders.pending(order):
+		if order.kind != "production" and WorkOrders.pending(order):
 			return true
 	return false
 
@@ -17,13 +18,15 @@ func refresh(world: RefCounted) -> void:
 	var active: Array[String] = []
 	for socket: String in world.orders.sites:
 		var order: Dictionary = world.orders.sites[socket]
-		if order.kind != "construction" or not WorkOrders.pending(order):
+		if order.kind == "production" or not WorkOrders.pending(order):
 			continue
 		active.append(socket)
 		if not rows.has(socket):
 			_create(socket)
 		var row: Dictionary = rows[socket]
 		var title: String = WorkRecipes.definition(world.catalog, order.recipe).name
+		if order.recipe in Repairs.IDS:
+			title += " · " + str(Repairs.describe(world.catalog, order.target).name)
 		for d: Dictionary in world.catalog.passages:
 			if d.id == order.target:
 				title = d.name
@@ -31,6 +34,8 @@ func refresh(world: RefCounted) -> void:
 			if d.id == order.target:
 				title = ("Remove · " if order.recipe == "road_remove" else "") + str(d.name)
 		row.label.text = "%s · %d%% · %d materials committed" % [title, int(100 * float(order.work_done) / float(order.work_required)), int(order.inputs.materials)]
+		if order.kind == "repair":
+			row.label.text = "%s · %d health left · %d materials committed" % [title, ceili((float(order.work_required) - float(order.work_done)) * float(world.balance.gate_repair_rate)), int(order.inputs.materials)]
 		if not str(order.blocked_reason).is_empty():
 			row.label.text += "\n" + str(order.blocked_reason)
 		row.cancel.text = "Cancel · +%d materials" % int(WorkOrders.refund(order).materials)

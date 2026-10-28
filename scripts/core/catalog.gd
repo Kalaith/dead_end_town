@@ -52,10 +52,15 @@ static func problems(data: Dictionary) -> Array[String]:
 			errors.append("Wandering turn interval is reversed.")
 		if not Rules.whole(data.balance.get("roam_seed")):
 			errors.append("Wandering seed must be a whole number.")
-		for key: String in ["step", "player_speed", "survivor_speed", "player_health", "survivor_health", "melee_damage", "attack_reach", "attack_cooldown", "gate_health", "gate_damage", "gate_repair_cost", "gate_repair_rate", "claim_materials", "garden_cost", "work_seconds", "food_seconds", "approach_seconds", "territory_fall_seconds", "starting_materials", "starting_food", "workshop_cost", "workshop_seconds", "armour_cost", "armour_seconds"]:
+		for key: String in ["step", "player_speed", "survivor_speed", "player_health", "survivor_health", "melee_damage", "attack_reach", "attack_cooldown", "gate_health", "gate_damage", "gate_repair_cost", "gate_repair_rate", "repair_seconds", "gate_rebuild_seconds", "legacy_repair_seconds", "claim_materials", "garden_cost", "work_seconds", "food_seconds", "approach_seconds", "territory_fall_seconds", "starting_materials", "starting_food", "workshop_cost", "workshop_seconds", "armour_cost", "armour_seconds"]:
 			rules.number_between(data.balance, key, 0.001, 10000.0)
 		for key: String in ["armour_damage_multiplier", "armour_speed_multiplier", "shield_damage_multiplier"]:
 			rules.number_between(data.balance, key, 0.01, 1.0)
+	if data.get("balance") is Dictionary:
+		var b: Dictionary = data.balance
+		if Rules.finite(b.get("legacy_repair_seconds")) and Rules.finite(b.get("gate_repair_rate")) and Rules.finite(b.get("gate_health")) and Rules.finite(b.get("barricade_health")):
+			if float(b.legacy_repair_seconds) * float(b.gate_repair_rate) < maxf(float(b.gate_health), float(b.barricade_health)):
+				errors.append("Legacy repair capacity must preserve a prepaid full repair.")
 	_zombie_types(data, errors)
 	if not rules.list(data, "properties", false):
 		return errors

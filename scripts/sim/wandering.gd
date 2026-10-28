@@ -1,5 +1,6 @@
 extends RefCounted
 ## Idle wandering and local pursuit share physical collision and defence damage.
+const Repairs = preload("res://scripts/sim/repairs.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
@@ -43,6 +44,7 @@ static func _bump(world: RefCounted, z: Dictionary, intended: Vector2, direction
 			state.gate_hp = maxf(0.0, float(state.gate_hp) - float(world.balance.gate_damage) * ZombieTypes.stat(world.catalog, z, "breach"))
 			z.cooldown = ZombieTypes.stat(world.catalog, z, "cooldown")
 			if float(state.gate_hp) <= 0:
+				Repairs.destroy(world, "gate:" + str(p.id))
 				world.rebuild_routes()
 				world.note(p.name + " / Gate breached. Defend and rebuild.")
 			return

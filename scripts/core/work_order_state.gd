@@ -1,4 +1,6 @@
 extends RefCounted
+const RepairState = preload("res://scripts/core/repair_state.gd")
+const Repairs = preload("res://scripts/sim/repairs.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 
@@ -33,7 +35,7 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 		var flags: Array = _restoration(data, id)
 		if flags[0] and not flags[1] and not ledger.sites.has("restore:" + id):
 			return false
-	return true
+	return RepairState.valid(data)
 
 
 static func _restoration(data: Dictionary, id: String) -> Array:
@@ -45,6 +47,8 @@ static func _restoration(data: Dictionary, id: String) -> Array:
 
 
 static func _valid_site(o: Dictionary, data: Dictionary, catalog: Dictionary) -> bool:
+	if o.recipe in Repairs.IDS:
+		return RepairState.valid_site(o, data, catalog)
 	if o.recipe in ["road_build", "road_remove"]:
 		if o.socket != "road:" + str(o.target) or not data.roadworks.has(o.target):
 			return false

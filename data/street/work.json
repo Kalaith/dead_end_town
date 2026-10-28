@@ -72,6 +72,36 @@
         "output": "",
         "count": "",
         "kind": "construction"
+      },
+      {
+        "id": "repair_line",
+        "name": "Repair",
+        "source": "balance",
+        "cost": "gate_repair_cost",
+        "seconds": "repair_seconds",
+        "output": "",
+        "count": "",
+        "kind": "repair"
+      },
+      {
+        "id": "gate_rebuild",
+        "name": "Rebuild gate",
+        "source": "balance",
+        "cost": "gate_repair_cost",
+        "seconds": "gate_rebuild_seconds",
+        "output": "",
+        "count": "",
+        "kind": "construction"
+      },
+      {
+        "id": "legacy_repair",
+        "name": "Repair",
+        "source": "balance",
+        "cost": "gate_repair_cost",
+        "seconds": "legacy_repair_seconds",
+        "output": "",
+        "count": "",
+        "kind": "repair"
       }
     ]
   }
