@@ -116,7 +116,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				if world.workshop.armour_done:
 					a.activity = "Workshop work complete"
 			"Ammo":
-				a.activity = "Crafting bullets" if world.materials >= int(world.catalog.firearm.material_cost) or world.firearms.reserved else "Bullet crafting paused - need materials"
+				a.activity = "Crafting bullets" if world.materials >= int(world.catalog.firearm.material_cost) or Firearms.reserved(world) else "Bullet crafting paused - need materials"
 				if not world.properties.munitions.claimed or not world.connected("munitions"):
 					a.activity = "Bullet crafting paused - reclaim the workshop route"
 					anchor = Routes.point(world.balance.home_respawn)

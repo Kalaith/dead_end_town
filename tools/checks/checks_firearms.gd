@@ -124,16 +124,16 @@ func check_assigned_worker_physically_arrives_and_crafts_one_shared_batch() -> S
 		return "Remote worker crafted without arriving."
 	for i: int in range(90):
 		w.step(0.05)
-	if a.pos.distance_to(Vector2(1800, 800)) >= 40 or not w.firearms.reserved:
+	if a.pos.distance_to(Vector2(1800, 800)) >= 40 or not Firearms.reserved(w):
 		return "Assigned worker did not physically enter the workshop and begin a batch."
-	w.firearms.progress = 0.0
+	w.orders.sites.munitions.work_done = 0.0
 	w.assign_survivor("mara", "ammo")
 	w.survivors[0].pos = a.pos
 	Firearms.step(w, float(w.catalog.firearm.craft_seconds) - 0.1)
 	if int(w.firearms.bullets) != 6:
 		return "Two workers doubled production."
 	Firearms.step(w, 0.1)
-	return "Batch cost/yield wrong" if w.materials != stock - 2 or int(w.firearms.bullets) != 12 or w.firearms.reserved else ""
+	return "Batch cost/yield wrong" if w.materials != stock - 2 or int(w.firearms.bullets) != 12 or Firearms.reserved(w) else ""
 
 
 func check_crafting_interruptions_and_reload_preserve_reserved_materials() -> String:
@@ -145,17 +145,17 @@ func check_crafting_interruptions_and_reload_preserve_reserved_materials() -> St
 	var stock: int = w.materials
 	w.properties.munitions.claimed = false
 	Firearms.step(w, 20.0)
-	if float(w.firearms.progress) != 4 or w.materials != stock:
+	if Firearms.progress(w) != 4 or w.materials != stock:
 		return "Lost workshop consumed materials or continued crafting."
 	w.properties.munitions.claimed = true
 	var save := SaveState.new(w.catalog)
 	var loaded: RefCounted = save.restore(JSON.parse_string(JSON.stringify(save.snapshot(w))))
-	if loaded == null or float(loaded.firearms.progress) != 4:
+	if loaded == null or Firearms.progress(loaded) != 4:
 		return "Partial batch failed save roundtrip."
 	loaded.zombies[0].hp = 100.0
 	loaded.zombies[0].pos = Vector2(1800, 820)
 	Firearms.step(loaded, 20.0)
-	if float(loaded.firearms.progress) != 4:
+	if Firearms.progress(loaded) != 4:
 		return "Crafting ignored nearby danger."
 	loaded.zombies[0].hp = 0.0
 	Firearms.step(loaded, 11.0)
@@ -163,7 +163,7 @@ func check_crafting_interruptions_and_reload_preserve_reserved_materials() -> St
 		return "Reload charged twice or lost the batch."
 	loaded.materials = 0
 	Firearms.step(loaded, 20.0)
-	return "Crafted without materials" if loaded.firearms.reserved or int(loaded.firearms.bullets) != 12 else ""
+	return "Crafted without materials" if Firearms.reserved(loaded) or int(loaded.firearms.bullets) != 12 else ""
 
 
 func check_real_schema_eleven_expands_without_rewriting_old_progress() -> String:

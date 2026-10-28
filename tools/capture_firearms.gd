@@ -1,4 +1,5 @@
 extends "res://addons/hatchery/testing/capture_runner.gd"
+const Firearms = preload("res://scripts/sim/firearms.gd")
 const Checks = preload("res://tools/checks/checks_firearms.gd")
 const Tasks = preload("res://scripts/sim/tasks.gd")
 
@@ -48,7 +49,7 @@ func tour() -> void:
 	game.assign_survivor("ellis", "ammo")
 	game.world.survivors[0].pos = Vector2(1800, 580)
 	game.world.step(0.05)
-	game.world.firearms.progress = 7.5
+	game.world.orders.sites.munitions.work_done = 7.5
 	game.world.shot.left = 0.0
 	game.camera.position = Vector2(1520, 800)
 	game.camera.force_update_scroll()

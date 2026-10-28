@@ -343,3 +343,16 @@ Documentation verification is recorded in the follow-up audit entry. No Godot pa
 - Added one optional recoverable depot utility van and its owning document, 18: restoration, two passengers, continuous driving/collision, noise, boarding/exits, hull damage, casualty recovery, repair, workshop retrieval and persistence. Replaced the blanket vehicle exclusion with this bounded exception. No fuel economy, hauling or mandatory vehicle gate.
 - Updated roster/readiness/staffing, recipe, roadmap and acceptance owners. Nine people cost 4.5 Food/minute; pre-pump production at 70% uptime leaves only 0.17/minute above meals. Two finale meals now require 18 Food. The optional van costs 12 Materials outside the unchanged core plan; spending it from the 29-Material margin leaves 17.
 - Documentation verification: local links, Markdown table structure, cross-document roster counts, food/material arithmetic, file sizes and whitespace checked. No runtime/data/art changes, engine checks, captures or human playtesting; these additions remain future design.
+
+
+## 28 October 2026: G01 shared work ledger, first integration
+
+Implementation:
+- Added simulation-owned prepaid work records with stable sequence IDs, one executor lease per socket, block reasons, committed input/output bundles, progress and terminal completion/cancellation/destruction guards. Bullet production now uses this ledger; other construction still uses its original records and is the next G01 work.
+- Schema 13 migrates schema-12 partial bullet batches without another debit. Earlier migration chains remain supported. JSON numeric fields are normalised when restored so deterministic simulation snapshots stay identical.
+- No new live UI text. The existing workshop meter reads authoritative ledger progress.
+
+Evidence:
+- All 96 simulation scenarios pass, including five new migration, conservation, lease/handoff, terminal replay and malformed-ledger scenarios. All 66 scripts load; Godot 4.7.2 headless editor/import passes. File sizes and whitespace pass.
+- Ran the four-state firearm capture tour at 1280x720; inspected bullet_workshop.png. The tour exercises real right-click shooting and the connected survivor assignment selector. These are staged checks, not human playtesting.
+- Full G01, campaign expansion, balance, audio, performance and release verification remain outstanding. No installation, toolkit changes, export or publication.

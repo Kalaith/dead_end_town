@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
 const Salvage = preload("res://scripts/sim/salvage.gd")
 const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
@@ -14,6 +15,7 @@ const Combat = preload("res://scripts/sim/combat.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
+var orders: Dictionary = WorkOrders.initial()
 var firearms: Dictionary = Firearms.initial()
 var shot: Dictionary = {"from": Vector2.ZERO, "to": Vector2.ZERO, "left": 0.0}
 var roam_rng := RandomNumberGenerator.new()

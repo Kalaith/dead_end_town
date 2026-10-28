@@ -1,10 +1,11 @@
 extends RefCounted
 ## Pistol ownership, physical ray shots and one shared ammunition workbench.
+const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 
 
 static func initial() -> Dictionary:
-	return {"owned": false, "bullets": 0, "progress": 0.0, "reserved": false}
+	return {"owned": false, "bullets": 0}
 
 
 static func civilian(a: Dictionary) -> bool:
@@ -58,28 +59,45 @@ static func shoot(world: RefCounted) -> bool:
 	return true
 
 
+static func batch(world: RefCounted) -> Dictionary:
+	return WorkOrders.current(world, "munitions")
+
+
+static func progress(world: RefCounted) -> float:
+	var order: Dictionary = batch(world)
+	return float(order.work_done) if WorkOrders.pending(order) else 0.0
+
+
+static func reserved(world: RefCounted) -> bool:
+	return WorkOrders.pending(batch(world))
+
+
 static func step(world: RefCounted, dt: float) -> void:
 	var site: Vector2 = Routes.point(world.definition("munitions").site)
-	if not world.properties.munitions.claimed or not world.connected("munitions") or world.remaining("munitions") > 0:
-		return
-	var executor: bool = false
+	var reason: String = ""
+	if not world.properties.munitions.claimed:
+		reason = "Reclaim site"
+	elif not world.connected("munitions"):
+		reason = "Need home route"
+	elif world.remaining("munitions") > 0:
+		reason = "Clear nearby threats"
+	var executor: String = ""
 	for a: Dictionary in world.survivors:
 		if a.order == "Ammo" and float(a.hp) > 0 and a.pos.distance_to(site) < 40 and not a.activity.begins_with("Sheltering"):
-			executor = true
+			if executor.is_empty() or str(a.id) < executor:
+				executor = a.id
 	for z: Dictionary in world.zombies:
 		if float(z.hp) > 0 and z.pos.distance_to(site) < 170:
-			return
-	if not executor:
+			reason = "Clear nearby threats"
+	if reason.is_empty() and executor.is_empty():
+		reason = "Need worker at bench"
+	if not reason.is_empty():
+		WorkOrders.block(world, "munitions", reason)
 		return
 	var rules: Dictionary = world.catalog.firearm
-	if not world.firearms.reserved:
-		if world.materials < int(rules.material_cost):
+	var recipe: Dictionary = {"id": "bullets", "kind": "production", "inputs": {"materials": int(rules.material_cost)}, "outputs": {"bullets": int(rules.batch_bullets)}, "seconds": float(rules.craft_seconds)}
+	if not reserved(world):
+		if not WorkOrders.approve(world, "munitions", "munitions", recipe, site):
 			return
-		world.materials -= int(rules.material_cost)
-		world.firearms.reserved = true
-	world.firearms.progress = minf(float(rules.craft_seconds), float(world.firearms.progress) + dt)
-	if float(world.firearms.progress) >= float(rules.craft_seconds):
-		world.firearms.bullets = int(world.firearms.bullets) + int(rules.batch_bullets)
-		world.firearms.progress = 0.0
-		world.firearms.reserved = false
+	if WorkOrders.advance(world, "munitions", executor, dt):
 		world.note("Ammunition workshop: %d bullets crafted." % int(rules.batch_bullets))

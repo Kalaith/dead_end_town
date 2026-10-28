@@ -1,5 +1,6 @@
 extends Node2D
 ## Original procedural greybox art. No imported game assets.
+const Firearms = preload("res://scripts/sim/firearms.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const NeighbourhoodView = preload("res://scripts/presentation/neighbourhood_view.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
@@ -91,7 +92,7 @@ func _property(p: Dictionary) -> void:
 		draw_rect(Rect2(site + Vector2(65, 0), Vector2(80, 25)), Color("ab8860"))
 		for i: int in range(6):
 			draw_line(site + Vector2(75 + i * 10, 3), site + Vector2(75 + i * 10, 18), Color("dfb36e"), 4)
-		_meter(site + Vector2(65, 33), 80, float(world.firearms.progress) / float(world.catalog.firearm.craft_seconds), TEAL)
+		_meter(site + Vector2(65, 33), 80, Firearms.progress(world) / float(world.catalog.firearm.craft_seconds), TEAL)
 	if p.id == "garage":
 		_workshop(site)
 	if float(state.occupation) > 0:

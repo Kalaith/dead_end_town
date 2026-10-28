@@ -1,4 +1,6 @@
 extends RefCounted
+const WorkOrderState = preload("res://scripts/core/work_order_state.gd")
+const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const FirearmState = preload("res://scripts/core/firearm_state.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
@@ -19,11 +21,11 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 12
+const SCHEMA: int = 13
 ## Saved world fields that are dictionaries and are copied, not shared.
-const COPIED_KEYS: Array[String] = ["workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
+const COPIED_KEYS: Array[String] = ["orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
+const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
 var catalog: Dictionary
 var store: RefCounted
 
@@ -62,12 +64,18 @@ func _decode_actor(a: Dictionary) -> Dictionary:
 
 
 func restore(raw: Dictionary) -> RefCounted:
-	var data: Dictionary = migrate(raw) if raw.get("schema_version") in range(1, SCHEMA) else raw
+	var data: Dictionary = migrate(raw) if Rules.integer_in(raw.get("schema_version"), 1, SCHEMA - 1) else raw
 	if not valid(data):
 		return null
 	var world := World.new(catalog)
 	for key: String in STATE_KEYS:
 		world.set(key, int(data[key]) if key in ["materials", "food", "downs"] else (data[key].duplicate(true) if key in COPIED_KEYS else data[key]))
+	world.orders.sequence = int(data.orders.sequence)
+	for order: Dictionary in world.orders.sites.values():
+		order.sequence = int(order.sequence)
+		for bundle: String in ["inputs", "outputs"]:
+			for stock: String in order[bundle]:
+				order[bundle][stock] = int(order[bundle][stock])
 	world.firearms.bullets = int(data.firearms.bullets)
 	world.slice_state.downs = int(data.slice_state.downs)
 	world.provisions.harvested = int(data.provisions.harvested)
@@ -92,7 +100,7 @@ func valid(data: Dictionary) -> bool:
 	if not data.get("roam_rng_state") is String or str(int(data.roam_rng_state)) != data.roam_rng_state:
 		return false
 	for key: String in STATE_KEYS:
-		if key in ["workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
+		if key in ["orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
 			continue
 		if key == "gate_repair_target":
 			if data.get(key) not in ["home", "garden", "library", "garage", "residence", "munitions"]:
@@ -166,7 +174,7 @@ func valid(data: Dictionary) -> bool:
 		return false
 	if data.player.id != "you":
 		return false
-	return FirearmState.valid(data, catalog) and PressureState.valid(data, catalog) and NeighbourhoodState.valid(data, catalog) and EquipmentState.valid(data) and ProvisionsState.valid(data, catalog) and SliceState.valid(data, catalog)
+	return WorkOrderState.valid(data, catalog) and FirearmState.valid(data, catalog) and PressureState.valid(data, catalog) and NeighbourhoodState.valid(data, catalog) and EquipmentState.valid(data) and ProvisionsState.valid(data, catalog) and SliceState.valid(data, catalog)
 
 
 func _valid_actor(a: Variant, max_health: float) -> bool:
@@ -199,6 +207,8 @@ func migrate(data: Dictionary) -> Dictionary:
 		return {}
 	var upgraded: Dictionary = data.duplicate(true)
 	var version: int = int(upgraded.schema_version)
+	if version == 12:
+		return _upgrade_orders(upgraded)
 	if version == 11:
 		return _upgrade_firearms(upgraded)
 	if version == 10:
@@ -372,6 +382,30 @@ func _upgrade_firearms(data: Dictionary) -> Dictionary:
 	for id: String in fresh.passages:
 		if not data.passages.has(id):
 			data.passages[id] = fresh.passages[id].duplicate(true)
-	data.firearms = Firearms.initial()
+	data.firearms = {"owned": false, "bullets": 0, "progress": 0.0, "reserved": false}
+	data.schema_version = 12
+	return _upgrade_orders(data)
+
+
+func _upgrade_orders(data: Dictionary) -> Dictionary:
+	if not data.get("firearms") is Dictionary:
+		return {}
+	var s: Dictionary = data.firearms
+	if not s.get("reserved") is bool or not Rules.finite(s.get("progress")):
+		return {}
+	if float(s.progress) < 0 or float(s.progress) >= float(catalog.firearm.craft_seconds) or (float(s.progress) > 0 and not s.reserved):
+		return {}
+	data.orders = WorkOrders.initial()
+	if s.reserved:
+		var recipe: Dictionary = {"id": "bullets", "kind": "production", "inputs": {"materials": int(catalog.firearm.material_cost)}, "outputs": {"bullets": int(catalog.firearm.batch_bullets)}, "seconds": float(catalog.firearm.craft_seconds)}
+		var site: Array = []
+		for p: Dictionary in catalog.properties:
+			if p.id == "munitions":
+				site = p.site
+		data.orders.sequence = 1
+		data.orders.sites.munitions = WorkOrders.record(1, "munitions", "munitions", recipe, Vector2(float(site[0]), float(site[1])))
+		data.orders.sites.munitions.work_done = float(s.progress)
+	s.erase("reserved")
+	s.erase("progress")
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}
