@@ -28,6 +28,15 @@
         "knockback": 12,
         "cone": 0.15,
         "targets": 2
+      },
+      "spear": {
+        "name": "Long spear",
+        "damage": 38,
+        "reach": 120,
+        "cooldown": 0.8,
+        "knockback": 20,
+        "cone": 0.75,
+        "targets": 1
       }
     }
   },

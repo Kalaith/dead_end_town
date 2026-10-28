@@ -9,8 +9,8 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	if not rules.object(data, "equipment") or not rules.object(data.equipment, "weapons"):
 		return
 	var weapons: Dictionary = data.equipment.weapons
-	if weapons.keys() != ["bat", "crowbar", "sword"]:
-		errors.append("Equipment needs exactly the implemented bat, crowbar and sword.")
+	if weapons.keys() != ["bat", "crowbar", "sword", "spear"]:
+		errors.append("Equipment needs exactly the implemented bat, crowbar, sword and spear.")
 	for raw: Variant in weapons.values():
 		if not raw is Dictionary:
 			errors.append("Weapon must be an object.")
@@ -25,16 +25,22 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 
 
 static func valid(data: Dictionary) -> bool:
-	if not data.get("equipment") is Dictionary or data.equipment.size() != 4:
+	if not data.get("equipment") is Dictionary or data.equipment.size() != 5:
 		return false
 	var wearers: Array[String] = ["", "you"]
 	for a: Dictionary in data.survivors:
 		wearers.append(a.id)
-	for id: String in ["crowbar", "sword", "iron", "shield"]:
+	for id: String in ["crowbar", "sword", "iron", "shield", "spear"]:
 		if not data.equipment.get(id) is String or not wearers.has(data.equipment[id]):
 			return false
-		if not data.equipment[id].is_empty() and not (data.properties.garage.looted if id == "crowbar" else data.workshop.armour_done):
+		if not data.equipment[id].is_empty() and not (data.properties.hardware.looted if id == "spear" else data.properties.garage.looted if id == "crowbar" else data.workshop.armour_done):
 			return false
-	if not data.equipment.crowbar.is_empty() and data.equipment.crowbar == data.equipment.sword:
+	var weapons: Array[String] = []
+	for id: String in ["crowbar", "sword", "spear"]:
+		if not data.equipment[id].is_empty():
+			if data.equipment[id] == "ellis" or data.equipment[id] in weapons:
+				return false
+			weapons.append(data.equipment[id])
+	if not data.equipment.spear.is_empty() and data.equipment.spear == data.equipment.shield:
 		return false
 	return data.workshop.equipped == (data.equipment.iron == "paige" and data.equipment.shield == "paige")

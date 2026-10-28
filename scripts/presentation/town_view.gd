@@ -172,7 +172,10 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 	if not zombie and a.id != "ellis" and not (a.id == "you" and float(world.shot.left) > 0):
 		var grip: Vector2 = pos + Vector2(0, -14) + direction * 12
 		var weapon: String = Equipment.weapon(world, a)
-		draw_line(grip, grip + direction * (36 if weapon == "sword" else 27), Color("c7b68e") if weapon == "bat" else Color("c1d1d0"), 5 if weapon != "sword" else 3)
+		draw_line(grip, grip + direction * (48 if weapon == "spear" else 36 if weapon == "sword" else 27), Color("c7b68e") if weapon == "bat" else Color("c1d1d0"), 5 if weapon != "sword" else 3)
+		if weapon == "spear":
+			var tip: Vector2 = grip + direction * 48
+			draw_colored_polygon(PackedVector2Array([tip + direction * 9, tip - direction * 5 + direction.orthogonal() * 5, tip - direction * 5 - direction.orthogonal() * 5]), Color("c1d1d0"))
 		if weapon == "crowbar":
 			draw_line(grip + direction * 27, grip + direction * 27 + direction.orthogonal() * 10, Color("c1d1d0"), 4)
 		draw_circle(grip, 3, Color("d7b08b"))

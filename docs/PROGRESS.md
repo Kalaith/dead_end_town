@@ -510,3 +510,17 @@ Evidence:
 - Mara's start and Paige/Ellis recruitment now use validated authored survivor records and one creation path. Searches can create each person once; repeating Ellis's rescue cannot replace spent ammunition or grant another pistol gift. Existing orders, default duties, positions and rescue lines remain intact.
 - Save roster validation derives expected people from implemented rescue sites; unique equipment owners derive from the validated recruited roster. This removes the fixed three-person assumptions before Market Row rescues, without adding future people or rewards.
 - All existing 137 scenarios pass after the change; two additional roster cases pass for discovery/gift idempotency, JSON reload, unknown/duplicate people and Ellis's starting duty. All 99 scripts load; headless editor/import passes. No visual change; preceding captures remain applicable. New rescues, paused introductions and Market Row content remain next.
+
+
+## 28 October 2026: hardware search, finite claim ledger and long spear
+
+Implementation:
+- The hardware shop is playable with three explicit Shambler stand-ins until the Runner mechanic arrives in G04. Local standing search requires clearance, pays exactly 32 Materials and two Food once, and recovers the long spear/construction tools. Search is allowed before a home connection; claiming still needs an adjacent home-connected property and pays six Materials once. Loss/reclaim/reload never repeats either reward. Original six-site combined claim/search transactions remain intact.
+- The unique spear has 38 damage, 120 reach, 0.80-second cadence, a narrow forward cone and one target. It reaches over low road lines, respects tall walls, and requires both hands. The simulation, loadout controls and save validation reject a simultaneous shield or duplicate weapon owner. Its long shaft and tip are visible in greybox art.
+- Schema 21 adds independent first-claim history, an empty spear owner and only the newly implemented hardware residents to old saves. It retains existing actors/corpses, resources, RNG, equipment and paid work. Tools discovery currently supplies spear availability; later reinforcement recipes remain unimplemented.
+- The live UI gains only E Search at the clear site. Loadout help is reduced to one line at 18 pixels, survivor labels use 18 pixels and the redundant successful-equipment footer is removed. Two-hand conflict explanation lives on the disabled choice/command.
+
+Evidence:
+- All 143 simulation scenarios pass. Four new cases cover remote/downed/occupied search rejection, exact separate search/first-claim payouts through loss/reload, real schema-20 expansion without old-actor changes, and spear reach/one-target/low-barrier/tall-wall/two-hand/unique ownership. Focused cases pass again after sharing the hand-conflict explanation with the picker.
+- All 103 scripts load; headless editor/import passes. Windowed hardware tour asserts separate search and uses the connected loadout picker. Inspected hardware_search.png, spear_loadout.png and spear_street.png at 1280x720. No file/function size violations.
+- These are staged/automated checks, not human combat feel or economy acceptance. Seventeen later sites remain shells. June/clinic, casualty recovery, Oliver/greenhouse and sustainable full-roster food remain G03 work; the full game is not complete. No toolkit changes, installations, exports or publication.

@@ -1,4 +1,5 @@
 extends RefCounted
+const DiscoveryState = preload("res://scripts/core/discovery_state.gd")
 const RosterState = preload("res://scripts/core/roster_state.gd")
 const TownState = preload("res://scripts/core/town_state.gd")
 const JobState = preload("res://scripts/core/job_state.gd")
@@ -28,7 +29,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 20
+const SCHEMA: int = 21
 ## Saved world fields that are collections and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -156,7 +157,7 @@ func valid(data: Dictionary) -> bool:
 			return false
 		if z.has("kind") and (not z.kind is String or not catalog.zombies.types.has(z.kind) or float(z.hp) > ZombieTypes.health(catalog, z.kind)):
 			return false
-	if not RosterState.valid(data, catalog):
+	if not RosterState.valid(data, catalog) or not DiscoveryState.valid(data, catalog):
 		return false
 	if float(data.garden_progress) > float(catalog.balance.work_seconds) or (data.garden_done and not data.garden_started):
 		return false
@@ -208,6 +209,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 20:
+		return _upgrade_discoveries(upgraded)
 	if version == 19:
 		return _upgrade_town(upgraded)
 	if version == 18:
@@ -513,5 +516,28 @@ func _upgrade_jobs(data: Dictionary) -> Dictionary:
 
 func _upgrade_town(data: Dictionary) -> Dictionary:
 	data.seen = TownState.LEGACY.duplicate()
+	data.schema_version = 20
+	return _upgrade_discoveries(data)
+
+
+func _upgrade_discoveries(data: Dictionary) -> Dictionary:
+	if not data.get("properties") is Dictionary or not data.get("equipment") is Dictionary or not data.get("zombies") is Array:
+		return {}
+	for state: Variant in data.properties.values():
+		if not state is Dictionary or not state.get("looted") is bool:
+			return {}
+		state.claimed_once = state.looted
+	if not data.equipment.has("spear"):
+		data.equipment.spear = ""
+	# Add only newly implemented residents; existing actors and cleared corpses stay exact.
+	var ids: Array[String] = []
+	for z: Variant in data.zombies:
+		if not z is Dictionary or not z.get("id") is String:
+			return {}
+		ids.append(z.id)
+	var fresh := World.new(catalog)
+	for z: Dictionary in fresh.zombies:
+		if z.home == "hardware" and z.id not in ids:
+			data.zombies.append(_encode_actor(z))
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

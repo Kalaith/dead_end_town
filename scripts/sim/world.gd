@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Discoveries = preload("res://scripts/sim/discoveries.gd")
 const Roster = preload("res://scripts/sim/roster.gd")
 const Exploration = preload("res://scripts/sim/exploration.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
@@ -73,7 +74,7 @@ func _init(data: Dictionary) -> void:
 	player = actor("you", "You", Routes.point(balance.player_start), float(balance.player_health))
 	Roster.start(self)
 	for p: Dictionary in catalog.properties:
-		properties[p.id] = {"claimed": p.id == "home", "looted": p.id == "home", "open": p.id != "home", "occupation": 0.0, "gate_hp": float(balance.gate_health) * (float(balance.home_gate_start_factor) if p.id == "home" else 1.0)}
+		properties[p.id] = {"claimed_once": p.id == "home", "claimed": p.id == "home", "looted": p.id == "home", "open": p.id != "home", "occupation": 0.0, "gate_hp": float(balance.gate_health) * (float(balance.home_gate_start_factor) if p.id == "home" else 1.0)}
 		for spawn: Array in p.zombies:
 			var z: Dictionary = actor("z%d" % zombies.size(), "Shambler", Routes.point(spawn), ZombieTypes.health(catalog))
 			z.home = p.id
@@ -215,6 +216,8 @@ func _context() -> String:
 				return "E Recover · %d food" % int(balance.recovery_food)
 			if remaining(p.id) > 0:
 				return "Clear yard"
+			if p.has("search") and not properties[p.id].looted:
+				return "E Search"
 			if not properties[p.id].claimed:
 				return "E Secure"
 			if p.id == "munitions":
@@ -230,6 +233,8 @@ func _context() -> String:
 
 
 func interact() -> void:
+	if float(player.hp) <= 0:
+		return
 	var passage: Dictionary = Neighbourhood.nearby(self)
 	if not passage.is_empty():
 		Neighbourhood.interact(self, passage)
@@ -256,7 +261,9 @@ func interact() -> void:
 			if p.id == "home" and state.claimed:
 				Provisions.recover(self)
 				return
-			if not state.claimed:
+			if p.has("search") and not state.looted:
+				Discoveries.search(self, p.id)
+			elif not state.claimed:
 				claim(p.id)
 			elif p.id == "garage":
 				Workshop.interact(self)
@@ -281,8 +288,21 @@ func claim(id: String) -> bool:
 	if not adjacent:
 		note("Secure a neighboring property first to connect this site to home.")
 		return false
+	var p: Dictionary = definition(id)
+	if p.has("search") and (float(player.hp) <= 0 or player.pos.distance_to(Routes.point(p.site)) >= 85):
+		return false
+	if p.has("search") and not properties[id].looted:
+		note("Search the site before securing it.")
+		return false
+	var first: bool = not properties[id].claimed_once
 	properties[id].claimed = true
+	properties[id].claimed_once = true
 	properties[id].occupation = 0.0
+	if p.has("search"):
+		if first:
+			materials += int(balance.claim_materials)
+		note(p.name + (" secured." if first else " reclaimed."))
+		return true
 	if properties[id].looted:
 		note(definition(id).name + " / Reclaimed. Previous improvements preserved.")
 		return true

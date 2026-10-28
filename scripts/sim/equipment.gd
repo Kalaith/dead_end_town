@@ -3,7 +3,7 @@ const Routes = preload("res://scripts/sim/routes.gd")
 
 
 static func initial() -> Dictionary:
-	return {"crowbar": "", "sword": "", "iron": "", "shield": ""}
+	return {"crowbar": "", "sword": "", "iron": "", "shield": "", "spear": ""}
 
 
 static func person(world: RefCounted, id: String) -> Dictionary:
@@ -18,11 +18,13 @@ static func person(world: RefCounted, id: String) -> Dictionary:
 static func unlocked(world: RefCounted, id: String) -> bool:
 	if id == "bat" or id == "none":
 		return true
+	if id == "spear":
+		return world.properties.hardware.looted
 	return world.properties.garage.looted if id == "crowbar" else world.workshop.armour_done
 
 
 static func weapon(world: RefCounted, a: Dictionary) -> String:
-	for id: String in ["crowbar", "sword"]:
+	for id: String in ["crowbar", "sword", "spear"]:
 		if world.equipment[id] == a.id:
 			return id
 	return "bat"
@@ -75,15 +77,18 @@ static func equip(world: RefCounted, actor_id: String, slot: String, item: Strin
 	if actor_id == "ellis" and slot == "weapon":
 		world.note("Ellis does not use weapons. Assign useful work instead.")
 		return false
-	var valid: bool = (slot == "weapon" and item in ["bat", "crowbar", "sword"]) or (slot == "protection" and item in ["none", "iron"]) or (slot == "shield" and item in ["none", "shield"])
+	var valid: bool = (slot == "weapon" and item in ["bat", "crowbar", "sword", "spear"]) or (slot == "protection" and item in ["none", "iron"]) or (slot == "shield" and item in ["none", "shield"])
 	if not valid or not unlocked(world, item):
 		world.note("That equipment has not been recovered and restored.")
+		return false
+	if not hand_reason(world, person(world, actor_id), item).is_empty():
+		world.note(hand_reason(world, person(world, actor_id), item))
 		return false
 	if world.equipment.has(item) and not world.equipment[item].is_empty() and world.equipment[item] != actor_id:
 		world.note("Return that unique item to the bench from its current wearer first.")
 		return false
 	for id: String in world.equipment:
-		var same_slot: bool = (slot == "weapon" and id in ["crowbar", "sword"]) or (slot == "protection" and id == "iron") or (slot == "shield" and id == "shield")
+		var same_slot: bool = (slot == "weapon" and id in ["crowbar", "sword", "spear"]) or (slot == "protection" and id == "iron") or (slot == "shield" and id == "shield")
 		if same_slot and world.equipment[id] == actor_id:
 			world.equipment[id] = ""
 	if world.equipment.has(item):
@@ -92,3 +97,9 @@ static func equip(world: RefCounted, actor_id: String, slot: String, item: Strin
 	world.workshop.equipped = world.equipment.iron == "paige" and world.equipment.shield == "paige"
 	world.note("%s: %s. Equipment changed at the bench." % [person(world, actor_id).name, description(world, person(world, actor_id))])
 	return true
+
+
+static func hand_reason(world: RefCounted, a: Dictionary, item: String) -> String:
+	if (item == "spear" and shielded(world, a)) or (item == "shield" and weapon(world, a) == "spear"):
+		return "The long spear needs both hands. Return the shield or change weapon first."
+	return ""

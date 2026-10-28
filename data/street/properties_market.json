@@ -4,8 +4,8 @@
     {
       "id": "hardware",
       "core": true,
-      "available": false,
-      "food_cache": 0,
+      "available": true,
+      "food_cache": 2,
       "name": "Hardware store",
       "rect": [
         2240,
@@ -36,10 +36,27 @@
         "residence",
         "clinic"
       ],
-      "reward": "Unfinished development content",
-      "reinforcements": [],
+      "reward": "Construction tools and a long spear",
+      "reinforcements": [
+        [
+          2370,
+          355
+        ],
+        [
+          2620,
+          385
+        ],
+        [
+          2720,
+          430
+        ]
+      ],
       "hidden_zombies": 0,
-      "zombies": []
+      "zombies": [],
+      "search": {
+        "materials": 32,
+        "line": "Hardware tools and a long spear recovered."
+      }
     },
     {
       "id": "grocer",

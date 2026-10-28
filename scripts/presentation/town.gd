@@ -191,8 +191,8 @@ func assign_survivor(id: String, task: String) -> void:
 
 
 func equip(id: String, slot: String, item: String) -> void:
-	Equipment.equip(world, id, slot, item)
-	hud.menu_status.text = world.messages.back()
+	var okay: bool = Equipment.equip(world, id, slot, item)
+	hud.menu_status.text = "" if okay else world.messages.back()
 	hud.refresh(world, paused)
 
 
