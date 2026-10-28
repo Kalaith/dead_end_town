@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const RecoverySalvage = preload("res://scripts/sim/recovery_salvage.gd")
 const Defeat = preload("res://scripts/sim/defeat.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
 const HomeRest = preload("res://scripts/sim/home_rest.gd")
@@ -60,6 +61,7 @@ var working: bool = false
 var interacting: bool = false
 var carry: Dictionary = Carrying.initial()
 var home_rest: Dictionary = HomeRest.initial()
+var recovery_salvage: Dictionary = RecoverySalvage.initial()
 var alert: String = "SAFE"
 var downs: int = 0
 var defeat_pending: bool = false
@@ -149,12 +151,17 @@ func step(dt: float) -> void:
 	Provisions.step(self, dt)
 	HomeRest.step(self, dt)
 	var work_dt: float = dt * Provisions.work_rate(self)
+	var player_work: bool = working
+	if not RecoverySalvage.nearby(self).is_empty():
+		RecoverySalvage.step(self, work_dt)
+		working = false
 	Neighbourhood.step(self, work_dt)
 	_work(work_dt)
 	Workshop.step(self, work_dt)
 	Clinic.step(self, work_dt)
 	Firearms.step(self, work_dt)
 	Roadworks.step(self, work_dt)
+	working = player_work
 	Pressure.step(self)
 	Carrying.sync(self)
 	SliceObjective.step(self, dt)
@@ -217,6 +224,9 @@ func context() -> String:
 				var name: String = str(Carrying.nearby(self).name)
 				return service + " · Hold E Carry" + ("" if service.contains(name) else " " + name)
 		return carry_text
+	var recovery_text: String = RecoverySalvage.context(self)
+	if not recovery_text.is_empty():
+		return recovery_text
 	var text: String = _context()
 	if not Salvage.nearby(self).is_empty():
 		text += "   Q Timber (+%d materials)" % int(balance.timber_materials)

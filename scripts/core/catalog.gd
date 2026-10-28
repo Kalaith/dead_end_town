@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authored content is validated before the simulation starts.
+const RecoverySalvageState = preload("res://scripts/core/recovery_salvage_state.gd")
 const RecoveryState = preload("res://scripts/core/recovery_state.gd")
 const ClinicState = preload("res://scripts/core/clinic_state.gd")
 const DiscoveryState = preload("res://scripts/core/discovery_state.gd")
@@ -17,7 +18,7 @@ const JsonIO = preload("res://addons/hatchery/core/json_io.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 
 ## Authored content is split by topic so no one file outgrows review. Add a file here when adding a topic.
-const FILES: Array[String] = ["street/survivors.json", "street/town.json", "street/work.json", "street/firearm.json", "street/balance.json", "street/pressure.json", "street/roads.json", "street/equipment.json", "street/properties.json", "zombies.json", "street/properties_market.json", "street/properties_civic.json", "street/properties_works.json", "street/roads_hearth_east.json", "street/roads_market.json", "street/roads_civic.json", "street/roads_works.json", "street/passages_market.json", "street/passages_civic.json", "street/passages_works.json"]
+const FILES: Array[String] = ["street/recovery.json", "street/survivors.json", "street/town.json", "street/work.json", "street/firearm.json", "street/balance.json", "street/pressure.json", "street/roads.json", "street/equipment.json", "street/properties.json", "zombies.json", "street/properties_market.json", "street/properties_civic.json", "street/properties_works.json", "street/roads_hearth_east.json", "street/roads_market.json", "street/roads_civic.json", "street/roads_works.json", "street/passages_market.json", "street/passages_civic.json", "street/passages_works.json"]
 
 
 static func read() -> Dictionary:
@@ -106,6 +107,7 @@ static func problems(data: Dictionary) -> Array[String]:
 			for pos: Variant in p[key]:
 				if not Rules.is_vec2(pos):
 					errors.append("Invalid zombie position.")
+	RecoverySalvageState.content(data, errors)
 	RecoveryState.content(data, errors)
 	ClinicState.content(data, errors)
 	DiscoveryState.content(data, errors)

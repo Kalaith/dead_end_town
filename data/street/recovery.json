@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "recovery_salvage": {
+    "cap": 24,
+    "batch": 2,
+    "seconds": 20,
+    "range": 40,
+    "sites": {
+      "home": [
+        180,
+        350
+      ],
+      "west": [
+        30,
+        610
+      ]
+    }
+  }
+}

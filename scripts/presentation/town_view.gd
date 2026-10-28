@@ -43,6 +43,12 @@ func _draw() -> void:
 	for x: int in [-18, 18]:
 		draw_line(shelter + Vector2(x, -40), shelter + Vector2(x, -12), Color("ab8860"), 4)
 	draw_rect(Rect2(shelter + Vector2(-16, -22), Vector2(32, 8)), Color("ab8860"))
+	for id: String in world.catalog.recovery_salvage.sites:
+		var scrap: Vector2 = Routes.point(world.catalog.recovery_salvage.sites[id])
+		for i: int in range(3):
+			draw_line(scrap + Vector2(-16 + i * 3, -4 + i * 5), scrap + Vector2(14 - i * 3, -9 + i * 5), Color("ab8860") if i != 1 else Color("9aa9a0"), 5)
+		if float(world.recovery_salvage[id]) > 0:
+			_meter(scrap + Vector2(-18, 16), 36, float(world.recovery_salvage[id]) / float(world.catalog.recovery_salvage.seconds), TEAL)
 	NeighbourhoodView.paint(self, world)
 	RoadView.paint(self, world, font)
 	# Characters are sorted by their feet, including bodies on the ground.

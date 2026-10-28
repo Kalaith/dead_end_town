@@ -1,4 +1,6 @@
 extends RefCounted
+const RecoverySalvageState = preload("res://scripts/core/recovery_salvage_state.gd")
+const RecoverySalvage = preload("res://scripts/sim/recovery_salvage.gd")
 const RecoveryState = preload("res://scripts/core/recovery_state.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
 const HomeRest = preload("res://scripts/sim/home_rest.gd")
@@ -34,11 +36,11 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 25
+const SCHEMA: int = 26
 ## Saved world fields that are collections and are copied, not shared.
-const COPIED_KEYS: Array[String] = ["carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
+const COPIED_KEYS: Array[String] = ["recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["defeat_pending", "carry", "home_rest", "clinic", "rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
+const STATE_KEYS: Array[String] = ["recovery_salvage", "defeat_pending", "carry", "home_rest", "clinic", "rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
 var catalog: Dictionary
 var store: RefCounted
 
@@ -115,7 +117,7 @@ func valid(data: Dictionary) -> bool:
 	if not data.get("roam_rng_state") is String or str(int(data.roam_rng_state)) != data.roam_rng_state:
 		return false
 	for key: String in STATE_KEYS:
-		if key in ["carry", "home_rest", "clinic", "rescue_intro", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
+		if key in ["recovery_salvage", "carry", "home_rest", "clinic", "rescue_intro", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
 			continue
 		if key == "gate_repair_target":
 			if not data.get("properties") is Dictionary or not data.properties.has(data.get(key)):
@@ -162,7 +164,7 @@ func valid(data: Dictionary) -> bool:
 			return false
 		if z.has("kind") and (not z.kind is String or not catalog.zombies.types.has(z.kind) or float(z.hp) > ZombieTypes.health(catalog, z.kind)):
 			return false
-	if not RosterState.valid(data, catalog) or not DiscoveryState.valid(data, catalog) or not ClinicState.valid(data, catalog) or not RecoveryState.valid(data, catalog):
+	if not RosterState.valid(data, catalog) or not DiscoveryState.valid(data, catalog) or not ClinicState.valid(data, catalog) or not RecoveryState.valid(data, catalog) or not RecoverySalvageState.valid(data, catalog):
 		return false
 	if float(data.garden_progress) > float(catalog.balance.work_seconds) or (data.garden_done and not data.garden_started):
 		return false
@@ -214,6 +216,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 25:
+		return _upgrade_recovery_salvage(upgraded)
 	if version == 24:
 		return _upgrade_defeat(upgraded)
 	if version == 23:
@@ -591,5 +595,11 @@ func _upgrade_recovery(data: Dictionary) -> Dictionary:
 
 func _upgrade_defeat(data: Dictionary) -> Dictionary:
 	data.defeat_pending = false
+	data.schema_version = 25
+	return _upgrade_recovery_salvage(data)
+
+
+func _upgrade_recovery_salvage(data: Dictionary) -> Dictionary:
+	data.recovery_salvage = RecoverySalvage.initial()
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}
