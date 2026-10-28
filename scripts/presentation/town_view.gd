@@ -1,5 +1,6 @@
 extends Node2D
 ## Original procedural greybox art. No imported game assets.
+const Carrying = preload("res://scripts/sim/carrying.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const NeighbourhoodView = preload("res://scripts/presentation/neighbourhood_view.gd")
@@ -82,7 +83,7 @@ func _property(p: Dictionary) -> void:
 	draw_rect(Rect2(building.get_center().x - 18, building.end.y - 48, 36, 48), Color("263536"))
 	_fence(rect, gate, state, accent)
 	# Only nearby porches need a prompt; ownership is visible in flags and windows.
-	if p.available and world.player.pos.distance_to(site) < 85:
+	if p.available and world.player.pos.distance_to(site) < 85 and not Carrying.occupied(world) and Carrying.nearby(world).is_empty():
 		draw_circle(site, 23, Color(0.06, 0.12, 0.12, 0.8))
 		draw_arc(site, 23, 0, TAU, 24, accent, 2)
 		_text(site + Vector2(-5, 6), "E", 18, accent)
@@ -161,6 +162,8 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 	var pos: Vector2 = a.pos
 	var direction: Vector2 = a.facing
 	if float(a.hp) <= 0:
+		if a.id == world.carry.patient:
+			return
 		draw_line(pos - Vector2(12, 0), pos + Vector2(12, 0), Color("575e4d") if zombie else RUST, 9)
 		return
 	_ellipse(pos + Vector2(1, 4), Vector2(21, 9) if a.get("kind") == "brute" else Vector2(15, 7), Color(0, 0, 0, 0.3))
@@ -176,7 +179,7 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		_armour(pos, a.facing)
 	if not zombie and Equipment.shielded(world, a):
 		_shield(pos, a.facing)
-	if not zombie and a.id != "ellis" and not (a.id == "you" and float(world.shot.left) > 0):
+	if not zombie and a.id != "ellis" and not (a.id == "you" and not str(world.carry.patient).is_empty()) and not (a.id == "you" and float(world.shot.left) > 0):
 		var grip: Vector2 = pos + Vector2(0, -14) + direction * 12
 		var weapon: String = Equipment.weapon(world, a)
 		draw_line(grip, grip + direction * (48 if weapon == "spear" else 36 if weapon == "sword" else 27), Color("c7b68e") if weapon == "bat" else Color("c1d1d0"), 5 if weapon != "sword" else 3)
@@ -190,6 +193,9 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 			_text(pos + Vector2(-16, -49), a.name, 13, CREAM)
 	if a.id == "ellis" and a.pos.distance_to(world.player.pos) < 170:
 		_text(pos + Vector2(-16, -49), "Ellis", 13, CREAM)
+	if a.id == "you" and not str(world.carry.patient).is_empty():
+		draw_line(pos + Vector2(-18, -25), pos + Vector2(14, -25), Color("9dc1ce"), 9)
+		draw_circle(pos + Vector2(18, -25), 6, Color("d7b08b"))
 	if a.id == "you" and float(world.shot.left) > 0:
 		draw_line(pos + direction * 12, pos + direction * 32, INK, 7)
 	if float(a.swing) > 0:

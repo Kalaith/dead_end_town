@@ -1,4 +1,5 @@
 extends "res://addons/hatchery/testing/capture_runner.gd"
+const HomeRest = preload("res://scripts/sim/home_rest.gd")
 const Checks = preload("res://tools/checks/checks_equipment.gd")
 const Provisions = preload("res://scripts/sim/provisions.gd")
 
@@ -19,7 +20,8 @@ func tour() -> void:
 	game.world.player.pos = Vector2(360, 350)
 	game.world.player.hp = 30.0
 	game.world.interact()
-	if game.world.player.hp != 100 or game.world.food != 0:
+	HomeRest.step(game.world, 15.0)
+	if game.world.player.hp != 50 or game.world.food != 0:
 		push_error("Recovery fixture did not spend a shared meal and recovery food.")
 		quit(1)
 		return

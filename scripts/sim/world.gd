@@ -1,5 +1,7 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Carrying = preload("res://scripts/sim/carrying.gd")
+const HomeRest = preload("res://scripts/sim/home_rest.gd")
 const Clinic = preload("res://scripts/sim/clinic.gd")
 const Discoveries = preload("res://scripts/sim/discoveries.gd")
 const Roster = preload("res://scripts/sim/roster.gd")
@@ -54,6 +56,9 @@ var messages: Array[String] = []
 var move_input := Vector2.ZERO
 var aim := Vector2.DOWN
 var working: bool = false
+var interacting: bool = false
+var carry: Dictionary = Carrying.initial()
+var home_rest: Dictionary = HomeRest.initial()
 var alert: String = "SAFE"
 var downs: int = 0
 var workshop: Dictionary = Workshop.initial()
@@ -121,14 +126,18 @@ func step(dt: float) -> void:
 	for a: Dictionary in [player] + survivors + zombies:
 		for key: String in ["cooldown", "flash", "swing"]:
 			a[key] = maxf(0.0, float(a[key]) - dt)
-	var travel: Vector2 = move_input * float(balance.player_speed) * Equipment.speed(self, player) * dt
+	if Carrying.occupied(self):
+		working = false
+	var travel: Vector2 = move_input * float(balance.player_speed) * Equipment.speed(self, player) * (float(balance.carry_speed_factor) if Carrying.occupied(self) else 1.0) * dt
 	player.pos = routes.move(player.pos, player.pos + travel, travel.length())
+	Carrying.step(self, dt)
 	face_aim()
 	Exploration.update(self)
 	Jobs.step(self, dt)
 	Combat.step(self, dt)
 	Territory.step(self, dt)
 	Provisions.step(self, dt)
+	HomeRest.step(self, dt)
 	var work_dt: float = dt * Provisions.work_rate(self)
 	Neighbourhood.step(self, work_dt)
 	_work(work_dt)
@@ -137,6 +146,7 @@ func step(dt: float) -> void:
 	Firearms.step(self, work_dt)
 	Roadworks.step(self, work_dt)
 	Pressure.step(self)
+	Carrying.sync(self)
 	SliceObjective.step(self, dt)
 	var next_alert: String = "SAFE"
 	for z: Dictionary in zombies:
@@ -148,6 +158,8 @@ func step(dt: float) -> void:
 
 
 func attack() -> void:
+	if Carrying.occupied(self):
+		return
 	Combat.strike(self, player, aim)
 
 
@@ -187,6 +199,14 @@ func safe_connected(id: String) -> bool:
 
 
 func context() -> String:
+	var carry_text: String = Carrying.context(self)
+	if not carry_text.is_empty():
+		if not Carrying.occupied(self) and float(carry.progress) == 0:
+			var service: String = _care_context()
+			if not service.is_empty():
+				var name: String = str(Carrying.nearby(self).name)
+				return service + " · Hold E Carry" + ("" if service.contains(name) else " " + name)
+		return carry_text
 	var text: String = _context()
 	if not Salvage.nearby(self).is_empty():
 		text += "   Q Timber (+%d materials)" % int(balance.timber_materials)
@@ -194,7 +214,7 @@ func context() -> String:
 
 
 func salvage() -> bool:
-	return Salvage.collect(self)
+	return false if Carrying.occupied(self) else Salvage.collect(self)
 
 
 func _context() -> String:
@@ -213,12 +233,7 @@ func _context() -> String:
 			if not p.available:
 				return "Unfinished"
 			if p.id == "home" and properties.home.claimed:
-				var injured: bool = float(player.hp) < float(balance.player_health)
-				for a: Dictionary in survivors:
-					injured = injured or float(a.hp) < float(balance.survivor_health)
-				if not injured:
-					return ""
-				return "E Recover · %d food" % int(balance.recovery_food)
+				return HomeRest.context(self)
 			if remaining(p.id) > 0:
 				return "Clear yard"
 			if p.has("search") and not properties[p.id].looted:
@@ -241,6 +256,8 @@ func _context() -> String:
 
 func interact() -> void:
 	if float(player.hp) <= 0:
+		return
+	if Carrying.press(self):
 		return
 	var passage: Dictionary = Neighbourhood.nearby(self)
 	if not passage.is_empty():
@@ -403,7 +420,7 @@ func garden_tended() -> bool:
 
 
 func player_at_worksite(id: String) -> bool:
-	if not working or player.pos.distance_to(Routes.point(definition(id).site)) >= 85:
+	if Carrying.occupied(self) or float(player.hp) <= 0 or not working or player.pos.distance_to(Routes.point(definition(id).site)) >= 85:
 		return false
 	for p: Dictionary in catalog.properties:
 		if player.pos.distance_to(Routes.point(p.gate)) < 76:
@@ -416,3 +433,24 @@ func finish_job(a: Dictionary, cancelled: bool = false) -> void:
 		Jobs.abort(self, a)
 	else:
 		Jobs.finish(self, a)
+
+
+func release_interact() -> void:
+	if not Carrying.release(self) or float(player.hp) <= 0:
+		return
+	if HomeRest.at_porch(self) and properties.home.claimed:
+		HomeRest.start(self)
+	elif clinic.done and player.pos.distance_to(Routes.point(definition("clinic").site)) < 85:
+		Clinic.treat(self)
+
+
+func _care_context() -> String:
+	if HomeRest.at_porch(self) and properties.home.claimed:
+		return HomeRest.context(self)
+	if clinic.done and properties.clinic.claimed and player.pos.distance_to(Routes.point(definition("clinic").site)) < 85:
+		return Clinic.context(self)
+	return ""
+
+
+func abandon_carried() -> void:
+	Carrying.abandon(self)

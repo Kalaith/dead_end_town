@@ -1,4 +1,5 @@
 extends RefCounted
+const HomeRest = preload("res://scripts/sim/home_rest.gd")
 ## One community meal clock; no individual needs or offline progression.
 
 
@@ -42,26 +43,7 @@ static func step(world: RefCounted, dt: float) -> void:
 
 
 static func recover(world: RefCounted) -> void:
-	if world.alert != "SAFE" or world.remaining("home") > 0:
-		world.note("Clear the home yard and approach before recovering.")
-		return
-	var injured: bool = float(world.player.hp) < float(world.balance.player_health)
-	for a: Dictionary in world.survivors:
-		injured = injured or float(a.hp) < float(world.balance.survivor_health)
-	if not injured:
-		world.note("Everyone is already rested. Food is kept for the next shared meal.")
-		return
-	var cost: int = int(world.balance.recovery_food)
-	if world.food < cost:
-		world.note("Recovery needs %d food. Tend the garden or recover unsearched supplies." % cost)
-		return
-	world.food -= cost
-	world.player.hp = float(world.balance.player_health)
-	for a: Dictionary in world.survivors:
-		if float(a.hp) <= 0:
-			a.pos = Vector2(310, 370)
-		a.hp = float(world.balance.survivor_health)
-	world.note("A meal and rest recover the team (%d food)." % cost)
+	HomeRest.start(world)
 
 
 static func summary(world: RefCounted) -> String:

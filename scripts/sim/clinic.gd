@@ -50,7 +50,7 @@ static func patient(world: RefCounted) -> Dictionary:
 	var distance: float = INF
 	for a: Dictionary in [world.player] + world.survivors:
 		var next: float = a.pos.distance_to(site(world))
-		if float(a.hp) >= full_health(world, a) or next >= 70:
+		if a.id == world.carry.patient or float(a.hp) >= full_health(world, a) or next >= 70:
 			continue
 		if next < distance or (is_equal_approx(next, distance) and str(a.id) < str(selected.get("id", ""))):
 			selected = a
@@ -105,7 +105,7 @@ static func step(world: RefCounted, dt: float) -> void:
 		if float(a.hp) >= full_health(world, a):
 			world.clinic.patients.erase(id)
 			continue
-		if a.pos.distance_to(site(world)) >= 70:
+		if a.id == world.carry.patient or a.pos.distance_to(site(world)) >= 70:
 			continue
 		var paid: Dictionary = world.clinic.patients[id]
 		paid.progress = minf(float(world.balance.treatment_seconds), float(paid.progress) + dt)

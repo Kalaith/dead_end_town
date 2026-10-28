@@ -143,7 +143,7 @@ func _build_menu() -> void:
 	sections.Work.add_child(work_menu)
 	work_menu.configured.connect(func(mode: String, target: int, reserve: int) -> void: production_requested.emit(mode, target, reserve))
 	work_menu.cancelled.connect(func() -> void: production_cancelled.emit())
-	sections.Help.add_child(kit.label("WASD / arrows  Move     Mouse  Aim\nRight click  Shoot     Left click / Space  Swing (hold to repeat)\nE  Interact     Hold R  Work     Q  Timber\nF  Team     J  Work     M  Town     G  Post guard\n1–4  Follow / Hold / Engage / Home     Esc / Tab  Pause", 18))
+	sections.Help.add_child(kit.label("WASD / arrows  Move     Mouse  Aim\nRight click  Shoot     Left click / Space  Swing (hold to repeat)\nE  Interact / drop     Hold E  Carry casualty\nHold R  Work     Q  Timber\nF  Team     J  Work     M  Town     G  Post guard\n1–4  Follow / Hold / Engage / Home     Esc / Tab  Pause", 18))
 	var row := HBoxContainer.new()
 	sections.Street.add_child(row)
 	for entry: Array in [["Save", "save"], ["Load", "load"], ["New street", "new"]]:

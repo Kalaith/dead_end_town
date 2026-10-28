@@ -24,7 +24,7 @@ static func rescue(world: RefCounted) -> void:
 
 
 static func shoot(world: RefCounted) -> bool:
-	if not world.firearms.owned or float(world.player.hp) <= 0 or float(world.player.cooldown) > 0:
+	if not str(world.carry.patient).is_empty() or not world.firearms.owned or float(world.player.hp) <= 0 or float(world.player.cooldown) > 0:
 		return false
 	if int(world.firearms.bullets) <= 0:
 		world.note("Pistol empty. Assign a worker at the ammunition workshop to craft bullets.")

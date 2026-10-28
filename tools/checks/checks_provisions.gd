@@ -1,4 +1,5 @@
 extends RefCounted
+const HomeRest = preload("res://scripts/sim/home_rest.gd")
 const Restoration = preload("res://scripts/sim/restoration.gd")
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
@@ -73,10 +74,17 @@ func check_recovery_costs_food_once_and_refuses_shortage_or_danger() -> String:
 		return "Dangerous recovery spent food."
 	w.alert = "SAFE"
 	w.interact()
-	if w.food != 4 or w.player.hp != 100 or w.survivors[0].hp != 100:
-		return "Paid recovery did not restore the team once."
+	if w.food != 4 or w.player.hp != 30 or w.survivors[0].hp != 0:
+		return "Home rest failed to commit once before timed recovery."
+	HomeRest.step(w, 15.0)
+	if w.player.hp != 50 or w.survivors[0].hp != 50:
+		return "Home recovery did not reach its first health threshold."
 	w.interact()
-	return "Resting a healthy team spent extra food" if w.food != 4 else ""
+	HomeRest.step(w, 15.0)
+	if w.player.hp != 100 or w.survivors[0].hp != 100 or w.food != 2:
+		return "Optional full healing did not require its second paid interval."
+	w.interact()
+	return "Resting a healthy team spent extra food" if w.food != 2 else ""
 
 
 func check_food_caches_are_unique_and_food_clock_reloads_without_offline_drain() -> String:

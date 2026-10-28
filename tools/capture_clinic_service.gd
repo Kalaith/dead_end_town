@@ -45,6 +45,7 @@ func tour() -> void:
 	var june: Dictionary = Roster.person(game.world, "june")
 	june.hp = 0.0
 	game.world.interact()
+	game.world.release_interact()
 	game.world.working = true
 	Clinic.step(game.world, 5.0)
 	var before: Dictionary = game.save_state.snapshot(game.world)

@@ -89,6 +89,11 @@
     "clinic_cost": 12,
     "clinic_seconds": 20,
     "treatment_cost": 1,
-    "treatment_seconds": 10
+    "treatment_seconds": 10,
+    "carry_range": 70,
+    "carry_seconds": 2,
+    "carry_speed_factor": 0.7,
+    "home_rest_seconds": 15,
+    "home_recover_health": 50
   }
 }

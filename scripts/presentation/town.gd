@@ -78,6 +78,7 @@ func _process(dt: float) -> void:
 	if not paused:
 		world.move_input = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 		world.working = Input.is_action_pressed("work")
+		world.interacting = Input.is_action_pressed("interact")
 		accumulator += minf(dt, 0.2)
 		var step: float = float(world.balance.step)
 		while accumulator >= step:
@@ -139,6 +140,8 @@ func _unhandled_input(event: InputEvent) -> void:
 					command("town")
 	if not paused and event.is_action_pressed("interact"):
 		world.interact()
+	elif not paused and event.is_action_released("interact"):
+		world.release_interact()
 
 
 func command(value: String) -> void:

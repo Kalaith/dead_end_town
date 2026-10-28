@@ -17,6 +17,7 @@ Everything happens in one continuous top-down world, and everyone stays active o
 - **Equip.** The garage hides a crowbar, sword, iron armour and shield. Restore the workshop, then choose loadouts for anyone. Every recovered item is unique, so return it before someone else takes it. Farther east, search the hardware shop for its material cache and long spear. The spear reaches farther and uses both hands, so it cannot share a loadout with the shield. Search and connected claim pay separately, once each.
 - **Shoot and supply.** The east house shelters Ellis, who gives you a pistol and six bullets. Ellis works and follows but never fights or guards. Aim with the mouse and right click to shoot; melee stays on left click/Space. Claim the ammunition workshop across the road, assign a worker with F and choose one batch or a stock target in J. Each batch makes six bullets per 15 work seconds for two materials. Production needs a protected home route and respects a six-material reserve; J can change the reserve, stop future batches or cancel the current one for its shown return.
 - **Treat.** Clear and search the clinic for June and 12 Medicine. Connect and secure the site, then approve its 12-Material restoration. After 20 work seconds, E commits one Medicine for the nearby named patient; hold R or assign a clinic worker for ten work seconds to heal or revive them. Both patient and worker must be present. Danger, ownership or route loss pauses paid treatment.
+- **Recover.** Hold E for two clear seconds beside a downed survivor to carry them. Carrying slows movement and prevents attacks; E puts them down at a clear held porch. At home, E commits two Food for fifteen safe active seconds of rest for the injured people physically there, recovering them to 50 health. Another two Food and fifteen seconds heals them to full. Leaving home, danger or ownership loss pauses already paid progress. Where a casualty is beside care, tap E for care or hold E to lift.
 - **Eat.** The group shares a meal every 60 seconds, costing one food each. Missing a meal slows work to 60%, with no hunger damage. Food also pays for healing at home. A tended garden brings in more.
 
 ### Your first run
@@ -39,7 +40,8 @@ Hold the original four yards (home, garden, library and garage), give each a pro
 | Mouse / left click | Aim and swing toward the cursor |
 | Right click | Shoot the recovered pistol toward the cursor (one bullet per shot) |
 | Space | Swing in your movement direction (or last facing); hold to repeat |
-| E | Interact: open or close gates, search, approve work, cancel a blueprint |
+| E | Interact; tap for care beside a casualty; drop a carried person at a clear held porch |
+| Hold E | Lift a locally clear downed survivor after two seconds |
 | Hold R | Repair or build at the nearest gate, passage, barricade or porch project |
 | Q | Collect a secured building's spare timber |
 | 1 / 2 / 3 / 4 | Whole team: Follow / Hold / Engage / Resume home duty (Ellis never fights or guards) |
@@ -93,4 +95,4 @@ You can also open `project.godot` in the editor. Headless checks and the staged 
 | [Vehicle design](docs/18-vehicle.md) | Recoverable utility van, travel, recovery and save rules |
 | [Progress](docs/PROGRESS.md) · [TODO](docs/TODO.md) | What is built and verified, and what is next |
 
-The full game design targets 24 properties, eight zombie kinds and eight survivors plus the player, with a core campaign and a finite relief-signal ending. It is documentation for future implementation; the runtime currently has eight searchable properties within the full 24-site layout; renewable medicine and casualty carrying are still being built. Design numbers are chosen starting values with validation gates, while `PROGRESS.md` records what exists and was actually checked.
+The full game design targets 24 properties, eight zombie kinds and eight survivors plus the player, with a core campaign and a finite relief-signal ending. It is documentation for future implementation; the runtime currently has eight searchable properties within the full 24-site layout; renewable medicine and companion rescue orders are still being built. Design numbers are chosen starting values with validation gates, while `PROGRESS.md` records what exists and was actually checked.
