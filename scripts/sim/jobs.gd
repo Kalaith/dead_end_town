@@ -16,6 +16,8 @@ static func current(catalog: Dictionary, a: Dictionary) -> String:
 			return "garden"
 		"Workshop", "Build":
 			return a.job
+		"Clinic":
+			return "clinic"
 		"Ammo":
 			return "ammo"
 		"Passage":
@@ -67,7 +69,7 @@ static func resume(world: RefCounted, a: Dictionary) -> void:
 	a.duty.temporary = false
 	a.duty.return_task = ""
 	if not world.assign_survivor(a.id, task, false):
-		if task in ["garden", "garage", "ammo"]:
+		if task in ["garden", "garage", "ammo", "clinic"]:
 			a.order = "Idle"
 			a.job = ""
 			a.anchor = a.pos
@@ -98,6 +100,8 @@ static func food_target(world: RefCounted) -> int:
 
 static func _task(order: Dictionary) -> String:
 	match order.recipe:
+		"clinic":
+			return "clinic"
 		"garden":
 			return "garden"
 		"workshop", "armour":
@@ -238,14 +242,14 @@ static func step(world: RefCounted, dt: float) -> void:
 		a.duty.clear_left = maxf(0.0, float(a.duty.clear_left) - dt)
 		if float(a.hp) <= 0:
 			continue
-		if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo"]:
+		if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo", "Clinic"]:
 			for z: Dictionary in world.zombies:
 				if float(z.hp) > 0 and z.pos.distance_to(a.anchor) < 170:
 					a.duty.clear_left = float(world.balance.work_clear_seconds)
 		if a.duty.temporary and not _needed(world, a):
 			finish(world, a)
-		if a.order == "Idle" and a.duty.role in ["garden", "garage"]:
-			var approved: bool = world.garden_started if a.duty.role == "garden" else world.workshop.started
+		if a.order == "Idle" and a.duty.role in ["garden", "garage", "clinic"]:
+			var approved: bool = world.clinic.started if a.duty.role == "clinic" else world.garden_started if a.duty.role == "garden" else world.workshop.started
 			if approved:
 				world.assign_survivor(a.id, a.duty.role, false)
 		if a.order != "Idle" or a.duty.role not in ["builder", "general"] or a.duty.retry > 0:

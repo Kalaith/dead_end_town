@@ -102,6 +102,16 @@
         "output": "",
         "count": "",
         "kind": "repair"
+      },
+      {
+        "id": "clinic",
+        "name": "Clinic",
+        "source": "balance",
+        "cost": "clinic_cost",
+        "seconds": "clinic_seconds",
+        "output": "",
+        "count": "",
+        "kind": "construction"
       }
     ]
   }

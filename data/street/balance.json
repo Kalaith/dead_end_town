@@ -1,13 +1,28 @@
 {
   "schema_version": 1,
-  "bounds": [8640, 1160],
+  "bounds": [
+    8640,
+    1160
+  ],
   "balance": {
     "garage_bonus_materials": 12,
     "home_gate_start_factor": 0.65,
-    "player_start": [360, 365],
-    "mara_start": [360, 445],
-    "home_respawn": [360, 350],
-    "home_alert_center": [360, 480],
+    "player_start": [
+      360,
+      365
+    ],
+    "mara_start": [
+      360,
+      445
+    ],
+    "home_respawn": [
+      360,
+      350
+    ],
+    "home_alert_center": [
+      360,
+      480
+    ],
     "home_alert_radius": 180,
     "scout_range": 640,
     "timber_materials": 10,
@@ -70,6 +85,10 @@
     "barricade_repair_cost": 3,
     "barricade_repair_rate": 24,
     "barricade_attack_reach": 40,
-    "barricade_stand_offset": 30
+    "barricade_stand_offset": 30,
+    "clinic_cost": 12,
+    "clinic_seconds": 20,
+    "treatment_cost": 1,
+    "treatment_seconds": 10
   }
 }

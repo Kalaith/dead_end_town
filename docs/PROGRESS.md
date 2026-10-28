@@ -533,3 +533,16 @@ Evidence:
 - Schema 22 adds zero Medicine and no pending introduction to old saves, plus only newly implemented clinic residents. Existing hardware search/first-claim history, actors, stocks and RNG remain intact. Medicine appears only in paused stock after the clinic search; there is no new live counter.
 - All 146 scenarios pass, including three new rescue/reload/gift/meal/gear and schema-21 migration cases. All 106 scripts load and headless editor/import passes. The connected windowed clinic tour verifies pause, blocked Return home, resume rejection and Hold choice; inspected june_introduction.png at 1280x720. The map tour also passes after moving its unfinished-site assertion to the current content state.
 - Clinic restoration, treatment/medicine recipes, field bag, casualty recovery and greenhouse food remain next. This is staged/automated evidence, not human rescue/navigation acceptance. No toolkit changes, installation or publication.
+
+
+## 28 October 2026: clinic restoration and physically present treatment
+
+Implementation:
+- E approves a held, searched and clear clinic for 12 Materials and 20 work seconds. Player and survivors share one prepaid construction rate, interruption, exact cancellation return and board priority/location/assignment. Permanent Clinic duty can wait for a replacement approval; temporary construction resumes the prior duty. Restore status and a simple patient-bed fixture are visible without a new HUD panel.
+- At the restored, held, clear and safely connected clinic, E commits one Medicine for the nearby named injured patient. Ten work seconds from a present player holding R or a present Clinic worker restores that patient to full, including a downed survivor. No remote patient, absent worker, healthy-person charge or second payment for interrupted treatment. One site treats one patient at a time; completed treatment removes its paid record atomically with healing.
+- Paid patient progress survives danger, lost ownership, disconnection, worker changes and JSON reload. Patients healed elsewhere discard unused paid capacity rather than storing it for another injury. Schema 23 starts old saves with an unrestored clinic and empty patient list, preserving Medicine, June and the pending introduction.
+
+Evidence:
+- All 150 scenarios pass, including four new restoration/shared-rate/loss/refund, local casualty/reload/revive, real worker travel/danger/disconnection and schema-22 migration cases. All 109 scripts load; headless editor/import passes. No size-limit violations.
+- The connected windowed service tour assigns June through the work-row picker, checks cancellation returns her to Hold with the exact 11-Material return, verifies paused frames preserve the paid patient snapshot, and completes a present casualty once. Inspected clinic_restoration.png and clinic_treatment.png at 1280x720.
+- Clinic medicine production, field bag, fixture damage/repair, casualty carrying and ordinary home-recovery replacement remain unfinished, as do greenhouse food and later campaign content. Existing home rest still has the slice's remote convenience until that recovery migration. These checks are staged/automated, not human treatment or combat acceptance. No toolkit changes, installations or publication.

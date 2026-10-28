@@ -34,7 +34,7 @@ static func _task(value: Variant, a: Dictionary, data: Dictionary, catalog: Dict
 		return a.id != "ellis"
 	if returning and value in ["follow", "engage"]:
 		return value != "engage" or a.id != "ellis"
-	if value in ["garden", "garage", "ammo"]:
+	if value in ["garden", "garage", "ammo", "clinic"]:
 		return data.properties["munitions" if value == "ammo" else value].looted
 	if value.begins_with("guard:") and a.id != "ellis":
 		for d: Dictionary in catalog.barricades:

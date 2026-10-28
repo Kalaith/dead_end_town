@@ -1,6 +1,6 @@
 extends RefCounted
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
-const IDS: Array[String] = ["bullets", "passage", "garden", "workshop", "armour", "road_build", "road_remove", "repair_line", "gate_rebuild", "legacy_repair"]
+const IDS: Array[String] = ["bullets", "passage", "garden", "workshop", "armour", "road_build", "road_remove", "repair_line", "gate_rebuild", "legacy_repair", "clinic"]
 
 
 static func definition(catalog: Dictionary, id: String) -> Dictionary:

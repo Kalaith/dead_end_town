@@ -98,6 +98,13 @@ func _property(p: Dictionary) -> void:
 		for i: int in range(6):
 			draw_line(site + Vector2(75 + i * 10, 3), site + Vector2(75 + i * 10, 18), Color("dfb36e"), 4)
 		_meter(site + Vector2(65, 33), 80, Firearms.progress(world) / float(world.catalog.firearm.craft_seconds), TEAL)
+	if p.id == "clinic" and state.looted:
+		var bed := Rect2(site + Vector2(80, -16), Vector2(56, 32))
+		draw_rect(bed.grow(3), INK)
+		draw_rect(bed, Color("9dc1ce") if world.clinic.done else Color("626052"))
+		draw_rect(Rect2(bed.position + Vector2(4, 4), Vector2(12, 24)), CREAM)
+		if world.clinic.started and not world.clinic.done:
+			_meter(site + Vector2(76, 28), 64, float(world.clinic.progress) / float(world.balance.clinic_seconds), TEAL)
 	if p.id == "garage":
 		_workshop(site)
 	if float(state.occupation) > 0:

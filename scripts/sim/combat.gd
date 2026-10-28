@@ -102,7 +102,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.cooldown = float(Equipment.stats(world, a).cooldown)
 				a.activity = "Holding the barricade"
 				return
-	if (a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo"] and (danger(world, anchor, 170) or a.duty.clear_left > 0)) or (Firearms.civilian(a) and danger(world, a.pos, 170)):
+	if (a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo", "Clinic"] and (danger(world, anchor, 170) or a.duty.clear_left > 0)) or (Firearms.civilian(a) and danger(world, a.pos, 170)):
 		anchor = Routes.point(world.balance.home_respawn)
 		a.activity = "Sheltering - work preserved"
 	else:
@@ -116,6 +116,8 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.activity = "Workshop work" if (world.workshop.started and not world.workshop.done) or (world.workshop.armour_started and not world.workshop.armour_done) else "Workshop ready - approve next job"
 				if world.workshop.armour_done:
 					a.activity = "Workshop work complete"
+			"Clinic":
+				a.activity = "Treating at clinic" if world.clinic.done else "Restoring clinic"
 			"Ammo":
 				a.activity = "Crafting bullets" if Firearms.reserved(world) else "Bullet bench"
 				if not world.production.reason.is_empty():
@@ -127,10 +129,10 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.activity = "Passage build/repair"
 			"Roadwork":
 				a.activity = "Road defence work"
-	if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo"] and a.duty.retry > 0 and not a.activity.begins_with("Sheltering"):
+	if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo", "Clinic"] and a.duty.retry > 0 and not a.activity.begins_with("Sheltering"):
 		a.activity = previous
 		return
-	var productive: bool = (a.order == "Garden" and world.garden_done) or (a.order == "Workshop" and world.workshop.done) or a.order == "Ammo"
+	var productive: bool = (a.order == "Garden" and world.garden_done) or (a.order == "Workshop" and world.workshop.done) or a.order == "Ammo" or (a.order == "Clinic" and world.clinic.done)
 	if productive and not a.activity.begins_with("Sheltering"):
 		if not world.safe_connected(a.job):
 			a.activity = "Work paused - secure the physical home route"

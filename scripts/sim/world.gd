@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Clinic = preload("res://scripts/sim/clinic.gd")
 const Discoveries = preload("res://scripts/sim/discoveries.gd")
 const Roster = preload("res://scripts/sim/roster.gd")
 const Exploration = preload("res://scripts/sim/exploration.gd")
@@ -38,6 +39,7 @@ var routes := Routes.new()
 var materials: int
 var food: int
 var medicine: int = 0
+var clinic: Dictionary = Clinic.initial()
 var rescue_intro: String = ""
 var elapsed: float = 0.0
 var approach: bool = false
@@ -131,6 +133,7 @@ func step(dt: float) -> void:
 	Neighbourhood.step(self, work_dt)
 	_work(work_dt)
 	Workshop.step(self, work_dt)
+	Clinic.step(self, work_dt)
 	Firearms.step(self, work_dt)
 	Roadworks.step(self, work_dt)
 	Pressure.step(self)
@@ -222,6 +225,8 @@ func _context() -> String:
 				return "E Search"
 			if not properties[p.id].claimed:
 				return "E Secure"
+			if p.id == "clinic":
+				return Clinic.context(self)
 			if p.id == "munitions":
 				return "F Bullets"
 			if p.id == "garage":
@@ -267,6 +272,11 @@ func interact() -> void:
 				Discoveries.search(self, p.id)
 			elif not state.claimed:
 				claim(p.id)
+			elif p.id == "clinic":
+				if clinic.done:
+					Clinic.treat(self)
+				else:
+					Clinic.approve(self)
 			elif p.id == "garage":
 				Workshop.interact(self)
 			elif p.id == "garden" and not garden_started:
