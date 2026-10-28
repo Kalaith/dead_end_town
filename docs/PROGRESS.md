@@ -454,3 +454,9 @@ Evidence:
 - All 127 simulation scenarios pass. Five new cases cover one-off completion/cancel/reload to a grower, tactical following/return and guard exclusion, priority builder sequencing without charges, immediate lease release/five-second clear timer reload, and schema-18 duty migration/invalid fields.
 - All 86 scripts load; Godot 4.7.2 headless editor/import passes. Ran the connected team-selector/priority tour and original team tour at 1280x720. Inspected temporary_duty.png, builder_next_project.png and work_priority.png; the builder physically completes the priority workshop then takes the garden without another approval/debit. Original threat/resume scenario now allows five clear seconds plus the actual return journey from shelter.
 - This remains staged automated/input/visual evidence. G01 still needs its final board/field-approval audit; safe automatic maintenance/food-target refinement can expand with the facility/economy owners. Full-town content, human balance and release gates remain incomplete. No toolkit edits, installations, exports or publication.
+
+
+## 28 October 2026: Ellis's default home return
+
+- New rescues and migrated older default duties send Ellis to the home shelter when the team returns, instead of his rescue porch. Follow remains tactical, an explicitly configured Ammo duty resumes normally, and he never receives guard duty.
+- All 128 simulation scenarios pass, including the older-save default-home return and configured-work preservation regression. No visual rules changed; the preceding duty tour remains the staged UI evidence. Human input/feel remains unverified.

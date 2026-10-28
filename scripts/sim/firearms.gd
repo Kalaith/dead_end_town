@@ -19,6 +19,7 @@ static func rescue(world: RefCounted) -> void:
 	var a: Dictionary = world.actor("ellis", "Ellis", Routes.point(world.definition("residence").site) + Vector2(35, 0), float(world.balance.survivor_health))
 	a.order = "Follow"
 	Jobs.initialise(a, "hold")
+	a.duty.anchor = world.balance.home_respawn.duplicate()
 	world.survivors.append(a)
 	world.firearms.owned = true
 	world.firearms.bullets = int(world.catalog.firearm.gift_bullets)

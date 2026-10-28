@@ -1,4 +1,7 @@
 extends RefCounted
+const FirearmChecks = preload("res://tools/checks/checks_firearms.gd")
+const Tasks = preload("res://scripts/sim/tasks.gd")
+const Routes = preload("res://scripts/sim/routes.gd")
 const Checks = preload("res://tools/checks/checks_restoration.gd")
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
@@ -110,3 +113,24 @@ func check_schema_eighteen_assignments_migrate_and_invalid_duties_are_rejected()
 		if save.valid(bad):
 			return "Accepted malformed duty " + str(entry[0])
 	return ""
+
+
+func check_ellis_default_home_return_uses_shelter_without_guard_duty() -> String:
+	var w: RefCounted = FirearmChecks.prepared()
+	w.order("Follow")
+	var save := SaveState.new(w.catalog)
+	var old: Dictionary = save.snapshot(w)
+	old.schema_version = 18
+	for a: Dictionary in old.survivors:
+		a.erase("duty")
+	w = save.restore(JSON.parse_string(JSON.stringify(old)))
+	if w == null:
+		return "Old Ellis default duty did not migrate."
+	w.order("Home")
+	var ellis: Dictionary = Tasks.person(w, "ellis")
+	if ellis.order != "Hold" or not ellis.anchor.is_equal_approx(Routes.point(w.balance.home_respawn)):
+		return "Ellis returned to the rescue porch or was assigned guard duty."
+	w.assign_survivor("ellis", "ammo")
+	w.order("Follow")
+	w.order("Home")
+	return "Home return erased Ellis's configured work" if ellis.order != "Ammo" or ellis.duty.role != "ammo" else ""

@@ -55,6 +55,8 @@ static func migrate(data: Dictionary, catalog: Dictionary) -> bool:
 		var task: String = Jobs.current(catalog, actor)
 		var role: String = task if task in ["garden", "garage", "ammo", "builder", "general"] or task.begins_with("guard:") else "hold" if a.id == "ellis" else "home"
 		Jobs.initialise(a, role)
+		if a.id == "ellis" and role == "hold":
+			a.duty.anchor = catalog.balance.home_respawn.duplicate()
 		if a.order in ["Build", "Roadwork", "Passage", "Repair"]:
 			a.duty.temporary = true
 			a.duty.return_task = role
