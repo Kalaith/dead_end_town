@@ -112,6 +112,44 @@ static func _task(order: Dictionary) -> String:
 	return ""
 
 
+static func assignment_reason(world: RefCounted, socket: String, a: Dictionary) -> String:
+	var order: Dictionary = WorkOrders.current(world, socket)
+	if not WorkOrders.pending(order) or order.kind == "production" or _task(order).is_empty():
+		return "Project is no longer available"
+	if a.is_empty() or float(a.hp) <= 0:
+		return "Recover this survivor first"
+	if not _safe(world, order, a):
+		return "Clear the site and secure a home route"
+	return ""
+
+
+static func assign_order(world: RefCounted, socket: String, id: String) -> bool:
+	for a: Dictionary in world.survivors:
+		if a.id == id:
+			var reason: String = assignment_reason(world, socket, a)
+			if not reason.is_empty():
+				world.note(reason + ".")
+				return false
+			return _take(world, a, _task(WorkOrders.current(world, socket)))
+	world.note("That survivor has not joined the team.")
+	return false
+
+
+static func _take(world: RefCounted, a: Dictionary, task: String) -> bool:
+	var saved: Dictionary = a.duty.duplicate(true)
+	var previous: String = current(world.catalog, a)
+	var anchor: Array = [a.anchor.x, a.anchor.y]
+	if not world.assign_survivor(a.id, task, false):
+		return false
+	a.duty = saved
+	if not saved.temporary:
+		a.duty.return_task = previous
+		a.duty.return_anchor = anchor
+	a.duty.temporary = true
+	a.duty.retry = 0.0
+	return true
+
+
 static func _safe(world: RefCounted, order: Dictionary, a: Dictionary) -> bool:
 	for z: Dictionary in world.zombies:
 		if float(z.hp) > 0 and z.pos.distance_to(Routes.point(order.stand)) < 170:
@@ -216,10 +254,4 @@ static func step(world: RefCounted, dt: float) -> void:
 		var task: String = _choose(world, a)
 		if task.is_empty():
 			continue
-		var saved: Dictionary = a.duty.duplicate(true)
-		if world.assign_survivor(a.id, task, false):
-			a.duty = saved
-			a.duty.temporary = true
-			a.duty.return_task = saved.role
-			a.duty.return_anchor = saved.anchor.duplicate()
-			a.duty.retry = 0.0
+		_take(world, a, task)

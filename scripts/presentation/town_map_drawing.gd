@@ -2,6 +2,7 @@ extends Control
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 var world: RefCounted
 var selected: String = "home"
+var work_point: Vector2 = Vector2.INF
 
 
 func centre(id: String) -> Vector2:
@@ -38,3 +39,7 @@ func _draw() -> void:
 	var player_pos := Vector2(12 + player_column * 64, 20 + player_y * 168)
 	draw_circle(player_pos, 5.0, Color("f5e6c2"))
 	draw_arc(player_pos, 8.0, 0.0, TAU, 20, Color("142426"), 2.0)
+	if work_point.is_finite():
+		var work_pos := Vector2(12 + (work_point.x - 80) / 720.0 * 64, 20 + work_point.y / 1160.0 * 168)
+		draw_line(work_pos - Vector2(7, 7), work_pos + Vector2(7, 7), Color("dfb36e"), 3.0)
+		draw_line(work_pos - Vector2(7, -7), work_pos + Vector2(7, -7), Color("dfb36e"), 3.0)

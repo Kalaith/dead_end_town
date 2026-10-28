@@ -1,4 +1,5 @@
 extends Node2D
+const Jobs = preload("res://scripts/sim/jobs.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Repairs = preload("res://scripts/sim/repairs.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
@@ -49,6 +50,8 @@ func _ready() -> void:
 	hud.production_requested.connect(configure_production)
 	hud.production_cancelled.connect(cancel_production)
 	hud.work_cancelled.connect(cancel_work)
+	hud.work_located.connect(locate_work)
+	hud.work_assigned.connect(assign_work)
 	hud.work_prioritised.connect(prioritise_work)
 	hud.assignment_requested.connect(assign_survivor)
 	hud.equipment_requested.connect(equip)
@@ -215,3 +218,17 @@ func prioritise_work(socket: String, value: bool) -> void:
 	if WorkOrders.prioritise(world, socket, value):
 		hud.menu_status.text = ""
 		hud.refresh(world, paused)
+
+
+func locate_work(socket: String) -> void:
+	var order: Dictionary = WorkOrders.current(world, socket)
+	if not WorkOrders.pending(order):
+		return
+	command("town")
+	hud.town_map.locate(world, Vector2(order.stand[0], order.stand[1]))
+
+
+func assign_work(socket: String, id: String) -> void:
+	var okay: bool = Jobs.assign_order(world, socket, id)
+	hud.menu_status.text = "" if okay else world.messages.back()
+	hud.refresh(world, paused)

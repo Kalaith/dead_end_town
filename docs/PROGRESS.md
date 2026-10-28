@@ -488,3 +488,11 @@ Evidence:
 - M opens the Town page with only discovered parcels, held-ground shape marks, the player position and actual usable/blocked links. Selecting or keyboard-focusing a seen parcel shows its name, ownership and adjacent known route conditions; unknown sites have no buttons, names or contents. No live HUD fields were added.
 - The connected windowed map tour verifies M opens pause, all saved state stays identical across 20 presentation frames, unseen Clinic remains hidden, and map selection never moves the player or changes simulation. Inspected known_town.png and scouted_town.png at 1280x720. All 135 simulation scenarios pass; all 93 scripts load and headless editor/import passes.
 - This first overview provides selection and route status. A local preview and board location/assignment are still follow-up work. Human map usability remains unverified; the full game is still in development.
+
+
+## 28 October 2026: work-board location and temporary assignment
+
+- Each approved non-production work row has Show and a survivor picker. Show opens the paused map at the nearest known parcel and marks the actual work point; it changes no simulation state. Map names omit the old numbered prefixes.
+- Board assignment goes through authoritative validation, rejecting downed workers, lost/unsafe sites and completed/unapproved work. It preserves the worker's regular duty and any existing temporary return, never approves or rebills a project, and shares the same resumption helper with automatic scheduling. Pickers refresh only when eligibility changes, so ordinary paused frames do not reset an open choice.
+- All 137 scenarios pass, including two new assignment/reload/completion and rejection cases. All 95 scripts load; headless editor/import passes. The connected windowed work-board tour selects Mara through the actual picker, asserts her garden return, opens Show and checks the world snapshot remains identical. Inspected work_assignment.png and work_location.png at 1280x720; no live HUD addition.
+- Local map preview, later district content and human usability/balance remain unfinished. No toolkit changes, installations or publication.

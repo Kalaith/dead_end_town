@@ -35,7 +35,7 @@ func refresh(value: RefCounted) -> void:
 				drawing.add_child(button)
 				sites[id] = button
 			sites[id].visible = id in world.seen
-			sites[id].tooltip_text = world.definition(id).name if id in world.seen else ""
+			sites[id].tooltip_text = place_name(world.definition(id)) if id in world.seen else ""
 	_update_detail()
 
 
@@ -43,6 +43,7 @@ func select_site(id: String) -> void:
 	if world == null or id not in world.seen:
 		return
 	selected = id
+	drawing.work_point = Vector2.INF
 	_update_detail()
 
 
@@ -54,13 +55,30 @@ func _update_detail() -> void:
 		status = "Unfinished"
 	elif state.claimed and not Neighbourhood.safe_connected(world, selected):
 		status += " · no protected home route"
-	detail.text = str(p.name) + " · " + status
+	detail.text = place_name(p) + " · " + status
 	for link: Dictionary in world.catalog.passages + world.catalog.crossings:
 		if selected not in link.requires or link.requires[0] not in world.seen or link.requires[1] not in world.seen:
 			continue
 		var other: String = link.requires[1] if link.requires[0] == selected else link.requires[0]
 		var reason: String = Neighbourhood.link_reason(world, link)
-		detail.text += "\n" + str(world.definition(other).name) + " · " + ("usable" if reason.is_empty() else reason)
+		detail.text += "\n" + place_name(world.definition(other)) + " · " + ("usable" if reason.is_empty() else reason)
 	drawing.world = world
 	drawing.selected = selected
 	drawing.queue_redraw()
+
+
+func locate(value: RefCounted, point: Vector2) -> void:
+	world = value
+	var closest: float = INF
+	for id: String in world.seen:
+		var site: Array = world.definition(id).site
+		var distance: float = point.distance_squared_to(Vector2(site[0], site[1]))
+		if distance < closest:
+			closest = distance
+			selected = id
+	drawing.work_point = point
+	_update_detail()
+
+
+static func place_name(p: Dictionary) -> String:
+	return str(p.name).get_slice("/", 1).strip_edges().capitalize() if "/" in str(p.name) else str(p.name)

@@ -158,3 +158,40 @@ func check_field_project_shows_commitment_and_rejects_remote_or_downed_approval(
 	w.player.hp = 100.0
 	Neighbourhood.interact(w, d)
 	return "Valid field commitment failed" if not w.passages.north.started or w.materials != 2 else ""
+
+
+func check_work_board_assignment_preserves_regular_duty_and_prepaid_progress() -> String:
+	var w: RefCounted = Checks.prepared("workshop")
+	w.working = false
+	w.assign_survivor("mara", "home")
+	var stock: int = w.materials
+	if not Jobs.assign_order(w, "restore:workshop", "mara") or w.survivors[0].order != "Workshop" or not w.survivors[0].duty.temporary or w.survivors[0].duty.role != "home":
+		return "Board assignment erased regular duty."
+	Jobs.step(w, 0.05)
+	if w.survivors[0].order != "Workshop":
+		return "Board worker abandoned pending restoration."
+	var save := SaveState.new(w.catalog)
+	var loaded: RefCounted = save.restore(JSON.parse_string(JSON.stringify(save.snapshot(w))))
+	if loaded == null or not loaded.survivors[0].duty.temporary:
+		return "Board assignment failed JSON reload."
+	loaded.survivors[0].pos = Vector2(1080, 800)
+	Restoration.step(loaded, "workshop", 16.0)
+	Jobs.step(loaded, 0.05)
+	if loaded.survivors[0].order != "Home" or loaded.survivors[0].duty.temporary or loaded.materials != stock:
+		return "Board completion failed to resume duty or rebilled work."
+	if Jobs.assign_order(loaded, "restore:workshop", "mara"):
+		return "Terminal work accepted a board assignment."
+	return ""
+
+
+func check_work_board_rejects_downed_or_unsafe_workers_without_reassignment() -> String:
+	var w: RefCounted = Checks.prepared("workshop")
+	w.survivors[0].hp = 0.0
+	var duty: Dictionary = w.survivors[0].duty.duplicate(true)
+	if Jobs.assign_order(w, "restore:workshop", "mara") or w.survivors[0].duty != duty:
+		return "Board reassigned a downed person."
+	w.survivors[0].hp = 100.0
+	w.properties.garage.claimed = false
+	if Jobs.assign_order(w, "restore:workshop", "mara") or w.survivors[0].duty != duty:
+		return "Board sent worker to lost site."
+	return "" if not Jobs.assign_order(w, "missing", "mara") else "Board assigned an unapproved project."
