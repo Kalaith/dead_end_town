@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "barricades": [
+    {
+      "id": "home_west",
+      "name": "Home block west barricade",
+      "rect": [72, 480, 16, 200],
+      "center": [80, 580],
+      "site": [128, 580],
+      "requires": ["home", "library"]
+    },
+    {
+      "id": "home_east",
+      "name": "Home block east barricade",
+      "rect": [632, 480, 16, 200],
+      "center": [640, 580],
+      "site": [592, 580],
+      "requires": ["home", "library"]
+    },
+    {
+      "id": "garden_west",
+      "name": "Garden block west barricade",
+      "rect": [792, 480, 16, 200],
+      "center": [800, 580],
+      "site": [848, 580],
+      "requires": ["garden", "garage"]
+    },
+    {
+      "id": "garden_east",
+      "name": "Garden block east barricade",
+      "rect": [1352, 480, 16, 200],
+      "center": [1360, 580],
+      "site": [1312, 580],
+      "requires": ["garden", "garage"]
+    }
+  ],
+  "crossings": [
+    {
+      "id": "west",
+      "name": "Western street crossing",
+      "requires": ["home", "library"],
+      "barriers": ["home_west", "home_east"],
+      "area": [88, 472, 544, 216]
+    },
+    {
+      "id": "east",
+      "name": "Eastern street crossing",
+      "requires": ["garden", "garage"],
+      "barriers": ["garden_west", "garden_east"],
+      "area": [808, 472, 544, 216]
+    }
+  ],
+  "passages": [
+    {
+      "id": "north",
+      "name": "Northern yard passage",
+      "requires": ["home", "garden"],
+      "area": [628, 352, 184, 96],
+      "sites": [[600, 400], [840, 400]],
+      "rails": [[632, 352, 176, 8], [632, 440, 176, 8]],
+      "gate": [712, 360, 16, 80]
+    },
+    {
+      "id": "south",
+      "name": "Southern yard passage",
+      "requires": ["library", "garage"],
+      "area": [628, 712, 184, 96],
+      "sites": [[600, 760], [840, 760]],
+      "rails": [[632, 712, 176, 8], [632, 800, 176, 8]],
+      "gate": [712, 720, 16, 80]
+    }
+  ]
+}

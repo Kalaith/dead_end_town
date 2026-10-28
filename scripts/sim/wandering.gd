@@ -3,6 +3,7 @@ extends RefCounted
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
+const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 
 
 static func step(world: RefCounted, z: Dictionary, dt: float) -> void:
@@ -16,7 +17,7 @@ static func step(world: RefCounted, z: Dictionary, dt: float) -> void:
 static func advance(world: RefCounted, z: Dictionary, target: Vector2, dt: float) -> void:
 	var direction: Vector2 = z.pos.direction_to(target)
 	z.facing = direction
-	var travel: float = float(world.balance.zombie_speed) * dt
+	var travel: float = ZombieTypes.stat(world.catalog, z, "speed") * dt
 	var intended: Vector2 = z.pos + direction * travel
 	var next: Vector2 = world.routes.move(z.pos, intended, travel)
 	if next.distance_to(z.pos) < travel * 0.5:
@@ -40,7 +41,7 @@ static func _bump(world: RefCounted, z: Dictionary, intended: Vector2, direction
 		var collision := Rect2(gate.x - 44, fence_y, 88, 8).grow(Routes.RADIUS)
 		if collision.has_point(intended) and float(z.cooldown) <= 0:
 			state.gate_hp = maxf(0.0, float(state.gate_hp) - float(world.balance.gate_damage))
-			z.cooldown = float(world.balance.zombie_cooldown)
+			z.cooldown = ZombieTypes.stat(world.catalog, z, "cooldown")
 			if float(state.gate_hp) <= 0:
 				world.rebuild_routes()
 				world.note(p.name + " / Gate breached. Defend and rebuild.")

@@ -73,7 +73,7 @@ func check_workshop_pauses_for_danger_and_refuses_insufficient_materials() -> St
 	w.interact()
 	w.working = true
 	var z: Dictionary = w.zombies[0]
-	z.hp = float(w.balance.zombie_health)
+	z.hp = float(w.catalog.zombies.types.shambler.health)
 	z.pos = Vector2(1240, 790)
 	_advance(w, 1.0)
 	if float(w.workshop.progress) != 0:
@@ -156,10 +156,10 @@ func check_armour_reduces_real_hits_and_shield_depends_on_facing() -> String:
 	paige.cooldown = 10.0
 	var front: float = Combat.incoming_damage(w, paige, paige.pos + Vector2.RIGHT * 20)
 	var back: float = Combat.incoming_damage(w, paige, paige.pos + Vector2.LEFT * 20)
-	if front <= 0 or front >= back or back >= float(w.balance.zombie_damage):
+	if front <= 0 or front >= back or back >= float(w.catalog.zombies.types.shambler.damage):
 		return "Armour and directional shield do not reduce damage correctly."
 	var z: Dictionary = w.zombies[0]
-	z.hp = float(w.balance.zombie_health)
+	z.hp = float(w.catalog.zombies.types.shambler.health)
 	z.pos = paige.pos + Vector2.RIGHT * 20
 	var hp: float = float(paige.hp)
 	w.step(0.05)

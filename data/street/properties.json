@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "properties": [
+    {"id":"home","food_cache":0,"name":"01 / HOME","rect":[80,80,560,400],"building":[180,150,350,155],"gate":[360,480],"site":[360,350],"post":[360,452],"neighbors":["garden","library"],"reward":"Home stockpile","reinforcements":[],"hidden_zombies":0,"zombies":[]},
+    {"id":"garden","food_cache":4,"name":"02 / GARDEN HOUSE","rect":[800,80,560,400],"building":[900,150,350,155],"gate":[1080,480],"site":[1080,350],"post":[1080,452],"neighbors":["home","garage"],"reward":"Food garden","reinforcements":[[870,350],[940,440],[1220,440],[1300,350]],"hidden_zombies":8,"zombies":[[980,365],[1170,380],[1080,430]]},
+    {"id":"library","food_cache":3,"name":"03 / LIBRARY","rect":[80,680,560,400],"building":[180,870,350,155],"gate":[360,680],"site":[360,800],"post":[360,710],"neighbors":["home","garage"],"reward":"Rescue Paige","reinforcements":[[150,760],[220,820],[500,820],[570,750]],"hidden_zombies":8,"zombies":[[260,760],[460,780],[360,735]]},
+    {"id":"garage","food_cache":2,"name":"04 / GARAGE","rect":[800,680,560,400],"building":[900,870,350,155],"gate":[1080,680],"site":[1080,800],"post":[1080,710],"neighbors":["garden","library"],"reward":"Tools and armour cache","reinforcements":[[870,750],[940,820],[1260,750],[1300,830],[1080,730],[1190,820]],"hidden_zombies":10,"zombies":[[990,760],[1160,760],[1080,830],[1220,820]]}
+  ]
+}

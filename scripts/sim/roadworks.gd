@@ -1,5 +1,6 @@
 extends RefCounted
 ## Temporary street defences. All work, damage and salvage are authoritative.
+const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 
 
@@ -238,7 +239,7 @@ static func intercept(world: RefCounted, z: Dictionary, target: Vector2, dt: flo
 			if float(s.hp) == float(world.balance.barricade_health):
 				world.note("STREET / %s is under attack." % chosen.name)
 			s.hp = maxf(0.0, float(s.hp) - float(world.balance.gate_damage))
-			z.cooldown = float(world.balance.zombie_cooldown)
+			z.cooldown = ZombieTypes.stat(world.catalog, z, "cooldown")
 			if float(s.hp) <= 0:
 				world.roadworks[chosen.id] = empty()
 				_release(world, chosen.id, true)
@@ -249,5 +250,5 @@ static func intercept(world: RefCounted, z: Dictionary, target: Vector2, dt: flo
 		var stand: Vector2 = hit + Vector2(side * float(world.balance.barricade_stand_offset), 0)
 		var next: Vector2 = stand if world.routes.line_clear(z.pos, stand) else world.routes.waypoint(z.pos, stand)
 		z.facing = z.pos.direction_to(next)
-		z.pos = world.routes.move(z.pos, next, float(world.balance.zombie_speed) * dt)
+		z.pos = world.routes.move(z.pos, next, ZombieTypes.stat(world.catalog, z, "speed") * dt)
 	return true

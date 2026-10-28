@@ -9,9 +9,20 @@ const RoadState = preload("res://scripts/core/road_state.gd")
 const JsonIO = preload("res://addons/hatchery/core/json_io.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 
+## Authored content is split by topic so no one file outgrows review. Add a file here when adding a topic.
+const FILES: Array[String] = ["street/balance.json", "street/pressure.json", "street/roads.json", "street/equipment.json", "street/properties.json", "zombies.json"]
+
+
 static func read() -> Dictionary:
 	var errors: Array[String] = []
-	var data: Dictionary = JsonIO.read_object("res://data/street.json", errors, 1)
+	var data: Dictionary = {}
+	for file: String in FILES:
+		var part: Dictionary = JsonIO.read_object("res://data/" + file, errors, 1)
+		for key: String in part:
+			if key != "schema_version" and data.has(key):
+				errors.append("%s repeats %s." % [file, key])
+		data.merge(part)
+	data.schema_version = 1
 	errors.append_array(problems(data))
 	for error: String in errors:
 		push_error(error)
@@ -39,10 +50,11 @@ static func problems(data: Dictionary) -> Array[String]:
 			errors.append("Wandering turn interval is reversed.")
 		if not Rules.whole(data.balance.get("roam_seed")):
 			errors.append("Wandering seed must be a whole number.")
-		for key: String in ["step", "player_speed", "survivor_speed", "zombie_speed", "player_health", "survivor_health", "zombie_health", "melee_damage", "zombie_damage", "attack_reach", "attack_cooldown", "zombie_cooldown", "gate_health", "gate_damage", "gate_repair_cost", "gate_repair_rate", "claim_materials", "garden_cost", "work_seconds", "food_seconds", "approach_seconds", "territory_fall_seconds", "starting_materials", "starting_food", "workshop_cost", "workshop_seconds", "armour_cost", "armour_seconds"]:
+		for key: String in ["step", "player_speed", "survivor_speed", "player_health", "survivor_health", "melee_damage", "attack_reach", "attack_cooldown", "gate_health", "gate_damage", "gate_repair_cost", "gate_repair_rate", "claim_materials", "garden_cost", "work_seconds", "food_seconds", "approach_seconds", "territory_fall_seconds", "starting_materials", "starting_food", "workshop_cost", "workshop_seconds", "armour_cost", "armour_seconds"]:
 			rules.number_between(data.balance, key, 0.001, 10000.0)
 		for key: String in ["armour_damage_multiplier", "armour_speed_multiplier", "shield_damage_multiplier"]:
 			rules.number_between(data.balance, key, 0.01, 1.0)
+	_zombie_types(data, errors)
 	if not rules.list(data, "properties", false):
 		return errors
 	var ids: Array = rules.unique_ids(data.properties)
@@ -83,3 +95,21 @@ static func problems(data: Dictionary) -> Array[String]:
 	ProvisionsState.content(data, errors)
 	SliceState.content(data, errors)
 	return errors
+
+
+static func _zombie_types(data: Dictionary, errors: Array[String]) -> void:
+	var zombies: Variant = data.get("zombies")
+	if not zombies is Dictionary or not zombies.get("types") is Dictionary or zombies.types.is_empty():
+		errors.append("Zombie types must be a nonempty object.")
+		return
+	if not zombies.types.has(zombies.get("default")):
+		errors.append("Default zombie type is not defined.")
+	for id: String in zombies.types:
+		var type_data: Variant = zombies.types[id]
+		if not type_data is Dictionary:
+			errors.append("Zombie type %s must be an object." % id)
+			continue
+		var rules := Rules.new(errors, "zombie " + id)
+		rules.text(type_data, "name")
+		for key: String in ["health", "speed", "damage", "cooldown"]:
+			rules.number_between(type_data, key, 0.001, 10000.0)

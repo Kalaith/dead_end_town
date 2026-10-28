@@ -62,7 +62,7 @@ Godot **4.7.2**, Compatibility renderer, desktop keyboard and mouse, 1280x720. N
 ./Run.ps1
 ```
 
-You can also open `project.godot` in the editor. Headless checks and the staged screenshot tour (written to `docs/verification/`) are listed in [AGENTS.md](AGENTS.md). Rules live in `scripts/sim/`, presentation in `scripts/presentation/`, content validation and saves in `scripts/core/`, and all balance and map data in `data/street.json`. Project layout came from The Last Hearth, and shared tooling from `../godot_toolkit`; no gameplay was borrowed.
+You can also open `project.godot` in the editor. Headless checks and the staged screenshot tour (written to `docs/verification/`) are listed in [AGENTS.md](AGENTS.md). Rules live in `scripts/sim/`, presentation in `scripts/presentation/`, content validation and saves in `scripts/core/`, and all balance and map data in `data/street/*.json` (zombie kinds in `data/zombies.json`). Project layout came from The Last Hearth, and shared tooling from `../godot_toolkit`; no gameplay was borrowed.
 
 ## Documentation
 

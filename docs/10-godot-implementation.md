@@ -28,7 +28,7 @@ assets/
 tools/                       # headless scenario scripts; no test addons
 ```
 
-This larger tree is proposed. The first runtime uses one wired town scene (`scenes/town.tscn`), a procedural `scripts/presentation/town_view.gd`, `data/street.json`, and the layers `scripts/sim/` (authoritative rules), `scripts/core/` (content validation and save mapping) and `scripts/presentation/`. Separate actor scenes, tile art, facilities, equipment and general job managers remain future work.
+This larger tree is proposed. The first runtime uses one wired town scene (`scenes/town.tscn`), a procedural `scripts/presentation/town_view.gd`, `data/street/*.json` (zombie kinds in `data/zombies.json`), and the layers `scripts/sim/` (authoritative rules), `scripts/core/` (content validation and save mapping) and `scripts/presentation/`. Separate actor scenes, tile art, facilities, equipment and general job managers remain future work.
 
 ## Scene responsibilities
 

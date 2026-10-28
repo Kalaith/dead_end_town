@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "equipment": {
+    "weapons": {
+      "bat": {
+        "name": "Bat",
+        "damage": 30,
+        "reach": 76,
+        "cooldown": 0.48,
+        "knockback": 18,
+        "cone": 0.2,
+        "targets": 1
+      },
+      "crowbar": {
+        "name": "Crowbar",
+        "damage": 50,
+        "reach": 82,
+        "cooldown": 0.85,
+        "knockback": 24,
+        "cone": 0.5,
+        "targets": 1
+      },
+      "sword": {
+        "name": "Restored sword",
+        "damage": 35,
+        "reach": 88,
+        "cooldown": 0.65,
+        "knockback": 12,
+        "cone": 0.15,
+        "targets": 2
+      }
+    }
+  },
+  "slice": {
+    "hold_seconds": 60,
+    "harvest_food": 4,
+    "start_range": 85
+  }
+}

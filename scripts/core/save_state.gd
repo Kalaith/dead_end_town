@@ -1,4 +1,5 @@
 extends RefCounted
+const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const Salvage = preload("res://scripts/sim/salvage.gd")
 const SliceState = preload("res://scripts/core/slice_state.gd")
 const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
@@ -127,7 +128,7 @@ func valid(data: Dictionary) -> bool:
 		return false
 	var ids: Array[String] = ["you"]
 	for a: Variant in data.survivors + data.zombies:
-		if not _valid_actor(a, maxf(float(catalog.balance.zombie_health), float(catalog.balance.survivor_health))) or ids.has(a.id):
+		if not _valid_actor(a, maxf(ZombieTypes.max_health(catalog), float(catalog.balance.survivor_health))) or ids.has(a.id):
 			return false
 		ids.append(a.id)
 	for z: Variant in data.zombies:

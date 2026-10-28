@@ -1,4 +1,5 @@
 extends RefCounted
+const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
@@ -155,9 +156,9 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 			target = a
 			best = distance
 	if not target.is_empty() and best < 29.0 and world.routes.line_clear(z.pos, target.pos) and float(z.cooldown) <= 0:
-		target.hp = maxf(0.0, float(target.hp) - incoming_damage(world, target, z.pos))
+		target.hp = maxf(0.0, float(target.hp) - incoming_damage(world, target, z.pos, z))
 		target.flash = 0.18
-		z.cooldown = float(world.balance.zombie_cooldown)
+		z.cooldown = ZombieTypes.stat(world.catalog, z, "cooldown")
 		return
 	if float(z.cooldown) < 0.7:
 		if target.is_empty():
@@ -173,8 +174,8 @@ static func _survivor_speed(world: RefCounted, a: Dictionary) -> float:
 	return float(world.balance.survivor_speed) * Equipment.speed(world, a)
 
 
-static func incoming_damage(world: RefCounted, target: Dictionary, source: Vector2) -> float:
-	var damage: float = float(world.balance.zombie_damage)
+static func incoming_damage(world: RefCounted, target: Dictionary, source: Vector2, attacker: Dictionary = {}) -> float:
+	var damage: float = ZombieTypes.stat(world.catalog, attacker, "damage")
 	if Equipment.protected(world, target):
 		damage *= float(world.balance.armour_damage_multiplier)
 	if Equipment.shielded(world, target) and target.facing.dot(target.pos.direction_to(source)) > 0.2:

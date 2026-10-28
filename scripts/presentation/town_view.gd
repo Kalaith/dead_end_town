@@ -4,6 +4,7 @@ const Equipment = preload("res://scripts/sim/equipment.gd")
 const NeighbourhoodView = preload("res://scripts/presentation/neighbourhood_view.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const RoadView = preload("res://scripts/presentation/road_view.gd")
+const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 var world: RefCounted
 var font: Font = ThemeDB.fallback_font
@@ -167,8 +168,8 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		var stats: Dictionary = Equipment.stats(world, a)
 		var half_angle: float = acos(float(stats.cone))
 		draw_arc(pos, float(stats.reach), direction.angle() - half_angle, direction.angle() + half_angle, 24, CREAM, 3)
-	if float(a.hp) < (float(world.balance.zombie_health) if zombie else 100.0):
-		_meter(pos + Vector2(-15, 10), 30, float(a.hp) / (float(world.balance.zombie_health) if zombie else 100.0), RUST)
+	if float(a.hp) < (ZombieTypes.max_health(world.catalog) if zombie else 100.0):
+		_meter(pos + Vector2(-15, 10), 30, float(a.hp) / (ZombieTypes.max_health(world.catalog) if zombie else 100.0), RUST)
 
 
 func _head(center: Vector2, direction: Vector2, zombie: bool) -> void:

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "pressure": {
+    "warning_seconds": 12,
+    "interval_seconds": 65,
+    "claim_interval_reduction": 8,
+    "minimum_interval": 40,
+    "base_size": 4,
+    "claim_size": 2,
+    "maximum_size": 10,
+    "living_cap": 36,
+    "spawn_spacing": 28,
+    "routes": [
+      {
+        "id": "east",
+        "name": "east road",
+        "entry": [1410, 580],
+        "spread": [0, 1]
+      },
+      {
+        "id": "west",
+        "name": "west road",
+        "entry": [30, 580],
+        "spread": [0, 1]
+      },
+      {
+        "id": "north",
+        "name": "north alley",
+        "entry": [720, 30],
+        "spread": [1, 0]
+      },
+      {
+        "id": "south",
+        "name": "south alley",
+        "entry": [720, 1130],
+        "spread": [1, 0]
+      }
+    ],
+    "patterns": [["east"], ["west"], ["north", "east"], ["south", "west"], ["east", "west", "north", "south"]]
+  }
+}

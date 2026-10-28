@@ -12,6 +12,7 @@ const Routes = preload("res://scripts/sim/routes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
+const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 var roam_rng := RandomNumberGenerator.new()
 var catalog: Dictionary
 var balance: Dictionary
@@ -62,7 +63,7 @@ func _init(data: Dictionary) -> void:
 	for p: Dictionary in catalog.properties:
 		properties[p.id] = {"claimed": p.id == "home", "looted": p.id == "home", "open": p.id != "home", "occupation": 0.0, "gate_hp": float(balance.gate_health) * (float(balance.home_gate_start_factor) if p.id == "home" else 1.0)}
 		for spawn: Array in p.zombies:
-			var z: Dictionary = actor("z%d" % zombies.size(), "Shambler", Routes.point(spawn), float(balance.zombie_health))
+			var z: Dictionary = actor("z%d" % zombies.size(), "Shambler", Routes.point(spawn), ZombieTypes.health(catalog))
 			z.home = p.id
 			z.raid = false
 			zombies.append(z)

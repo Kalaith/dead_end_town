@@ -97,7 +97,7 @@ func check_protection_and_shield_apply_to_player_and_mara_independently() -> Str
 	Equipment.equip(w, "mara", "shield", "shield")
 	w.player.facing = Vector2.RIGHT
 	w.survivors[0].facing = Vector2.RIGHT
-	var base: float = float(w.balance.zombie_damage)
+	var base: float = float(w.catalog.zombies.types.shambler.damage)
 	if not is_equal_approx(Combat.incoming_damage(w, w.player, w.player.pos + Vector2.LEFT), base * 0.5):
 		return "Player lacks iron protection."
 	if not is_equal_approx(Combat.incoming_damage(w, w.survivors[0], w.survivors[0].pos + Vector2.RIGHT), base * 0.5) or not is_equal_approx(Combat.incoming_damage(w, w.survivors[0], w.survivors[0].pos + Vector2.LEFT), base):

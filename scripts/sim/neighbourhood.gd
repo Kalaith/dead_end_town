@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authored passages and protected street crossings, separate from ownership.
+const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 
 
@@ -153,7 +154,7 @@ static func bump(world: RefCounted, z: Dictionary, intended: Vector2) -> bool:
 		if Routes.rectangle(d.gate).grow(Routes.RADIUS).has_point(intended):
 			if float(z.cooldown) <= 0:
 				s.hp = maxf(0, float(s.hp) - float(world.balance.gate_damage))
-				z.cooldown = float(world.balance.zombie_cooldown)
+				z.cooldown = ZombieTypes.stat(world.catalog, z, "cooldown")
 				if float(s.hp) <= 0:
 					world.rebuild_routes()
 					world.note("Passage gate breached. Check both connected yards.")
