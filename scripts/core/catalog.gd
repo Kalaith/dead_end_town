@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authored content is validated before the simulation starts.
+const TownContent = preload("res://scripts/core/town_content.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const FirearmState = preload("res://scripts/core/firearm_state.gd")
 const SliceState = preload("res://scripts/core/slice_state.gd")
@@ -12,7 +13,7 @@ const JsonIO = preload("res://addons/hatchery/core/json_io.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 
 ## Authored content is split by topic so no one file outgrows review. Add a file here when adding a topic.
-const FILES: Array[String] = ["street/work.json", "street/firearm.json", "street/balance.json", "street/pressure.json", "street/roads.json", "street/equipment.json", "street/properties.json", "zombies.json"]
+const FILES: Array[String] = ["street/town.json", "street/work.json", "street/firearm.json", "street/balance.json", "street/pressure.json", "street/roads.json", "street/equipment.json", "street/properties.json", "zombies.json", "street/properties_market.json", "street/properties_civic.json", "street/properties_works.json", "street/roads_hearth_east.json", "street/roads_market.json", "street/roads_civic.json", "street/roads_works.json", "street/passages_market.json", "street/passages_civic.json", "street/passages_works.json"]
 
 
 static func read() -> Dictionary:
@@ -21,9 +22,15 @@ static func read() -> Dictionary:
 	for file: String in FILES:
 		var part: Dictionary = JsonIO.read_object("res://data/" + file, errors, 1)
 		for key: String in part:
-			if key != "schema_version" and data.has(key):
-				errors.append("%s repeats %s." % [file, key])
-		data.merge(part)
+			if key == "schema_version":
+				continue
+			if data.has(key):
+				if key in ["properties", "barricades", "crossings", "passages"] and data[key] is Array and part[key] is Array:
+					data[key].append_array(part[key])
+				else:
+					errors.append("%s repeats %s." % [file, key])
+			else:
+				data[key] = part[key]
 	data.schema_version = 1
 	errors.append_array(problems(data))
 	for error: String in errors:
@@ -41,6 +48,7 @@ static func problems(data: Dictionary) -> Array[String]:
 		rules.number_between(data.balance, "home_gate_start_factor", 0.01, 1.0)
 		rules.number_between(data.balance, "garage_bonus_materials", 0, 10000)
 		rules.number_between(data.balance, "home_alert_radius", 1.0, 10000.0)
+		rules.number_between(data.balance, "scout_range", 1.0, 10000.0)
 		for key: String in ["player_start", "mara_start", "home_respawn", "home_alert_center"]:
 			rules.vec2(data.balance, key)
 		rules.number_between(data.balance, "zombie_notice_range", 29.0, 10000.0)
@@ -65,8 +73,7 @@ static func problems(data: Dictionary) -> Array[String]:
 	if not rules.list(data, "properties", false):
 		return errors
 	var ids: Array = rules.unique_ids(data.properties)
-	if ids != ["home", "garden", "library", "garage", "residence", "munitions"]:
-		errors.append("The street needs home, garden, library, garage, residence and munitions in order.")
+
 	for raw: Variant in data.properties:
 		if not raw is Dictionary:
 			errors.append("Property must be an object.")
@@ -95,6 +102,7 @@ static func problems(data: Dictionary) -> Array[String]:
 			for pos: Variant in p[key]:
 				if not Rules.is_vec2(pos):
 					errors.append("Invalid zombie position.")
+	TownContent.content(data, errors)
 	PressureState.content(data, errors)
 	RoadState.content(data, errors)
 	NeighbourhoodState.content(data, errors)

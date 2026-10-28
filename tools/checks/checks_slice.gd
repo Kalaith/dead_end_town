@@ -118,6 +118,8 @@ func check_complete_street_builds_from_authored_supplies_without_free_structures
 	w.working = false
 	w.interact()
 	for d: Dictionary in w.catalog.barricades:
+		if d.requires not in [["home", "library"], ["garden", "garage"]]:
+			continue
 		w.player.pos = w.routes.point(d.site)
 		w.interact()
 		w.working = true

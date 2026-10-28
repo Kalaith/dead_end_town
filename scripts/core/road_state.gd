@@ -13,8 +13,14 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 		rules.number_between(data.balance, "barricade_salvage", 0, 1)
 	if not rules.list(data, "barricades", false):
 		return
-	if rules.unique_ids(data.barricades) != ["home_west", "home_east", "garden_west", "garden_east"]:
-		errors.append("The street needs west and east defence sockets for both blocks.")
+	var expected: Array[String] = []
+	if not data.get("town") is Dictionary:
+		return
+	for pair: Array in data.town.columns:
+		expected.append(str(pair[0]) + "_west")
+		expected.append(str(pair[0]) + "_east")
+	if rules.unique_ids(data.barricades) != expected:
+		errors.append("Every crossing needs its own west/east barrier pair.")
 	for raw: Variant in data.barricades:
 		if not raw is Dictionary:
 			errors.append("Road defence must be an object.")
@@ -33,7 +39,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 			if errors.is_empty() and (float(rect[2]) <= 0 or float(rect[3]) <= 0):
 				errors.append("Road defence rectangle must have positive dimensions.")
 		if rules.list(d, "requires", false):
-			if d.requires not in [["home", "library"], ["garden", "garage"]]:
+			if d.requires not in data.town.columns:
 				errors.append("Road defences require both facing properties.")
 
 

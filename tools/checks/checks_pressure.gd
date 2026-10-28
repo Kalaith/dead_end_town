@@ -19,7 +19,7 @@ func check_resident_population_and_occupied_claims() -> String:
 func check_raids_warn_recur_and_use_every_edge_without_teleporting() -> String:
 	var w := World.new(Catalog.read())
 	var origins: Dictionary = {}
-	for wave: int in range(5):
+	for wave: int in range(w.catalog.pressure.patterns.size()):
 		w.elapsed = float(w.pressure.next) - float(w.catalog.pressure.warning_seconds)
 		Pressure.step(w)
 		if not w.pressure.warned or not w.messages.back().contains("Incoming"):
@@ -35,13 +35,13 @@ func check_raids_warn_recur_and_use_every_edge_without_teleporting() -> String:
 			if not z.raid:
 				continue
 			count += 1
-			origins[z.id.split("_")[1]] = true
-			if not w.routes.walkable(z.pos) or minf(minf(z.pos.x, z.pos.y), minf(1440 - z.pos.x, 1160 - z.pos.y)) > 40:
+			origins[z.id.get_slice("_", 1) + ("_" + z.id.get_slice("_", 2) if z.id.get_slice("_", 2) in ["civic", "works"] else "")] = true
+			if not w.routes.walkable(z.pos) or minf(minf(z.pos.x, z.pos.y), minf(float(w.catalog.bounds[0]) - z.pos.x, float(w.catalog.bounds[1]) - z.pos.y)) > 40:
 				return "Raid did not enter through a walkable map edge."
 			z.hp = 0.0
 		if count != 4 or int(w.pressure.wave) != wave + 1:
 			return "Repeated home-only raid has incorrect size or sequence."
-	return "Not all four origins used" if origins.size() != 4 else ""
+	return "Not all authored origins used" if origins.size() != w.catalog.pressure.routes.size() else ""
 
 
 func check_expansion_increases_size_frequency_and_spreads_edge_arrivals() -> String:

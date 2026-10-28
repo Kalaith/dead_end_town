@@ -28,8 +28,8 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	if not rules.list(config, "routes", false):
 		return
 	var ids: Array = rules.unique_ids(config.routes)
-	if ids != ["east", "west", "north", "south"]:
-		errors.append("Pressure needs the four authored edge routes.")
+	if ids != ["east", "west", "north", "south", "north_civic", "south_civic", "north_works", "south_works"]:
+		errors.append("Pressure needs the eight authored edge routes.")
 	for raw: Variant in config.routes:
 		if not raw is Dictionary:
 			errors.append("Raid route must be an object.")
@@ -109,12 +109,12 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 		if z.id in ["raid0", "raid1", "raid2"]:
 			continue
 		var parts: PackedStringArray = z.id.split("_")
-		if parts.size() != 3 or not parts[0].begins_with("wave") or not parts[0].substr(4).is_valid_int() or not parts[2].is_valid_int():
+		if parts.size() < 3 or not parts[0].begins_with("wave") or not parts[0].substr(4).is_valid_int() or not parts[parts.size() - 1].is_valid_int():
 			return false
 		var wave: int = int(parts[0].substr(4))
-		if wave < 0 or wave >= int(state.wave) or int(parts[2]) < 0 or int(parts[2]) >= int(catalog.pressure.maximum_size):
+		if wave < 0 or wave >= int(state.wave) or int(parts[parts.size() - 1]) < 0 or int(parts[parts.size() - 1]) >= int(catalog.pressure.maximum_size):
 			return false
-		var pattern: Array = catalog.pressure.patterns[wave % catalog.pressure.patterns.size()]
-		if parts[1] != pattern[int(parts[2]) % pattern.size()]:
+		var route_id: String = "_".join(parts.slice(1, parts.size() - 1))
+		if Pressure.route_definition(catalog, route_id).is_empty():
 			return false
 	return seen.size() == residents.size() and migrants <= int(catalog.pressure.living_cap) and living <= int(catalog.pressure.living_cap)

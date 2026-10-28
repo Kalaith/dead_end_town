@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "barricades": [
+    {
+      "id": "station_west",
+      "name": "Police station west barricade",
+      "rect": [
+        4392,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        4400,
+        580
+      ],
+      "site": [
+        4448,
+        580
+      ],
+      "requires": [
+        "station",
+        "firehall"
+      ]
+    },
+    {
+      "id": "station_east",
+      "name": "Police station east barricade",
+      "rect": [
+        4952,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        4960,
+        580
+      ],
+      "site": [
+        4912,
+        580
+      ],
+      "requires": [
+        "station",
+        "firehall"
+      ]
+    },
+    {
+      "id": "radio_west",
+      "name": "Radio office west barricade",
+      "rect": [
+        5112,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        5120,
+        580
+      ],
+      "site": [
+        5168,
+        580
+      ],
+      "requires": [
+        "radio",
+        "museum"
+      ]
+    },
+    {
+      "id": "radio_east",
+      "name": "Radio office east barricade",
+      "rect": [
+        5672,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        5680,
+        580
+      ],
+      "site": [
+        5632,
+        580
+      ],
+      "requires": [
+        "radio",
+        "museum"
+      ]
+    },
+    {
+      "id": "hall_west",
+      "name": "Town hall west barricade",
+      "rect": [
+        5832,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        5840,
+        580
+      ],
+      "site": [
+        5888,
+        580
+      ],
+      "requires": [
+        "hall",
+        "school"
+      ]
+    },
+    {
+      "id": "hall_east",
+      "name": "Town hall east barricade",
+      "rect": [
+        6392,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        6400,
+        580
+      ],
+      "site": [
+        6352,
+        580
+      ],
+      "requires": [
+        "hall",
+        "school"
+      ]
+    }
+  ],
+  "crossings": [
+    {
+      "id": "station_crossing",
+      "name": "Police station crossing",
+      "requires": [
+        "station",
+        "firehall"
+      ],
+      "barriers": [
+        "station_west",
+        "station_east"
+      ],
+      "area": [
+        4408,
+        472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "radio_crossing",
+      "name": "Radio office crossing",
+      "requires": [
+        "radio",
+        "museum"
+      ],
+      "barriers": [
+        "radio_west",
+        "radio_east"
+      ],
+      "area": [
+        5128,
+        472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "hall_crossing",
+      "name": "Town hall crossing",
+      "requires": [
+        "hall",
+        "school"
+      ],
+      "barriers": [
+        "hall_west",
+        "hall_east"
+      ],
+      "area": [
+        5848,
+        472,
+        544,
+        216
+      ]
+    }
+  ]
+}

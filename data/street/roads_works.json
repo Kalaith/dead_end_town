@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "barricades": [
+    {
+      "id": "depot_west",
+      "name": "Delivery depot west barricade",
+      "rect": [
+        6552,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        6560,
+        580
+      ],
+      "site": [
+        6608,
+        580
+      ],
+      "requires": [
+        "depot",
+        "salvage"
+      ]
+    },
+    {
+      "id": "depot_east",
+      "name": "Delivery depot east barricade",
+      "rect": [
+        7112,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        7120,
+        580
+      ],
+      "site": [
+        7072,
+        580
+      ],
+      "requires": [
+        "depot",
+        "salvage"
+      ]
+    },
+    {
+      "id": "pump_west",
+      "name": "Waterworks west barricade",
+      "rect": [
+        7272,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        7280,
+        580
+      ],
+      "site": [
+        7328,
+        580
+      ],
+      "requires": [
+        "pump",
+        "substation"
+      ]
+    },
+    {
+      "id": "pump_east",
+      "name": "Waterworks east barricade",
+      "rect": [
+        7832,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        7840,
+        580
+      ],
+      "site": [
+        7792,
+        580
+      ],
+      "requires": [
+        "pump",
+        "substation"
+      ]
+    },
+    {
+      "id": "relay_west",
+      "name": "Relief relay west barricade",
+      "rect": [
+        7992,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        8000,
+        580
+      ],
+      "site": [
+        8048,
+        580
+      ],
+      "requires": [
+        "relay",
+        "assembly"
+      ]
+    },
+    {
+      "id": "relay_east",
+      "name": "Relief relay east barricade",
+      "rect": [
+        8552,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        8560,
+        580
+      ],
+      "site": [
+        8512,
+        580
+      ],
+      "requires": [
+        "relay",
+        "assembly"
+      ]
+    }
+  ],
+  "crossings": [
+    {
+      "id": "depot_crossing",
+      "name": "Delivery depot crossing",
+      "requires": [
+        "depot",
+        "salvage"
+      ],
+      "barriers": [
+        "depot_west",
+        "depot_east"
+      ],
+      "area": [
+        6568,
+        472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "pump_crossing",
+      "name": "Waterworks crossing",
+      "requires": [
+        "pump",
+        "substation"
+      ],
+      "barriers": [
+        "pump_west",
+        "pump_east"
+      ],
+      "area": [
+        7288,
+        472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "relay_crossing",
+      "name": "Relief relay crossing",
+      "requires": [
+        "relay",
+        "assembly"
+      ],
+      "barriers": [
+        "relay_west",
+        "relay_east"
+      ],
+      "area": [
+        8008,
+        472,
+        544,
+        216
+      ]
+    }
+  ]
+}

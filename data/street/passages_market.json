@@ -1,0 +1,269 @@
+{
+  "schema_version": 1,
+  "passages": [
+    {
+      "id": "residence_hardware",
+      "name": "Residence \u2014 Hardware store",
+      "requires": [
+        "residence",
+        "hardware"
+      ],
+      "area": [
+        2068,
+        352,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          2040,
+          400
+        ],
+        [
+          2280,
+          400
+        ]
+      ],
+      "rails": [
+        [
+          2072,
+          352,
+          176,
+          8
+        ],
+        [
+          2072,
+          440,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        2152,
+        360,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "munitions_grocer",
+      "name": "Munitions \u2014 Corner grocer",
+      "requires": [
+        "munitions",
+        "grocer"
+      ],
+      "area": [
+        2068,
+        712,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          2040,
+          760
+        ],
+        [
+          2280,
+          760
+        ]
+      ],
+      "rails": [
+        [
+          2072,
+          712,
+          176,
+          8
+        ],
+        [
+          2072,
+          800,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        2152,
+        720,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "hardware_clinic",
+      "name": "Hardware store \u2014 Clinic",
+      "requires": [
+        "hardware",
+        "clinic"
+      ],
+      "area": [
+        2788,
+        352,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          2760,
+          400
+        ],
+        [
+          3000,
+          400
+        ]
+      ],
+      "rails": [
+        [
+          2792,
+          352,
+          176,
+          8
+        ],
+        [
+          2792,
+          440,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        2872,
+        360,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "grocer_allotment",
+      "name": "Corner grocer \u2014 Allotment",
+      "requires": [
+        "grocer",
+        "allotment"
+      ],
+      "area": [
+        2788,
+        712,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          2760,
+          760
+        ],
+        [
+          3000,
+          760
+        ]
+      ],
+      "rails": [
+        [
+          2792,
+          712,
+          176,
+          8
+        ],
+        [
+          2792,
+          800,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        2872,
+        720,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "clinic_greenhouse",
+      "name": "Clinic \u2014 Greenhouse",
+      "requires": [
+        "clinic",
+        "greenhouse"
+      ],
+      "area": [
+        3508,
+        352,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          3480,
+          400
+        ],
+        [
+          3720,
+          400
+        ]
+      ],
+      "rails": [
+        [
+          3512,
+          352,
+          176,
+          8
+        ],
+        [
+          3512,
+          440,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        3592,
+        360,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "allotment_diner",
+      "name": "Allotment \u2014 Diner",
+      "requires": [
+        "allotment",
+        "diner"
+      ],
+      "area": [
+        3508,
+        712,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          3480,
+          760
+        ],
+        [
+          3720,
+          760
+        ]
+      ],
+      "rails": [
+        [
+          3512,
+          712,
+          176,
+          8
+        ],
+        [
+          3512,
+          800,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        3592,
+        720,
+        16,
+        80
+      ]
+    }
+  ]
+}

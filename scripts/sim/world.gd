@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Exploration = preload("res://scripts/sim/exploration.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
 const Repairs = preload("res://scripts/sim/repairs.gd")
 const Restoration = preload("res://scripts/sim/restoration.gd")
@@ -24,6 +25,7 @@ var orders: Dictionary = WorkOrders.initial()
 var firearms: Dictionary = Firearms.initial()
 var shot: Dictionary = {"from": Vector2.ZERO, "to": Vector2.ZERO, "left": 0.0}
 var roam_rng := RandomNumberGenerator.new()
+var seen: Array = ["home"]
 var catalog: Dictionary
 var balance: Dictionary
 var properties: Dictionary = {}
@@ -79,6 +81,7 @@ func _init(data: Dictionary) -> void:
 			z.home = p.id
 			z.raid = false
 			zombies.append(z)
+	Exploration.update(self)
 	Pressure.add_residents(self)
 	rebuild_routes()
 	note("Mara has the gate. Hold R to repair.")
@@ -118,6 +121,7 @@ func step(dt: float) -> void:
 	var travel: Vector2 = move_input * float(balance.player_speed) * Equipment.speed(self, player) * dt
 	player.pos = routes.move(player.pos, player.pos + travel, travel.length())
 	face_aim()
+	Exploration.update(self)
 	Jobs.step(self, dt)
 	Combat.step(self, dt)
 	Territory.step(self, dt)
@@ -202,6 +206,8 @@ func _context() -> String:
 				return "R Rebuild · %d materials" % int(balance.gate_repair_cost)
 			return "E %s%s" % ["Close" if properties[p.id].open else "Open", "   R Repair · %d materials" % int(balance.gate_repair_cost) if float(properties[p.id].gate_hp) < float(balance.gate_health) else ""]
 		if player.pos.distance_to(Routes.point(p.site)) < 85:
+			if not p.available:
+				return "Unfinished"
 			if p.id == "home" and properties.home.claimed:
 				var injured: bool = float(player.hp) < float(balance.player_health)
 				for a: Dictionary in survivors:
@@ -263,6 +269,9 @@ func interact() -> void:
 
 
 func claim(id: String) -> bool:
+	if not definition(id).available:
+		note("This part of town is still in development.")
+		return false
 	if properties[id].claimed:
 		return false
 	if remaining(id) > 0:

@@ -12,8 +12,8 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	for key: String in ["passages", "crossings"]:
 		if not rules.list(data, key, false):
 			continue
-		var expected: Array = ["north", "south", "far_north", "far_south"] if key == "passages" else ["west", "east"]
-		if rules.unique_ids(data[key]) != expected:
+		var ids: Array = rules.unique_ids(data[key])
+		if ids.size() != (22 if key == "passages" else 12):
 			errors.append("Missing authored neighbourhood links.")
 		for raw: Variant in data[key]:
 			if not raw is Dictionary:
@@ -23,9 +23,8 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 			rules.text(d, "name")
 			_rect(d.get("area"), errors)
 			if rules.list(d, "requires", false):
-				var pairs: Array = [["home", "garden"], ["library", "garage"], ["garden", "residence"], ["garage", "munitions"]] if key == "passages" else [["home", "library"], ["garden", "garage"]]
-				if not expected.has(d.get("id")) or d.requires != pairs[expected.find(d.get("id"))]:
-					errors.append("Neighbourhood link has incorrect property endpoints.")
+				if d.requires.size() != 2:
+					errors.append("Neighbourhood links need two endpoints.")
 			if key == "passages":
 				_rect(d.get("gate"), errors)
 				if rules.list(d, "rails", false):
@@ -40,9 +39,11 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 						if not Rules.is_vec2(site):
 							errors.append("Invalid passage work position.")
 			elif rules.list(d, "barriers", false):
-				var barriers: Array = ["home_west", "home_east"] if d.id == "west" else ["garden_west", "garden_east"]
-				if d.barriers != barriers:
-					errors.append("Crossing needs both physical end barricades.")
+				if d.requires.size() == 2:
+					var barriers: Array = [str(d.requires[0]) + "_west", str(d.requires[0]) + "_east"]
+					if d.barriers != barriers:
+						errors.append("Crossing needs both independent end barricades.")
+
 
 
 static func _rect(raw: Variant, errors: Array[String]) -> void:

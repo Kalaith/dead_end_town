@@ -9,34 +9,141 @@
     "claim_size": 2,
     "maximum_size": 10,
     "living_cap": 48,
-    "specials": [{"kind": "brute", "from_wave": 0, "count": 1}],
+    "specials": [
+      {
+        "kind": "brute",
+        "from_wave": 0,
+        "count": 1
+      }
+    ],
     "spawn_spacing": 28,
     "routes": [
       {
         "id": "east",
         "name": "east road",
-        "entry": [2130, 580],
-        "spread": [0, 1]
+        "entry": [
+          8610,
+          580
+        ],
+        "spread": [
+          0,
+          1
+        ]
       },
       {
         "id": "west",
         "name": "west road",
-        "entry": [30, 580],
-        "spread": [0, 1]
+        "entry": [
+          30,
+          580
+        ],
+        "spread": [
+          0,
+          1
+        ]
       },
       {
         "id": "north",
         "name": "north alley",
-        "entry": [720, 30],
-        "spread": [1, 0]
+        "entry": [
+          2160,
+          30
+        ],
+        "spread": [
+          1,
+          0
+        ]
       },
       {
         "id": "south",
         "name": "south alley",
-        "entry": [720, 1130],
-        "spread": [1, 0]
+        "entry": [
+          2160,
+          1130
+        ],
+        "spread": [
+          1,
+          0
+        ]
+      },
+      {
+        "id": "north_civic",
+        "name": "north civic alley",
+        "entry": [
+          4320,
+          30
+        ],
+        "spread": [
+          1,
+          0
+        ]
+      },
+      {
+        "id": "south_civic",
+        "name": "south civic alley",
+        "entry": [
+          4320,
+          1130
+        ],
+        "spread": [
+          1,
+          0
+        ]
+      },
+      {
+        "id": "north_works",
+        "name": "north works alley",
+        "entry": [
+          6480,
+          30
+        ],
+        "spread": [
+          1,
+          0
+        ]
+      },
+      {
+        "id": "south_works",
+        "name": "south works alley",
+        "entry": [
+          6480,
+          1130
+        ],
+        "spread": [
+          1,
+          0
+        ]
       }
     ],
-    "patterns": [["east"], ["west"], ["north", "east"], ["south", "west"], ["east", "west", "north", "south"]]
+    "patterns": [
+      [
+        "east"
+      ],
+      [
+        "west"
+      ],
+      [
+        "north",
+        "east"
+      ],
+      [
+        "south",
+        "west"
+      ],
+      [
+        "east",
+        "west",
+        "north",
+        "south"
+      ],
+      [
+        "north_civic",
+        "south_civic"
+      ],
+      [
+        "north_works",
+        "south_works"
+      ]
+    ]
   }
 }

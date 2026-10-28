@@ -1,0 +1,245 @@
+{
+  "schema_version": 1,
+  "properties": [
+    {
+      "id": "hardware",
+      "core": true,
+      "available": false,
+      "food_cache": 0,
+      "name": "Hardware store",
+      "rect": [
+        2240,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        2340,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        2520,
+        480
+      ],
+      "site": [
+        2520,
+        350
+      ],
+      "post": [
+        2520,
+        452
+      ],
+      "neighbors": [
+        "grocer",
+        "residence",
+        "clinic"
+      ],
+      "reward": "Unfinished development content",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": []
+    },
+    {
+      "id": "grocer",
+      "core": false,
+      "available": false,
+      "food_cache": 0,
+      "name": "Corner grocer",
+      "rect": [
+        2240,
+        680,
+        560,
+        400
+      ],
+      "building": [
+        2340,
+        870,
+        350,
+        155
+      ],
+      "gate": [
+        2520,
+        680
+      ],
+      "site": [
+        2520,
+        800
+      ],
+      "post": [
+        2520,
+        710
+      ],
+      "neighbors": [
+        "hardware",
+        "munitions",
+        "allotment"
+      ],
+      "reward": "Unfinished development content",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": []
+    },
+    {
+      "id": "clinic",
+      "core": true,
+      "available": false,
+      "food_cache": 0,
+      "name": "Clinic",
+      "rect": [
+        2960,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        3060,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        3240,
+        480
+      ],
+      "site": [
+        3240,
+        350
+      ],
+      "post": [
+        3240,
+        452
+      ],
+      "neighbors": [
+        "allotment",
+        "hardware",
+        "greenhouse"
+      ],
+      "reward": "Unfinished development content",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": []
+    },
+    {
+      "id": "allotment",
+      "core": false,
+      "available": false,
+      "food_cache": 0,
+      "name": "Allotment",
+      "rect": [
+        2960,
+        680,
+        560,
+        400
+      ],
+      "building": [
+        3060,
+        870,
+        350,
+        155
+      ],
+      "gate": [
+        3240,
+        680
+      ],
+      "site": [
+        3240,
+        800
+      ],
+      "post": [
+        3240,
+        710
+      ],
+      "neighbors": [
+        "clinic",
+        "grocer",
+        "diner"
+      ],
+      "reward": "Unfinished development content",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": []
+    },
+    {
+      "id": "greenhouse",
+      "core": true,
+      "available": false,
+      "food_cache": 0,
+      "name": "Greenhouse",
+      "rect": [
+        3680,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        3780,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        3960,
+        480
+      ],
+      "site": [
+        3960,
+        350
+      ],
+      "post": [
+        3960,
+        452
+      ],
+      "neighbors": [
+        "diner",
+        "clinic",
+        "station"
+      ],
+      "reward": "Unfinished development content",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": []
+    },
+    {
+      "id": "diner",
+      "core": false,
+      "available": false,
+      "food_cache": 0,
+      "name": "Diner",
+      "rect": [
+        3680,
+        680,
+        560,
+        400
+      ],
+      "building": [
+        3780,
+        870,
+        350,
+        155
+      ],
+      "gate": [
+        3960,
+        680
+      ],
+      "site": [
+        3960,
+        800
+      ],
+      "post": [
+        3960,
+        710
+      ],
+      "neighbors": [
+        "greenhouse",
+        "allotment",
+        "firehall"
+      ],
+      "reward": "Unfinished development content",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": []
+    }
+  ]
+}

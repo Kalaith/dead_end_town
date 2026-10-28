@@ -1,4 +1,5 @@
 extends RefCounted
+const TownState = preload("res://scripts/core/town_state.gd")
 const JobState = preload("res://scripts/core/job_state.gd")
 const RepairState = preload("res://scripts/core/repair_state.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
@@ -26,11 +27,11 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 19
-## Saved world fields that are dictionaries and are copied, not shared.
-const COPIED_KEYS: Array[String] = ["production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
+const SCHEMA: int = 20
+## Saved world fields that are collections and are copied, not shared.
+const COPIED_KEYS: Array[String] = ["seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
+const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
 var catalog: Dictionary
 var store: RefCounted
 
@@ -107,10 +108,10 @@ func valid(data: Dictionary) -> bool:
 	if not data.get("roam_rng_state") is String or str(int(data.roam_rng_state)) != data.roam_rng_state:
 		return false
 	for key: String in STATE_KEYS:
-		if key in ["production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
+		if key in ["seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
 			continue
 		if key == "gate_repair_target":
-			if data.get(key) not in ["home", "garden", "library", "garage", "residence", "munitions"]:
+			if not data.get("properties") is Dictionary or not data.properties.has(data.get(key)):
 				return false
 			continue
 		if key in ["approach", "garden_started", "garden_done", "repair_reserved"]:
@@ -181,7 +182,7 @@ func valid(data: Dictionary) -> bool:
 		return false
 	if data.player.id != "you":
 		return false
-	return JobState.valid(data, catalog) and WorkOrderState.valid(data, catalog) and FirearmState.valid(data, catalog) and PressureState.valid(data, catalog) and NeighbourhoodState.valid(data, catalog) and EquipmentState.valid(data) and ProvisionsState.valid(data, catalog) and SliceState.valid(data, catalog)
+	return TownState.valid(data, catalog) and JobState.valid(data, catalog) and WorkOrderState.valid(data, catalog) and FirearmState.valid(data, catalog) and PressureState.valid(data, catalog) and NeighbourhoodState.valid(data, catalog) and EquipmentState.valid(data) and ProvisionsState.valid(data, catalog) and SliceState.valid(data, catalog)
 
 
 func _valid_actor(a: Variant, max_health: float) -> bool:
@@ -214,6 +215,10 @@ func migrate(data: Dictionary) -> Dictionary:
 		return {}
 	var upgraded: Dictionary = data.duplicate(true)
 	var version: int = int(upgraded.schema_version)
+	if not TownState.expand(upgraded, catalog):
+		return {}
+	if version == 19:
+		return _upgrade_town(upgraded)
 	if version == 18:
 		return _upgrade_jobs(upgraded)
 	if version == 17:
@@ -511,5 +516,11 @@ func _upgrade_repairs(data: Dictionary) -> Dictionary:
 func _upgrade_jobs(data: Dictionary) -> Dictionary:
 	if not JobState.migrate(data, catalog):
 		return {}
+	data.schema_version = 19
+	return _upgrade_town(data)
+
+
+func _upgrade_town(data: Dictionary) -> Dictionary:
+	data.seen = TownState.LEGACY.duplicate()
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

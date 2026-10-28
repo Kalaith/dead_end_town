@@ -467,3 +467,17 @@ Evidence:
 - Nearby construction approval now distinguishes protected stock access from an explicit field-supply commitment and warns when the shown cost uses the material reserve. Passage approval rejects downed or remote callers; paused cancellation remains available separately.
 - All 129 scenarios pass, all 86 scripts load, and the headless editor/import passes. The work-order capture tour stages and verifies field_supplies.png at 1280x720; inspected the contextual cost/field/reserve line. No persistent HUD counter or confirmation dialogue was added.
 - The shared-order foundation now supports the map/content expansion. Work-board location/assignment access will use the known-town overview in G02; routine maintenance and food-target refinements remain with their facility/economy owners. Full-game scope is not complete.
+
+
+## 28 October 2026: G02 full-town geometry and safe expansion
+
+Implementation:
+- The street spans all 24 sites in four districts, with 22 side passages, 12 crossings and 24 independent road-barrier sockets. All 18 core sites connect without requiring the six optional sites. Original six property IDs, rewards, residents and existing structures retain their identities.
+- The 18 new sites are explicit development shells: no claim, reward, encounter or hidden facility effects. Walking near a site records discovery for the upcoming known-town overview. Pressure can originate at all district edges while retaining the existing living-zombie cap.
+- Schema 20 expands historical saves with untouched new sites while preserving old property state, supplies, actors, RNG, prepaid work and the earned neighbourhood watch. Historical raid route IDs remain valid.
+- The renderer culls offscreen drawing; path-grid construction rasterises collision rectangles and clears stale cells when rebuilding. These changes support the larger layout without changing authoritative offscreen simulation.
+
+Evidence:
+- All 135 simulation scenarios pass, including full topology/core-only connectivity, actual movement from the west edge to the east works, six-site save expansion, persistent discovery, and every path-grid cell against collision plus removed-barrier recovery. Existing fixture checks retain their original six-site scope.
+- All 91 scripts load; Godot 4.7.2 headless editor/import passes. The windowed town tour stages three 1280x720 captures and asserts shell interaction cannot claim or pay rewards. Inspected market_row_shells.png and east_works_shells.png; the live HUD remains health, pause and one nearby prompt.
+- Captures and automated traversal are not human playtesting or a full-town performance benchmark. The paused map/board access, new district content, full campaign balance and release acceptance remain unfinished. No toolkit edits, installations, exports or publication.

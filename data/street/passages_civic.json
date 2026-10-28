@@ -1,0 +1,269 @@
+{
+  "schema_version": 1,
+  "passages": [
+    {
+      "id": "greenhouse_station",
+      "name": "Greenhouse \u2014 Police station",
+      "requires": [
+        "greenhouse",
+        "station"
+      ],
+      "area": [
+        4228,
+        352,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          4200,
+          400
+        ],
+        [
+          4440,
+          400
+        ]
+      ],
+      "rails": [
+        [
+          4232,
+          352,
+          176,
+          8
+        ],
+        [
+          4232,
+          440,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        4312,
+        360,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "diner_firehall",
+      "name": "Diner \u2014 Fire station",
+      "requires": [
+        "diner",
+        "firehall"
+      ],
+      "area": [
+        4228,
+        712,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          4200,
+          760
+        ],
+        [
+          4440,
+          760
+        ]
+      ],
+      "rails": [
+        [
+          4232,
+          712,
+          176,
+          8
+        ],
+        [
+          4232,
+          800,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        4312,
+        720,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "station_radio",
+      "name": "Police station \u2014 Radio office",
+      "requires": [
+        "station",
+        "radio"
+      ],
+      "area": [
+        4948,
+        352,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          4920,
+          400
+        ],
+        [
+          5160,
+          400
+        ]
+      ],
+      "rails": [
+        [
+          4952,
+          352,
+          176,
+          8
+        ],
+        [
+          4952,
+          440,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        5032,
+        360,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "firehall_museum",
+      "name": "Fire station \u2014 Museum",
+      "requires": [
+        "firehall",
+        "museum"
+      ],
+      "area": [
+        4948,
+        712,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          4920,
+          760
+        ],
+        [
+          5160,
+          760
+        ]
+      ],
+      "rails": [
+        [
+          4952,
+          712,
+          176,
+          8
+        ],
+        [
+          4952,
+          800,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        5032,
+        720,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "radio_hall",
+      "name": "Radio office \u2014 Town hall",
+      "requires": [
+        "radio",
+        "hall"
+      ],
+      "area": [
+        5668,
+        352,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          5640,
+          400
+        ],
+        [
+          5880,
+          400
+        ]
+      ],
+      "rails": [
+        [
+          5672,
+          352,
+          176,
+          8
+        ],
+        [
+          5672,
+          440,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        5752,
+        360,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "museum_school",
+      "name": "Museum \u2014 School hall",
+      "requires": [
+        "museum",
+        "school"
+      ],
+      "area": [
+        5668,
+        712,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          5640,
+          760
+        ],
+        [
+          5880,
+          760
+        ]
+      ],
+      "rails": [
+        [
+          5672,
+          712,
+          176,
+          8
+        ],
+        [
+          5672,
+          800,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        5752,
+        720,
+        16,
+        80
+      ]
+    }
+  ]
+}

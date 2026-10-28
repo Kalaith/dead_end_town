@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "barricades": [
+    {
+      "id": "hardware_west",
+      "name": "Hardware store west barricade",
+      "rect": [
+        2232,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        2240,
+        580
+      ],
+      "site": [
+        2288,
+        580
+      ],
+      "requires": [
+        "hardware",
+        "grocer"
+      ]
+    },
+    {
+      "id": "hardware_east",
+      "name": "Hardware store east barricade",
+      "rect": [
+        2792,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        2800,
+        580
+      ],
+      "site": [
+        2752,
+        580
+      ],
+      "requires": [
+        "hardware",
+        "grocer"
+      ]
+    },
+    {
+      "id": "clinic_west",
+      "name": "Clinic west barricade",
+      "rect": [
+        2952,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        2960,
+        580
+      ],
+      "site": [
+        3008,
+        580
+      ],
+      "requires": [
+        "clinic",
+        "allotment"
+      ]
+    },
+    {
+      "id": "clinic_east",
+      "name": "Clinic east barricade",
+      "rect": [
+        3512,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        3520,
+        580
+      ],
+      "site": [
+        3472,
+        580
+      ],
+      "requires": [
+        "clinic",
+        "allotment"
+      ]
+    },
+    {
+      "id": "greenhouse_west",
+      "name": "Greenhouse west barricade",
+      "rect": [
+        3672,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        3680,
+        580
+      ],
+      "site": [
+        3728,
+        580
+      ],
+      "requires": [
+        "greenhouse",
+        "diner"
+      ]
+    },
+    {
+      "id": "greenhouse_east",
+      "name": "Greenhouse east barricade",
+      "rect": [
+        4232,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        4240,
+        580
+      ],
+      "site": [
+        4192,
+        580
+      ],
+      "requires": [
+        "greenhouse",
+        "diner"
+      ]
+    }
+  ],
+  "crossings": [
+    {
+      "id": "hardware_crossing",
+      "name": "Hardware store crossing",
+      "requires": [
+        "hardware",
+        "grocer"
+      ],
+      "barriers": [
+        "hardware_west",
+        "hardware_east"
+      ],
+      "area": [
+        2248,
+        472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "clinic_crossing",
+      "name": "Clinic crossing",
+      "requires": [
+        "clinic",
+        "allotment"
+      ],
+      "barriers": [
+        "clinic_west",
+        "clinic_east"
+      ],
+      "area": [
+        2968,
+        472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "greenhouse_crossing",
+      "name": "Greenhouse crossing",
+      "requires": [
+        "greenhouse",
+        "diner"
+      ],
+      "barriers": [
+        "greenhouse_west",
+        "greenhouse_east"
+      ],
+      "area": [
+        3688,
+        472,
+        544,
+        216
+      ]
+    }
+  ]
+}

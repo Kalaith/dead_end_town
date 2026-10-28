@@ -28,7 +28,7 @@ static func prepared() -> RefCounted:
 
 func check_new_properties_require_clearance_and_give_one_pistol_six_bullets() -> String:
 	var w := World.new(Catalog.read())
-	if w.catalog.properties.size() != 6 or w.survivors.size() != 1 or w.firearms.owned or w.shoot() or w.claim("residence"):
+	if w.catalog.properties.size() != 24 or w.survivors.size() != 1 or w.firearms.owned or w.shoot() or w.claim("residence"):
 		return "Expansion is missing or reveals/grants an unearned rescue."
 	for z: Dictionary in w.zombies:
 		z.hp = 0.0
@@ -185,7 +185,7 @@ func check_real_schema_eleven_expands_without_rewriting_old_progress() -> String
 		old.passages.erase(id)
 	old.zombies = old.zombies.filter(func(z: Dictionary) -> bool: return z.home not in ["residence", "munitions"])
 	var loaded: RefCounted = save.restore(old)
-	if loaded == null or loaded.properties.size() != 6 or loaded.firearms.owned or loaded.materials != w.materials or loaded.zombies.size() != w.zombies.size():
+	if loaded == null or loaded.properties.size() != 24 or loaded.firearms.owned or loaded.materials != w.materials or loaded.zombies.size() != w.zombies.size():
 		return "Old street did not expand safely."
 	var raw: Dictionary = save.snapshot(loaded)
 	for value: Variant in [-1, 1.5, "six"]:

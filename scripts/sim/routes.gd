@@ -38,14 +38,28 @@ func rebuild(definitions: Array, properties: Dictionary, size: Vector2, defences
 		if not properties[p.id].open and float(properties[p.id].gate_hp) > 0:
 			walls.append(Rect2(gate.x - 44, fence_y, 88, 8))
 	walls.append_array(passage_walls)
+	grid.clear()
 	grid.region = Rect2i(0, 0, int(bounds.x / CELL), int(bounds.y / CELL))
 	grid.cell_size = Vector2(CELL, CELL)
 	grid.offset = Vector2(CELL / 2, CELL / 2)
 	grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
 	grid.update()
+	# Rasterise obstacle footprints rather than testing every cell against every wall.
+	# This keeps a full-town rebuild proportional to the occupied grid area.
 	for x: int in range(grid.region.size.x):
-		for y: int in range(grid.region.size.y):
-			grid.set_point_solid(Vector2i(x, y), not walkable(Vector2(x, y) * CELL + grid.offset))
+		grid.set_point_solid(Vector2i(x, 0))
+		grid.set_point_solid(Vector2i(x, grid.region.size.y - 1))
+	for y: int in range(grid.region.size.y):
+		grid.set_point_solid(Vector2i(0, y))
+		grid.set_point_solid(Vector2i(grid.region.size.x - 1, y))
+	for wall: Rect2 in walls + road_walls:
+		var area: Rect2 = wall.grow(RADIUS)
+		var first := Vector2i(ceili((area.position.x - grid.offset.x) / CELL), ceili((area.position.y - grid.offset.y) / CELL))
+		var end := Vector2i(ceili((area.end.x - grid.offset.x) / CELL), ceili((area.end.y - grid.offset.y) / CELL))
+		for x: int in range(maxi(0, first.x), mini(grid.region.size.x, end.x)):
+			for y: int in range(maxi(0, first.y), mini(grid.region.size.y, end.y)):
+				grid.set_point_solid(Vector2i(x, y))
+
 
 
 func walkable(pos: Vector2) -> bool:

@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "properties": [
+    {
+      "id": "depot",
+      "core": true,
+      "available": false,
+      "food_cache": 0,
+      "name": "Delivery depot",
+      "rect": [
+        6560,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        6660,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        6840,
+        480
+      ],
+      "site": [
+        6840,
+        350
+      ],
+      "post": [
+        6840,
+        452
+      ],
+      "neighbors": [
+        "salvage",
+        "hall",
+        "pump"
+      ],
+      "reward": "Unfinished development content",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": []
+    },
+    {
+      "id": "salvage",
+      "core": true,
+      "available": false,
+      "food_cache": 0,
+      "name": "Salvage yard",
+      "rect": [
+        6560,
+        680,
+        560,
+        400
+      ],
+      "building": [
+        6660,
+        870,
+        350,
+        155
+      ],
+      "gate": [
+        6840,
+        680
+      ],
+      "site": [
+        6840,
+        800
+      ],
+      "post": [
+        6840,
+        710
+      ],
+      "neighbors": [
+        "depot",
+        "school",
+        "substation"
+      ],
+      "reward": "Unfinished development content",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": []
+    },
+    {
+      "id": "pump",
+      "core": true,
+      "available": false,
+      "food_cache": 0,
+      "name": "Waterworks",
+      "rect": [
+        7280,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        7380,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        7560,
+        480
+      ],
+      "site": [
+        7560,
+        350
+      ],
+      "post": [
+        7560,
+        452
+      ],
+      "neighbors": [
+        "substation",
+        "depot",
+        "relay"
+      ],
+      "reward": "Unfinished development content",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": []
+    },
+    {
+      "id": "substation",
+      "core": true,
+      "available": false,
+      "food_cache": 0,
+      "name": "Substation",
+      "rect": [
+        7280,
+        680,
+        560,
+        400
+      ],
+      "building": [
+        7380,
+        870,
+        350,
+        155
+      ],
+      "gate": [
+        7560,
+        680
+      ],
+      "site": [
+        7560,
+        800
+      ],
+      "post": [
+        7560,
+        710
+      ],
+      "neighbors": [
+        "pump",
+        "salvage",
+        "assembly"
+      ],
+      "reward": "Unfinished development content",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": []
+    },
+    {
+      "id": "relay",
+      "core": true,
+      "available": false,
+      "food_cache": 0,
+      "name": "Relief relay",
+      "rect": [
+        8000,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        8100,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        8280,
+        480
+      ],
+      "site": [
+        8280,
+        350
+      ],
+      "post": [
+        8280,
+        452
+      ],
+      "neighbors": [
+        "assembly",
+        "pump"
+      ],
+      "reward": "Unfinished development content",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": []
+    },
+    {
+      "id": "assembly",
+      "core": true,
+      "available": false,
+      "food_cache": 0,
+      "name": "Assembly yard",
+      "rect": [
+        8000,
+        680,
+        560,
+        400
+      ],
+      "building": [
+        8100,
+        870,
+        350,
+        155
+      ],
+      "gate": [
+        8280,
+        680
+      ],
+      "site": [
+        8280,
+        800
+      ],
+      "post": [
+        8280,
+        710
+      ],
+      "neighbors": [
+        "relay",
+        "substation"
+      ],
+      "reward": "Unfinished development content",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": []
+    }
+  ]
+}

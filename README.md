@@ -2,7 +2,7 @@
 
 Reclaim a zombie-infested street, one property at a time, with a small group of survivors who work and fight together.
 
-**Status: playable greybox slice (28 October 2026).** One continuous six-property street with combat, territory, building, equipment, food and a finish. It is a vertical slice, not a full campaign, and it has had only partial human playtesting. See [progress and verification](docs/PROGRESS.md) for exactly what has and has not been checked.
+**Status: full-town greybox expansion (28 October 2026).** The continuous street now has all 24 property sites across four districts. The original six sites have combat, territory, building, equipment, food and a slice finish; the other 18 are development shells without rewards or encounters. The full campaign is still being built, and human playtesting remains partial. See [progress and verification](docs/PROGRESS.md) for exactly what has and has not been checked.
 
 ## The game
 
@@ -91,4 +91,4 @@ You can also open `project.godot` in the editor. Headless checks and the staged 
 | [Vehicle design](docs/18-vehicle.md) | Recoverable utility van, travel, recovery and save rules |
 | [Progress](docs/PROGRESS.md) · [TODO](docs/TODO.md) | What is built and verified, and what is next |
 
-The full game design targets 24 properties, eight zombie kinds and eight survivors plus the player, with a core campaign and a finite relief-signal ending. It is documentation for future implementation; the runtime described above remains the six-property slice. Design numbers are chosen starting values with validation gates, while `PROGRESS.md` records what exists and was actually checked.
+The full game design targets 24 properties, eight zombie kinds and eight survivors plus the player, with a core campaign and a finite relief-signal ending. It is documentation for future implementation; the runtime currently has six functional properties within the full 24-site layout. Design numbers are chosen starting values with validation gates, while `PROGRESS.md` records what exists and was actually checked.

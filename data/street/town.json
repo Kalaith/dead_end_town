@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "town": {
+    "columns": [
+      [
+        "home",
+        "library"
+      ],
+      [
+        "garden",
+        "garage"
+      ],
+      [
+        "residence",
+        "munitions"
+      ],
+      [
+        "hardware",
+        "grocer"
+      ],
+      [
+        "clinic",
+        "allotment"
+      ],
+      [
+        "greenhouse",
+        "diner"
+      ],
+      [
+        "station",
+        "firehall"
+      ],
+      [
+        "radio",
+        "museum"
+      ],
+      [
+        "hall",
+        "school"
+      ],
+      [
+        "depot",
+        "salvage"
+      ],
+      [
+        "pump",
+        "substation"
+      ],
+      [
+        "relay",
+        "assembly"
+      ]
+    ],
+    "districts": [
+      "Hearth Street",
+      "Market Row",
+      "Civic Block",
+      "East Works"
+    ],
+    "core": [
+      "home",
+      "library",
+      "garden",
+      "garage",
+      "residence",
+      "munitions",
+      "hardware",
+      "clinic",
+      "greenhouse",
+      "station",
+      "radio",
+      "hall",
+      "depot",
+      "salvage",
+      "pump",
+      "substation",
+      "relay",
+      "assembly"
+    ]
+  }
+}

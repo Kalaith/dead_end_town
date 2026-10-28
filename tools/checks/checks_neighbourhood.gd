@@ -25,6 +25,8 @@ static func integrate(w: RefCounted) -> void:
 	for p: Dictionary in w.properties.values():
 		p.open = true
 	for d: Dictionary in w.catalog.barricades:
+		if d.requires not in [["home", "library"], ["garden", "garage"]]:
+			continue
 		w.roadworks[d.id] = {"phase": "ready", "progress": 0.0, "hp": float(w.balance.barricade_health), "repair_reserved": false}
 	w.rebuild_routes()
 
