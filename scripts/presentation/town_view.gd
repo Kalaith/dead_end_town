@@ -1,5 +1,6 @@
 extends Node2D
 ## Original procedural greybox art. No imported game assets.
+const FieldMedicine = preload("res://scripts/sim/field_medicine.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
@@ -58,6 +59,11 @@ func _draw() -> void:
 	for a: Dictionary in actors:
 		if visible_world.grow(100).has_point(a.pos):
 			_actor(a, a.has("raid"))
+	var patient: Dictionary = FieldMedicine.player_target(world)
+	if not patient.is_empty():
+		draw_arc(patient.pos, 25, 0, TAU, 32, Color("9dc1ce"), 2)
+		if world.field_care.has(patient.id):
+			draw_arc(patient.pos, 28, -PI / 2, -PI / 2 + TAU * float(world.field_care[patient.id]) / float(world.balance.field_seconds), 32, CREAM, 3)
 	if float(world.shot.left) > 0:
 		draw_line(world.shot.from, world.shot.to, Color("ffe7a0"), 3)
 		draw_circle(world.shot.from, 9, Color("fff0b0"))
@@ -196,6 +202,11 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		_armour(pos, a.facing)
 	if not zombie and Equipment.shielded(world, a):
 		_shield(pos, a.facing)
+	if not zombie and world.equipment.field_bag == a.id:
+		var bag: Vector2 = pos + direction.orthogonal() * 15 + Vector2(0, -11)
+		draw_line(bag + Vector2(-6, -7), bag + Vector2(6, -7), CREAM, 3)
+		draw_rect(Rect2(bag - Vector2(9, 6), Vector2(18, 14)), INK)
+		draw_rect(Rect2(bag - Vector2(7, 4), Vector2(14, 10)), Color("9dc1ce"))
 	if not zombie and a.id != "ellis" and not Carrying.burdened(world, a.id) and not (a.id == "you" and float(world.shot.left) > 0):
 		var grip: Vector2 = pos + Vector2(0, -14) + direction * 12
 		var weapon: String = Equipment.weapon(world, a)

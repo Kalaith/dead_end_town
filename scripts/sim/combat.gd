@@ -52,7 +52,7 @@ static func step(world: RefCounted, dt: float) -> void:
 				world.note(a.name + " is down. Carry them to a clear shelter.")
 			a.activity = "Down - carry to shelter"
 			continue
-		if a.order != "Rescue":
+		if a.order not in ["Rescue", "Field"]:
 			_survivor(world, a, dt)
 	for z: Dictionary in world.zombies:
 		if float(z.hp) > 0:

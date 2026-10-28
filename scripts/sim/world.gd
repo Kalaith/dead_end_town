@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const FieldMedicine = preload("res://scripts/sim/field_medicine.gd")
 const CompanionRescue = preload("res://scripts/sim/companion_rescue.gd")
 const Medicine = preload("res://scripts/sim/medicine.gd")
 const RecoverySalvage = preload("res://scripts/sim/recovery_salvage.gd")
@@ -49,6 +50,7 @@ var medicine_production: Dictionary
 var clinic: Dictionary = Clinic.initial()
 var rescue_intro: String = ""
 var rescue_jobs: Dictionary = {}
+var field_care: Dictionary = {}
 var elapsed: float = 0.0
 var approach: bool = false
 var pressure: Dictionary
@@ -162,6 +164,8 @@ func step(dt: float) -> void:
 	if not RecoverySalvage.nearby(self).is_empty():
 		RecoverySalvage.step(self, work_dt)
 		working = false
+	if not FieldMedicine.player_target(self).is_empty():
+		working = false
 	Neighbourhood.step(self, work_dt)
 	_work(work_dt)
 	Workshop.step(self, work_dt)
@@ -169,6 +173,7 @@ func step(dt: float) -> void:
 	Firearms.step(self, work_dt)
 	Roadworks.step(self, work_dt)
 	working = player_work
+	FieldMedicine.step(self, work_dt)
 	Pressure.step(self)
 	Carrying.sync(self)
 	CompanionRescue.sync(self)
@@ -235,6 +240,9 @@ func context() -> String:
 	var recovery_text: String = RecoverySalvage.context(self)
 	if not recovery_text.is_empty():
 		return recovery_text
+	var field_text: String = FieldMedicine.context(self)
+	if not field_text.is_empty():
+		return field_text
 	var text: String = _context()
 	if not Salvage.nearby(self).is_empty():
 		text += "   Q Timber (+%d materials)" % int(balance.timber_materials)

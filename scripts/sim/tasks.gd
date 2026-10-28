@@ -1,5 +1,6 @@
 extends RefCounted
 ## Named survivor orders share physical work sites, never a global worker slot.
+const FieldMedicine = preload("res://scripts/sim/field_medicine.gd")
 const CompanionRescue = preload("res://scripts/sim/companion_rescue.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
@@ -50,6 +51,10 @@ static func options(world: RefCounted, a: Dictionary = {}) -> Array[Dictionary]:
 			var owner: String = CompanionRescue.owner(world, patient.id)
 			var shelter: String = str(world.rescue_jobs[owner].shelter) if world.rescue_jobs.has(owner) else CompanionRescue.destination(world, patient)
 			result.append({"id": "rescue:" + str(patient.id), "label": "Rescue " + str(patient.name) + (" → " + shelter.capitalize() if not shelter.is_empty() else "")})
+	if not a.is_empty() and world.equipment.field_bag == a.id:
+		for patient: Dictionary in [world.player] + world.survivors:
+			if FieldMedicine.eligible(world, patient):
+				result.append({"id": "field:" + str(patient.id), "label": "Treat " + str(patient.name)})
 	for entry: Dictionary in result:
 		entry.reason = unavailable(world, entry.id, a)
 	return result
@@ -58,6 +63,8 @@ static func options(world: RefCounted, a: Dictionary = {}) -> Array[Dictionary]:
 static func unavailable(world: RefCounted, task: String, a: Dictionary = {}) -> String:
 	if not a.is_empty() and Firearms.civilian(a) and (task in ["home", "engage"] or task.begins_with("guard:")):
 		return "Ellis cannot fight or take a guard role"
+	if task.begins_with("field:"):
+		return FieldMedicine.reason(world, a, task.trim_prefix("field:"))
 	if task.begins_with("rescue:"):
 		return CompanionRescue.reason(world, task.trim_prefix("rescue:"), a)
 	match task:
@@ -134,6 +141,10 @@ static func assign(world: RefCounted, id: String, task: String, announce: bool =
 			a.order = task.capitalize()
 			a.anchor = a.pos if task == "hold" else world.player.pos
 		_:
+			if task.begins_with("field:"):
+				a.order = "Field"
+				a.job = task.trim_prefix("field:")
+				a.anchor = a.pos
 			if task.begins_with("rescue:"):
 				CompanionRescue.start(world, a, task.trim_prefix("rescue:"))
 			if task.begins_with("repair:"):
@@ -170,7 +181,7 @@ static func selected(world: RefCounted, a: Dictionary) -> String:
 
 static func label(world: RefCounted, a: Dictionary) -> String:
 	var id: String = selected(world, a)
-	for entry: Dictionary in options(world):
+	for entry: Dictionary in options(world, a):
 		if entry.id == id:
 			return entry.label
 	return "Guard home"

@@ -108,6 +108,10 @@
     "medicine_food_cost": 2,
     "medicine_batch": 2,
     "medicine_seconds": 30,
-    "medicine_target": 8
+    "medicine_target": 8,
+    "field_medicine_cost": 1,
+    "field_seconds": 3,
+    "field_heal": 40,
+    "field_range": 70
   }
 }

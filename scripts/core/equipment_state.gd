@@ -25,15 +25,15 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 
 
 static func valid(data: Dictionary) -> bool:
-	if not data.get("equipment") is Dictionary or data.equipment.size() != 5:
+	if not data.get("equipment") is Dictionary or data.equipment.size() != 6:
 		return false
 	var wearers: Array[String] = ["", "you"]
 	for a: Dictionary in data.survivors:
 		wearers.append(a.id)
-	for id: String in ["crowbar", "sword", "iron", "shield", "spear"]:
+	for id: String in ["crowbar", "sword", "iron", "shield", "spear", "field_bag"]:
 		if not data.equipment.get(id) is String or not wearers.has(data.equipment[id]):
 			return false
-		if not data.equipment[id].is_empty() and not (data.properties.hardware.looted if id == "spear" else data.properties.garage.looted if id == "crowbar" else data.workshop.armour_done):
+		if not data.equipment[id].is_empty() and not (data.properties.clinic.looted if id == "field_bag" else data.properties.hardware.looted if id == "spear" else data.properties.garage.looted if id == "crowbar" else data.workshop.armour_done):
 			return false
 	var weapons: Array[String] = []
 	for id: String in ["crowbar", "sword", "spear"]:
@@ -41,6 +41,8 @@ static func valid(data: Dictionary) -> bool:
 			if data.equipment[id] == "ellis" or data.equipment[id] in weapons:
 				return false
 			weapons.append(data.equipment[id])
-	if not data.equipment.spear.is_empty() and data.equipment.spear == data.equipment.shield:
+	if not data.equipment.spear.is_empty() and data.equipment.spear in [data.equipment.shield, data.equipment.field_bag]:
+		return false
+	if not data.equipment.field_bag.is_empty() and data.equipment.field_bag == data.equipment.shield:
 		return false
 	return data.workshop.equipped == (data.equipment.iron == "paige" and data.equipment.shield == "paige")

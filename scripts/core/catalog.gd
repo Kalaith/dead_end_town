@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authored content is validated before the simulation starts.
+const FieldMedicineState = preload("res://scripts/core/field_medicine_state.gd")
 const MedicineState = preload("res://scripts/core/medicine_state.gd")
 const RecoverySalvageState = preload("res://scripts/core/recovery_salvage_state.gd")
 const RecoveryState = preload("res://scripts/core/recovery_state.gd")
@@ -108,6 +109,7 @@ static func problems(data: Dictionary) -> Array[String]:
 			for pos: Variant in p[key]:
 				if not Rules.is_vec2(pos):
 					errors.append("Invalid zombie position.")
+	FieldMedicineState.content(data, errors)
 	MedicineState.content(data, errors)
 	RecoverySalvageState.content(data, errors)
 	RecoveryState.content(data, errors)

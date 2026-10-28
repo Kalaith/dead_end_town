@@ -25,6 +25,8 @@ static func current(catalog: Dictionary, a: Dictionary) -> String:
 			return "passage:" + str(a.job)
 		"Roadwork":
 			return "work:" + str(a.job)
+		"Field":
+			return "field:" + str(a.job)
 		"Rescue":
 			return "rescue:" + str(a.job)
 		"Repair":
@@ -43,7 +45,7 @@ static func current(catalog: Dictionary, a: Dictionary) -> String:
 
 
 static func temporary(task: String) -> bool:
-	return task.begins_with("rescue:") or task.begins_with("work:") or task.begins_with("passage:") or task.begins_with("repair:")
+	return task.begins_with("field:") or task.begins_with("rescue:") or task.begins_with("work:") or task.begins_with("passage:") or task.begins_with("repair:")
 
 
 static func remember(world: RefCounted, a: Dictionary, task: String) -> void:
@@ -222,6 +224,8 @@ static func _choose(world: RefCounted, a: Dictionary) -> String:
 
 static func _needed(world: RefCounted, a: Dictionary) -> bool:
 	var task: String = current(world.catalog, a)
+	if task.begins_with("field:"):
+		return world.equipment.field_bag == a.id
 	if task.begins_with("rescue:"):
 		return world.rescue_jobs.has(a.id)
 	for order: Dictionary in world.orders.sites.values():

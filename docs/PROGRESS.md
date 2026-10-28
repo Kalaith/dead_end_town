@@ -603,3 +603,21 @@ Evidence:
 - All 181 scenarios pass, including eight new physical route/lift/drop/JSON/duty, closed/lost route, individual/group reassignment, downed carrier/attack restriction, civilian/duplicate ownership, defeat cleanup, schema-27 and nearer-clinic cases. All 130 scripts load; headless editor/import passes.
 - The windowed Team-picker tour verifies connected assignment and paused snapshot conservation, then runs the authoritative journey and previous garden-duty resumption. Inspected companion_rescue_order.png and companion_carried.png. The carrier image deliberately stages the camera away from the player and hides that offscreen player's unrelated context; it is a visual fixture, not human play evidence. Team body text is 18 pixels and redundant assignment footers are omitted. No live rescue panel was added.
 - Field treatment, greenhouse food/Oliver, fixture damage/repair and later campaign content remain unfinished. Human rescue reliability and path feel remain unverified. No toolkit changes, installations or publication.
+
+
+## 28 October 2026: field bag review and current-state assessment
+
+Implementation:
+- Reviewed and completed the pending field-medicine slice. Clinic search unlocks one unique field bag at the existing workshop loadout bench. Its off-hand slot excludes shield and two-handed spear combinations. A standing local patient receives up to 40 health for one Medicine and three clear work seconds; interrupted progress remains paid on that patient through range loss, danger, tool handoff and JSON reload. Fully healed patients discard unused paid capacity. Downed people still require physical shelter care.
+- Held R selects nearby injured companions before self-care and yields to gates, projects, salvage and casualty handling. An explicitly ordered bag-equipped companion, including Ellis, can treat a nearby standing patient, then resume their prior duty. No autonomous medicine spending is introduced. Schema 29 adds an empty dose ledger and bag owner without changing existing stock or duties.
+- Review corrected corrupted punctuation in field prompts, rescue destinations and the spear tooltip. The failing migration assertion assumed tactical Hold replaces a regular duty; it now checks every survivor's actual prior duty and order are preserved.
+
+Current boundary and next step:
+- G01/common orders and G02/full-map skeleton are implemented; G03/Market Row remains partial. Eight sites are searchable, with the original six-site loop plus hardware and clinic, four companions plus the protagonist, two enemy kinds and sixteen development shells. Original neighbourhood watch remains the slice finish. This is a playable greybox foundation, not a complete campaign.
+- Next deliver Oliver's once-only greenhouse rescue and introduction as a separate slice, then greenhouse restoration/physical food production and the planned meal/garden retune. G03 acceptance needs a sustainable six-person loop, including medical costs and interruptions. Current runtime still uses 60-second meals; the full-design 120-second interval is not yet implemented.
+- Later work includes new enemy behaviours/noise/pressure, remaining facilities and recruits, relief-signal ending, optional van, save slots, production art/audio/accessibility and full campaign balance/performance checks. Historical sections above describe their state at the time and do not override this boundary.
+
+Evidence:
+- The windowed field tour uses R press/release through the real game input, verifies a single paid dose and pause conservation, and completes healing. Inspected field_treatment.png and field_bag_loadout.png at 1280x720: bag selection, sparse contextual prompt and patient progress ring are readable. The standard ten-state capture tour also completes; inspected its home.png for the current general street view.
+- All 187 simulation scenarios pass, including six field-medicine cases. All 134 scripts load; headless editor/import passes. Whitespace and file/function size checks pass.
+- Automated and staged evidence is separate from human acceptance. No new human combat, rescue reliability, food-pressure or pacing session occurred. No export, installation, toolkit change, push or publication.

@@ -25,18 +25,18 @@ func refresh(world: RefCounted) -> void:
 		row.label.tooltip_text = reason
 		for slot: String in ["weapon", "protection", "shield"]:
 			var picker: OptionButton = row[slot]
-			var signature: String = JSON.stringify([world.equipment, world.workshop.armour_done, world.properties.garage.looted, world.properties.hardware.looted, reason])
+			var signature: String = JSON.stringify([world.equipment, world.workshop.armour_done, world.properties.garage.looted, world.properties.hardware.looted, world.properties.clinic.looted, reason])
 			if picker.get_meta("signature", "") == signature:
 				continue
 			picker.set_meta("signature", signature)
 			picker.clear()
 			picker.disabled = not reason.is_empty() or (a.id == "ellis" and slot == "weapon")
-			picker.tooltip_text = reason if not reason.is_empty() else "Change " + slot + " at the bench"
-			var ids: Array = ["bat", "crowbar", "sword", "spear"] if slot == "weapon" else (["none", "iron"] if slot == "protection" else ["none", "shield"])
+			picker.tooltip_text = reason if not reason.is_empty() else "Change " + ("off-hand" if slot == "shield" else slot) + " at the bench"
+			var ids: Array = ["bat", "crowbar", "sword", "spear"] if slot == "weapon" else (["none", "iron"] if slot == "protection" else ["none", "shield", "field_bag"])
 			for id: String in ids:
 				if not Equipment.unlocked(world, id):
 					continue
-				var label: String = "No " + slot if id == "none" else (world.catalog.equipment.weapons[id].name if slot == "weapon" else id.capitalize())
+				var label: String = "No " + ("off-hand" if slot == "shield" else slot) if id == "none" else (world.catalog.equipment.weapons[id].name if slot == "weapon" else id.replace("_", " ").capitalize())
 				var owner: String = str(world.equipment.get(id, ""))
 				if not owner.is_empty() and owner != a.id:
 					label += " (in use)"
@@ -45,12 +45,15 @@ func refresh(world: RefCounted) -> void:
 				picker.set_item_metadata(index, id)
 				var hands: String = Equipment.hand_reason(world, a, id)
 				picker.set_item_disabled(index, (not owner.is_empty() and owner != a.id) or not hands.is_empty())
-				picker.set_item_tooltip(index, hands if not hands.is_empty() else "Two hands · no shield" if id == "spear" else "")
+				picker.set_item_tooltip(index, hands if not hands.is_empty() else "Two hands · no off-hand item" if id == "spear" else "")
 				if (slot == "weapon" and Equipment.weapon(world, a) == id) or (slot != "weapon" and ((id == "none" and not world.equipment.values().has(a.id)) or owner == a.id)):
 					picker.select(index)
 			if slot != "weapon":
-				var gear: String = "iron" if slot == "protection" else "shield"
-				picker.select(1 if Equipment.unlocked(world, gear) and world.equipment[gear] == a.id else 0)
+				var gear: String = "iron" if slot == "protection" else "field_bag" if world.equipment.field_bag == a.id else "shield"
+				var selected: String = gear if world.equipment[gear] == a.id else "none"
+				for index: int in range(picker.item_count):
+					if picker.get_item_metadata(index) == selected:
+						picker.select(index)
 	for id: String in rows.keys():
 		if Equipment.person(world, id).is_empty():
 			rows[id].box.queue_free()
