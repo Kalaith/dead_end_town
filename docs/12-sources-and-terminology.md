@@ -31,7 +31,7 @@ Earlier activity skill tracks, XP, eight-to-twelve-person colonies, possessional
 | Operational | Facility restored/intact, held, locally safe and safely connected |
 | Passage | Paid enclosed same-row link through formerly separate fences |
 | Crossing | Facing-property road link protected at both boundary lines |
-| Boundary line | Shared road barrier separating adjacent column corridors |
+| Boundary line | One crossing's west/east road barrier; the neighbouring crossing has its own |
 | Perimeter | Actual exposed boundary including rear routes, concavities and holes |
 | Breach | A real opening where protection has broken or been left open |
 | Occupation | Eight-second unopposed zombie presence leading to ownership loss |
@@ -48,7 +48,7 @@ Earlier activity skill tracks, XP, eight-to-twelve-person colonies, possessional
 | Migrant | Zombie entering from a real edge in a scheduled event |
 | Kind | Enemy statistics/special behaviour, independent of resident/migrant role |
 | Threat cost | Internal composition budget; no XP/level or player reward |
-| Notice | Nearby-person priority at 240 pixels |
+| Notice | Nearby-person priority, 240-pixel default and 340 for Spitter |
 | Noise | Short-lived spatial event attracting existing enemies |
 | Teaching encounter | First readable introduction enabling later routine special templates |
 | Readiness | Explained prerequisites/defence assessment, not an abstract battle resolver |

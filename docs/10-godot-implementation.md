@@ -57,7 +57,7 @@ Save coherent snapshots at fixed-step boundaries under `user://`. Three named ma
 
 Autosave every five active minutes when not in immediate attack danger, after first district entry at a clear approach, and once on final completion. If danger persists, postpone the periodic save, but an explicit paused manual save remains available anywhere, including combat/finale. Do not indefinitely accumulate deferred save requests. The final attempt also requests a pre-start recovery snapshot; failed saving does not spend readiness stock or launch automatically. Offer Retry, Cancel or an explicit Begin without recovery copy, so an unavailable disk cannot permanently block campaign completion.
 
-Snapshot includes world clock, RNG streams, all living actors and defeated resident IDs, health/action phases/cooldowns/statuses, people/roles/loadouts, carries, properties/searches, structures, safe-link source geometry, stocks/bundles/orders/output flags, food clock/shortage, active noise, migrations/warnings/pending finale members, discoveries, dialogue flags, attempt grace/clock/completion and difficulty preset.
+Snapshot includes world clock, RNG streams, monotonic identity counters for new items/jobs/events, all living actors and defeated resident IDs, health/action phases/cooldowns/statuses, people/roles/loadouts, carries, properties/searches/first-claim rewards, structures, safe-link source geometry, stocks/bundles/orders/output flags, food clock/shortage, active noise, migrations/warnings/pending finale members, discoveries, dialogue flags, attempt grace/clock/completion and difficulty preset. Counters cannot regress on load and reuse a completed item's/order's identity.
 
 Do not save nodes, runtime instance IDs, UI focus, cached navigation or derived safe flags as authority. Reconstruct definitions → entities/ownership → geometry → routes → orders/leases → pressure/objective references → presentation. Remain paused until all validation finishes; loading consumes no simulation time.
 
@@ -65,7 +65,7 @@ Use toolkit staged write/backup recovery. A failed save retains progress, live s
 
 ## Expanding old streets
 
-Keep the first six property identities/positions, old loot/search/timber state, people, unique items and partial projects. Add 18 new unsearched/unheld sites and their 58 authored residents once. Original living enemies remain untouched; do not replace garage residents with a Brute or reroll defeated actors. Existing completion means slice watch complete, never campaign victory.
+Keep the first six property identities/positions, existing four road barrier IDs/geometries, old loot/search/timber state, people, unique items and partial projects. Retain the protagonist's existing `you` actor ID. For legacy parcels, map `looted` to both searched and first-claim-rewarded; retain separate timber state. Add 18 new unsearched/unheld sites and their 58 authored residents once. Original living enemies remain untouched; do not replace garage residents with a Brute or reroll defeated actors. Existing completion means slice watch complete, never campaign victory.
 
 An old street may already have 48 living actors; adding 58 can make 106. Preserve them all as a grandfathered migration overage above the normal 96 cap. Admit no new routine migrant until below cap; do not delete/damage/queue existing actors. Scenario-check and profile this explicit 106-actor case. Finale cannot start while capacity would prevent its valid admission semantics.
 

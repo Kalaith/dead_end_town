@@ -106,7 +106,7 @@ The substation's **search** grants the relay coil; restoration enables power. No
 
 | Recipe | Cost | Work | Health/collision | Removal/notes |
 | --- | --- | --- | --- | --- |
-| passage | 4 M | 6 s | Rails/gate 160; opens authored shared fence | 75% Materials × health fraction; 4 s |
+| passage | 4 M | 6 s | Fixed rails, breakable gate 160; opens authored shared fence | 75% Materials × health fraction; 4 s |
 | road_line | 8 M | 8 s | 180, low barrier blocks travel, allows fire/melee reach | 75% × health fraction; 4 s |
 | alley_line | 8 M | 8 s | 180, same attack rules at alley socket | Same |
 | reinforce_line | 10 M | 12 s | Increase road/alley max to 360; needs hardware_tools | Upgrade cost salvageable; removal 6 s |

@@ -6,7 +6,7 @@ Final full game roster: the protagonist and seven named survivors. Four people e
 
 | ID/name | Starting situation | Identity and voice | Default useful role | Visual anchor |
 | --- | --- | --- | --- | --- |
-| player / You | Starts at home | Quiet practical organiser; no authored name/gender requirement | Direct action, orders, field work | Player-selected accent on jacket |
+| you / You | Starts at home | Quiet practical organiser; no authored name/gender requirement | Direct action, orders, field work | Player-selected accent on jacket |
 | mara / Mara | Already at home, guarding | Mechanic; short concrete observations, dry humour | Build/repair or equipped gate defence | Rust-red overalls, tied hair, tool belt |
 | paige / Paige | Library | Librarian and D&D enthusiast; imaginative but competent | Workshop work or shield defence | Teal scarf, glasses, book patch |
 | ellis / Ellis | East house (`residence`) | Quiet former print worker; clear about never fighting | Bullets, growing, general safe work | Mustard cardigan, ink-stained hands |

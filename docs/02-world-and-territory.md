@@ -4,11 +4,11 @@ Full game contract. [13](13-campaign-and-map.md) owns the 24-site topology; [15]
 
 ## Property record and independent states
 
-A property has a stable ID, yard polygon, building footprint, room floor, entrances, porch claim point, improvement sockets, neighbour edges and authored initial occupants. Clearance, discovery, ownership, connection and operation are separate facts.
+A property has a stable ID, yard polygon, building footprint, room floor, entrances, porch claim point, improvement sockets, neighbour edges and authored initial occupants. Clearance, discovery, ownership, connection and operation are separate facts. Save `searched`, `first_claim_rewarded` and, where applicable, `timber_collected` separately from current ownership. A pre-claim search cannot pay the later stipend twice, and a recapture cannot repay either transaction.
 
 | Fact | Definition | Changes when |
 | --- | --- | --- |
-| Cleared | No living hostile in its yard/rooms and no pending initial occupant | Occupants enter, leave or die |
+| Cleared | No living hostile in its yard/rooms | Occupants enter, leave or die |
 | Searched | One-time search transaction committed | First successful search; never resets |
 | Held | Claimed and not lost to unopposed occupation | Claim or occupation completes |
 | Ownership-connected | Held chain through authored adjacent parcels to held home | Any ownership change |
@@ -29,7 +29,7 @@ Show unmet conditions without revealing unknown rewards. A blueprint boundary is
 
 Build a home-rooted graph over clear held parcels and authored link corridors. A link is eligible only if its endpoints are held, its route footprint is free of hostiles, required protection exists/intact, and its traversable entrances are open and wide enough for the actor. Also require a collision-valid path through each intervening yard/room. Ownership adjacency alone is insufficient.
 
-For a same-row link: completed fenced passage, enclosing rails intact, passage gate open/intact. For a crossing: both boundary road barriers intact, both facing yard gates open/intact, no hostile in the protected road corridor. Use the shared boundary lines in 13; an inner barrier's collision can block a longer road route even though it helps a short crossing.
+For a same-row link: completed fenced passage, enclosing fixed rails present, passage gate open/intact. For a crossing: both independent boundary road barriers intact, both facing yard gates open/intact, no hostile in the protected road corridor. Use the separate crossing boundaries in 13; an inner barrier's collision can block a longer road route even though it helps a short crossing.
 
 Choose safe paths by length with stable edge-ID ties; a longer safe route beats a shorter exposed street. Recompute eligibility on relevant changes and revalidate before a worker starts a segment. Existing travellers stop at a safe side and report the block. Never walk into a known infected yard to satisfy a work order.
 

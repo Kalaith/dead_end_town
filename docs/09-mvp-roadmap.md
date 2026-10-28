@@ -13,7 +13,7 @@ Preserve old discoveries and earned watch completion. A positive slice report do
 | Milestone | Buildable scope | Dependencies | Done when |
 | --- | --- | --- | --- |
 | G01: reliable common orders | General work records, idempotent bundles, blocked reasons, role resumption, reserves | Current slice | Handoff/cancel/loss/reload conservation scenarios pass; existing slice still plays |
-| G02: campaign skeleton | Full 24-site geometry, 34 links, shared road lines, core route, known map | G01 | All sites reachable; no optional dependency; migrate original six without changed rewards |
+| G02: campaign skeleton | Full 24-site geometry, 34 links, independent crossing barriers, core route, known map | G01 | All sites reachable; no optional dependency; migrate original six without changed rewards |
 | G03: sustainable Market Row | June/Oliver, clinic/greenhouse, full food rates, recovery salvage | G02 | Six-person loop sustains food; no material/medical softlock; people work physically |
 | G04: mobile/attention threats | Runner, Screecher, noise and campaign migration scheduler | G03 | Telegraph/counter/reload checks; quiet/loud encounter visibly differs; home time remains useful |
 | G05: Civic choices | Theo, station/radio/hall, shotgun, riot gear, Armoured and Crawler | G04 | Flank/plate/shotgun rules, forecasts, two-follower limit and route choices work |
@@ -23,13 +23,13 @@ Preserve old discoveries and earned watch completion. A positive slice report do
 | G09: production presentation | Modular art, interiors, layered gear, audio, remapping, accessibility | Art pilot can precede G03; final content after G08 | All states/tells/screens inspected with real input at fixed scale |
 | G10: release candidate | Save slots/recovery, full balance/performance pass, desktop packaging | G09 | Acceptance in 17, real complete human run and platform checks recorded |
 
-G02 includes greybox shells for optional sites, but their loot/equipment/facilities arrive at G08. Until then, they are explicitly unavailable content in development builds and cannot hold hidden mandatory rewards. G07 must be winnable without G08. No ship milestone can leave unimplemented optional promises in player-facing UI.
+G02 includes greybox shells for all later sites, but new property contents arrive with their owning milestone. Optional loot/equipment/facilities arrive at G08. Until then, those shells are explicitly unavailable development content and cannot hold hidden mandatory rewards. Never add unimplemented kind/effect IDs to runtime JSON: a site's teaching encounter is authored when its kind is implemented, or uses clearly recorded Shambler stand-ins in intermediate development builds. Existing defeated actors never respawn when the final kind is added. G07 must be winnable without G08. No ship milestone can leave stand-ins or unimplemented optional promises in player-facing content.
 
 ## Recommended implementation slices
 
 G01: extract order ledger → migrate existing constructions → repeating production/targets → reserves/board → preserve legacy save coverage. Do not simultaneously replace all combat dictionaries and UI.
 
-G02: new map/parcel definitions → shared-line ownership/migration → north-chain passages → protected crossings/alternate routes → fog/known overview. Prove two adjacent shared lines before extending all twelve columns.
+G02: new map/parcel definitions → existing barrier identity/migration → north-chain passages → protected crossings/alternate routes → fog/known overview. Prove two adjacent crossing corridors and their intervening exposed alley before extending all twelve columns.
 
 G03: general rescue actor records → June/clinic → casualty carrying/recovery → Oliver/greenhouse → meal retune and safeguard. Keep Ellis capability checks as regression coverage in every order change.
 

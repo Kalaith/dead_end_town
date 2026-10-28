@@ -34,7 +34,7 @@ The diagram defines column order, not literal spacing. Every token is a stable p
 
 Same-row adjacent columns have fenced-passage sockets. Each facing pair has a protected-crossing link with west/east road barriers. These are the only settlement adjacency edges: 22 same-row edges and 12 crossings, 34 total. No diagonal claims. Street movement outside held land does not add productive connectivity.
 
-There are 22 passage projects. Road boundary structures are shared by neighbouring crossings: 13 possible barrier lines, rather than 24 duplicate structures. Crossing c needs lines c and c+1. A shared line helps both neighbouring crossings; removing it invalidates both. Preserve existing slice barrier identities through an explicit migration alias table when adopting shared lines. Never place two colliders at the same boundary.
+There are 22 passage projects and 24 independent road-barrier sockets, two per crossing. A parcel is 560 pixels wide on a 720-pixel pitch, leaving a 160-pixel alley gap; adjacent crossings therefore do not share the same physical boundary. Keep that gap exposed instead of incorrectly merging its two barriers. Removing one barrier invalidates only its crossing. Retain home_west/home_east and garden_west/garden_east exactly. New pairs use <north-property-id>_west/east; the eastern pair is residence_west/east.
 
 This parallel ladder offers recovery alternatives. A lost northern property can be bypassed through the southern row if crossings and passages remain usable. The paired property can shorten a dangerous detour. Isolated facilities pause; discoveries and ownership do not vanish merely because a bridge link fails.
 
@@ -42,9 +42,11 @@ This parallel ladder offers recovery alternatives. A lost northern property can 
 
 Retain approximately 720-pixel column pitch and a 200-pixel road. Full width is about 8,640 pixels plus edge margin; height about 1,160. A 190-pixel/second player takes roughly 45–55 seconds end to end without obstacles. Armour adds time. Measure this with final geometry; do not promise it from the diagram.
 
-District boundaries at columns 2/3, 5/6 and 8/9 have north and south alley mouths linked to map edges. Together with west/east road entries, these make eight regular migration origins. Finale uses the east map edge and north/south Works-boundary edge entries. Its east post is road line 12; its north/south posts are alley lines at the 8/9 boundary. All three routes reach their posts directly without first crossing the home barricades. Anchors are never spawn points inside property yards.
+District boundaries at columns 2/3, 5/6 and 8/9 have north and south alley mouths linked to map edges. Together with west/east road entries, these make eight regular migration origins. Finale uses the east map edge and north/south Works-boundary edge entries. Its east post is relay_east; its north/south posts are alley lines at the 8/9 boundary. All three routes reach their posts directly without first crossing the home barricades. Anchors are never spawn points inside property yards.
 
 Buildings sit within yards, leaving alternative approaches. Clinic, school and waterworks have a second entrance. No mandatory fight uses a dead-end room with one actor-width door. Ordinary door clear width is at least two actor diameters plus eight pixels. Work positions sit inside the defended side with an alternate retreat position.
+
+Each finale alley socket includes a reachable inside access gate from depot (north) or salvage (south), a safe-side work point and a retreat into that held yard. Put the north line near y=240 and its inside post near y=280; south line near y=920 and post near y=880. These sit outside the existing passage rails at y=352–448 and y=712–808. Opening the access gate does not remove the alley barrier; the guarded pocket is a defence-post extension, not a new claim/production link. Check actual actor widths before locking these coordinates.
 
 Rear footpaths outside both rows are exposed scouting/flanking routes, never safe home links. They do not allow disconnected claims. Collision and art must leave them continuous and readable.
 
@@ -82,7 +84,7 @@ No villain or conspiracy branch. The challenge is making a place dependable. Sho
 Begin **Open the relief signal** explicitly at the relay console with the player present. The paused panel lists every failed condition. Background migration scheduling stops during the attempt; living enemies remain. The three defence zones must be clear to start.
 
 1. All 18 core sites held, searched and safely connected to home; all seven survivors recruited and standing.
-2. Working garden, workshop, bullet bench, clinic, greenhouse, salvage yard, waterworks, substation and relay; none awaiting required restoration.
+2. Working garden, workshop, bullet bench, clinic, greenhouse, radio, salvage yard, waterworks, substation, relay and assembly shelter; none awaiting required restoration.
 3. Hardware tools, medical kit, growing kit, radio receiver, relief plan, generator coupler and relay coil deposited as permanent discoveries.
 4. Three named approach lines at full health: east road approach, north works alley, south works alley. Each has an inside post and retreat route to assembly.
 5. A standing recruited combatant at each approach post. Ellis never qualifies. All three placements are physically checked at start; the protagonist must be at the console and therefore cannot also satisfy a distant post. After launch the player is free to reinforce or replace anyone.
@@ -92,7 +94,7 @@ The supply check neither spends nor permanently reserves stock. Meals, healing, 
 
 ## Six-minute watch
 
-Duration: 360 active seconds. Save/load preserve elapsed time, wave IDs and pending members. This is not the slice's continuously checked readiness watch.
+Duration: 360 active seconds. Save/load preserve elapsed time, wave IDs and pending members. This is not the slice's continuously checked readiness watch. Show the three-wave timetable and directions before launch; its fixed warnings below replace the ordinary migration radio timing for this deliberate event.
 
 | Time | Event | Composition and threat cost |
 | --- | --- | --- |
@@ -111,7 +113,7 @@ The first two fronts are routine-defence scale; the Breaker front is the persona
 
 ## Failure and retry
 
-Immediate failure: protagonist defeat; loss of home, relay or assembly; all standing combatants down; relay/substation facility health reaches zero. A breach, other property loss, individual casualty or shortage is recoverable within the attempt.
+Immediate failure: protagonist defeat; loss of home, relay or assembly; all standing combatants down; relay, substation or assembly facility health reaches zero. A breach, other property loss, individual casualty or shortage is recoverable within the attempt.
 
 Relay connection/power interruption suspends the watch and starts a 30-active-second grace budget. Actors/work continue. Restore service to resume the watch and freeze the remaining budget; expiry while service is interrupted fails. Reset the budget to 30 only after five continuous active seconds of restored service. Another interruption before that uses the remaining budget, preventing rapid toggles from extending grace forever. Save both the remaining budget and stable-service timer.
 
@@ -123,7 +125,7 @@ Emergency recovery from [03](03-combat-and-defence.md) still applies. No attempt
 
 ## Success and continuation
 
-Success: clock at 360, working connected relay/power, held home/relay/assembly, standing protagonist, all 31 scheduled attempt migrants defeated and none pending. Background zombies need not all be dead. Attempt actors cannot silently take the ordinary migration exit while running. Commit completion once, then attempt a completion autosave before ending. Failed writing retains the earned flag in memory and offers Retry save.
+Success: clock at 360, working connected relay/power and operational assembly shelter, held home/relay/assembly, standing protagonist, all 31 scheduled attempt migrants defeated and none pending. Background zombies need not all be dead. Attempt actors cannot silently take the ordinary migration exit while running. Commit completion once, then attempt a completion autosave before ending. Failed writing retains the earned flag in memory and offers Retry save.
 
 The illustrated ending answers the signal and recognises the rescued cast. No new simulated population appears. Show completion time, held properties and rescues without grading casualties or demanding perfection. Full reclamation earns an extra line.
 

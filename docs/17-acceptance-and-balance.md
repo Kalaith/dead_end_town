@@ -6,9 +6,9 @@ This is a future implementation/QA specification, not a report that these scenar
 
 Hold/search the complete northern chain: home → garden → residence → hardware → clinic → greenhouse → station → radio → hall → depot → pump → relay. Build eleven passages, 44 Materials total. From held north sites, clear/claim the six core south sites: library, garage, munitions, salvage, substation and assembly. Optional grocer/allotment/diner/firehall/museum/school are absent from this route and every mandatory prerequisite.
 
-Protect crossings at columns 0,1,2,9,10,11 with shared road lines 0,1,2,3,9,10,11,12. Eight lines cost 64 Materials. Each crossing also needs its actual yard gates open and corridor clear. Adjacent north passages keep east-west travel available even when road lines block through-traffic. No need to remove a shared line that is still protecting a core crossing.
+Protect crossings at columns 0,1,2,9,10,11 with two separate west/east road lines each: twelve lines cost 96 Materials. Each crossing also needs its actual yard gates open and corridor clear. The 160-pixel alley gap between adjacent crossings is excluded from their protected areas. Northern passages keep east-west travel available when road lines block through-traffic.
 
-Finale east approach uses line 12, already in the above budget. Add north/south Works alley lines, 16 Materials, then reinforce all three final lines for 30 Materials as a recommended preparation plan. Reinforcement is helpful but not a hidden readiness requirement. The player can reach every inside work position through the held yards. Do not place the alley line collider over the northern through-passage.
+Finale east approach uses relay_east, already in the above budget. Add north/south Works alley lines, 16 Materials, then reinforce all three final lines for 30 Materials as a recommended preparation plan. Reinforcement is helpful but not a hidden readiness requirement. The player can reach every inside work position through the held yards. Do not place the alley line collider over the northern through-passage.
 
 ## Material ledger
 
@@ -19,24 +19,24 @@ Core searches total 272 Materials. Seventeen non-home core first claims add 102,
 | Required facility restoration | garden 8 + workshop 10 + clinic 12 + greenhouse 16 + radio 10 + salvage 16 + pump 18 + power 24 + relay 24 + assembly 16 | 154 |
 | Original garage sword/iron/shield | Optional but included as a useful defence loadout | 12 |
 | Northern passages | 11 × 4 | 44 |
-| Core protected crossings | 8 unique road lines × 8 | 64 |
+| Core protected crossings | 12 independent road lines × 8 | 96 |
 | Two Works alley lines | 2 × 8 | 16 |
 | Three reinforced final lines | 3 × 10 | 30 |
 | Six line/gate repair batches | 6 × 3 | 18 |
 | Sixty crafted Bullets | 10 × 2 | 20 |
 | Six crafted Medicine | 3 × 1; also six Food | 3 |
-| Total spent | — | **361** |
-| Remaining | 422 − 361 | **61** |
+| Total spent | — | **393** |
+| Remaining | 422 − 393 | **29** |
 | Finale available-Materials requirement | Retain, do not spend at launch | 12 |
-| Additional margin | 61 − 12 | **49** |
+| Additional margin | 29 − 12 | **17** |
 
-This is a planned baseline, not unlimited repairs. Two destroyed 300-health facilities need up to four facility repair batches (16 Materials) and still leave 33 above the launch reserve. Optional equipment/upgrades require an explicit budget choice or renewable salvage. A failed finale can demand salvage/repair time; it does not refund shots or create free supplies.
+This is a planned baseline, not unlimited repairs. Two destroyed 300-health facilities need up to four facility repair batches (16 Materials) and still leave one above the launch reserve. Optional equipment/upgrades require an explicit budget choice or renewable salvage. A failed finale can demand salvage/repair time; it does not refund shots or create free supplies.
 
 ### Funding before the late salvage source
 
-The first six sites supply 18 starting + 30 first-claim + 30 timber + 12 garage search = 90 Materials. Garden/workshop/original set cost 30, first two northern passages 8, and lines 0–3 cost 32: 70 spent, 20 remain. There are 17 Food in those searches plus the starting eight. Garden work can already sustain ordinary early consumption.
+The first six sites supply 18 starting + 30 first-claim + 30 timber + 12 garage search = 90 Materials. Garden/workshop/original set cost 30, first two northern passages 8, and all three core crossing pairs cost 48: 86 spent, four remain before repairs. The third pair is needed for safe bullet-workshop production through residence/munitions. There are 17 Food in those searches plus the starting eight. Garden work can already sustain ordinary early consumption.
 
-Market core searches add 60 Materials (hardware 32, clinic 12, greenhouse 16), three claims add 18. Three new northern passages cost 12, clinic/greenhouse 28; after six repair batches and 60 Bullets across the early/midgame, stock is 20. That is before any Civic material rewards, optional loot or salvage production. It is not necessary to clear optional houses to afford clinic/greenhouse.
+Market core searches add 60 Materials (hardware 32, clinic 12, greenhouse 16), three claims add 18. Three new northern passages cost 12, clinic/greenhouse 28; after six repair batches and 60 Bullets across the early/midgame, stock is four. That is before any Civic material rewards, optional loot or salvage production. It is not necessary to clear optional houses to afford clinic/greenhouse.
 
 At Civic, core searches add 52 (station 20, radio 12, hall 20), claims 18; three passages cost 12 and radio costs 10. Enough remains to enter Works with a 12-Material reserve. This is a conservative ordering example, not a forced story sequence. New resources arrive through actual clear/search/claim commands, not fixture stock injections.
 
@@ -66,7 +66,7 @@ Automated fixtures may stage initial actors/resources for an isolated rule, but 
 | --- | --- | --- | --- |
 | A01 | Validate all catalogues, unknown IDs, wrong types, prerequisite cycle | Fail clearly; 24 sites, 18 core, seven named companions, eight kinds | Headless/data |
 | A02 | Remove all optional vertices, trace home connections | Every core site/facility/finale requirement still obtainable | Headless/graph |
-| A03 | Build adjacent crossing lines then remove shared boundary | Exactly the affected crossings pause; no duplicate collider/refund | Headless + window |
+| A03 | Build adjacent crossing lines then remove one boundary; enter intervening alley | Only its crossing pauses; exposed alley never counts safe; no duplicate collider/refund | Headless + window |
 | A04 | Occupy yard for 7.9 s, contest, then 8 s unopposed | Timer resets on standing entry; downed actor cannot contest; home can fall | Headless |
 | A05 | Lose bridge parcel, use alternate lower route, then reclaim | Physical safe path chosen; rewards/work commitments unchanged | Headless + window |
 | A06 | Player→AI→player work; switch roles; two sites at once | One debit/output/site; one site's completion does not reset another | Headless |
@@ -89,7 +89,7 @@ Automated fixtures may stage initial actors/resources for an isolated rule, but 
 | A23 | Full-roster meal shortfall; food delivered; pause/load | No debt/death; one restoring meal; work rate returns correctly | Headless |
 | A24 | Carry/place/treat, unsafe interruption, healthy recovery | Conservation, real location, one input commitment, no remote revive | Headless + input |
 | A25 | All down, home occupied, no resources | Emergency recovery always available; IDs/gear retained; no free loot | Headless + human |
-| A26 | Waste early Materials, no refundable jobs, no food | Recovery salvage cap works; viable gate/garden/reclaim action | Headless + human |
+| A26 | Spend every finite cache; no refundable jobs/food; salvage bench and power unrestored | Emergency salvage reaches 24; restore 16-Material salvage bench and fund remaining progress; viable gate/garden/reclaim action | Headless + human |
 | A27 | Save all supported schemas, corrupt newest slot, write failure | Valid backup offered, prior save/live progress intact, no silent reset | Headless + UI |
 | A28 | Finale starts with each missing prerequisite individually | Named actionable reason; unknown rewards not exposed; no spend | Headless + UI |
 | A29 | Save at warning/entry/last pending finale member | Exactly 31 scheduled migrants/cost 51, no skipped or duplicate member | Headless |
