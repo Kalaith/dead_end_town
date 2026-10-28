@@ -4,7 +4,7 @@ Full game design. [14](14-zombie-catalogue.md) owns the eight kinds and exact at
 
 ## Shared behaviour priority
 
-At each simulation decision, choose: incapacitated/dead → committed attack phase → nearest standing person in notice range → recent person position → strongest relevant noise → migrant route/settlement destination → local wandering. Committed wind-ups still cancel if their attack contract requires valid range/line and it is lost. A new nearby person overrides migration and noise immediately after a non-interruptible attack phase ends.
+At each simulation decision, choose: incapacitated/dead → committed attack phase → nearest standing person in notice range → recent person position → strongest relevant noise → explicit finale approach or ordinary migrant route/settlement destination → local wandering. Committed wind-ups still cancel if their attack contract requires valid range/line and it is lost. A new nearby person overrides migration and noise immediately after a non-interruptible attack phase ends. Finale actors do not choose ordinary settlement/exits while their attempt runs; 13 owns that exception.
 
 Notice range is 240 pixels for all kinds initially. Preserve the user's nearby-person priority: walls block movement/attacks but do not prevent close proximity detection. No distant acquisition through buildings. Select the nearest standing person each simulation decision, with stable actor-ID tie break. Presentation can smooth turning but cannot retain a farther target against this rule. Explicit committed attack phases keep their telegraphed direction as specified in 14.
 
@@ -12,7 +12,7 @@ After losing a person, investigate the last sensed position for up to 4 seconds,
 
 Residents wander in their home yard until attracted out by a person or noise. They never respawn. Migrants travel from authored world edges, seek eligible under-quota uncontrolled yards, settle at their rear, or leave via a physical edge if no destination is eligible. Claimed yards have target quota zero, preventing intentional settlement homing on every claimed porch. Nearby people/noise may still draw migrants into them; ordinary occupation then applies.
 
-Settling probabilities derive from stable actor/property IDs. Saved RNG supplies genuine wandering choices. A loss changes a yard's eligibility, never conjures replacement residents. All migrants retain origin, creation wave and destination for debugging and persistence.
+Each non-home uncontrolled property's target quota equals its initial resident count in 15; home quota is always zero, even after loss. A raider settles with 60% deterministic actor/property-ID eligibility, selecting the nearest eligible under-quota yard by reachable route length. Quota gates entry only: an already settled actor is not expelled when another actor arrives. Claimed properties always have quota zero. Settling probabilities derive from stable IDs, while saved RNG supplies genuine wandering choices. A loss changes eligibility, never conjures replacement residents. All migrants retain origin, creation wave and destination for debugging and persistence.
 
 ## Noise contract
 
@@ -90,7 +90,7 @@ Retain a warned event's origin/composition/time on load. Entry uses 0.5-second s
 
 The 24 authored encounters in 15 total 89 living residents at new campaign creation. All are present from the start, with stable IDs and their real positions. There is no district activation spawn, pending-resident claim blocker or invisible progression gate. The 96-living cap leaves seven initial migrant slots and more as the player clears the street. Routine overflow is skipped under the rule above, never stored as a backlog.
 
-All actors stay authoritative off camera. Do not replace guards/zombies with a readiness percentage. Fully simulate the 96 cap first and optimise after profiling. Corpses can collapse into persistent defeated IDs for memory, but cannot become living again. Old-save expansion requires explicit placement of new residents outside held/visible parcels at the load boundary; its migration policy is in 10.
+All actors stay authoritative off camera. Do not replace guards/zombies with a readiness percentage. Fully simulate the 96 cap first and optimise after profiling. Corpses can collapse into persistent defeated IDs for memory, but cannot become living again. Old-save expansion adds new residents only to the new district parcels while the load screen is paused; its placement/overage policy is in 10.
 
 ## Fairness and debugging
 

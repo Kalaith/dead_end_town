@@ -318,3 +318,10 @@ Documentation verification is recorded in the follow-up audit entry. No Godot pa
 - Recomputed core finite supply: 272 searched Materials + 102 first-claim + 30 timber + 18 starting = 422. The worked preparation plan spends 361 and leaves 61, including the required 12-Material launch reserve. Core finite Food/Bullets/Shells/Medicine are 61/48/8/22 before starting stock/production.
 - All tracked/unignored GDScript, scene, JSON and Markdown files remain below 800 lines; measured largest file is world.gd at 386. Largest detected top-level function span is 83 lines. Markdown tables and git diff whitespace checks pass.
 - Review corrected the Market-stage subtotal to 20 Materials and removed a provisional optional-building route dependency. No runtime verification was run for these documentation changes.
+
+
+### Documentation audit: finale and hostile intent
+
+- A consistency review found that ordinary raider quota/exiting behaviour could let finale migrants leave a fully held town. Finale actors now retain explicit physical approaches and relay/power/assembly targets while preserving nearby-person priority.
+- Clarified three physically present recruited launch guards (the player is at the console), the third wave's exact south/east split, 31 scheduled actors/threat cost 51, world-time outage grace versus watch-time events, cumulative grace through brief reconnects, explicit abort and all-attempt-enemies-defeated completion.
+- Defined fixture damage/repair, settlement quotas and shared pool-damage cooldowns; confirmed an unavailable pre-attempt recovery save does not permanently prevent an explicit launch. These are documentation fixes, not newly implemented runtime features.

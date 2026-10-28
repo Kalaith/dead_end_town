@@ -85,7 +85,7 @@ Begin **Open the relief signal** explicitly at the relay console with the player
 2. Working garden, workshop, bullet bench, clinic, greenhouse, salvage yard, waterworks, substation and relay; none awaiting required restoration.
 3. Hardware tools, medical kit, growing kit, radio receiver, relief plan, generator coupler and relay coil deposited as permanent discoveries.
 4. Three named approach lines at full health: east road approach, north works alley, south works alley. Each has an inside post and retreat route to assembly.
-5. A standing combatant at each approach post; the player can occupy one. Ellis never qualifies. Placement is physically checked at start.
+5. A standing recruited combatant at each approach post. Ellis never qualifies. All three placements are physically checked at start; the protagonist must be at the console and therefore cannot also satisfy a distant post. After launch the player is free to reinforce or replace anyone.
 6. Two meals available (2 × roster size Food), 24 Bullets or 8 Shells or an equivalent mix (1 Shell counts as 3 Bullets), 6 Medicine and 12 uncommitted Materials.
 
 The supply check neither spends nor permanently reserves stock. Meals, healing, firing and repair spend normally. With eight people, two meals means 16 Food. No named sword, armour or follower pairing is mandatory. Reinforcement and ranged equipment help; geometry and a capable melee team remain viable.
@@ -99,11 +99,13 @@ Duration: 360 active seconds. Save/load preserve elapsed time, wave IDs and pend
 | 0 | Signal starts; first warning | No new actor until t=40 |
 | 40 | East road approach | 8 Shamblers, 2 Runners, 1 Brute: cost 15 |
 | 130 | North alley | 6 Shamblers, 1 Screecher, 1 Armoured, 1 Spitter: cost 15 |
-| 230 | South alley plus east stragglers | 8 Shamblers, 1 Brute, 1 Breaker, 1 Crawler: cost 21 |
+| 230 | South alley plus east stragglers | South: 4 Shamblers, 1 Brute, 1 Breaker, 1 Crawler; east: 4 Shamblers; total cost 21 |
 | 300 | Report actual unresolved approaches | No extra surprise spawn |
 | 360+ | Signal continues until attempt migrants are gone | No further scheduled wave |
 
-Costs use [14](14-zombie-catalogue.md). Warnings occur at t=0,95,195: at least 35 seconds before map entry, followed by actual travel. Release at 0.5-second spacing. Pending members wait if the population cap is full; they count as unresolved and cannot be silently skipped for an easy win.
+Costs use [14](14-zombie-catalogue.md). Warnings occur at t=0,95,195: at least 35 seconds before map entry, followed by actual travel. Wave two uses only north, wave three warns both south and east. Release at 0.5-second spacing. Pending members wait if the population cap is full; they count as unresolved and cannot be silently skipped for an easy win. Across the attempt there are exactly 31 scheduled actors and threat cost 51.
+
+Attempt migrants have a saved explicit approach route and relief objective. East entries target the relay fixture, north entries target substation power, south entries target the assembly shelter. They follow their assigned entry to its defence line and then toward that fixture, attacking actual blocking breakable structures. Nearby people still take priority; a strong noise can divert them, after which the approach intent resumes. They never use the ordinary under-quota settlement/exiting policy while an attempt runs. Otherwise a fully held town could make every finale enemy decide to leave without testing a defence. No actor is moved onto the route by teleport.
 
 The first two fronts are routine-defence scale; the Breaker front is the personal response focus. Move, order, repair and recover normally. Shortage or spending below starting reserves does not fail the watch. Guards may leave launch posts; physical consequences decide risk.
 
@@ -111,7 +113,9 @@ The first two fronts are routine-defence scale; the Breaker front is the persona
 
 Immediate failure: protagonist defeat; loss of home, relay or assembly; all standing combatants down; relay/substation facility health reaches zero. A breach, other property loss, individual casualty or shortage is recoverable within the attempt.
 
-Relay connection/power interruption suspends the watch and starts a 30-active-second grace timer. Actors/work continue. Restore service to resume; expiry fails. A new grace period is eligible only after five continuous seconds of restored service, preventing rapid toggles from extending it forever.
+Relay connection/power interruption suspends the watch and starts a 30-active-second grace budget. Actors/work continue. Restore service to resume the watch and freeze the remaining budget; expiry while service is interrupted fails. Reset the budget to 30 only after five continuous active seconds of restored service. Another interruption before that uses the remaining budget, preventing rapid toggles from extending grace forever. Save both the remaining budget and stable-service timer.
+
+Warning/arrival times use watch elapsed time; grace uses world active time. An outage therefore delays unissued waves, never despawns an issued wave or repeats a warning. Clamp watch elapsed at 360 while resolving remaining enemies. States are preparing → running ↔ suspended → failed or complete. Retry returns failed to preparing; completed never returns to running. The pause action Abort signal uses the same world-preserving failure path as a loss.
 
 Failure pauses with its cause and offers Continue preparing or Load recovery save. Preserve the world, spent ammunition and killed residents. Living attempt migrants remain; pending arrivals cancel. Background migration restarts after 180 seconds of recovery. Retry requires fresh readiness and runs a new finite sequence with new attempt IDs. No abstract fee or resource refund.
 
@@ -119,7 +123,7 @@ Emergency recovery from [03](03-combat-and-defence.md) still applies. No attempt
 
 ## Success and continuation
 
-Success: clock at 360, working connected relay/power, held home/relay/assembly, standing protagonist, no living/pending attempt migrants. Background zombies need not all be dead. Commit completion once, then attempt a completion autosave before ending. Failed writing retains the earned flag in memory and offers Retry save.
+Success: clock at 360, working connected relay/power, held home/relay/assembly, standing protagonist, all 31 scheduled attempt migrants defeated and none pending. Background zombies need not all be dead. Attempt actors cannot silently take the ordinary migration exit while running. Commit completion once, then attempt a completion autosave before ending. Failed writing retains the earned flag in memory and offers Retry save.
 
 The illustrated ending answers the signal and recognises the rescued cast. No new simulated population appears. Show completion time, held properties and rescues without grading casualties or demanding perfection. Full reclamation earns an extra line.
 

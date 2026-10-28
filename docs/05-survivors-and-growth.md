@@ -65,6 +65,7 @@ Do not create sleep cycles, personal hunger bars, moods, homes, furniture needs 
 | Hearth, 4 people | Player + Paige | Ellis | Mara | Bullet batches when food buffer permits |
 | Market, 6 people | Player + Paige | Oliver + Ellis if needed | Mara + June | Shift one person to treatment/build after threat clears |
 | Full, 8 people | Player + Theo + Paige | Oliver + Ellis | Mara + June | Nia salvage/repair; rotate through medicine/bullets |
+| Relief watch, 8 people | Player responds to siege | Oliver + Ellis | Mara + Paige + Theo at three launch posts | June treatment, Nia repair/production |
 
 These are examples, not forced roles. Two growers can sustain eight people under 06. The final watch deliberately brings expedition people back onto posts. Do not require every facility to have a dedicated permanent operator; finite stock buffers support switching a worker for a batch.
 

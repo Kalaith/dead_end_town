@@ -32,6 +32,8 @@ Breached structures retain socket identity and become rebuildable; their destruc
 
 Repair is a bounded committed batch: 3 Materials restores up to 120 health at 24 health/second. A damaged facility uses 4 Materials for up to 200 health at 20/second. Stop at max; unused healing capacity is lost, not held for future damage. Pay once, retain remaining capacity/progress through interruption, and never bill the same repair again after load. A breached gate needs the gate-rebuild recipe rather than a repair to an absent collider.
 
+Restored facility fixtures have their own 300-health breakable hitbox within the building; the building shell is indestructible. A zombie reaching an active work-noise source may attack that fixture if no standing person takes priority. Ordinary zombies do not damage silent fixtures without a route/noise reason. Finale actors may target their explicit relief fixture after entering; 13 assigns those targets. A zero-health fixture keeps its unlock/restore flag but is inoperable until repaired; stock and committed bundles are never destroyed with it.
+
 ## Job policy
 
 Each survivor has a primary role and optional selected site. Guard/follower assignments are exclusive; they do not compete with general work. The player approves at most eight pending non-production projects at a time; completed and blocked history does not count after acknowledged. No general infinite work queue.
