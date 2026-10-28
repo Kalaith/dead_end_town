@@ -49,7 +49,7 @@ Long-campaign manual/auto slots can arrive before G10 once the save owner is rea
 
 ## Review gates and scope control
 
-At each major milestone run parse, simulation scenarios and headless editor/import using installed Godot. Use windowed captures for changed visuals/input and inspect them. Check file/function sizes and whitespace. No test frameworks/addons or `tests/` directory.
+At each major milestone run parse and headless editor/import using installed Godot, then inspect the game directly with real input. The user has requested removal of all automated simulation scenarios and scripted staging tours; do not recreate them. Existing scenario descriptions in the design remain acceptance criteria to assess through gameplay, not executable checks to rebuild. Check file/function sizes and whitespace. No test frameworks/addons or `tests/` directory.
 
 Record implementation, automated evidence, staged visual evidence, human observations and remaining uncertainty separately in PROGRESS. A scripted perfect-economy run proves accounting, not a fair campaign. Each working slice is committed immediately; finish with clean Git status. No pushing/publication unless requested.
 

@@ -9,3 +9,5 @@ The full game is specified in [01](01-game-design.md) with system owners and cat
 5. Pilot art/audio/accessibility and long-campaign save slots before full human runs. Record real observations separately from staged captures and automated checks.
 
 Carry forward engineering follow-ups: grow save migrations in small modules; use toolkit bindings/settings/text helpers when those features arrive. No toolkit side effects, installations or publication. Publishing wrappers still lack a destination; configure exports only when requested for the intended release.
+
+User verification override (28 October 2026): automated simulation scenarios and scripted staging tours are deleted and must not be recreated. Use script loading/editor checks and direct game inspection/input for G04–G10.

@@ -7,8 +7,8 @@ Read `README.md`, `docs/01-game-design.md`, `docs/11-decisions-and-questions.md`
 - Godot 4.7.2, Compatibility renderer, desktop keyboard/mouse first, 1280x720. Current art is original procedural greybox drawing.
 - `scripts/sim/` owns authoritative state and fixed-step rules without scene-tree dependencies. `scripts/presentation/` reads state and issues commands. `scripts/core/` owns content validation and save mapping. Balance and map content live in `data/street/*.json` (zombie kinds in `data/zombies.json`).
 - Use `../godot_toolkit` through the ignored `addons/hatchery` junction. Recreate it with `../godot_toolkit/tools/Link-Toolkit.ps1 -ProjectDir .`. Do not edit shared toolkit code as a side effect.
-- Verification commands: `--headless --path . --script res://tools/parse_all.gd`, `--headless --path . --script res://tools/sim_checks.gd`, and `--headless --editor --path . --quit`. Use the installed console executable in `C:/Program Files/Godot/`.
-- Run and inspect visual captures with `./Run.ps1 -GameArgs @('--script','res://tools/capture.gd','--','--size=1280x720','--no-save')`. Captures stage states and are not evidence of human playtesting.
+- Verification commands: `--headless --path . --script res://tools/parse_all.gd` and `--headless --editor --path . --quit`. Use the installed console executable in `C:/Program Files/Godot/`.
+- The user requests deletion of all automated simulation scenarios and scripted staging tours. Do not recreate them. Verify gameplay through direct game inspection/input; script loading and editor/import checks remain available. Authoritative game rules under `scripts/sim/` are runtime gameplay and must remain.
 - `docs/PROGRESS.md` records implementation and evidence separately. The design documents describe intended scope, not completed features.
 - No pushing or publication without a user request. Web and Windows publishing is configured for `/public_html/games/dead_end_town/` on webhatchery.au; credentials stay in the external environment file.
 
