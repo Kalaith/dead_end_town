@@ -21,9 +21,9 @@ func check_full_town_has_24_sites_34_links_and_24_independent_barriers() -> Stri
 		return "Full authored town topology is incomplete."
 	var w: RefCounted = quiet()
 	var stock: int = w.materials
-	if w.claim("greenhouse") or w.properties.greenhouse.looted or w.materials != stock:
+	if w.claim("station") or w.properties.station.looted or w.materials != stock:
 		return "Unimplemented shell granted a reward."
-	w.player.pos = Vector2(3960, 350)
+	w.player.pos = Vector2(4680, 350)
 	return "Development shell has a misleading live approval" if w.context() != "Unfinished" else ""
 
 
@@ -128,3 +128,4 @@ func check_rasterised_route_grid_matches_collision_and_clears_removed_barriers()
 	w.roadworks.home_east = {"phase": "empty", "hp": 0.0, "progress": 0.0, "repair_reserved": false}
 	w.rebuild_routes()
 	return "Removed defence left stale route cells" if w.routes.grid.is_point_solid(Vector2i(31, 29)) else ""
+

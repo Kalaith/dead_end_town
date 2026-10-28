@@ -40,7 +40,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 29
+const SCHEMA: int = 30
 ## Saved world fields that are collections and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -221,6 +221,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 29:
+		return _upgrade_greenhouse_search(upgraded)
 	if version == 28:
 		return _upgrade_field_medicine(upgraded)
 	if version == 27:
@@ -638,5 +640,21 @@ func _upgrade_field_medicine(data: Dictionary) -> Dictionary:
 	if not data.equipment.has("field_bag"):
 		data.equipment.field_bag = ""
 	data.field_care = {}
+	data.schema_version = 29
+	return _upgrade_greenhouse_search(data)
+
+
+func _upgrade_greenhouse_search(data: Dictionary) -> Dictionary:
+	if not data.get("zombies") is Array:
+		return {}
+	var ids: Array[String] = []
+	for z: Variant in data.zombies:
+		if not z is Dictionary or not z.get("id") is String:
+			return {}
+		ids.append(z.id)
+	var fresh := World.new(catalog)
+	for z: Dictionary in fresh.zombies:
+		if z.home == "greenhouse" and z.id not in ids:
+			data.zombies.append(_encode_actor(z))
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

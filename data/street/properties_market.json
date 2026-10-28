@@ -202,8 +202,8 @@
     {
       "id": "greenhouse",
       "core": true,
-      "available": false,
-      "food_cache": 0,
+      "available": true,
+      "food_cache": 8,
       "name": "Greenhouse",
       "rect": [
         3680,
@@ -234,10 +234,29 @@
         "clinic",
         "station"
       ],
-      "reward": "Unfinished development content",
-      "reinforcements": [],
+      "reward": "Growing kit and a survivor",
+      "reinforcements": [
+        [
+          3810,
+          355
+        ],
+        [
+          4030,
+          385
+        ],
+        [
+          4150,
+          430
+        ]
+      ],
       "hidden_zombies": 0,
-      "zombies": []
+      "zombies": [],
+      "search": {
+        "materials": 16,
+        "medicine": 0,
+        "survivor": "oliver",
+        "line": "Growing kit and food recovered."
+      }
     },
     {
       "id": "diner",

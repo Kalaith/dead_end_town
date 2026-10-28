@@ -52,6 +52,19 @@
         0
       ],
       "intro": "I kept the medicine safe.\nLet's get this place working."
+    },
+    {
+      "id": "oliver",
+      "name": "Oliver",
+      "site": "greenhouse",
+      "order": "Hold",
+      "duty": "home",
+      "line": "Oliver joins the team.",
+      "offset": [
+        35,
+        0
+      ],
+      "intro": "The plants made it through. So did I.\nGive me a safe route and we can feed everyone."
     }
   ]
 }
