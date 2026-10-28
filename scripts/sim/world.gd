@@ -1,5 +1,7 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Salvage = preload("res://scripts/sim/salvage.gd")
+const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
 const Provisions = preload("res://scripts/sim/provisions.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
@@ -27,6 +29,7 @@ var garden_progress: float = 0.0
 var garden_started: bool = false
 var garden_done: bool = false
 var harvest: float = 0.0
+var gate_repair_target: String = "home"
 var repair_reserved: bool = false
 var messages: Array[String] = []
 var move_input := Vector2.ZERO
@@ -35,6 +38,8 @@ var working: bool = false
 var alert: String = "SAFE"
 var downs: int = 0
 var workshop: Dictionary = Workshop.initial()
+var timber: Dictionary = Salvage.initial()
+var slice_state: Dictionary = SliceObjective.initial()
 var provisions: Dictionary = Provisions.initial()
 var equipment: Dictionary = Equipment.initial()
 var passages: Dictionary
@@ -108,6 +113,7 @@ func step(dt: float) -> void:
 	Workshop.step(self, work_dt)
 	Roadworks.step(self, work_dt)
 	Pressure.step(self)
+	SliceObjective.step(self, dt)
 	var next_alert: String = "SAFE"
 	for z: Dictionary in zombies:
 		if float(z.hp) > 0 and z.pos.distance_to(Vector2(360, 480)) < 180:
@@ -153,6 +159,17 @@ func safe_connected(id: String) -> bool:
 
 
 func context() -> String:
+	var text: String = _context()
+	if not Salvage.nearby(self).is_empty():
+		text += "   Q / Salvage timber (+%d materials)" % int(balance.timber_materials)
+	return text
+
+
+func salvage() -> bool:
+	return Salvage.collect(self)
+
+
+func _context() -> String:
 	var passage: Dictionary = Neighbourhood.nearby(self)
 	if not passage.is_empty():
 		return Neighbourhood.context(self, passage)
@@ -163,7 +180,7 @@ func context() -> String:
 		if player.pos.distance_to(Routes.point(p.gate)) < 76:
 			if float(properties[p.id].gate_hp) <= 0:
 				return "R / Rebuild gate (3 materials, hold to work)"
-			return "E / %s gate%s" % ["Close" if properties[p.id].open else "Open", "   |   R / Repair (3 materials)" if p.id == "home" else ""]
+			return "E / %s gate%s" % ["Close" if properties[p.id].open else "Open", "   |   R / Repair (%d materials)" % int(balance.gate_repair_cost)]
 		if player.pos.distance_to(Routes.point(p.site)) < 85:
 			if p.id == "home" and properties.home.claimed:
 				return "E / Recover the team (%d food)" % int(balance.recovery_food)
@@ -281,23 +298,30 @@ func assign_mara() -> void:
 
 
 func _work(dt: float) -> void:
-	var at_gate: bool = player.pos.distance_to(Vector2(360, 480)) < 76
-	if working and at_gate and float(properties.home.gate_hp) < float(balance.gate_health) and not Combat.danger(self, player.pos, 90):
+	for p: Dictionary in catalog.properties:
+		var state: Dictionary = properties[p.id]
+		if not working or player.pos.distance_to(Routes.point(p.gate)) >= 76 or float(state.gate_hp) >= float(balance.gate_health) or Combat.danger(self, player.pos, 90):
+			continue
+		if repair_reserved and gate_repair_target != p.id:
+			note("Finish the committed gate repair at " + definition(gate_repair_target).name + " first.")
+			break
 		if not repair_reserved and materials >= int(balance.gate_repair_cost):
 			materials -= int(balance.gate_repair_cost)
 			repair_reserved = true
+			gate_repair_target = p.id
 		if repair_reserved:
-			var destroyed: bool = float(properties.home.gate_hp) <= 0
-			properties.home.gate_hp = minf(float(balance.gate_health), float(properties.home.gate_hp) + dt * float(balance.gate_repair_rate))
+			var destroyed: bool = float(state.gate_hp) <= 0
+			state.gate_hp = minf(float(balance.gate_health), float(state.gate_hp) + dt * float(balance.gate_repair_rate))
 			if destroyed:
-				properties.home.open = true
+				state.open = true
 				rebuild_routes()
-			if float(properties.home.gate_hp) >= float(balance.gate_health):
+			if float(state.gate_hp) >= float(balance.gate_health):
 				repair_reserved = false
-				note("Home gate repaired.")
+				note(p.name + " / Gate repaired.")
+		break
 	if garden_started and not garden_done:
 		var site: Vector2 = Routes.point(definition("garden").site)
-		var executor: bool = working and player.pos.distance_to(site) < 85
+		var executor: bool = player_at_worksite("garden")
 		for a: Dictionary in survivors:
 			if a.order in ["Build", "Garden"] and a.job == "garden" and float(a.hp) > 0 and a.pos.distance_to(site) < 40:
 				executor = true
@@ -324,9 +348,18 @@ func post_road_guard() -> void:
 
 func garden_tended() -> bool:
 	var site: Vector2 = Routes.point(definition("garden").site)
-	if working and player.pos.distance_to(site) < 85:
+	if player_at_worksite("garden"):
 		return true
 	for a: Dictionary in survivors:
 		if a.order == "Garden" and float(a.hp) > 0 and a.pos.distance_to(site) < 40:
 			return true
 	return false
+
+
+func player_at_worksite(id: String) -> bool:
+	if not working or player.pos.distance_to(Routes.point(definition(id).site)) >= 85:
+		return false
+	for p: Dictionary in catalog.properties:
+		if player.pos.distance_to(Routes.point(p.gate)) < 76:
+			return false
+	return true

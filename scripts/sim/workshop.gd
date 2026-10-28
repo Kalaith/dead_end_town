@@ -23,6 +23,8 @@ static func context(world: RefCounted) -> String:
 		return "R / Restore workshop %d%%   |   F / Team orders" % int(float(state.progress) / float(world.balance.workshop_seconds) * 100)
 	if not state.armour_started:
 		return "E / Restore cached armour and shield (%d materials)" % int(world.balance.armour_cost)
+	if not state.armour_done and not world.safe_connected("garage"):
+		return "Armour work paused / secure the workshop home route"
 	if not state.armour_done:
 		return "R / Restore armour %d%%   |   F / Team orders" % int(float(state.armour_progress) / float(world.balance.armour_seconds) * 100)
 	if not state.equipped and world.equipment.iron.is_empty() and world.equipment.shield.is_empty():
@@ -72,11 +74,11 @@ static func step(world: RefCounted, dt: float) -> void:
 	if not unfinished(world) or not safe(world):
 		return
 	var site: Vector2 = Routes.point(world.definition("garage").site)
-	var executor: bool = world.working and world.player.pos.distance_to(site) < 85
+	var executor: bool = world.player_at_worksite("garage")
 	for a: Dictionary in world.survivors:
 		if a.order in ["Build", "Workshop"] and a.job == "garage" and float(a.hp) > 0 and a.pos.distance_to(site) < 40:
 			executor = true
-	if not executor:
+	if not executor or (world.workshop.done and not world.safe_connected("garage")):
 		return
 	var armour: bool = world.workshop.done
 	var key: String = "armour_progress" if armour else "progress"

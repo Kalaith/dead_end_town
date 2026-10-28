@@ -15,6 +15,7 @@
 | D09 | After taking both properties, barricade the street from both directions; dismantle temporary defences to reclaim materials as the front moves | User request after a further game playtest, 28 October 2026 |
 | D10 | Direct survivors individually, such as Mara gardening and Paige working at the workshop while the player guards | User request after recruiting Paige, 28 October 2026 |
 | D11 | Increase resident numbers, recurring raids and attack directions so each territory gain feels fought for | User feedback that zombies are not a threat, 28 October 2026 |
+| D15 | Implement physical neighbourhood integration, equipment choices, useful food and a clear slice objective, then return for user testing | User implementation request, 28 October 2026 |
 | D14 | All zombies wander randomly without a fixed destination; basic player melee hits one zombie per swing | User feedback about stationary occupiers and overly strong attacks, 28 October 2026 |
 | D13 | Undefended buildings fall quickly to zombie occupation; physical security buys time | User feedback that zombies cannot retake territory, 28 October 2026 |
 | D12 | Remove map status/count/reward text and reveal Paige only when rescued | User requests less screen text and discovery without spoilers, 28 October 2026 |
@@ -97,3 +98,10 @@ Eight to twelve survivors, one controlled character plus three companions, museu
 ## Maintaining the package
 
 When a choice is resolved, record the date, rationale, and affected documents here, then update the owning system document. Avoid leaving contradictory rules in a later appendix. Record implementation and test results separately once work begins; a design statement is not evidence that a feature works.
+
+
+## Expanded slice defaults, 28 October 2026
+
+The requested four systems are implemented for the current authored street. Physical integration uses paid, fenced yard passages and explicitly protected street crossings; productive workers use safe routes. Any actor can equip the unique recovered crowbar, sword, iron and shield at the connected workshop. Shared meals cost one food per person every 60 active seconds; shortage reduces work to 60%, with no hunger injury. Recovery costs two food. Three finite timber caches provide ten materials each, including for migrated runs.
+
+The slice objective is **A street worth keeping**: all four clear, held yards physically connected to home, four food actually harvested, restored equipment deployed, everyone standing and one meal reserved, then 60 active seconds of neighbourhood watch started at home. Setbacks restart the watch; completion remains earned during continued play. This is an implementation default for testing, not the final campaign ending. Values and encounter feel await user feedback. Schema 11 preserves the new states and migrates previous saves.

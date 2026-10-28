@@ -34,7 +34,7 @@ func check_claim_requires_clearance_and_connection_and_rewards_once():
 	var before: int = w.materials
 	if not w.claim("garden") or not w.connected("garden"):
 		return "Garden failed to connect."
-	if w.claim("garden") or w.materials != before + 6:
+	if w.claim("garden") or w.materials != before + int(w.balance.claim_materials):
 		return "Claim reward duplicated."
 	if not w.claim("library") or w.survivors.size() != 2:
 		return "Paige rescue failed."
@@ -50,7 +50,7 @@ func check_work_handoff_and_save_roundtrip_preserve_materials():
 	w.player.pos = Vector2(1080, 350)
 	w.interact()
 	w.interact()
-	if w.materials != 16:
+	if w.materials != int(w.balance.starting_materials) + int(w.balance.claim_materials) - int(w.balance.garden_cost):
 		return "Garden charged more than once."
 	w.working = true
 	for i: int in range(60):
@@ -65,7 +65,7 @@ func check_work_handoff_and_save_roundtrip_preserve_materials():
 	restored.assign_mara()
 	for i: int in range(200):
 		restored.step(0.05)
-	if not restored.garden_done or restored.materials != 16:
+	if not restored.garden_done or restored.materials != int(w.balance.starting_materials) + int(w.balance.claim_materials) - int(w.balance.garden_cost):
 		return "Saved work failed to finish exactly once after handoff."
 	return ""
 

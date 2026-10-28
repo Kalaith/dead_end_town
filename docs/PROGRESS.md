@@ -170,7 +170,7 @@ Implementation:
 - Both northern yards and both southern yards can be joined by approved fenced passages (4 materials, 6 seconds). Player and named-worker labour shares progress. Completion explicitly opens the existing side fences and adds physical rails and a closable gate. Blueprints leave fences intact; cancellation refunds unused materials. Gate occupancy, breach and committed repair survive save/load.
 - Safe home connectivity is now distinct from ownership adjacency. Protected street crossings need both end barricades, usable yard gates and a clear corridor. Passage links need held endpoints and an open intact gate. Alternate routes work around a lost corner; losing home or every valid route pauses garden delivery without erasing harvest progress. Local construction can still proceed before a protected connection exists.
 - Pause lists known route conditions without revealing unsearched rewards. Passage work appears in individual orders. Movement now checks actor width before using a straight route, avoiding a fence-rail corner trap.
-- Schema 8 migrates schemas 1�7 with empty passage construction; existing progress and resources remain. The shared toolkit is unchanged.
+- Schema 8 migrates schemas 1–7 with empty passage construction; existing progress and resources remain. The shared toolkit is unchanged.
 
 Evidence:
 - All 60 headless scenarios pass, including six new passage/connection scenarios: cost/handoff/cancel/reload, real actor traversal and flank collision, crossing boundary/gate/hostile conditions, alternate routes and production pause/resume, occupancy/breach/repair, and migration/malformed data.
@@ -203,3 +203,20 @@ Implementation:
 Evidence:
 - All 70 scenarios pass; five new checks cover roster meal costs/no hunger injury, slowed actual workshop work and garden recovery, transactional recovery, unique caches and mid-meal reload, plus migration/malformed clocks.
 - Ran Run.ps1 with capture_provisions.gd at 1280x720 and inspected food_shortage.png and food_recovery.png. Staged pause/recovery UI, not human balance acceptance.
+
+
+## 28 October 2026: a street worth keeping, ready for user testing
+
+Implementation:
+- Added a clear slice objective: reclaim and clear all four yards, physically connect each to home, deliver four garden food, restore the equipment cache, deploy a recovered weapon/iron/shield, keep everyone standing and reserve a shared meal. Begin the neighbourhood watch from pause at the home porch, then maintain readiness for 60 active seconds. Loss, unsafe connectivity, a downed person, protagonist defeat or inadequate food resets the watch until readiness returns. Completion pauses with a visible Continue button; continued play preserves the earned finish.
+- Added finite visible timber piles (Q near each secured non-home porch, ten materials once). This leaves original claim rewards unchanged and gives migrated saves the same new supply opportunity. A command-driven construction-economy scenario builds both passages, all four road barricades, garden/workshop/cache and repairs home using authored supplies, finishing with five materials. Its enemies are cleared and first raid delayed to isolate economy; this does not prove difficulty or a complete human-input run.
+- Productive garden/workshop workers use an area-constrained route through the actual home-connected yards and clear protected corridors. A longer safe route wins over a short exposed street. Disconnection pauses production and reports its cause; local initial construction remains possible before integration. Armour restoration also requires the protected home route. Every property gate can now be rebuilt, with one saved repair commitment; player labour cannot simultaneously repair a gate and work a porch facility.
+- Schema 11 preserves timber, objective phase/clock, last defeat count and gate repair target. Schemas 1–10 migrate without changing supplies or granting completed objectives. No publication, toolkit changes or installations.
+
+Evidence:
+- All 77 simulation scenarios pass. Five slice checks cover prerequisites/spoiler protection, setback resets, partial-watch reload/one-time completion, full construction accounting and old-save/malformed-state handling. Two additional neighbourhood checks prove a worker physically takes the longer protected route and a non-home gate repair resumes after reload without extra cost.
+- All 55 project/tool scripts load; the Godot 4.7.2 headless editor/import check passes. File/function size limits pass.
+- Ran Run.ps1 at 1280x720 with capture_slice.gd. Its actual watch button starts the objective, the process opens the completion screen, and Continue resumes without losing completion. Inspected neighbourhood_watch.png and slice_complete.png. Refreshed the standard ten-state tour, discovery tour and equipment tour and inspected the updated pause, equipment, armour and spoiler-free pre-rescue states.
+- These are automated simulation and staged windowed UI/visual checks. The construction fixture uses enemy clearance and delayed raids; the completion capture stages the final fraction of its watch. Human playtesting of these four additions, full-run difficulty, exports/browser/device/audio and performance benchmarking remain unverified.
+
+The requested implementation is ready for another user test. docs/09-mvp-roadmap.md records the suggested test route and feedback points. The larger campaign, interiors, firearm/audio and general job/recipe systems remain outside this completed slice step.

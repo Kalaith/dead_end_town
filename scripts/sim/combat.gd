@@ -1,4 +1,5 @@
 extends RefCounted
+const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const Wandering = preload("res://scripts/sim/wandering.gd")
 ## Spatial combat and bounded AI. Every actor stays active off camera.
@@ -111,6 +112,19 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.activity = "Passage build/repair"
 			"Roadwork":
 				a.activity = "Road defence work"
+	var productive: bool = (a.order == "Garden" and world.garden_done) or (a.order == "Workshop" and world.workshop.done)
+	if productive and not a.activity.begins_with("Sheltering"):
+		if not world.safe_connected(a.job):
+			a.activity = "Work paused - secure the physical home route"
+			return
+		if a.pos.distance_to(anchor) > 24:
+			var areas: Array[Rect2] = Neighbourhood.work_areas(world)
+			var next: Vector2 = anchor if world.routes.safe_travel_clear(a.pos, anchor, areas) else world.routes.safe_waypoint(a.pos, anchor, areas)
+			if next.is_equal_approx(a.pos):
+				a.activity = "No safe work route - bring this person inside"
+				return
+			_walk(world, a, next, dt, _survivor_speed(world, a))
+		return
 	if a.pos.distance_to(anchor) > (4.0 if a.order == "Roadguard" else 24.0):
 		var old: Vector2 = a.pos
 		_walk(world, a, anchor, dt, _survivor_speed(world, a))

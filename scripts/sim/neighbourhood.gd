@@ -164,6 +164,9 @@ static func bump(world: RefCounted, z: Dictionary, intended: Vector2) -> bool:
 static func link_reason(world: RefCounted, d: Dictionary) -> String:
 	if not owned(world, d):
 		return "uncontrolled yard"
+	for id: String in d.requires:
+		if world.remaining(id) > 0:
+			return "hostile yard"
 	if not clear(world, Routes.rectangle(d.area)):
 		return "hostile in corridor"
 	if d.has("rails"):
@@ -209,3 +212,14 @@ static func summary(world: RefCounted) -> String:
 			var reason: String = link_reason(world, d)
 			lines.append(d.name + ": " + ("usable" if reason.is_empty() else reason))
 	return "\n".join(lines)
+
+
+static func work_areas(world: RefCounted) -> Array[Rect2]:
+	var areas: Array[Rect2] = []
+	for p: Dictionary in world.catalog.properties:
+		if safe_connected(world, p.id):
+			areas.append(Routes.rectangle(p.rect).grow(1))
+	for d: Dictionary in world.catalog.passages + world.catalog.crossings:
+		if link_reason(world, d).is_empty() and safe_connected(world, d.requires[0]) and safe_connected(world, d.requires[1]):
+			areas.append(Routes.rectangle(d.area).grow(1))
+	return areas

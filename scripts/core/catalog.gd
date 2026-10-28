@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authored content is validated before the simulation starts.
+const SliceState = preload("res://scripts/core/slice_state.gd")
 const ProvisionsState = preload("res://scripts/core/provisions_state.gd")
 const EquipmentState = preload("res://scripts/core/equipment_state.gd")
 const NeighbourhoodState = preload("res://scripts/core/neighbourhood_state.gd")
@@ -71,4 +72,5 @@ static func problems(data: Dictionary) -> Array[String]:
 	NeighbourhoodState.content(data, errors)
 	EquipmentState.content(data, errors)
 	ProvisionsState.content(data, errors)
+	SliceState.content(data, errors)
 	return errors

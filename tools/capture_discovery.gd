@@ -1,5 +1,7 @@
 extends "res://addons/hatchery/testing/capture_runner.gd"
 
+const NeighbourhoodChecks = preload("res://tools/checks/checks_neighbourhood.gd")
+
 
 func tour() -> void:
 	var game: Node = await open_scene("res://scenes/town.tscn")
@@ -24,6 +26,11 @@ func tour() -> void:
 		return
 	game.world.claim("garden")
 	game.world.claim("garage")
+	NeighbourhoodChecks.integrate(game.world)
+	game.world.passages.south = {"started": false, "progress": 0.0, "done": false, "open": false, "hp": 0.0, "repair_reserved": false}
+	for id: String in ["home_west", "home_east"]:
+		game.world.roadworks[id] = {"phase": "empty", "progress": 0.0, "hp": 0.0, "repair_reserved": false}
+	game.world.rebuild_routes()
 	game.world.player.pos = Vector2(1080, 800)
 	game.world.interact()
 	game.world.working = true

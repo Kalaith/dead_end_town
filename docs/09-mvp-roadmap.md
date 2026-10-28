@@ -2,7 +2,7 @@
 
 ## Current state
 
-An initial playable greybox street was implemented on 28 October 2026. M0 has a pinned engine, controls, map and camera; portions of M1–M7 demonstrate melee, squad orders, home defence, claims, shared work, rescue and persistence. The user subsequently human-playtested basic zombie combat and territory capture. Garage restoration and a first visible armour/shield set are now implemented, and the persistent bottom panel is removed. The user has reported a further game playtest. Temporary road barricades, dismantling salvage and road guard posts are now implemented for both facing-property pairs. Full milestone acceptance gates and human review of the new road defences remain open. See [PROGRESS.md](PROGRESS.md) for implemented behavior and evidence. The table below remains the target acceptance roadmap; estimates should follow observed play.
+The four-property greybox now includes physical yard passages and protected crossings, individual work orders, transferable recovered weapons/protection, shared meals and food-funded recovery, recurring aimless arrivals, occupation/loss/reclaiming, and explicit save/load. The neighbourhood-watch objective provides a slice finish: connect and supply the four yards, deploy restored gear, then hold readiness for 60 active seconds. This is implemented scope, not acceptance of every roadmap proposal below. See [PROGRESS.md](PROGRESS.md) for evidence and limits. The user has playtested earlier combat/territory iterations; these new systems await another human session.
 
 ## MVP content budget: proposed
 
@@ -52,3 +52,15 @@ Full town generation, multiplayer, vehicles, multi-floor combat, freeform constr
 Design: resolve the next milestone's open questions and maintain the building reward table. Engineering: protect state ownership, navigation, and accounting invariants. Art: establish tile scale and one survivor/equipment pipeline before producing the cast. Audio: make attacks, work, and warnings distinct. QA: maintain reproducible world seeds or authored scenarios and label what was actually tested.
 
 After M8, decide whether to expand the map, improve combat, or cut systems based on observed play. Reaching the milestone means the promise is demonstrated, not that a commercial release is ready.
+
+
+## Current playtest handoff, 28 October 2026
+
+Run from source with Run.ps1. A fresh street best demonstrates the discovery sequence; schema 1–10 saves also migrate to 11. No export is needed.
+
+- Reclaim a yard, collect its timber with Q, approve and build a side passage with E/R, then open its gate. Check that people use it and closing it reports paused production when no alternate route exists.
+- Restore the workshop and choose loadouts with F while both people are at the bench. Compare the fast bat, slower crowbar, two-target sword, iron mobility penalty and independent frontal shield.
+- Leave someone tending the connected garden. Check whether meals and two-food recovery give the garden a useful role without forcing constant management.
+- Follow the paused next objective, start the neighbourhood watch at home, and work toward the slice-complete screen. Losing a yard, route, person or food reserve interrupts the watch; recovery should make restarting practical.
+
+Report any blocked routes, unclear prerequisites, material shortages, frequent forced returns, or equipment choice that feels obviously dominant. Timing and difficulty are tuning questions for this playtest. Firearms, audio, interiors, full-campaign content and deferred systems remain outside this handoff.

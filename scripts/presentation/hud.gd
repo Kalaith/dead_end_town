@@ -1,4 +1,5 @@
 extends Control
+const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
 const Provisions = preload("res://scripts/sim/provisions.gd")
 const EquipmentMenu = preload("res://scripts/presentation/equipment_menu.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
@@ -17,6 +18,7 @@ var radio: Label
 var team_orders: VBoxContainer
 var supplies: Label
 var menu: PanelContainer
+var watch_button: Button
 var equipment_menu: VBoxContainer
 var routes_status: Label
 var menu_status: Label
@@ -78,7 +80,12 @@ func _build_menu() -> void:
 	column.add_child(pause_title)
 	column.add_child(kit.label("Search buildings and hold your ground.", 16))
 	objective = kit.label("", 17, Color("dfb36e"))
+	objective.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(objective)
+	first_button = kit.button("Begin", func() -> void: requested.emit("resume"), true)
+	column.add_child(first_button)
+	watch_button = kit.button("Begin neighbourhood watch", func() -> void: requested.emit("watch"))
+	column.add_child(watch_button)
 	supplies = kit.label("", 16)
 	column.add_child(supplies)
 	routes_status = kit.label("", 13)
@@ -89,9 +96,7 @@ func _build_menu() -> void:
 	equipment_menu = EquipmentMenu.new()
 	column.add_child(equipment_menu)
 	equipment_menu.chosen.connect(func(id: String, slot: String, item: String) -> void: equipment_requested.emit(id, slot, item))
-	column.add_child(kit.label("WASD / arrows  Move and face     Mouse  Aim\nClick  Swing at cursor     Space  Swing forward (hold to repeat)\nE  Interact     Hold R  Work     F  Team orders     G  Post road guard\n1-4  Entire team: Follow / Hold / Engage / Home     Esc / Tab  Pause", 15))
-	first_button = kit.button("Begin", func() -> void: requested.emit("resume"), true)
-	column.add_child(first_button)
+	column.add_child(kit.label("WASD / arrows  Move and face     Mouse  Aim\nClick  Swing at cursor     Space  Swing forward (hold to repeat)\nE  Interact     R  Work     Q  Salvage     F  Orders/loadouts     G  Post guard\n1-4  Entire team: Follow / Hold / Engage / Home     Esc / Tab  Pause", 15))
 	var row := HBoxContainer.new()
 	column.add_child(row)
 	for entry: Array in [["Save street", "save"], ["Load saved street", "load"], ["New street", "new"]]:
@@ -116,7 +121,10 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	if world.pressure.warned and stats.text.ends_with("SAFE"):
 		stats.text = "HEALTH %d     RAID / IN %ds" % [int(world.player.hp), ceili(float(world.pressure.next) - world.elapsed)]
 	stats.modulate = Color("e7dfc9") if world.alert == "SAFE" and not stats.text.contains("THREATENED") else Color("ffac82")
-	objective.text = "NEXT / " + _goal(world)
+	objective.text = "NEXT / " + SliceObjective.next(world)
+	watch_button.visible = world.slice_state.phase == "preparing" and world.properties.garden.looted and world.properties.library.looted and world.properties.garage.looted
+	watch_button.disabled = not SliceObjective.readiness(world).is_empty()
+	watch_button.tooltip_text = SliceObjective.readiness(world)
 	supplies.text = "STOCKPILE / %d materials     %d food\n%s" % [world.materials, world.food, Provisions.summary(world)]
 	context_label.text = world.context()
 	context_label.visible = not paused and not context_label.text.is_empty()
@@ -137,32 +145,7 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 
 
 func _goal(world: RefCounted) -> String:
-	for p: Dictionary in world.catalog.properties:
-		if world.properties[p.id].looted and not world.properties[p.id].claimed:
-			return "Clear and reclaim " + p.name + " at its porch with E."
-	if world.workshop.equipped:
-		return "Paige equipped. Use 4 to send the team home to guard."
-	if world.workshop.armour_done:
-		if not world.properties.library.claimed:
-			return "The restored armour is stored at the workshop."
-		return "Choose weapons, armour and shields at the workshop with F."
-	if world.workshop.armour_started:
-		return "Restore the armour with R or assign a survivor with F at the garage."
-	if world.workshop.done:
-		return "Start restoring the cached armour at the garage bench with E."
-	if world.workshop.started:
-		return "Restore the workshop with R or assign a survivor with F at the garage."
-	if world.properties.garage.claimed:
-		return "Restore the workshop at the garage porch with E."
-	if world.garden_done:
-		return "Explore the remaining properties."
-	if world.properties.garden.claimed:
-		if world.garden_started:
-			return "Assign a gardener with F, or help build the beds with R."
-		return "Start the garden with E, then hold R or assign a survivor with F."
-	if float(world.properties.home.gate_hp) >= float(world.balance.gate_health) or world.properties.home.open:
-		return "Explore east of home; search cleared buildings with E."
-	return "Repair the home gate with R, then open it with E and head east."
+	return SliceObjective.next(world)
 
 
 func show_menu(intro: bool = false) -> void:

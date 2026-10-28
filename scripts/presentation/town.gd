@@ -1,4 +1,5 @@
 extends Node2D
+const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
@@ -13,6 +14,7 @@ var camera: Camera2D
 var hud: Control
 var paused: bool = true
 var accumulator: float = 0.0
+var completion_shown: bool = false
 var storage_enabled: bool = true
 var controls := PlayerControls.new()
 
@@ -69,6 +71,12 @@ func _process(dt: float) -> void:
 		world.face_aim()
 		if Input.is_action_pressed("attack"):
 			world.attack()
+	if world.slice_state.phase == "complete" and not completion_shown:
+		completion_shown = true
+		paused = true
+		hud.show_menu()
+		hud.pause_title.text = "A STREET WORTH KEEPING / SLICE COMPLETE"
+		hud.first_button.text = "Continue the street"
 	view.queue_redraw()
 	hud.refresh(world, paused, dt)
 
@@ -91,6 +99,8 @@ func _unhandled_input(event: InputEvent) -> void:
 					world.order("Engage")
 				KEY_4:
 					world.order("Home")
+				KEY_Q:
+					world.salvage()
 				KEY_G:
 					world.post_road_guard()
 				KEY_F:
@@ -101,6 +111,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func command(value: String) -> void:
 	match value:
+		"watch":
+			SliceObjective.start(world)
+			hud.menu_status.text = world.messages.back()
+			hud.refresh(world, paused)
 		"team":
 			paused = true
 			hud.refresh(world, paused)
@@ -121,6 +135,7 @@ func command(value: String) -> void:
 				hud.menu_status.text = "No saved street yet." if save_state.store.last_error.is_empty() else save_state.store.last_error
 			else:
 				world = save_state.restore(data)
+				completion_shown = false
 				controls = PlayerControls.new()
 				view.world = world
 				accumulator = 0
@@ -129,6 +144,7 @@ func command(value: String) -> void:
 			if not save_state.store.keep_previous():
 				hud.menu_status.text = save_state.store.last_error
 				return
+			completion_shown = false
 			world = World.new(world.catalog)
 			controls = PlayerControls.new()
 			view.world = world

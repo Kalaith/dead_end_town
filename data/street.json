@@ -2,6 +2,7 @@
   "schema_version": 1,
   "bounds": [1440, 1160],
   "balance": {
+    "timber_materials": 10,
     "meal_seconds": 60,
     "recovery_food": 2,
     "food_yield": 2,
@@ -147,6 +148,11 @@
     {"id":"garden_west","name":"Garden block west barricade","rect":[792,480,16,200],"center":[800,580],"site":[848,580],"requires":["garden","garage"]},
     {"id":"garden_east","name":"Garden block east barricade","rect":[1352,480,16,200],"center":[1360,580],"site":[1312,580],"requires":["garden","garage"]}
   ],
+  "slice": {
+    "hold_seconds": 60,
+    "harvest_food": 4,
+    "start_range": 85
+  },
   "equipment": {
   "weapons": {
     "bat": {

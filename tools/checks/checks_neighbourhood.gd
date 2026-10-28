@@ -196,3 +196,50 @@ func check_neighbourhood_migration_and_malformed_state_refusal() -> String:
 	var data: Dictionary = Catalog.read()
 	data.passages[0].rails[0][2] = -1
 	return "Malformed passage content accepted" if Catalog.problems(data).is_empty() else ""
+
+
+func check_productive_workers_use_the_safe_route_instead_of_a_shorter_exposed_street() -> String:
+	var w: RefCounted = _street()
+	integrate(w)
+	for id: String in ["home_west", "home_east"]:
+		w.roadworks[id] = {"phase": "empty", "progress": 0.0, "hp": 0.0, "repair_reserved": false}
+	w.rebuild_routes()
+	w.workshop.started = true
+	w.workshop.done = true
+	w.workshop.progress = float(w.balance.workshop_seconds)
+	w.workshop.armour_started = true
+	w.assign_survivor("mara", "garage")
+	for i: int in range(700):
+		w.step(0.05)
+		var inside: bool = false
+		for area: Rect2 in Neighbourhood.work_areas(w):
+			inside = inside or area.has_point(w.survivors[0].pos)
+		if not inside:
+			return "Productive worker took the shorter unprotected street."
+	if w.survivors[0].pos.distance_to(Vector2(1080, 800)) >= 40 or not w.workshop.armour_done:
+		return "Worker did not reach/finish through the longer protected route."
+	w.properties.home.claimed = false
+	w.workshop.armour_done = false
+	w.workshop.armour_progress = 1.0
+	w.working = true
+	w.player.pos = Vector2(1080, 800)
+	_advance(w, 1)
+	return "Disconnected workshop kept producing" if w.workshop.armour_progress != 1.0 else ""
+
+
+func check_every_property_gate_rebuilds_with_one_saved_commitment() -> String:
+	var w: RefCounted = _street()
+	w.properties.garage.gate_hp = 0.0
+	w.properties.garage.open = false
+	w.rebuild_routes()
+	w.player.pos = Vector2(1080, 720)
+	w.working = true
+	w.step(0.05)
+	var stock: int = w.materials
+	var save := SaveState.new(w.catalog)
+	var loaded: RefCounted = save.restore(JSON.parse_string(JSON.stringify(save.snapshot(w))))
+	if loaded == null or loaded.gate_repair_target != "garage":
+		return "Non-home gate repair target failed to save."
+	loaded.working = true
+	_advance(loaded, 8)
+	return "Non-home gate could not recover without duplicate costs" if loaded.materials != stock or not loaded.properties.garage.open or loaded.properties.garage.gate_hp != float(w.balance.gate_health) else ""

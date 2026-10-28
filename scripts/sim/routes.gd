@@ -3,6 +3,8 @@ extends RefCounted
 var walls: Array[Rect2] = []
 var road_walls: Array[Rect2] = []
 var grid := AStarGrid2D.new()
+var safe_grid := AStarGrid2D.new()
+var safe_signature: String = ""
 var bounds := Vector2(1440, 1160)
 const CELL: float = 20.0
 const RADIUS: float = 11.0
@@ -17,6 +19,7 @@ static func rectangle(value: Array) -> Rect2:
 
 
 func rebuild(definitions: Array, properties: Dictionary, size: Vector2, defences: Array[Rect2] = [], openings: Array[Rect2] = [], passage_walls: Array[Rect2] = []) -> void:
+	safe_signature = ""
 	road_walls = defences
 	bounds = size
 	walls.clear()
@@ -108,3 +111,41 @@ func travel_clear(from: Vector2, to: Vector2) -> bool:
 		if not walkable(from.lerp(to, float(i) / float(steps))):
 			return false
 	return true
+
+
+func safe_waypoint(from: Vector2, to: Vector2, areas: Array[Rect2]) -> Vector2:
+	var signature: String = str(areas)
+	if signature != safe_signature:
+		safe_signature = signature
+		safe_grid.region = grid.region
+		safe_grid.cell_size = grid.cell_size
+		safe_grid.offset = grid.offset
+		safe_grid.diagonal_mode = grid.diagonal_mode
+		safe_grid.update()
+		for x: int in range(grid.region.size.x):
+			for y: int in range(grid.region.size.y):
+				var cell := Vector2i(x, y)
+				var pos: Vector2 = Vector2(cell) * CELL + grid.offset
+				safe_grid.set_point_solid(cell, grid.is_point_solid(cell) or not _inside(pos, areas))
+	var start := Vector2i(from / CELL)
+	var end := Vector2i(to / CELL)
+	if not safe_grid.is_in_boundsv(start) or not safe_grid.is_in_boundsv(end) or safe_grid.is_point_solid(start) or safe_grid.is_point_solid(end):
+		return from
+	var path: PackedVector2Array = safe_grid.get_point_path(start, end)
+	return path[1] if path.size() > 1 else (to if path.size() == 1 else from)
+
+
+func safe_travel_clear(from: Vector2, to: Vector2, areas: Array[Rect2]) -> bool:
+	var steps: int = maxi(1, ceili(from.distance_to(to) / (RADIUS * 0.5)))
+	for i: int in range(steps + 1):
+		var pos: Vector2 = from.lerp(to, float(i) / float(steps))
+		if not walkable(pos) or not _inside(pos, areas):
+			return false
+	return true
+
+
+func _inside(pos: Vector2, areas: Array[Rect2]) -> bool:
+	for area: Rect2 in areas:
+		if area.has_point(pos):
+			return true
+	return false

@@ -19,7 +19,9 @@ func tour() -> void:
 		push_error("Loadout UI did not issue unique ownership commands.")
 		quit(1)
 		return
-	game.hud.menu.get_child(0).scroll_vertical = 300
+	game.command("team")
+	await frames(3)
+	game.hud.menu.get_child(0).scroll_vertical = 500
 	await frames(5)
 	await shot("equipment_choices")
 	game.world.survivors[0].pos = Vector2(1030, 790)

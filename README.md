@@ -2,7 +2,7 @@
 
 Reclaim a zombie-infested town, one property at a time, with a small group of survivors who work and fight together.
 
-**Status: first playable greybox prototype, 28 October 2026.** A continuous four-property street now runs in Godot 4.7.2 with melee combat, Mara's home defence, connected property claims, a shared garden construction job, Paige's rescue, manual save/load, garage restoration, Paige's first iron armour and shield, salvageable road barricades, and individual survivor assignments. This is an early foundation, not the complete MVP. See [progress and verification](docs/PROGRESS.md) for the exact boundary.
+**Status: expanded playable greybox slice, 28 October 2026.** A continuous four-property street now runs in Godot 4.7.2 with melee combat, Mara's home defence, connected property claims, a shared garden construction job, Paige's rescue, manual save/load, garage restoration, Paige's first iron armour and shield, salvageable road barricades, individual survivor assignments, physical yard passages, transferable equipment, food upkeep/recovery, and a neighbourhood-watch finish. Full MVP acceptance and production work remain open. See [progress and verification](docs/PROGRESS.md) for the exact boundary.
 
 Prepared 28 October 2026 from the [Game concept development conversation](chatgpt-conversation://6ae0fba7-c8a4-83ec-9e38-b9d8b951a9ac) and the accompanying project request.
 
@@ -24,9 +24,10 @@ Alternatively, import `project.godot` in Godot and run the project. The opening 
 | Mouse / left click | Aim explicitly; click swings toward the cursor, including while moving |
 | Space | Swing in your movement direction; when stopped, keep the last facing; hold to repeat |
 | E | Interact; approve road construction/dismantling; cancel unfinished road work |
-| Hold R | Repair the home gate or road barricade; contribute construction/dismantling work |
+| Hold R | Repair any property/passage gate or road barricade; contribute work |
+| Q | Recover a secured building's finite timber cache near its porch |
 | 1 / 2 / 3 / 4 | Team Follow / Hold / Engage / Return home and guard |
-| F | Pause and open individual survivor orders |
+| F | Pause and open individual orders and workshop loadouts |
 | G | Post one survivor at a nearby completed road barricade |
 | Esc / Tab | Pause all simulation and open the menu |
 
@@ -34,9 +35,9 @@ Keyboard movement takes control of facing from the mouse. Space follows movement
 
 Start by approaching the home gate, holding R to repair it, then opening it with E. Cross east into the garden yard, clear its seven shamblers and press E at the marked porch. Press E again to reserve garden materials, then hold R or assign a survivor with F. Keep home access open for their route. A closed gate reports blocked work. The library across the road rescues Paige; the garage adds tools and materials. All actors stay active while off camera. The garden and library each hold seven zombies; the garage holds ten. Recurring map-edge raids begin after 45 active seconds, with a 12-second warning. They cycle through the east and west roads, north/south alley flanks, and attacks from all four edges. Claiming more properties grows each wave from four to ten and shortens the interval from 65 to 41 seconds. All shamblers, including new arrivals and occupiers of lost properties, wander with independent random headings. They turn every 0.8â€“2.8 seconds or when blocked, without pursuing people, entrances or a fixed porch. They bite people on contact and damage gates or road barricades they bump into. Open entrances let them wander between yards and street. A 36-living-zombie cap bounds arrivals; cleared residents never respawn.
 
-After securing the garage, press E at its porch to commit 10 materials to restoring its workshop. Hold R or assign a survivor with F. Once complete, E commits 12 materials to restoring its cached iron armour and shield. Finish that work, bring rescued Paige to the bench with Follow (1), then press E to fit the single set. Iron armour halves incoming damage and reduces her movement speed by 20%; the shield halves the remaining damage from the front. No healing or remote equipment swap is granted.
+After securing the garage, press E at its porch to commit 10 materials to restoring its workshop. Hold R or assign a survivor with F. Once complete, E commits 12 materials to restoring its cached sword, iron armour and shield. Finish that work, bring rescued Paige to the bench with Follow (1), then press E to fit the single set. Iron armour halves incoming damage and reduces her movement speed by 20%; the shield halves the remaining damage from the front. F also offers loadouts for the player and either survivor at the clear, connected workshop. Each recovered crowbar, sword, iron and shield is unique: return it before another person takes it. Crowbar hits harder and slower; sword can hit two targets. Equipping grants no healing.
 
-The street has no floating building/status/count/reward labels or permanent facility captions. Flags, windows, crops and equipment show progress. Health and danger alerts stay visible; prompts appear nearby, and short messages report discoveries. Unsearched buildings keep their rewards hidden, including Paige until her rescue. Facility orders appear after claiming their property. Pause with Esc/Tab for the next objective, stockpile, team status, equipment and controls. Existing schema-1/2/3/4/5/6 saves migrate to schema 7 when loaded, preserving their street, supplies, work, equipment and existing orders. Claimed yards stay cleared; unclaimed yards receive the extra residents. Old saves get 65 active seconds to prepare for recurring attacks. Each survivor now stores their own work target.
+The street has no floating building/status/count/reward labels or permanent facility captions. Flags, windows, crops and equipment show progress. Health and danger alerts stay visible; prompts appear nearby, and short messages report discoveries. Unsearched buildings keep their rewards hidden, including Paige until her rescue. Facility orders appear after claiming their property. Pause with Esc/Tab for the next objective, stockpile, team status, equipment and controls. Existing schema-1 through schema-10 saves migrate to schema 11 when loaded, preserving their street, supplies, work, equipment and existing orders. Claimed yards stay cleared; unclaimed yards receive the extra residents. Old saves get 65 active seconds to prepare for recurring attacks. Each survivor now stores their own work target.
 
 Secure **home and library**, the properties facing one another across the western road block, to unlock its west/east barricade sockets. Garden and garage unlock the next block's pair. Stand at a dashed socket on the road and press E to commit 8 materials, then hold R for 8 seconds or assign a survivor with F. Barricades block all actors, and zombies attack and eventually breach them. G posts one living survivor on the inside; use it at the other end to post another. Guards strike over the low barricade. Team orders 1-4 override these posts.
 
@@ -48,7 +49,17 @@ Press **F** (or Esc/Tab) for paused team orders. Choose **Garden: build and tend
 
 The garden role stays after construction and produces food only while someone tends the safe beds (or you hold R there). The workshop role stays at the bench after finishing, ready for the next restoration order you approve. You can also give one survivor Follow, Hold, Engage, Home guard, or work/guard orders at relevant road barricades. Those choices leave everyone else's assignment intact. Keys 1-4 still deliberately command the entire team and override individual jobs.
 
-The prototype uses original procedural greybox drawing. Buildings have solid footprints with porch interactions; there are no explorable interiors yet. No audio, firearm, general equipment inventory or recipes, food consumption, general construction queues/priorities, physical inter-property integration, noise-driven migration or final campaign ending is implemented.
+The prototype uses original procedural greybox drawing. Buildings have solid footprints with porch interactions; there are no explorable interiors yet. Audio, firearms, general recipe/job queues and a full campaign ending remain unimplemented. Noise-directed pursuit remains superseded by the aimless-zombie direction. The neighbourhood-watch finish is the end of this slice, not a full-game campaign ending.
+
+## Food and the slice finish
+
+Search supplies include food. One shared meal every 60 active seconds costs one food per person. Missing a meal slows work to 60% without hunger damage; enough food restores normal work. Safe-home recovery costs two food only when someone is injured. A tended, connected garden delivers two food per 20 work seconds. Pause explains food status; no clock runs while paused or closed.
+
+Q near each secured garden/library/garage porch collects ten materials from its finite spare-timber cache. The visible board pile disappears once collected. Older saves retain their resources and can collect these new caches too. This supplies the extra connections without changing old claim rewards.
+
+To finish **A street worth keeping**, hold all four yards, give each a protected physical home route, deliver four garden food, restore the equipment cache, deploy a recovered weapon plus iron and shield, keep everyone standing and retain one shared meal. Return to the home porch and choose **Begin neighbourhood watch** in pause. Maintain those conditions for 60 active seconds. A setback resets the watch until readiness returns. Completion pauses with **Continue the street**; continuing and later losses preserve the earned finish. Saving remains explicit.
+
+The new systems are ready for another human playtest. Automated checks and staged captures establish functionality and presentation, not difficulty or player acceptance.
 
 ## Project template and toolkit
 

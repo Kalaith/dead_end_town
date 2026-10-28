@@ -76,6 +76,9 @@ func _property(p: Dictionary) -> void:
 		draw_circle(site, 23, Color(0.06, 0.12, 0.12, 0.8))
 		draw_arc(site, 23, 0, TAU, 24, accent, 2)
 		_text(site + Vector2(-5, 6), "E", 18, accent)
+	if state.claimed and world.timber.has(p.id) and not world.timber[p.id]:
+		for i: int in range(3):
+			draw_line(site + Vector2(-92, 16 + i * 7), site + Vector2(-48, 16 + i * 7), Color("ab8860"), 5)
 	if p.id == "home":
 		_meter(gate + Vector2(-44, 20), 88, float(state.gate_hp) / float(world.balance.gate_health), accent)
 	if p.id == "garden":
