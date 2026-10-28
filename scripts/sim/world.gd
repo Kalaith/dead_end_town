@@ -55,12 +55,12 @@ func _init(data: Dictionary) -> void:
 	pressure = Pressure.initial(data)
 	materials = int(balance.starting_materials)
 	food = int(balance.starting_food)
-	player = actor("you", "You", Vector2(360, 365), float(balance.player_health))
-	survivors.append(actor("mara", "Mara", Vector2(360, 445), float(balance.survivor_health)))
+	player = actor("you", "You", Routes.point(balance.player_start), float(balance.player_health))
+	survivors.append(actor("mara", "Mara", Routes.point(balance.mara_start), float(balance.survivor_health)))
 	survivors[0].order = "Guard"
-	survivors[0].anchor = Vector2(360, 445)
+	survivors[0].anchor = survivors[0].pos
 	for p: Dictionary in catalog.properties:
-		properties[p.id] = {"claimed": p.id == "home", "looted": p.id == "home", "open": p.id != "home", "occupation": 0.0, "gate_hp": float(balance.gate_health) * (0.65 if p.id == "home" else 1.0)}
+		properties[p.id] = {"claimed": p.id == "home", "looted": p.id == "home", "open": p.id != "home", "occupation": 0.0, "gate_hp": float(balance.gate_health) * (float(balance.home_gate_start_factor) if p.id == "home" else 1.0)}
 		for spawn: Array in p.zombies:
 			var z: Dictionary = actor("z%d" % zombies.size(), "Shambler", Routes.point(spawn), float(balance.zombie_health))
 			z.home = p.id
@@ -116,7 +116,7 @@ func step(dt: float) -> void:
 	SliceObjective.step(self, dt)
 	var next_alert: String = "SAFE"
 	for z: Dictionary in zombies:
-		if float(z.hp) > 0 and z.pos.distance_to(Vector2(360, 480)) < 180:
+		if float(z.hp) > 0 and z.pos.distance_to(Routes.point(balance.home_alert_center)) < float(balance.home_alert_radius):
 			next_alert = "BREACHED" if float(properties.home.gate_hp) <= 0 or properties.home.open else "THREATENED"
 	if next_alert != alert:
 		alert = next_alert
@@ -179,7 +179,7 @@ func _context() -> String:
 	for p: Dictionary in catalog.properties:
 		if player.pos.distance_to(Routes.point(p.gate)) < 76:
 			if float(properties[p.id].gate_hp) <= 0:
-				return "R / Rebuild gate (3 materials, hold to work)"
+				return "R / Rebuild gate (%d materials, hold to work)" % int(balance.gate_repair_cost)
 			return "E / %s gate%s" % ["Close" if properties[p.id].open else "Open", "   |   R / Repair (%d materials)" % int(balance.gate_repair_cost)]
 		if player.pos.distance_to(Routes.point(p.site)) < 85:
 			if p.id == "home" and properties.home.claimed:
@@ -191,7 +191,7 @@ func _context() -> String:
 			if p.id == "garage":
 				return Workshop.context(self)
 			if p.id == "garden" and not garden_done:
-				return "E / Start garden (8 materials)   |   R / Help build   |   F / Team orders"
+				return "E / Start garden (%d materials)   |   R / Help build   |   F / Team orders" % int(balance.garden_cost)
 			if p.id == "garden":
 				return "R / Tend garden   |   F / Assign a gardener"
 			return ""
@@ -231,7 +231,7 @@ func interact() -> void:
 				Workshop.interact(self)
 			elif p.id == "garden" and not garden_started:
 				if materials < int(balance.garden_cost):
-					note("Garden needs 8 materials.")
+					note("Garden needs %d materials." % int(balance.garden_cost))
 				else:
 					materials -= int(balance.garden_cost)
 					garden_started = true
@@ -260,8 +260,8 @@ func claim(id: String) -> bool:
 	food += int(definition(id).food_cache)
 	materials += int(balance.claim_materials)
 	if id == "garage":
-		materials += 12
-		note("Garage recovered: tools, cached armour and 12 extra materials. Restore the workshop here with E.")
+		materials += int(balance.garage_bonus_materials)
+		note("Garage recovered: tools, cached armour and %d extra materials. Restore the workshop here with E." % int(balance.garage_bonus_materials))
 	elif id == "library":
 		var paige: Dictionary = actor("paige", "Paige", Routes.point(definition(id).site) + Vector2(35, 0), float(balance.survivor_health))
 		paige.order = "Follow"

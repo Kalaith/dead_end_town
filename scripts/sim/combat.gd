@@ -1,4 +1,5 @@
 extends RefCounted
+const Routes = preload("res://scripts/sim/routes.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const Wandering = preload("res://scripts/sim/wandering.gd")
@@ -53,7 +54,7 @@ static func step(world: RefCounted, dt: float) -> void:
 	if float(world.player.hp) <= 0:
 		world.downs += 1
 		world.player.hp = float(world.balance.player_health)
-		world.player.pos = Vector2(360, 350)
+		world.player.pos = Routes.point(world.balance.home_respawn)
 		world.move_input = Vector2.ZERO
 		world.note("You were pulled back home. The street and your discoveries are preserved.")
 
@@ -62,7 +63,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 	var anchor: Vector2 = a.anchor
 	match a.order:
 		"Guard", "Home":
-			anchor = Vector2(360, 445)
+			anchor = Routes.point(world.balance.mara_start)
 		"Follow", "Engage":
 			anchor = world.player.pos + Vector2(-38, 24)
 		"Build", "Garden", "Workshop":
@@ -86,7 +87,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 	# A low barricade allows a gate guard to hit the attacker leaning over it.
 	if a.order == "Guard" and not world.properties.home.open:
 		for z: Dictionary in world.zombies:
-			if float(z.hp) > 0 and z.pos.distance_to(Vector2(360, 490)) < 50 and a.pos.distance_to(Vector2(360, 445)) < 32 and float(a.cooldown) <= 0:
+			if float(z.hp) > 0 and z.pos.distance_to(Vector2(360, 490)) < 50 and a.pos.distance_to(Routes.point(world.balance.mara_start)) < 32 and float(a.cooldown) <= 0:
 				z.hp = maxf(0, float(z.hp) - float(Equipment.stats(world, a).damage))
 				z.flash = 0.18
 				a.swing = 0.18
@@ -95,7 +96,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.activity = "Holding the barricade"
 				return
 	if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage"] and danger(world, anchor, 170):
-		anchor = Vector2(360, 350)
+		anchor = Routes.point(world.balance.home_respawn)
 		a.activity = "Sheltering - work preserved"
 	else:
 		a.activity = a.order

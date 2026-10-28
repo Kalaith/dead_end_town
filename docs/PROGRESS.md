@@ -273,3 +273,10 @@ Used: `JsonIO`, `DataRules`, `JsonSave` (staged writes, backup recovery, migrati
 ### Verification of this pass
 
 Static review and file measurement only. The parse, simulation and editor checks were not re-run for this documentation-only change; the latest recorded results are in the preceding section.
+
+
+## 28 October 2026: review fixes
+
+- Moved the garage bonus, home gate starting factor, player/Mara start, home respawn and home alert centre/radius into validated `balance` content in `data/street.json`. Guard anchors and shelter positions now read the same values. Cost prompts for the garden and gate rebuild read balance instead of repeating numbers.
+- `save_state.gd` now has `SCHEMA` and `COPIED_KEYS` constants in place of repeated literals. Save format is unchanged (schema 11).
+- All 80 scenarios pass, all 56 scripts load and the headless editor check reports no errors. No gameplay values changed; windowed captures were not re-run.

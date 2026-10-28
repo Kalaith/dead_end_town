@@ -16,6 +16,9 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
+const SCHEMA: int = 11
+## Saved world fields that are dictionaries and are copied, not shared.
+const COPIED_KEYS: Array[String] = ["workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
 const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "gate_repair_target"]
 var catalog: Dictionary
@@ -24,16 +27,16 @@ var store: RefCounted
 
 func _init(data: Dictionary, path: String = "user://street.json") -> void:
 	catalog = data
-	store = JsonSave.new(path, 11, valid)
+	store = JsonSave.new(path, SCHEMA, valid)
 	store.migrate = migrate
 	store.schema_key = "schema_version"
 	store.block_on_damage = true
 
 
 func snapshot(world: RefCounted) -> Dictionary:
-	var result: Dictionary = {"schema_version": 11, "roam_rng_state": str(world.roam_rng.state), "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
+	var result: Dictionary = {"schema_version": SCHEMA, "roam_rng_state": str(world.roam_rng.state), "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
 	for key: String in STATE_KEYS:
-		result[key] = world.get(key).duplicate(true) if key in ["workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber"] else world.get(key)
+		result[key] = world.get(key).duplicate(true) if key in COPIED_KEYS else world.get(key)
 	for a: Dictionary in world.survivors:
 		result.survivors.append(_encode_actor(a))
 	for z: Dictionary in world.zombies:
@@ -56,12 +59,12 @@ func _decode_actor(a: Dictionary) -> Dictionary:
 
 
 func restore(raw: Dictionary) -> RefCounted:
-	var data: Dictionary = migrate(raw) if raw.get("schema_version") in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] else raw
+	var data: Dictionary = migrate(raw) if raw.get("schema_version") in range(1, SCHEMA) else raw
 	if not valid(data):
 		return null
 	var world := World.new(catalog)
 	for key: String in STATE_KEYS:
-		world.set(key, int(data[key]) if key in ["materials", "food", "downs"] else (data[key].duplicate(true) if key in ["workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber"] else data[key]))
+		world.set(key, int(data[key]) if key in ["materials", "food", "downs"] else (data[key].duplicate(true) if key in COPIED_KEYS else data[key]))
 	world.slice_state.downs = int(data.slice_state.downs)
 	world.provisions.harvested = int(data.provisions.harvested)
 	world.roam_rng.state = int(data.roam_rng_state)
@@ -80,7 +83,7 @@ func restore(raw: Dictionary) -> RefCounted:
 
 
 func valid(data: Dictionary) -> bool:
-	if not Rules.integer_in(data.get("schema_version"), 11, 11):
+	if not Rules.integer_in(data.get("schema_version"), SCHEMA, SCHEMA):
 		return false
 	if not data.get("roam_rng_state") is String or str(int(data.roam_rng_state)) != data.roam_rng_state:
 		return false
@@ -178,7 +181,7 @@ func _valid_actor(a: Variant, max_health: float) -> bool:
 
 
 func migrate(data: Dictionary) -> Dictionary:
-	if not Rules.integer_in(data.get("schema_version"), 1, 10):
+	if not Rules.integer_in(data.get("schema_version"), 1, SCHEMA - 1):
 		return {}
 	var upgraded: Dictionary = data.duplicate(true)
 	var version: int = int(upgraded.schema_version)

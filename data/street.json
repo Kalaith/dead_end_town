@@ -2,6 +2,13 @@
   "schema_version": 1,
   "bounds": [1440, 1160],
   "balance": {
+    "garage_bonus_materials": 12,
+    "home_gate_start_factor": 0.65,
+    "player_start": [360, 365],
+    "mara_start": [360, 445],
+    "home_respawn": [360, 350],
+    "home_alert_center": [360, 480],
+    "home_alert_radius": 180,
     "timber_materials": 10,
     "meal_seconds": 60,
     "recovery_food": 2,

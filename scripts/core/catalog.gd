@@ -25,6 +25,11 @@ static func problems(data: Dictionary) -> Array[String]:
 	rules.vec2(data, "bounds")
 	if rules.object(data, "balance"):
 		rules.number_between(data.balance, "attack_cone_dot", -1.0, 0.99)
+		rules.number_between(data.balance, "home_gate_start_factor", 0.01, 1.0)
+		rules.number_between(data.balance, "garage_bonus_materials", 0, 10000)
+		rules.number_between(data.balance, "home_alert_radius", 1.0, 10000.0)
+		for key: String in ["player_start", "mara_start", "home_respawn", "home_alert_center"]:
+			rules.vec2(data.balance, key)
 		rules.number_between(data.balance, "zombie_notice_range", 29.0, 10000.0)
 		rules.number_between(data.balance, "roam_seed", 1, 2147483647)
 		rules.number_between(data.balance, "roam_turn_min", 0.05, 30)
