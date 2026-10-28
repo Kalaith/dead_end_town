@@ -1,116 +1,85 @@
 # Dead End Town
 
-Reclaim a zombie-infested town, one property at a time, with a small group of survivors who work and fight together.
+Reclaim a zombie-infested street, one property at a time, with a small group of survivors who work and fight together.
 
-**Status: expanded playable greybox slice, 28 October 2026.** A continuous four-property street now runs in Godot 4.7.2 with melee combat, Mara's home defence, connected property claims, a shared garden construction job, Paige's rescue, manual save/load, garage restoration, Paige's first iron armour and shield, salvageable road barricades, individual survivor assignments, physical yard passages, transferable equipment, food upkeep/recovery, and a neighbourhood-watch finish. Full MVP acceptance and production work remain open. See [progress and verification](docs/PROGRESS.md) for the exact boundary.
+**Status: playable greybox slice (28 October 2026).** One continuous four-property street with combat, territory, building, equipment, food and a finish. It is a vertical slice, not a full campaign, and it has had only partial human playtesting. See [progress and verification](docs/PROGRESS.md) for exactly what has and has not been checked.
 
-Prepared 28 October 2026 from a game-concept conversation and the accompanying project request; see [sources and terminology](docs/12-sources-and-terminology.md).
+## The game
 
-## Play from source
+You start at a fenced home with one survivor, Mara. Open the gate, clear the zombies from the next yard and secure it. Each property you hold unlocks something: food, materials, a rescued survivor, a workshop. Then go home, or send someone else.
 
-Use the installed standard Godot **4.7.2** editor, Compatibility renderer. Desktop keyboard and mouse are the initial target; the viewport is 1280x720. No installation or export is needed.
+Everything happens in one continuous top-down world, and everyone stays active off camera. Your survivors are a cooperative team, not a colony to micromanage. Growth comes from discoveries, buildings and equipment rather than XP.
 
-```powershell
-# First checkout: recreate the ignored shared-toolkit junction.
-& ../godot_toolkit/tools/Link-Toolkit.ps1 -ProjectDir .
-./Run.ps1
-```
+- **Fight.** Melee is single-target: each swing hits the nearest zombie in reach. Aim with the mouse or swing the way you are moving. Recovered weapons change reach, damage, speed and how many zombies a swing can hit.
+- **Claim.** Clearing a yard and securing it are separate steps. A property has to connect to home, and you can only claim ground next to what you already hold. Searching rewards you once; reclaiming a lost property never pays twice.
+- **Defend.** Zombies wander until someone comes within about 240 pixels, then head for the nearest person. They bite on contact and break gates and barricades they bump into. Raids arrive from the map edges and grow with your territory, and a warning tells you which side. If zombies hold a yard with nobody standing in it for eight seconds, you lose it, home included. Clear them and reclaim.
+- **Build.** Barricade the road, fence passages between yards, repair gates, tend a garden, restore a workshop. You approve each project at its site with **E** and spend materials once. After that you can hold **R** to work, or give the job to a survivor. Progress is shared, so two workers do not double the speed.
+- **Equip.** The garage hides a crowbar, sword, iron armour and shield. Restore the workshop, then choose loadouts for anyone. Every item is unique, so return it before someone else takes it.
+- **Eat.** The group shares a meal every 60 seconds, costing one food each. Missing a meal slows work to 60%, with no hunger damage. Food also pays for healing at home. A tended garden brings in more.
 
-Alternatively, import `project.godot` in Godot and run the project. The opening screen pauses the world until Begin. Saves are explicit through the pause menu and live in Godot's `user://street.json`; reopening starts a fresh preview until you choose Load saved street. New street preserves the existing on-disk save until a later Save, and archives it as `.previous` first. Incompatible or damaged saves without a usable backup block saving and show a message.
+### Your first run
+
+1. Hold **R** at the home gate to repair it, then open it with **E**.
+2. Clear the garden yard, press **E** at its porch to secure it, and collect the timber with **Q**.
+3. Take the library across the road. Paige is inside. Take the garage next for tools and the equipment cache.
+4. Press **F** to send Mara to the garden and Paige to the workshop while you guard the road.
+5. Build barricades and passages so every yard has a protected route home.
+
+### Finishing: a street worth keeping
+
+Hold all four yards, give each a protected route home, harvest four garden food, restore the equipment cache, deploy a recovered weapon plus iron and shield, keep everyone standing, and keep a shared meal in reserve. Then choose **Begin neighbourhood watch** in the pause menu at home and keep those conditions for 60 seconds. Any setback resets the watch. Completing it pauses with **Continue the street**, and the finish is kept.
+
+## Controls
 
 | Control | Action |
 | --- | --- |
 | WASD / arrows | Move and face |
-| Mouse / left click | Aim explicitly; click swings toward the cursor, including while moving |
-| Space | Swing in your movement direction; when stopped, keep the last facing; hold to repeat |
-| E | Interact; approve road construction/dismantling; cancel unfinished road work |
-| Hold R | Repair any property/passage gate or road barricade; contribute work |
-| Q | Recover a secured building's finite timber cache near its porch |
-| 1 / 2 / 3 / 4 | Team Follow / Hold / Engage / Return home and guard |
-| F | Pause and open individual orders and workshop loadouts |
-| G | Post one survivor at a nearby completed road barricade |
-| Esc / Tab | Pause all simulation and open the menu |
+| Mouse / left click | Aim and swing toward the cursor |
+| Space | Swing in your movement direction (or last facing); hold to repeat |
+| E | Interact: open or close gates, search, approve work, cancel a blueprint |
+| Hold R | Repair or build at the nearest gate, passage, barricade or porch project |
+| Q | Collect a secured building's spare timber |
+| 1 / 2 / 3 / 4 | Whole team: Follow / Hold / Engage / Return home and guard |
+| F | Pause for individual orders and loadouts |
+| G | Post a survivor at a nearby barricade |
+| Esc / Tab | Pause and open the menu |
 
-Keyboard movement takes control of facing from the mouse. Space follows movement or your last facing when stationary. Moving the mouse aims explicitly; holding left click follows the cursor while moving. A swing keeps its original direction until its animation finishes. The basic bat damages and knocks back only the nearest living zombie within its forward reach; it cannot sweep through a crowd. Survivors use the same single-target basic melee rule.
+The world pauses on the opening screen and in any menu. The pause menu shows the next objective, supplies, who is doing what, equipment and known route conditions. The street itself has almost no on-screen text: flags, windows, crops and bars show state, and prompts only appear near what you can use.
 
-Start by approaching the home gate, holding R to repair it, then opening it with E. Cross east into the garden yard, clear its seven shamblers and press E at the marked porch. Press E again to reserve garden materials, then hold R or assign a survivor with F. Keep home access open for their route. A closed gate reports blocked work. The library across the road rescues Paige; the garage adds tools and materials. All actors stay active while off camera. The garden and library each hold seven zombies; the garage holds ten. Recurring map-edge raids begin after 45 active seconds, with a 12-second warning. They cycle through the east and west roads, north/south alley flanks, and attacks from all four edges. Claiming more properties grows each wave from four to ten and shortens the interval from 65 to 41 seconds. All shamblers, including new arrivals and occupiers of lost properties, wander with independent random headings. They turn every 0.8–2.8 seconds or when blocked, while idle. The nearest living person within 240 pixels immediately overrides wandering; they head toward that person until nobody is nearby. Entrances and porches are not fixed destinations. They bite people on contact and damage gates or road barricades they bump into. Open entrances let them wander between yards and street. A 36-living-zombie cap bounds arrivals; cleared residents never respawn.
+Saving is explicit from the pause menu and stored at `user://street.json`. Reopening starts a fresh street until you choose Load. Damaged saves fall back to a backup, and older save versions migrate automatically.
 
-After securing the garage, press E at its porch to commit 10 materials to restoring its workshop. Hold R or assign a survivor with F. Once complete, E commits 12 materials to restoring its cached sword, iron armour and shield. Finish that work, bring rescued Paige to the bench with Follow (1), then press E to fit the single set. Iron armour halves incoming damage and reduces her movement speed by 20%; the shield halves the remaining damage from the front. F also offers loadouts for the player and either survivor at the clear, connected workshop. Each recovered crowbar, sword, iron and shield is unique: return it before another person takes it. Crowbar hits harder and slower; sword can hit two targets. Equipping grants no healing.
+## Not in the slice
 
-The street has no floating building/status/count/reward labels or permanent facility captions. Flags, windows, crops and equipment show progress. Health and danger alerts stay visible; prompts appear nearby, and short messages report discoveries. Unsearched buildings keep their rewards hidden, including Paige until her rescue. Facility orders appear after claiming their property. Pause with Esc/Tab for the next objective, stockpile, team status, equipment and controls. Existing schema-1 through schema-10 saves migrate to schema 11 when loaded, preserving their street, supplies, work, equipment and existing orders. Claimed yards stay cleared; unclaimed yards receive the extra residents. Old saves get 65 active seconds to prepare for recurring attacks. Each survivor now stores their own work target.
+Explorable interiors, firearms, audio, production art, noise-driven zombies, general build queues and freeform construction, remapping and gamepad, and a full campaign ending. The neighbourhood-watch finish ends this slice, not the game.
 
-Secure **home and library**, the properties facing one another across the western road block, to unlock its west/east barricade sockets. Garden and garage unlock the next block's pair. Stand at a dashed socket on the road and press E to commit 8 materials, then hold R for 8 seconds or assign a survivor with F. Barricades block all actors, and zombies attack and eventually breach them. G posts one living survivor on the inside; use it at the other end to post another. Guards strike over the low barricade. Team orders 1-4 override these posts.
+## Run from source
 
-E at a built barricade approves dismantling; hold R for 4 seconds or assign a survivor through F. An undamaged barricade returns 6 materials, with less salvage after damage. E again keeps it without a refund. E on an unfinished blueprint cancels it: full refund before any work, decreasing toward the built salvage value as work proceeds. Hold R to repair a damaged standing barricade for one 3-material commitment. Unsafe work pauses. Collision remains until dismantling finishes, so open an inner barricade to reach the next block as the line advances. If living zombies occupy a claimed yard without a standing player or survivor inside, it falls after eight active seconds. A brief warning and draining porch bar precede the lost flag/windows. Closed gates and road barricades buy time by physically keeping attackers out; downed survivors cannot contest control. Clear the yard and press E at its porch to reclaim it, including home. Discoveries, rescued people, equipment, surviving defences and committed facility work persist; reclaiming never grants loot twice. Lost/disconnected facilities pause.
-
-Build fenced passages between home/garden or library/garage at the side-fence work points (E approves 4 materials, R or F contributes 6 seconds). Completion cuts the existing fences and adds enclosing rails and a closable gate. E opens the passage; R repairs it. Garden delivery requires a clear physical home route, through passages or street crossings protected by both end barricades. Lost yards, closed gates and hostile corridors can pause delivery; an alternate safe route keeps it running. Pause lists known route conditions.
-
-Press **F** (or Esc/Tab) for paused team orders. Choose **Garden: build and tend** beside Mara and **Workshop: build and restore** beside Paige, then return to the street. Each walks to their own work site while you guard. Any recruited, standing survivor can do either job. Approve each project at its porch with E first; assigning a role never spends supplies or starts a new recipe. Closed gates and danger can block work, and the row beneath each name explains their activity.
-
-The garden role stays after construction and produces food only while someone tends the safe beds (or you hold R there). The workshop role stays at the bench after finishing, ready for the next restoration order you approve. You can also give one survivor Follow, Hold, Engage, Home guard, or work/guard orders at relevant road barricades. Those choices leave everyone else's assignment intact. Keys 1-4 still deliberately command the entire team and override individual jobs.
-
-The prototype uses original procedural greybox drawing. Buildings have solid footprints with porch interactions; there are no explorable interiors yet. Audio, firearms, general recipe/job queues and a full campaign ending remain unimplemented. Noise-directed movement remains unimplemented; nearby living people override idle wandering. The neighbourhood-watch finish is the end of this slice, not a full-game campaign ending.
-
-## Food and the slice finish
-
-Search supplies include food. One shared meal every 60 active seconds costs one food per person. Missing a meal slows work to 60% without hunger damage; enough food restores normal work. Safe-home recovery costs two food only when someone is injured. A tended, connected garden delivers two food per 20 work seconds. Pause explains food status; no clock runs while paused or closed.
-
-Q near each secured garden/library/garage porch collects ten materials from its finite spare-timber cache. The visible board pile disappears once collected. Older saves retain their resources and can collect these new caches too. This supplies the extra connections without changing old claim rewards.
-
-To finish **A street worth keeping**, hold all four yards, give each a protected physical home route, deliver four garden food, restore the equipment cache, deploy a recovered weapon plus iron and shield, keep everyone standing and retain one shared meal. Return to the home porch and choose **Begin neighbourhood watch** in pause. Maintain those conditions for 60 active seconds. A setback resets the watch until readiness returns. Completion pauses with **Continue the street**; continuing and later losses preserve the earned finish. Saving remains explicit.
-
-The new systems are ready for another human playtest. Automated checks and staged captures establish functionality and presentation, not difficulty or player acceptance.
-
-## Project template and toolkit
-
-The Last Hearth supplied the project structure, Compatibility configuration and toolkit workflow. Its gameplay, art, BDI agents and turn-based combat were not copied. Dead End Town has its own pure fixed-step rules in `scripts/sim/` and presentation in `scripts/presentation/`.
-
-`../godot_toolkit` is linked at the ignored `addons/hatchery` junction. Runtime code uses its `JsonIO`, `DataRules`, `JsonSave`, `Palette` and `UiKit`; developer tools use the shared parse, scenario and capture runners. The shared toolkit itself was not modified. The standard publishing wrappers are present, but `publish.json` and `export_presets.cfg` are deliberately absent until a destination is chosen; nothing has been published.
+Godot **4.7.2**, Compatibility renderer, desktop keyboard and mouse, 1280x720. No export is needed.
 
 ```powershell
-$godot = 'C:/Program Files/Godot/Godot_v4.7.2-stable_win64_console.exe'
-& $godot --headless --path . --script res://tools/parse_all.gd
-& $godot --headless --path . --script res://tools/sim_checks.gd
-& $godot --headless --editor --path . --quit
-./Run.ps1 -GameArgs @('--script','res://tools/capture.gd','--','--size=1280x720','--no-save')
+# First checkout: recreate the ignored shared-toolkit junction (../godot_toolkit).
+& ../godot_toolkit/tools/Link-Toolkit.ps1 -ProjectDir .
+./Run.ps1
 ```
 
-The capture tour stages example states without writing a gameplay save. Its images are in `docs/verification/`. The user has human-playtested basic zombie combat and territory capture. The user subsequently reported another game playtest and requested movable street defences. The new barricades have automated and staged visual verification; their human feel and browser/device support remain unverified.
-
-## The game
-
-Open the gate, take a small squad down the street, and clear the next house. Back home, the survivors you left behind repair fences, grow food, and defend the perimeter. Bring back tools, equipment, and people that change what your community can do. Connect the new property and watch a dangerous street become a lived-in neighbourhood.
-
-Everything happens in one continuous world. The survivors are a cooperative team. Growth comes mainly from key discoveries, useful buildings, and visible equipment rather than experience grinding or complex character management.
+You can also open `project.godot` in the editor. Headless checks and the staged screenshot tour (written to `docs/verification/`) are listed in [AGENTS.md](AGENTS.md). Rules live in `scripts/sim/`, presentation in `scripts/presentation/`, content validation and saves in `scripts/core/`, and all balance and map data in `data/street.json`. Project layout came from The Last Hearth, and shared tooling from `../godot_toolkit`; no gameplay was borrowed.
 
 ## Documentation
 
 | Document | Purpose |
 | --- | --- |
-| [Game design](docs/01-game-design.md) | Vision, pillars, core loop, player experience, scope |
-| [World and territory](docs/02-world-and-territory.md) | Property claims, connections, perimeter, loss and recovery |
-| [Combat and home defence](docs/03-combat-and-defence.md) | Player actions, squad orders, autonomous defence, alerts |
-| [Construction and jobs](docs/04-construction-and-jobs.md) | Shared work progress, jobs, interruptions, safe autonomy |
-| [Survivors and growth](docs/05-survivors-and-growth.md) | Named cast, equipment, Paige's transformation |
-| [Buildings and economy](docs/06-buildings-and-economy.md) | Rewards, unlock chains, stockpile, production |
-| [Zombies and pressure](docs/07-zombies-and-pressure.md) | Noise, migration, hordes, readable escalation |
-| [Experience and presentation](docs/08-experience-and-presentation.md) | Opening, interfaces, visual changes, accessibility |
-| [MVP roadmap](docs/09-mvp-roadmap.md) | Milestones, acceptance gates, playtest plan, deferred scope |
-| [Godot implementation](docs/10-godot-implementation.md) | Proposed scenes, data, navigation, simulation, persistence |
-| [Decisions and questions](docs/11-decisions-and-questions.md) | Confirmed direction, defaults, unresolved choices |
-| [Sources and terminology](docs/12-sources-and-terminology.md) | Source limits, precedence, technical references, glossary |
+| [Game design](docs/01-game-design.md) | Vision, pillars, core loop, scope |
+| [World and territory](docs/02-world-and-territory.md) | Claims, connections, loss and recovery |
+| [Combat and home defence](docs/03-combat-and-defence.md) | Player actions, squad orders, defence |
+| [Construction and jobs](docs/04-construction-and-jobs.md) | Shared work, jobs, interruptions |
+| [Survivors and growth](docs/05-survivors-and-growth.md) | Cast, equipment, Paige |
+| [Buildings and economy](docs/06-buildings-and-economy.md) | Rewards, unlock chains, production |
+| [Zombies and pressure](docs/07-zombies-and-pressure.md) | Wandering, pursuit, raids |
+| [Experience and presentation](docs/08-experience-and-presentation.md) | Opening, interface, accessibility |
+| [MVP roadmap](docs/09-mvp-roadmap.md) | Milestones, playtest route, deferred scope |
+| [Godot implementation](docs/10-godot-implementation.md) | Architecture, data, persistence |
+| [Decisions and questions](docs/11-decisions-and-questions.md) | Confirmed direction and open choices |
+| [Sources and terminology](docs/12-sources-and-terminology.md) | Sources, precedence, glossary |
+| [Progress](docs/PROGRESS.md) · [TODO](docs/TODO.md) | What is built and verified, and what is next |
 
-Read the game design first, then the decisions register. For implementation, follow the MVP roadmap and treat the technical document as a proposal until tested.
-
-## How to use this package
-
-- **Confirmed direction** means explicitly selected by the user in the conversation or current request.
-- **Proposed default** means a concrete working rule supplied to make the design buildable. It remains open to revision.
-- **Illustrative** means example content or tuning, not a production commitment.
-- **Open** means a decision still needs evidence or a user choice.
-
-Unless specifically identified as confirmed, mechanics, counts, numerical values, cast details beyond Paige, and implementation choices below are proposed defaults. The latest user direction takes precedence over earlier brainstorming. In particular, earlier activity-based skill suggestions do not override the later request for high-level, item-led growth.
-
-## First development objective
-
-Prove that leaving home is interesting because trusted survivors continue defending a real place. Build one small street before expanding into a full town. See [the milestone gates](docs/09-mvp-roadmap.md).
+Read the game design first, then the decisions register. Numbers in the design docs are proposed defaults unless marked confirmed; the design documents describe intended scope, while `PROGRESS.md` records what exists.
