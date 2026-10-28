@@ -1,4 +1,5 @@
 extends RefCounted
+const Restoration = preload("res://scripts/sim/restoration.gd")
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
@@ -209,7 +210,8 @@ func check_productive_workers_use_the_safe_route_instead_of_a_shorter_exposed_st
 	w.workshop.started = true
 	w.workshop.done = true
 	w.workshop.progress = float(w.balance.workshop_seconds)
-	w.workshop.armour_started = true
+	w.player.pos = Vector2(1080, 800)
+	Restoration.approve(w, "armour")
 	w.assign_survivor("mara", "garage")
 	for i: int in range(700):
 		w.step(0.05)
@@ -223,6 +225,10 @@ func check_productive_workers_use_the_safe_route_instead_of_a_shorter_exposed_st
 	w.properties.home.claimed = false
 	w.workshop.armour_done = false
 	w.workshop.armour_progress = 1.0
+	# Stage the same paid bench before completion to isolate connectivity.
+	w.orders.sites["restore:armour"].work_done = 1.0
+	w.orders.sites["restore:armour"].phase = "working"
+	w.orders.sites["restore:armour"].output_granted = false
 	w.working = true
 	w.player.pos = Vector2(1080, 800)
 	_advance(w, 1)

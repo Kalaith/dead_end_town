@@ -1,4 +1,5 @@
 extends RefCounted
+const Restoration = preload("res://scripts/sim/restoration.gd")
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
@@ -34,6 +35,8 @@ func check_shortage_slows_labour_and_a_connected_harvest_restores_work() -> Stri
 	var w: RefCounted = EquipmentChecks.prepared()
 	w.workshop.armour_done = false
 	w.workshop.armour_progress = 0.0
+	w.workshop.armour_started = false
+	Restoration.approve(w, "armour")
 	w.provisions.hungry = true
 	w.food = 0
 	w.working = true

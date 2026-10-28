@@ -1,4 +1,5 @@
 extends VBoxContainer
+const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 signal cancelled(socket: String)
 var rows: Dictionary = {}
@@ -21,7 +22,7 @@ func refresh(world: RefCounted) -> void:
 		if not rows.has(socket):
 			_create(socket)
 		var row: Dictionary = rows[socket]
-		var title: String = "Passage"
+		var title: String = WorkRecipes.definition(world.catalog, order.recipe).name
 		for d: Dictionary in world.catalog.passages:
 			if d.id == order.target:
 				title = d.name

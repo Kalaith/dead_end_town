@@ -1,4 +1,5 @@
 extends RefCounted
+const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 
 
@@ -25,10 +26,31 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 		var state: Dictionary = data.passages[id]
 		if state.started and not state.done and not ledger.sites.has("passage:" + id):
 			return false
+	for id: String in ["garden", "workshop", "armour"]:
+		var flags: Array = _restoration(data, id)
+		if flags[0] and not flags[1] and not ledger.sites.has("restore:" + id):
+			return false
 	return true
 
 
+static func _restoration(data: Dictionary, id: String) -> Array:
+	if id == "garden":
+		return [data.garden_started, data.garden_done, data.garden_progress]
+	if id == "workshop":
+		return [data.workshop.started, data.workshop.done, data.workshop.progress]
+	return [data.workshop.armour_started, data.workshop.armour_done, data.workshop.armour_progress]
+
+
 static func _valid_site(o: Dictionary, data: Dictionary, catalog: Dictionary) -> bool:
+	if o.recipe in ["garden", "workshop", "armour"]:
+		var flags: Array = _restoration(data, o.recipe)
+		if o.socket != "restore:" + str(o.recipe) or o.target != ("garden" if o.recipe == "garden" else "garage"):
+			return false
+		if o.phase in ["approved", "working", "blocked"]:
+			return flags[0] and not flags[1] and float(flags[2]) == float(o.work_done)
+		if o.phase == "completed":
+			return flags[1]
+		return not flags[0] and not flags[1]
 	if o.recipe == "bullets":
 		return o.socket == "munitions" and o.target == "munitions" and data.properties.munitions.looted
 	for d: Dictionary in catalog.passages:
@@ -50,22 +72,22 @@ static func _valid_site(o: Dictionary, data: Dictionary, catalog: Dictionary) ->
 static func _valid_order(o: Dictionary, catalog: Dictionary) -> bool:
 	if not Rules.integer_in(o.get("sequence"), 1, 1000000000) or o.get("id") != "work_%d" % int(o.sequence):
 		return false
-	if o.get("recipe") not in ["bullets", "passage"]:
+	if o.get("recipe") not in WorkRecipes.IDS:
 		return false
-	var production: bool = o.recipe == "bullets"
-	if o.get("kind") != ("production" if production else "construction"):
+	var recipe: Dictionary = WorkRecipes.recipe(catalog, o.recipe)
+	if o.get("kind") != recipe.kind:
 		return false
 	if o.get("phase") not in ["approved", "working", "blocked", "completed", "cancelled", "destroyed"]:
 		return false
-	if not _bundle(o.get("inputs"), "materials", int(catalog.firearm.material_cost if production else catalog.balance.passage_cost)):
+	if not _bundle(o.get("inputs"), "materials", int(recipe.inputs.materials)):
 		return false
 	if not o.get("outputs") is Dictionary:
 		return false
-	if production and not _bundle(o.outputs, "bullets", int(catalog.firearm.batch_bullets)):
+	if not recipe.outputs.is_empty() and not _bundle(o.outputs, "bullets", int(recipe.outputs.bullets)):
 		return false
-	if not production and not o.outputs.is_empty():
+	if recipe.outputs.is_empty() and not o.outputs.is_empty():
 		return false
-	if not Rules.finite(o.get("work_required")) or float(o.work_required) != float(catalog.firearm.craft_seconds if production else catalog.balance.passage_seconds):
+	if not Rules.finite(o.get("work_required")) or float(o.work_required) != float(recipe.seconds):
 		return false
 	if not Rules.finite(o.get("work_done")) or float(o.work_done) < 0 or float(o.work_done) > float(o.work_required):
 		return false

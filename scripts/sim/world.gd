@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Restoration = preload("res://scripts/sim/restoration.gd")
 const Production = preload("res://scripts/sim/production.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
@@ -252,12 +253,8 @@ func interact() -> void:
 			elif p.id == "garage":
 				Workshop.interact(self)
 			elif p.id == "garden" and not garden_started:
-				if materials < int(balance.garden_cost):
-					note("Garden needs %d materials." % int(balance.garden_cost))
-				else:
-					materials -= int(balance.garden_cost)
-					garden_started = true
-					note("Garden materials reserved once. Hold R to work, or assign a survivor with F.")
+				if Restoration.approve(self, "garden"):
+					note("Garden approved. Hold R or assign a worker.")
 			return
 
 
@@ -351,20 +348,12 @@ func _work(dt: float) -> void:
 				note(p.name + " / Gate repaired.")
 		break
 	if garden_started and not garden_done:
-		var site: Vector2 = Routes.point(definition("garden").site)
-		var executor: bool = player_at_worksite("garden")
-		for a: Dictionary in survivors:
-			if a.order in ["Build", "Garden"] and a.job == "garden" and float(a.hp) > 0 and a.pos.distance_to(site) < 40:
-				executor = true
-		if executor and not Combat.danger(self, site, 170) and connected("garden"):
-			garden_progress = minf(float(balance.work_seconds), garden_progress + dt)
-			if garden_progress >= float(balance.work_seconds):
-				garden_done = true
-				note("Food garden ready. Assign a gardener with F, or hold R here to tend it.")
-				for a: Dictionary in survivors:
-					if a.order == "Build" and a.job == "garden":
-						a.order = "Hold" if a.id == "ellis" else "Home"
-						a.job = ""
+		if Restoration.step(self, "garden", dt):
+			note("Garden ready. Hold R or assign a grower.")
+			for a: Dictionary in survivors:
+				if a.order == "Build" and a.job == "garden":
+					a.order = "Hold" if a.id == "ellis" else "Home"
+					a.job = ""
 	if garden_done and garden_tended() and safe_connected("garden") and not Combat.danger(self, Routes.point(definition("garden").site), 230):
 		harvest += dt
 		if harvest >= float(balance.food_seconds):

@@ -1,5 +1,6 @@
 extends RefCounted
 ## Pistol ownership, physical ray shots and one shared ammunition workbench.
+const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const Production = preload("res://scripts/sim/production.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
@@ -97,7 +98,7 @@ static func step(world: RefCounted, dt: float) -> void:
 		WorkOrders.block(world, "munitions", reason)
 		return
 	var rules: Dictionary = world.catalog.firearm
-	var recipe: Dictionary = {"id": "bullets", "kind": "production", "inputs": {"materials": int(rules.material_cost)}, "outputs": {"bullets": int(rules.batch_bullets)}, "seconds": float(rules.craft_seconds)}
+	var recipe: Dictionary = WorkRecipes.recipe(world.catalog, "bullets")
 	if not reserved(world):
 		world.production.reason = Production.start_reason(world)
 		if not world.production.reason.is_empty():

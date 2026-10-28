@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authored passages and protected street crossings, separate from ownership.
+const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
@@ -98,7 +99,7 @@ static func openings(world: RefCounted) -> Array[Rect2]:
 
 
 static func recipe(catalog: Dictionary) -> Dictionary:
-	return {"id": "passage", "kind": "construction", "inputs": {"materials": int(catalog.balance.passage_cost)}, "outputs": {}, "seconds": float(catalog.balance.passage_seconds)}
+	return WorkRecipes.recipe(catalog, "passage")
 
 
 static func cancel(world: RefCounted, socket: String) -> bool:

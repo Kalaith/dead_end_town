@@ -19,6 +19,13 @@ static func record(sequence: int, socket: String, target: String, recipe: Dictio
 
 
 static func approve(world: RefCounted, socket: String, target: String, recipe: Dictionary, stand: Vector2) -> bool:
+	if recipe.kind != "production":
+		var count: int = 0
+		for order: Dictionary in world.orders.sites.values():
+			if order.kind != "production" and pending(order):
+				count += 1
+		if count >= int(world.catalog.work.pending_limit):
+			return false
 	if pending(current(world, socket)):
 		return false
 	for stock: String in recipe.inputs:

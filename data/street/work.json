@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "work": {
+    "pending_limit": 8,
+    "recipes": [
+      {
+        "id": "bullets",
+        "name": "Bullets",
+        "source": "firearm",
+        "cost": "material_cost",
+        "seconds": "craft_seconds",
+        "output": "bullets",
+        "count": "batch_bullets",
+        "kind": "production"
+      },
+      {
+        "id": "passage",
+        "name": "Fenced passage",
+        "source": "balance",
+        "cost": "passage_cost",
+        "seconds": "passage_seconds",
+        "output": "",
+        "count": "",
+        "kind": "construction"
+      },
+      {
+        "id": "garden",
+        "name": "Garden beds",
+        "source": "balance",
+        "cost": "garden_cost",
+        "seconds": "work_seconds",
+        "output": "",
+        "count": "",
+        "kind": "construction"
+      },
+      {
+        "id": "workshop",
+        "name": "Workshop",
+        "source": "balance",
+        "cost": "workshop_cost",
+        "seconds": "workshop_seconds",
+        "output": "",
+        "count": "",
+        "kind": "construction"
+      },
+      {
+        "id": "armour",
+        "name": "Recovered gear",
+        "source": "balance",
+        "cost": "armour_cost",
+        "seconds": "armour_seconds",
+        "output": "",
+        "count": "",
+        "kind": "construction"
+      }
+    ]
+  }
+}

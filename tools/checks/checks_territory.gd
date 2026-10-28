@@ -1,4 +1,5 @@
 extends RefCounted
+const Restoration = preload("res://scripts/sim/restoration.gd")
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Territory = preload("res://scripts/sim/territory.gd")
@@ -40,8 +41,12 @@ func check_occupation_requires_entry_and_living_defenders_prevent_loss() -> Stri
 
 func check_loss_reload_reclaim_preserves_unique_rewards_and_work() -> String:
 	var w: RefCounted = _street()
-	w.garden_started = true
-	w.garden_progress = 5.0
+	w.player.pos = Vector2(1080, 350)
+	Restoration.approve(w, "garden")
+	w.working = true
+	Restoration.step(w, "garden", 5.0)
+	w.working = false
+	w.player.pos = Vector2(360, 350)
 	var supplies: int = w.materials
 	var z: Dictionary = w.zombies[0]
 	z.hp = 60.0

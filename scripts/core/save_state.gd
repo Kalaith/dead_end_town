@@ -1,4 +1,5 @@
 extends RefCounted
+const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Production = preload("res://scripts/sim/production.gd")
 const WorkOrderState = preload("res://scripts/core/work_order_state.gd")
@@ -23,7 +24,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 15
+const SCHEMA: int = 16
 ## Saved world fields that are dictionaries and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -211,6 +212,8 @@ func migrate(data: Dictionary) -> Dictionary:
 		return {}
 	var upgraded: Dictionary = data.duplicate(true)
 	var version: int = int(upgraded.schema_version)
+	if version == 15:
+		return _upgrade_restoration_orders(upgraded)
 	if version == 14:
 		return _upgrade_passage_orders(upgraded)
 	if version == 13:
@@ -441,6 +444,28 @@ func _upgrade_passage_orders(data: Dictionary) -> Dictionary:
 				return {}
 			data.orders.sequence = int(data.orders.sequence) + 1
 			var order: Dictionary = WorkOrders.record(int(data.orders.sequence), "passage:" + str(d.id), d.id, Neighbourhood.recipe(catalog), Routes.point(d.sites[0]))
+			order.work_done = float(s.progress)
+			data.orders.sites[order.socket] = order
+	data.schema_version = 15
+	return _upgrade_restoration_orders(data)
+
+
+func _upgrade_restoration_orders(data: Dictionary) -> Dictionary:
+	if not data.get("orders") is Dictionary or not data.orders.get("sites") is Dictionary or not Rules.integer_in(data.orders.get("sequence"), 0, 1000000000) or not data.get("workshop") is Dictionary:
+		return {}
+	for id: String in ["garden", "workshop", "armour"]:
+		var keys: Array = ["started", "done", "progress"] if id == "workshop" else ["armour_started", "armour_done", "armour_progress"]
+		var s: Dictionary = {"started": data.get("garden_started"), "done": data.get("garden_done"), "progress": data.get("garden_progress")} if id == "garden" else {"started": data.workshop.get(keys[0]), "done": data.workshop.get(keys[1]), "progress": data.workshop.get(keys[2])}
+		if not s.started is bool or not s.done is bool or not Rules.finite(s.progress):
+			return {}
+		if s.started and not s.done:
+			data.orders.sequence = int(data.orders.sequence) + 1
+			var site_id: String = "garden" if id == "garden" else "garage"
+			var stand := Vector2.ZERO
+			for p: Dictionary in catalog.properties:
+				if p.id == site_id:
+					stand = Routes.point(p.site)
+			var order: Dictionary = WorkOrders.record(int(data.orders.sequence), "restore:" + id, site_id, WorkRecipes.recipe(catalog, id), stand)
 			order.work_done = float(s.progress)
 			data.orders.sites[order.socket] = order
 	data.schema_version = SCHEMA

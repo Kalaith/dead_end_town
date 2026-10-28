@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authored content is validated before the simulation starts.
+const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const FirearmState = preload("res://scripts/core/firearm_state.gd")
 const SliceState = preload("res://scripts/core/slice_state.gd")
 const ProvisionsState = preload("res://scripts/core/provisions_state.gd")
@@ -11,7 +12,7 @@ const JsonIO = preload("res://addons/hatchery/core/json_io.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 
 ## Authored content is split by topic so no one file outgrows review. Add a file here when adding a topic.
-const FILES: Array[String] = ["street/firearm.json", "street/balance.json", "street/pressure.json", "street/roads.json", "street/equipment.json", "street/properties.json", "zombies.json"]
+const FILES: Array[String] = ["street/work.json", "street/firearm.json", "street/balance.json", "street/pressure.json", "street/roads.json", "street/equipment.json", "street/properties.json", "zombies.json"]
 
 
 static func read() -> Dictionary:
@@ -96,6 +97,7 @@ static func problems(data: Dictionary) -> Array[String]:
 	ProvisionsState.content(data, errors)
 	FirearmState.content(data, errors)
 	SliceState.content(data, errors)
+	WorkRecipes.content(data, errors)
 	return errors
 
 

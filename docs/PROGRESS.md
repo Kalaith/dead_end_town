@@ -398,3 +398,17 @@ Evidence:
 - All 106 simulation scenarios pass, including five new passage-ledger cases: player/AI/loss/reload takeover, downed final-tick footprint, exact once-only refund, concurrent sites/shared rate and schema-14 migration/projection rejection.
 - All 74 scripts load and the Godot 4.7.2 headless editor/import passes. The windowed work-order tour checks hidden undiscovered bullet UI and the actual cancellation button; inspected passage_work_board.png and passage_work_blocked.png at 1280x720.
 - These are staged automated/input/visual checks. Human playtesting, full-game balance and release verification remain outstanding. Next G01 work: remaining construction/restoration, bounded repairs, primary roles/resumption and queue policy. No toolkit edits, installations, exports or publication.
+
+
+## 28 October 2026: G01 garden and bench restoration orders
+
+Implementation:
+- Garden beds, workshop restoration and recovered gear now use prepaid shared orders with stable identities, deterministic player/worker leases, loss/danger blocks, cancellation returns and once-only completion. Their former state fields are validated projections for compatibility.
+- The existing paused Work page includes these projects without adding live HUD text or revealing unknown recipes. Cancelling releases invalid worker assignments; completed facilities/gear cannot be cancelled or approved again.
+- Added validated data/street/work.json recipe metadata, referencing existing authoritative balance costs/times rather than copying numbers. Its catalogue contains only implemented work. New construction approvals respect the designed eight-pending-project limit and require a standing player at a clear held site.
+- Schema 16 maps old unfinished garden/workshop/gear work into prepaid records without spending stock or removing completed improvements. Historical schemas 1–15 remain supported.
+
+Evidence:
+- All 111 simulation scenarios pass. Five new cases cover all three cancellation paths, loss/reclaim/final completion after reload, prepaid schema-15 migrations, board/remote/downed approval rejection, recipe validation and projection drift. Updated older fixtures that previously invented partial construction without a paid order; completed-fixture staging remains explicit.
+- All 77 scripts load and Godot 4.7.2 headless editor/import passes. Ran the work-order capture tour and standard ten-state construction/equipment tour at 1280x720; inspected restoration_work_board.png and the restored workshop/equipment states. The work-board cancellation button is exercised through its connected command.
+- Automated/staged evidence does not establish human feel or full-campaign balance. G01 road build/removal, bounded repairs and primary-role/queue resumption remain; full-game content and release gates remain incomplete. No toolkit edits, installations, exports or publication.

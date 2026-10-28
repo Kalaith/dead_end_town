@@ -1,4 +1,6 @@
 extends "res://addons/hatchery/testing/capture_runner.gd"
+const RestorationChecks = preload("res://tools/checks/checks_restoration.gd")
+const Restoration = preload("res://scripts/sim/restoration.gd")
 const Checks = preload("res://tools/checks/checks_passage_orders.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 
@@ -39,3 +41,19 @@ func tour() -> void:
 	game.view.queue_redraw()
 	await frames(3)
 	await shot("passage_work_blocked")
+
+	game.hud.menu_status.text = ""
+	game.world = RestorationChecks.prepared("workshop")
+	Restoration.step(game.world, "workshop", 4.0)
+	game.view.world = game.world
+	game.view.queue_redraw()
+	game.hud.refresh(game.world, true)
+	game.hud.show_section("Work")
+	await frames(3)
+	await shot("restoration_work_board")
+	stock = game.world.materials
+	game.hud.construction_menu.rows["restore:workshop"].cancel.pressed.emit()
+	if game.world.materials <= stock or game.world.workshop.started:
+		push_error("Restoration cancellation did not reach the simulation")
+		quit(1)
+		return
