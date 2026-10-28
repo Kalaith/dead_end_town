@@ -1,0 +1,16 @@
+{
+  "slug": "dead_end_town",
+  "display_name": "Dead End Town",
+  "description": "Reclaim a zombie-infested street with cooperative survivors in this work-in-progress greybox game.",
+  "godot_version": "4.7.2",
+  "executable": "DeadEndTown.exe",
+  "targets": [
+    "web",
+    "windows"
+  ],
+  "itch_target": "kalaith/dead-end-town",
+  "itch_channels": {
+    "html5": "html5",
+    "windows": "windows"
+  }
+}

@@ -2,7 +2,7 @@
 
 Reclaim a zombie-infested street, one property at a time, with a small group of survivors who work and fight together.
 
-**Status: full-town greybox expansion (28 October 2026).** The continuous street now has all 24 property sites across four districts. The original six sites have combat, territory, building, equipment, food and a slice finish; the hardware shop now adds a separate search, material cache and long spear. The clinic adds June’s rescue, restoration and treatment for people physically present. The greenhouse adds Oliver’s rescue, restoration and physical food production. The other 15 sites are development shells without rewards or encounters. The full campaign is still being built, and human playtesting remains partial. See [progress and verification](docs/PROGRESS.md) for exactly what has and has not been checked.
+**Status: full-town greybox expansion (28 October 2026).** The continuous street now has all 24 property sites across four districts. The original six sites have combat, territory, building, equipment, food and a slice finish; the hardware shop now adds a separate search, material cache and long spear. The clinic adds June’s rescue, restoration and treatment for people physically present. The greenhouse adds Oliver’s rescue, restoration and physical food production. The other 15 sites are development shells without rewards or encounters. Runners at hardware and greenhouse telegraph a committed lunge: sidestep its lane or interrupt it, then exploit the recovery. The full campaign is still being built, and human playtesting remains partial. See [progress and verification](docs/PROGRESS.md) for exactly what has and has not been checked.
 
 ## The game
 
@@ -75,6 +75,20 @@ Godot **4.7.2**, Compatibility renderer, desktop keyboard and mouse, 1280x720. N
 
 You can also open `project.godot` in the editor. Headless checks and the staged screenshot tour (written to `docs/verification/`) are listed in [AGENTS.md](AGENTS.md). Rules live in `scripts/sim/`, presentation in `scripts/presentation/`, content validation and saves in `scripts/core/`, and all balance and map data in `data/street/*.json` (zombie kinds in `data/zombies.json`). Project layout came from The Last Hearth, and shared tooling from `../godot_toolkit`; no gameplay was borrowed.
 
+## Production copy
+
+Play the current greybox at [webhatchery.au](https://webhatchery.au/games/dead_end_town/) or [download Windows](https://webhatchery.au/games/dead_end_town/dead_end_town_windows.zip). The published game is still in development; the full campaign remains unfinished.
+
+`publish.json` and `export_presets.cfg` configure Web and Windows release builds through the shared toolkit. JSON content is included recursively; development tools and documentation are excluded. FTP credentials and deployment roots remain in the external `D:\WebHatchery\.env` file.
+
+```powershell
+./publish.ps1 -BuildOnly
+# Only publish when explicitly requested:
+./publish.ps1 -Production -FTP -SkipBuild
+```
+
+The production destination is `/public_html/games/dead_end_town/`, with a local production copy under the configured `PRODUCTION_ROOT`. The publisher uploads the launcher last and records successful deployments in Project Roost. Never export from a checkout another chat is actively changing: use a fixed committed source snapshot.
+
 ## Documentation
 
 | Document | Purpose |
@@ -99,4 +113,4 @@ You can also open `project.godot` in the editor. Headless checks and the staged 
 | [Vehicle design](docs/18-vehicle.md) | Recoverable utility van, travel, recovery and save rules |
 | [Progress](docs/PROGRESS.md) · [TODO](docs/TODO.md) | What is built and verified, and what is next |
 
-The full game design targets 24 properties, eight zombie kinds and eight survivors plus the player, with a core campaign and a finite relief-signal ending. It is documentation for future implementation; the runtime currently has nine searchable properties within the full 24-site layout, including field treatment and Oliver’s greenhouse food loop. Later facilities and enemy behaviours remain in development. Design numbers are chosen starting values with validation gates, while `PROGRESS.md` records what exists and was actually checked.
+The full game design targets 24 properties, eight zombie kinds and eight survivors plus the player, with a core campaign and a finite relief-signal ending. It is documentation for future implementation; the runtime currently has nine searchable properties within the full 24-site layout, including field treatment and Oliver’s greenhouse food loop. Three enemy kinds are implemented, including Runner lunges; Screechers, noise, campaign scheduling and later facilities remain in development. Design numbers are chosen starting values with validation gates, while `PROGRESS.md` records what exists and was actually checked.

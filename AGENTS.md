@@ -10,7 +10,7 @@ Read `README.md`, `docs/01-game-design.md`, `docs/11-decisions-and-questions.md`
 - Verification commands: `--headless --path . --script res://tools/parse_all.gd`, `--headless --path . --script res://tools/sim_checks.gd`, and `--headless --editor --path . --quit`. Use the installed console executable in `C:/Program Files/Godot/`.
 - Run and inspect visual captures with `./Run.ps1 -GameArgs @('--script','res://tools/capture.gd','--','--size=1280x720','--no-save')`. Captures stage states and are not evidence of human playtesting.
 - `docs/PROGRESS.md` records implementation and evidence separately. The design documents describe intended scope, not completed features.
-- No pushing or publication without a user request. Publishing wrappers are prepared boilerplate; no deployment destination is configured.
+- No pushing or publication without a user request. Web and Windows publishing is configured for `/public_html/games/dead_end_town/` on webhatchery.au; credentials stay in the external environment file.
 
 ## Shared WebHatchery Godot standards
 
