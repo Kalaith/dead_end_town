@@ -36,7 +36,7 @@ static func executor(world: RefCounted, site_id: String) -> String:
 	var chosen: String = ""
 	var site: Vector2 = Routes.point(world.definition(site_id).site)
 	for a: Dictionary in world.survivors:
-		if a.order in ["Build", "Garden", "Workshop"] and a.job == site_id and float(a.hp) > 0 and a.pos.distance_to(site) < 40 and not a.activity.begins_with("Sheltering"):
+		if a.order in ["Build", "Garden", "Workshop"] and a.job == site_id and float(a.hp) > 0 and a.pos.distance_to(site) < 40 and not a.activity.begins_with("Sheltering") and a.duty.clear_left <= 0:
 			if chosen.is_empty() or str(a.id) < chosen:
 				chosen = a.id
 	return chosen
@@ -85,6 +85,5 @@ static func cancel(world: RefCounted, socket: String) -> bool:
 		world.workshop["armour_progress" if id == "armour" else "progress"] = 0.0
 	for a: Dictionary in world.survivors:
 		if a.job == target(id) and a.order in ["Build", "Garden", "Workshop"]:
-			a.order = "Hold" if a.id == "ellis" else "Home"
-			a.job = ""
+			world.finish_job(a, true)
 	return true

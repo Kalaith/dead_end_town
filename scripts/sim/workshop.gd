@@ -69,6 +69,5 @@ static func step(world: RefCounted, dt: float) -> void:
 	if Restoration.step(world, "armour" if armour else "workshop", dt):
 		world.note("Recovered gear ready." if armour else "Workshop ready. E restores the recovered gear.")
 		for a: Dictionary in world.survivors:
-			if a.order == "Build" and a.job == "garage":
-				a.order = "Hold" if a.id == "ellis" else "Home"
-				a.job = ""
+			if a.order in ["Build", "Workshop"] and a.job == "garage":
+				world.finish_job(a)

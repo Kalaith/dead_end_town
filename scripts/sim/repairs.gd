@@ -45,7 +45,7 @@ static func _worker(world: RefCounted, d: Dictionary, executor: String) -> bool:
 				return true
 		return false
 	for a: Dictionary in world.survivors:
-		if a.id != executor or float(a.hp) <= 0 or a.activity.begins_with("Sheltering"):
+		if a.id != executor or float(a.hp) <= 0 or a.activity.begins_with("Sheltering") or a.duty.clear_left > 0:
 			continue
 		var task: String = "Roadwork" if d.group == "road" else "Passage" if d.group == "passage" else "Repair"
 		if a.order != task or a.job != d.id:
@@ -154,8 +154,7 @@ static func cancel(world: RefCounted, socket: String) -> bool:
 	if not d.is_empty():
 		for a: Dictionary in world.survivors:
 			if a.job == d.id and a.order in ["Roadwork", "Passage", "Repair"]:
-				a.order = "Hold" if a.id == "ellis" else "Home"
-				a.job = ""
+				world.finish_job(a, true)
 	sync(world)
 	return true
 

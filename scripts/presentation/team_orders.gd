@@ -18,7 +18,9 @@ func refresh(world: RefCounted) -> void:
 			_create_row(a.id)
 		var row: Dictionary = rows[a.id]
 		var equipment: String = Equipment.description(world, a)
-		row.status.text = "%s / %d health / %s\n%s" % [a.name, int(a.hp), equipment, a.activity]
+		row.status.text = "%s / %d health / %s" % [a.name, int(a.hp), equipment]
+		if a.activity not in ["Ready", "Follow", "Hold", "Guard", "Home"]:
+			row.status.text += "\n" + str(a.activity)
 		var picker: OptionButton = row.picker
 		picker.disabled = float(a.hp) <= 0
 		if fresh or changed:
@@ -30,6 +32,12 @@ func refresh(world: RefCounted) -> void:
 				picker.set_item_disabled(index, not entry.reason.is_empty())
 				picker.get_popup().set_item_tooltip(index, entry.reason)
 		var current: String = Tasks.selected(world, a)
+		if a.duty.temporary:
+			var after: String = "Previous duty"
+			for entry: Dictionary in Tasks.options(world):
+				if entry.id == a.duty.return_task:
+					after = entry.label
+			row.status.text += "\nThen: " + after
 		for index: int in range(picker.item_count):
 			if picker.get_item_metadata(index) == current:
 				picker.select(index)

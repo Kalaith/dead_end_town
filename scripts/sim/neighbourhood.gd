@@ -112,8 +112,7 @@ static func cancel(world: RefCounted, socket: String) -> bool:
 	world.passages[id] = initial(world.catalog)[id]
 	for a: Dictionary in world.survivors:
 		if a.order == "Passage" and a.job == id:
-			a.order = "Hold" if a.id == "ellis" else "Home"
-			a.job = ""
+			world.finish_job(a, true)
 	world.note("Passage cancelled. Materials returned.")
 	return true
 
@@ -143,7 +142,7 @@ static func step(world: RefCounted, dt: float) -> void:
 		for a: Dictionary in world.survivors:
 			if executor == "you":
 				break
-			if a.order == "Passage" and a.job == d.id and float(a.hp) > 0 and not a.activity.begins_with("Sheltering"):
+			if a.order == "Passage" and a.job == d.id and float(a.hp) > 0 and not a.activity.begins_with("Sheltering") and a.duty.clear_left <= 0:
 				for site: Array in d.sites:
 					if a.pos.distance_to(Routes.point(site)) < 40 and (executor.is_empty() or str(a.id) < executor):
 						executor = a.id
@@ -159,8 +158,14 @@ static func step(world: RefCounted, dt: float) -> void:
 				s.hp = float(world.balance.gate_health)
 				world.rebuild_routes()
 				world.note("Passage ready. E opens the gate.")
+				for a: Dictionary in world.survivors:
+					if a.order == "Passage" and a.job == d.id:
+						world.finish_job(a)
 		elif float(s.hp) < float(world.balance.gate_health) or s.repair_reserved:
-			Repairs.step(world, "passage:" + str(d.id), executor, dt)
+			if Repairs.step(world, "passage:" + str(d.id), executor, dt):
+				for a: Dictionary in world.survivors:
+					if a.order == "Passage" and a.job == d.id:
+						world.finish_job(a)
 
 
 static func bump(world: RefCounted, z: Dictionary, intended: Vector2) -> bool:

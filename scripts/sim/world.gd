@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Jobs = preload("res://scripts/sim/jobs.gd")
 const Repairs = preload("res://scripts/sim/repairs.gd")
 const Restoration = preload("res://scripts/sim/restoration.gd")
 const Production = preload("res://scripts/sim/production.gd")
@@ -70,6 +71,7 @@ func _init(data: Dictionary) -> void:
 	survivors.append(actor("mara", "Mara", Routes.point(balance.mara_start), float(balance.survivor_health)))
 	survivors[0].order = "Guard"
 	survivors[0].anchor = survivors[0].pos
+	Jobs.initialise(survivors[0], "home")
 	for p: Dictionary in catalog.properties:
 		properties[p.id] = {"claimed": p.id == "home", "looted": p.id == "home", "open": p.id != "home", "occupation": 0.0, "gate_hp": float(balance.gate_health) * (float(balance.home_gate_start_factor) if p.id == "home" else 1.0)}
 		for spawn: Array in p.zombies:
@@ -116,6 +118,7 @@ func step(dt: float) -> void:
 	var travel: Vector2 = move_input * float(balance.player_speed) * Equipment.speed(self, player) * dt
 	player.pos = routes.move(player.pos, player.pos + travel, travel.length())
 	face_aim()
+	Jobs.step(self, dt)
 	Combat.step(self, dt)
 	Territory.step(self, dt)
 	Provisions.step(self, dt)
@@ -289,6 +292,7 @@ func claim(id: String) -> bool:
 	elif id == "library":
 		var paige: Dictionary = actor("paige", "Paige", Routes.point(definition(id).site) + Vector2(35, 0), float(balance.survivor_health))
 		paige.order = "Follow"
+		Jobs.initialise(paige, "home")
 		survivors.append(paige)
 		note("Paige rescued. 'Next time, I want to be the one holding the door.'")
 	else:
@@ -298,19 +302,15 @@ func claim(id: String) -> bool:
 
 func order(value: String) -> void:
 	for a: Dictionary in survivors:
-		if Firearms.civilian(a) and value in ["Engage", "Home", "Guard"]:
-			a.order = "Hold"
-			a.job = ""
-			a.anchor = Routes.point(balance.home_respawn) if value == "Home" else a.pos
-			continue
-		a.order = value
-		a.job = ""
-		a.anchor = a.pos if value == "Hold" else player.pos
-	note("Team order: " + value + ".")
+		if value == "Home":
+			Jobs.resume(self, a)
+		else:
+			assign_survivor(a.id, "hold" if a.id == "ellis" and value == "Engage" else value.to_lower(), false)
+	note("Team: " + value)
 
 
-func assign_survivor(id: String, task: String) -> bool:
-	return Tasks.assign(self, id, task)
+func assign_survivor(id: String, task: String, announce: bool = true) -> bool:
+	return Tasks.assign(self, id, task, announce)
 
 
 func assign_mara() -> void:
@@ -328,18 +328,23 @@ func assign_mara() -> void:
 
 func _work(dt: float) -> void:
 	for p: Dictionary in catalog.properties:
-		Repairs.block(self, "gate:" + str(p.id), "Need worker at site")
-	for p: Dictionary in catalog.properties:
-		if working and player.pos.distance_to(Routes.point(p.gate)) < 76:
-			Repairs.step(self, "gate:" + str(p.id), "you", dt)
-			break
+		var executor: String = "you" if working and player.pos.distance_to(Routes.point(p.gate)) < 76 else ""
+		for a: Dictionary in survivors:
+			if executor != "you" and a.order == "Repair" and a.job == p.id and float(a.hp) > 0 and a.pos.distance_to(Routes.point(p.gate)) < 40 and a.duty.clear_left <= 0:
+				if executor.is_empty() or str(a.id) < executor:
+					executor = a.id
+		if executor.is_empty():
+			Repairs.block(self, "gate:" + str(p.id), "Need worker at site")
+		elif Repairs.step(self, "gate:" + str(p.id), executor, dt):
+			for a: Dictionary in survivors:
+				if a.order == "Repair" and a.job == p.id:
+					Jobs.finish(self, a)
 	if garden_started and not garden_done:
 		if Restoration.step(self, "garden", dt):
 			note("Garden ready. Hold R or assign a grower.")
 			for a: Dictionary in survivors:
-				if a.order == "Build" and a.job == "garden":
-					a.order = "Hold" if a.id == "ellis" else "Home"
-					a.job = ""
+				if a.order in ["Build", "Garden"] and a.job == "garden":
+					Jobs.finish(self, a)
 	if garden_done and garden_tended() and safe_connected("garden") and not Combat.danger(self, Routes.point(definition("garden").site), 230):
 		harvest += dt
 		if harvest >= float(balance.food_seconds):
@@ -357,7 +362,7 @@ func garden_tended() -> bool:
 	if player_at_worksite("garden"):
 		return true
 	for a: Dictionary in survivors:
-		if a.order == "Garden" and float(a.hp) > 0 and a.pos.distance_to(site) < 40:
+		if a.order == "Garden" and float(a.hp) > 0 and a.duty.clear_left <= 0 and a.pos.distance_to(site) < 40:
 			return true
 	return false
 
@@ -369,3 +374,10 @@ func player_at_worksite(id: String) -> bool:
 		if player.pos.distance_to(Routes.point(p.gate)) < 76:
 			return false
 	return true
+
+
+func finish_job(a: Dictionary, cancelled: bool = false) -> void:
+	if cancelled:
+		Jobs.abort(self, a)
+	else:
+		Jobs.finish(self, a)

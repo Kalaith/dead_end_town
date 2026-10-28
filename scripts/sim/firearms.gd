@@ -1,5 +1,6 @@
 extends RefCounted
 ## Pistol ownership, physical ray shots and one shared ammunition workbench.
+const Jobs = preload("res://scripts/sim/jobs.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const Production = preload("res://scripts/sim/production.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
@@ -17,6 +18,7 @@ static func civilian(a: Dictionary) -> bool:
 static func rescue(world: RefCounted) -> void:
 	var a: Dictionary = world.actor("ellis", "Ellis", Routes.point(world.definition("residence").site) + Vector2(35, 0), float(world.balance.survivor_health))
 	a.order = "Follow"
+	Jobs.initialise(a, "hold")
 	world.survivors.append(a)
 	world.firearms.owned = true
 	world.firearms.bullets = int(world.catalog.firearm.gift_bullets)
@@ -85,7 +87,7 @@ static func step(world: RefCounted, dt: float) -> void:
 		reason = "Clear nearby threats"
 	var executor: String = ""
 	for a: Dictionary in world.survivors:
-		if a.order == "Ammo" and float(a.hp) > 0 and a.pos.distance_to(site) < 40 and not a.activity.begins_with("Sheltering"):
+		if a.order == "Ammo" and float(a.hp) > 0 and a.pos.distance_to(site) < 40 and not a.activity.begins_with("Sheltering") and a.duty.clear_left <= 0:
 			if executor.is_empty() or str(a.id) < executor:
 				executor = a.id
 	for z: Dictionary in world.zombies:

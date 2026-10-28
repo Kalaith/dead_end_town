@@ -155,6 +155,10 @@ static func post_guard(world: RefCounted) -> void:
 	chosen.job = ""
 	chosen.order = "Roadguard"
 	chosen.anchor = post
+	chosen.duty.role = "guard:" + str(d.id)
+	chosen.duty.anchor = [post.x, post.y]
+	chosen.duty.temporary = false
+	chosen.duty.return_task = ""
 	world.note("%s: %s" % [chosen.name, d.name])
 
 
@@ -172,7 +176,7 @@ static func step(world: RefCounted, dt: float) -> void:
 		for a: Dictionary in world.survivors:
 			if executor == "you":
 				break
-			if a.order == "Roadwork" and a.job == d.id and float(a.hp) > 0 and a.pos.distance_to(Routes.point(d.site)) < 40 and not a.activity.begins_with("Sheltering") and (executor.is_empty() or str(a.id) < executor):
+			if a.order == "Roadwork" and a.job == d.id and float(a.hp) > 0 and a.pos.distance_to(Routes.point(d.site)) < 40 and not a.activity.begins_with("Sheltering") and a.duty.clear_left <= 0 and (executor.is_empty() or str(a.id) < executor):
 				executor = a.id
 		if executor.is_empty():
 			WorkOrders.block(world, socket, "Need worker at site")
@@ -218,16 +222,14 @@ static func _repair(world: RefCounted, d: Dictionary, s: Dictionary, executor: S
 static func _release(world: RefCounted, id: String, remove_guard: bool = false) -> void:
 	for a: Dictionary in world.survivors:
 		if a.order == "Roadwork" and a.job == id:
-			a.order = "Hold" if a.id == "ellis" else "Home"
-			a.job = ""
+			world.finish_job(a, true)
 	if not remove_guard:
 		return
 	for d: Dictionary in world.catalog.barricades:
 		if d.id == id:
 			for a: Dictionary in world.survivors:
 				if a.order == "Roadguard" and a.anchor.distance_to(guard_post(world, d)) < 10:
-					a.order = "Hold" if a.id == "ellis" else "Home"
-					a.job = ""
+					world.assign_survivor(a.id, "hold" if a.id == "ellis" else "home", false)
 
 
 static func intercept(world: RefCounted, z: Dictionary, target: Vector2, dt: float) -> bool:

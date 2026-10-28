@@ -108,3 +108,15 @@ static func cancel(world: RefCounted, socket: String, destroyed: bool = false) -
 	order.executor = ""
 	order.blocked_reason = ""
 	return true
+
+
+static func prioritise(world: RefCounted, socket: String, value: bool) -> bool:
+	var order: Dictionary = current(world, socket)
+	if not pending(order) or order.kind == "production":
+		return false
+	if value:
+		for other: Dictionary in world.orders.sites.values():
+			if other.target == order.target:
+				other.priority = false
+	order.priority = value
+	return true

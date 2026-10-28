@@ -3,6 +3,7 @@ const Repairs = preload("res://scripts/sim/repairs.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
+signal prioritised(socket: String, value: bool)
 signal cancelled(socket: String)
 var rows: Dictionary = {}
 
@@ -24,6 +25,7 @@ func refresh(world: RefCounted) -> void:
 		if not rows.has(socket):
 			_create(socket)
 		var row: Dictionary = rows[socket]
+		row.priority.set_pressed_no_signal(bool(order.priority))
 		var title: String = WorkRecipes.definition(world.catalog, order.recipe).name
 		if order.recipe in Repairs.IDS:
 			title += " · " + str(Repairs.describe(world.catalog, order.target).name)
@@ -59,7 +61,15 @@ func _create(socket: String) -> void:
 	var label := Label.new()
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	container.add_child(label)
+	var actions := HBoxContainer.new()
+	container.add_child(actions)
+	var priority := Button.new()
+	priority.text = "Priority"
+	priority.toggle_mode = true
+	priority.toggled.connect(func(value: bool) -> void: prioritised.emit(socket, value))
+	actions.add_child(priority)
 	var cancel := Button.new()
+	cancel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	cancel.pressed.connect(func() -> void: cancelled.emit(socket))
-	container.add_child(cancel)
-	rows[socket] = {"container": container, "label": label, "cancel": cancel}
+	actions.add_child(cancel)
+	rows[socket] = {"container": container, "label": label, "cancel": cancel, "priority": priority}

@@ -1,5 +1,6 @@
 extends RefCounted
 ## Named survivor orders share physical work sites, never a global worker slot.
+const Jobs = preload("res://scripts/sim/jobs.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
@@ -18,6 +19,8 @@ static func options(world: RefCounted, a: Dictionary = {}) -> Array[Dictionary]:
 		{"id": "follow", "label": "Follow me"},
 		{"id": "hold", "label": "Hold current position"},
 		{"id": "engage", "label": "Engage nearby threats"},
+		{"id": "builder", "label": "Builder: approved projects"},
+		{"id": "general", "label": "General worker"},
 	]
 	if world.properties.munitions.claimed:
 		result.append({"id": "ammo", "label": "Craft bullets (%d materials / %d bullets)" % [int(world.catalog.firearm.material_cost), int(world.catalog.firearm.batch_bullets)]})
@@ -25,6 +28,9 @@ static func options(world: RefCounted, a: Dictionary = {}) -> Array[Dictionary]:
 		result.append({"id": "garden", "label": "Garden: build and tend"})
 	if world.properties.garage.claimed:
 		result.append({"id": "garage", "label": "Workshop: build and restore"})
+	for p: Dictionary in world.catalog.properties:
+		if world.properties[p.id].looted and float(world.properties[p.id].gate_hp) < float(world.balance.gate_health):
+			result.append({"id": "repair:" + str(p.id), "label": "Repair: " + str(p.name)})
 	for d: Dictionary in world.catalog.barricades:
 		var s: Dictionary = world.roadworks[d.id]
 		if s.phase == "empty":
@@ -45,7 +51,7 @@ static func unavailable(world: RefCounted, task: String, a: Dictionary = {}) -> 
 	if not a.is_empty() and Firearms.civilian(a) and (task in ["home", "engage"] or task.begins_with("guard:")):
 		return "Ellis cannot fight or take a guard role"
 	match task:
-		"home", "follow", "hold", "engage":
+		"home", "follow", "hold", "engage", "builder", "general":
 			return ""
 		"ammo":
 			return "Claim the ammunition workshop first" if not world.properties.munitions.claimed else ""
@@ -59,26 +65,36 @@ static func unavailable(world: RefCounted, task: String, a: Dictionary = {}) -> 
 			return "Approve work here first" if s.phase == "empty" or (s.phase == "ready" and float(s.hp) >= float(world.balance.barricade_health)) else ""
 		if task == "guard:" + d.id:
 			return "Build this barricade first" if not Roadworks.active(world.roadworks[d.id]) else ""
+	if task.begins_with("repair:"):
+		var id: String = task.trim_prefix("repair:")
+		return "Reclaim site" if not world.properties.has(id) or not world.properties[id].claimed else ""
 	if task.begins_with("passage:"):
 		var id: String = task.trim_prefix("passage:")
 		return "Approve passage here first" if not world.passages.has(id) or not world.passages[id].started else ""
 	return "Unknown assignment"
 
 
-static func assign(world: RefCounted, id: String, task: String) -> bool:
+static func assign(world: RefCounted, id: String, task: String, announce: bool = true) -> bool:
 	var a: Dictionary = person(world, id)
 	if a.is_empty():
-		world.note("That survivor has not joined the team.")
+		if announce:
+			world.note("That survivor has not joined the team.")
 		return false
 	if float(a.hp) <= 0:
-		world.note("Recover %s at home before assigning work." % a.name)
+		if announce:
+			world.note("Recover %s at home before assigning work." % a.name)
 		return false
 	var reason: String = unavailable(world, task, a)
 	if not reason.is_empty():
-		world.note(reason + ".")
+		if announce:
+			world.note(reason + ".")
 		return false
+	Jobs.remember(world, a, task)
 	a.job = ""
 	match task:
+		"builder", "general":
+			a.order = "Idle"
+			a.anchor = a.pos
 		"ammo":
 			a.order = "Ammo"
 			a.job = "munitions"
@@ -93,6 +109,10 @@ static func assign(world: RefCounted, id: String, task: String) -> bool:
 			a.order = task.capitalize()
 			a.anchor = a.pos if task == "hold" else world.player.pos
 		_:
+			if task.begins_with("repair:"):
+				a.order = "Repair"
+				a.job = task.trim_prefix("repair:")
+				a.anchor = Routes.point(world.definition(a.job).gate)
 			if task.begins_with("passage:"):
 				a.order = "Passage"
 				a.job = task.trim_prefix("passage:")
@@ -110,29 +130,15 @@ static func assign(world: RefCounted, id: String, task: String) -> bool:
 					a.order = "Roadguard"
 					a.anchor = Roadworks.guard_post(world, d)
 	a.activity = "Heading to " + label(world, a)
-	world.note("%s: %s" % [a.name, label(world, a)])
+	if not Jobs.temporary(task) and task not in ["follow", "hold", "engage"]:
+		a.duty.anchor = [a.anchor.x, a.anchor.y]
+	if announce:
+		world.note("%s: %s" % [a.name, label(world, a)])
 	return true
 
 
 static func selected(world: RefCounted, a: Dictionary) -> String:
-	match a.order:
-		"Ammo":
-			return "ammo"
-		"Garden":
-			return "garden"
-		"Workshop", "Build":
-			return a.job
-		"Passage":
-			return "passage:" + a.job
-		"Roadwork":
-			return "work:" + a.job
-		"Roadguard":
-			for d: Dictionary in world.catalog.barricades:
-				if a.anchor.distance_to(Roadworks.guard_post(world, d)) < 10:
-					return "guard:" + d.id
-		"Follow", "Hold", "Engage":
-			return a.order.to_lower()
-	return "home"
+	return Jobs.current(world.catalog, a)
 
 
 static func label(world: RefCounted, a: Dictionary) -> String:

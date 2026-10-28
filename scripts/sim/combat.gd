@@ -66,6 +66,7 @@ static func step(world: RefCounted, dt: float) -> void:
 
 
 static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
+	var previous: String = a.activity
 	var anchor: Vector2 = a.anchor
 	match a.order:
 		"Guard", "Home":
@@ -101,7 +102,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.cooldown = float(Equipment.stats(world, a).cooldown)
 				a.activity = "Holding the barricade"
 				return
-	if (a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Ammo"] and danger(world, anchor, 170)) or (Firearms.civilian(a) and danger(world, a.pos, 170)):
+	if (a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo"] and (danger(world, anchor, 170) or a.duty.clear_left > 0)) or (Firearms.civilian(a) and danger(world, a.pos, 170)):
 		anchor = Routes.point(world.balance.home_respawn)
 		a.activity = "Sheltering - work preserved"
 	else:
@@ -126,6 +127,9 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.activity = "Passage build/repair"
 			"Roadwork":
 				a.activity = "Road defence work"
+	if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo"] and a.duty.retry > 0 and not a.activity.begins_with("Sheltering"):
+		a.activity = previous
+		return
 	var productive: bool = (a.order == "Garden" and world.garden_done) or (a.order == "Workshop" and world.workshop.done) or a.order == "Ammo"
 	if productive and not a.activity.begins_with("Sheltering"):
 		if not world.safe_connected(a.job):
@@ -136,6 +140,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 			var next: Vector2 = anchor if world.routes.safe_travel_clear(a.pos, anchor, areas) else world.routes.safe_waypoint(a.pos, anchor, areas)
 			if next.is_equal_approx(a.pos):
 				a.activity = "No safe work route - bring this person inside"
+				a.duty.retry = float(world.balance.work_retry_seconds)
 				return
 			_walk(world, a, next, dt, _survivor_speed(world, a))
 		return
@@ -144,6 +149,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 		_walk(world, a, anchor, dt, _survivor_speed(world, a))
 		if old.is_equal_approx(a.pos) and not a.activity.begins_with("Sheltering"):
 			a.activity = "Route blocked - check gate"
+			a.duty.retry = float(world.balance.work_retry_seconds)
 	elif a.order == "Home":
 		a.order = "Guard"
 		a.activity = "Guard"

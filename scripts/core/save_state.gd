@@ -1,4 +1,5 @@
 extends RefCounted
+const JobState = preload("res://scripts/core/job_state.gd")
 const RepairState = preload("res://scripts/core/repair_state.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
@@ -25,7 +26,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 18
+const SCHEMA: int = 19
 ## Saved world fields that are dictionaries and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -180,7 +181,7 @@ func valid(data: Dictionary) -> bool:
 		return false
 	if data.player.id != "you":
 		return false
-	return WorkOrderState.valid(data, catalog) and FirearmState.valid(data, catalog) and PressureState.valid(data, catalog) and NeighbourhoodState.valid(data, catalog) and EquipmentState.valid(data) and ProvisionsState.valid(data, catalog) and SliceState.valid(data, catalog)
+	return JobState.valid(data, catalog) and WorkOrderState.valid(data, catalog) and FirearmState.valid(data, catalog) and PressureState.valid(data, catalog) and NeighbourhoodState.valid(data, catalog) and EquipmentState.valid(data) and ProvisionsState.valid(data, catalog) and SliceState.valid(data, catalog)
 
 
 func _valid_actor(a: Variant, max_health: float) -> bool:
@@ -191,7 +192,7 @@ func _valid_actor(a: Variant, max_health: float) -> bool:
 	for key: String in ["id", "name", "activity"]:
 		if not Rules.nonempty(a.get(key)):
 			return false
-	if a.get("order") not in ["Guard", "Follow", "Hold", "Engage", "Home", "Build", "Roadwork", "Roadguard", "Garden", "Workshop", "Passage", "Ammo"]:
+	if a.get("order") not in ["Guard", "Follow", "Hold", "Engage", "Home", "Build", "Roadwork", "Roadguard", "Garden", "Workshop", "Passage", "Ammo", "Idle", "Repair"]:
 		return false
 	for key: String in VECTOR_KEYS:
 		if not Rules.is_vec2(a.get(key)):
@@ -213,6 +214,8 @@ func migrate(data: Dictionary) -> Dictionary:
 		return {}
 	var upgraded: Dictionary = data.duplicate(true)
 	var version: int = int(upgraded.schema_version)
+	if version == 18:
+		return _upgrade_jobs(upgraded)
 	if version == 17:
 		return _upgrade_repairs(upgraded)
 	if version == 16:
@@ -287,6 +290,8 @@ func _valid_workshop(data: Dictionary) -> bool:
 
 func _valid_task(a: Dictionary, data: Dictionary) -> bool:
 	match a.order:
+		"Repair":
+			return data.properties.has(a.job) and data.properties[a.job].looted
 		"Ammo":
 			return a.job == "munitions" and data.properties.munitions.looted
 		"Garden":
@@ -498,6 +503,13 @@ func _upgrade_road_orders(data: Dictionary) -> Dictionary:
 
 func _upgrade_repairs(data: Dictionary) -> Dictionary:
 	if not RepairState.migrate(data, catalog):
+		return {}
+	data.schema_version = 18
+	return _upgrade_jobs(data)
+
+
+func _upgrade_jobs(data: Dictionary) -> Dictionary:
+	if not JobState.migrate(data, catalog):
 		return {}
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

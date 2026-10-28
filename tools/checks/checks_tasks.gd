@@ -128,7 +128,8 @@ func check_threats_pause_one_job_and_both_people_can_swap_roles() -> String:
 	if float(w.workshop.progress) != 0 or w.garden_progress <= 0:
 		return "Workshop danger stalled the other job or allowed unsafe work."
 	z.hp = 0.0
-	_advance(w, 6.0)
+	# Five clear seconds plus the real journey back from shelter.
+	_advance(w, 16.0)
 	if float(w.workshop.progress) <= 0 or w.survivors[1].order != "Workshop":
 		return "Workshop role failed to resume after sheltering."
 	var stock: int = w.materials

@@ -1,4 +1,5 @@
 extends Node2D
+const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Repairs = preload("res://scripts/sim/repairs.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const Restoration = preload("res://scripts/sim/restoration.gd")
@@ -48,6 +49,7 @@ func _ready() -> void:
 	hud.production_requested.connect(configure_production)
 	hud.production_cancelled.connect(cancel_production)
 	hud.work_cancelled.connect(cancel_work)
+	hud.work_prioritised.connect(prioritise_work)
 	hud.assignment_requested.connect(assign_survivor)
 	hud.equipment_requested.connect(equip)
 	hud.show_menu(true)
@@ -173,8 +175,8 @@ func command(value: String) -> void:
 
 
 func assign_survivor(id: String, task: String) -> void:
-	world.assign_survivor(id, task)
-	hud.menu_status.text = world.messages.back()
+	var okay: bool = world.assign_survivor(id, task)
+	hud.menu_status.text = "" if okay else world.messages.back()
 	hud.refresh(world, paused)
 
 
@@ -199,4 +201,10 @@ func cancel_production() -> void:
 func cancel_work(socket: String) -> void:
 	if Neighbourhood.cancel(world, socket) or Restoration.cancel(world, socket) or Roadworks.cancel(world, socket) or Repairs.cancel(world, socket):
 		hud.menu_status.text = "Work cancelled"
+		hud.refresh(world, paused)
+
+
+func prioritise_work(socket: String, value: bool) -> void:
+	if WorkOrders.prioritise(world, socket, value):
+		hud.menu_status.text = ""
 		hud.refresh(world, paused)
