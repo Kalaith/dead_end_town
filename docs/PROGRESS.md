@@ -503,3 +503,10 @@ Evidence:
 - Selected known sites now have a compact physical-layout preview beside their route details. It reads current collision walls, passage openings, gates, barrier footprints and gate damage. It reveals no unknown parcels, enemies or rewards, and uses no additional labels.
 - The map and work-board windowed tours pass their pause/world-snapshot/selection assertions; inspected the updated work_location.png at 1280x720. All 96 scripts load and headless editor/import passes. The prior 137-scenario simulation result remains applicable: this slice changes presentation only.
 - G02's geometry, discovery, overview and board access are implemented. Human navigation usability remains unverified; new district content and the rest of the full game remain incomplete.
+
+
+## 28 October 2026: shared named-survivor rescue records
+
+- Mara's start and Paige/Ellis recruitment now use validated authored survivor records and one creation path. Searches can create each person once; repeating Ellis's rescue cannot replace spent ammunition or grant another pistol gift. Existing orders, default duties, positions and rescue lines remain intact.
+- Save roster validation derives expected people from implemented rescue sites; unique equipment owners derive from the validated recruited roster. This removes the fixed three-person assumptions before Market Row rescues, without adding future people or rewards.
+- All existing 137 scenarios pass after the change; two additional roster cases pass for discovery/gift idempotency, JSON reload, unknown/duplicate people and Ellis's starting duty. All 99 scripts load; headless editor/import passes. No visual change; preceding captures remain applicable. New rescues, paused introductions and Market Row content remain next.

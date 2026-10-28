@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "survivors": [
+    {
+      "id": "mara",
+      "name": "Mara",
+      "site": "home",
+      "order": "Guard",
+      "duty": "home",
+      "line": "",
+      "offset": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "paige",
+      "name": "Paige",
+      "site": "library",
+      "order": "Follow",
+      "duty": "home",
+      "line": "Paige rescued. 'Next time, I want to be the one holding the door.'",
+      "offset": [
+        35,
+        0
+      ]
+    },
+    {
+      "id": "ellis",
+      "name": "Ellis",
+      "site": "residence",
+      "order": "Follow",
+      "duty": "hold",
+      "line": "Ellis rescued: 'Take my pistol and six bullets. I can work, but I can't fight or guard.' Right click to shoot; left click still swings.",
+      "offset": [
+        35,
+        0
+      ]
+    }
+  ]
+}

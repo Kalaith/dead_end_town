@@ -27,11 +27,9 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 static func valid(data: Dictionary) -> bool:
 	if not data.get("equipment") is Dictionary or data.equipment.size() != 4:
 		return false
-	var wearers: Array[String] = ["", "you", "mara"]
-	if data.properties.library.looted:
-		wearers.append("paige")
-	if data.properties.residence.looted:
-		wearers.append("ellis")
+	var wearers: Array[String] = ["", "you"]
+	for a: Dictionary in data.survivors:
+		wearers.append(a.id)
 	for id: String in ["crowbar", "sword", "iron", "shield"]:
 		if not data.equipment.get(id) is String or not wearers.has(data.equipment[id]):
 			return false

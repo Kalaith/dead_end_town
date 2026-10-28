@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Roster = preload("res://scripts/sim/roster.gd")
 const Exploration = preload("res://scripts/sim/exploration.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
 const Repairs = preload("res://scripts/sim/repairs.gd")
@@ -70,10 +71,7 @@ func _init(data: Dictionary) -> void:
 	materials = int(balance.starting_materials)
 	food = int(balance.starting_food)
 	player = actor("you", "You", Routes.point(balance.player_start), float(balance.player_health))
-	survivors.append(actor("mara", "Mara", Routes.point(balance.mara_start), float(balance.survivor_health)))
-	survivors[0].order = "Guard"
-	survivors[0].anchor = survivors[0].pos
-	Jobs.initialise(survivors[0], "home")
+	Roster.start(self)
 	for p: Dictionary in catalog.properties:
 		properties[p.id] = {"claimed": p.id == "home", "looted": p.id == "home", "open": p.id != "home", "occupation": 0.0, "gate_hp": float(balance.gate_health) * (float(balance.home_gate_start_factor) if p.id == "home" else 1.0)}
 		for spawn: Array in p.zombies:
@@ -299,11 +297,7 @@ func claim(id: String) -> bool:
 	elif id == "munitions":
 		note("Ammunition workshop unlocked. F assigns a worker: %d materials makes %d bullets in %ds." % [int(catalog.firearm.material_cost), int(catalog.firearm.batch_bullets), int(catalog.firearm.craft_seconds)])
 	elif id == "library":
-		var paige: Dictionary = actor("paige", "Paige", Routes.point(definition(id).site) + Vector2(35, 0), float(balance.survivor_health))
-		paige.order = "Follow"
-		Jobs.initialise(paige, "home")
-		survivors.append(paige)
-		note("Paige rescued. 'Next time, I want to be the one holding the door.'")
+		Roster.recruit(self, "paige")
 	else:
 		note("Garden house secured. Start the food garden at its porch with E.")
 	return true

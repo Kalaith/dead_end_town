@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authored content is validated before the simulation starts.
+const RosterState = preload("res://scripts/core/roster_state.gd")
 const TownContent = preload("res://scripts/core/town_content.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const FirearmState = preload("res://scripts/core/firearm_state.gd")
@@ -13,7 +14,7 @@ const JsonIO = preload("res://addons/hatchery/core/json_io.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 
 ## Authored content is split by topic so no one file outgrows review. Add a file here when adding a topic.
-const FILES: Array[String] = ["street/town.json", "street/work.json", "street/firearm.json", "street/balance.json", "street/pressure.json", "street/roads.json", "street/equipment.json", "street/properties.json", "zombies.json", "street/properties_market.json", "street/properties_civic.json", "street/properties_works.json", "street/roads_hearth_east.json", "street/roads_market.json", "street/roads_civic.json", "street/roads_works.json", "street/passages_market.json", "street/passages_civic.json", "street/passages_works.json"]
+const FILES: Array[String] = ["street/survivors.json", "street/town.json", "street/work.json", "street/firearm.json", "street/balance.json", "street/pressure.json", "street/roads.json", "street/equipment.json", "street/properties.json", "zombies.json", "street/properties_market.json", "street/properties_civic.json", "street/properties_works.json", "street/roads_hearth_east.json", "street/roads_market.json", "street/roads_civic.json", "street/roads_works.json", "street/passages_market.json", "street/passages_civic.json", "street/passages_works.json"]
 
 
 static func read() -> Dictionary:
@@ -102,6 +103,7 @@ static func problems(data: Dictionary) -> Array[String]:
 			for pos: Variant in p[key]:
 				if not Rules.is_vec2(pos):
 					errors.append("Invalid zombie position.")
+	RosterState.content(data, errors)
 	TownContent.content(data, errors)
 	PressureState.content(data, errors)
 	RoadState.content(data, errors)

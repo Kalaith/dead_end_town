@@ -1,6 +1,6 @@
 extends RefCounted
 ## Pistol ownership, physical ray shots and one shared ammunition workbench.
-const Jobs = preload("res://scripts/sim/jobs.gd")
+const Roster = preload("res://scripts/sim/roster.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const Production = preload("res://scripts/sim/production.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
@@ -16,14 +16,11 @@ static func civilian(a: Dictionary) -> bool:
 
 
 static func rescue(world: RefCounted) -> void:
-	var a: Dictionary = world.actor("ellis", "Ellis", Routes.point(world.definition("residence").site) + Vector2(35, 0), float(world.balance.survivor_health))
-	a.order = "Follow"
-	Jobs.initialise(a, "hold")
-	a.duty.anchor = world.balance.home_respawn.duplicate()
-	world.survivors.append(a)
+	if not Roster.recruit(world, "ellis"):
+		return
 	world.firearms.owned = true
 	world.firearms.bullets = int(world.catalog.firearm.gift_bullets)
-	world.note("Ellis rescued: 'Take my pistol and six bullets. I can work, but I can't fight or guard.' Right click to shoot; left click still swings.")
+	# Rescue dialogue comes from the authored roster.
 
 
 static func shoot(world: RefCounted) -> bool:

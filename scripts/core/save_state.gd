@@ -1,4 +1,5 @@
 extends RefCounted
+const RosterState = preload("res://scripts/core/roster_state.gd")
 const TownState = preload("res://scripts/core/town_state.gd")
 const JobState = preload("res://scripts/core/job_state.gd")
 const RepairState = preload("res://scripts/core/repair_state.gd")
@@ -155,17 +156,7 @@ func valid(data: Dictionary) -> bool:
 			return false
 		if z.has("kind") and (not z.kind is String or not catalog.zombies.types.has(z.kind) or float(z.hp) > ZombieTypes.health(catalog, z.kind)):
 			return false
-	var expected: Array[String] = ["mara"]
-	if data.properties.library.looted:
-		expected.append("paige")
-	if data.properties.residence.looted:
-		expected.append("ellis")
-	var actual: Array[String] = []
-	for a: Dictionary in data.survivors:
-		actual.append(a.id)
-	expected.sort()
-	actual.sort()
-	if actual != expected:
+	if not RosterState.valid(data, catalog):
 		return false
 	if float(data.garden_progress) > float(catalog.balance.work_seconds) or (data.garden_done and not data.garden_started):
 		return false
