@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Production = preload("res://scripts/sim/production.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
 const Salvage = preload("res://scripts/sim/salvage.gd")
@@ -15,6 +16,7 @@ const Combat = preload("res://scripts/sim/combat.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
+var production: Dictionary
 var orders: Dictionary = WorkOrders.initial()
 var firearms: Dictionary = Firearms.initial()
 var shot: Dictionary = {"from": Vector2.ZERO, "to": Vector2.ZERO, "left": 0.0}
@@ -55,6 +57,7 @@ var roadworks: Dictionary
 func _init(data: Dictionary) -> void:
 	catalog = data
 	balance = data.balance
+	production = Production.initial(data)
 	roam_rng.seed = int(balance.roam_seed)
 	passages = Neighbourhood.initial(data)
 	roadworks = Roadworks.initial(data)

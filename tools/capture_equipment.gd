@@ -21,7 +21,8 @@ func tour() -> void:
 		return
 	game.command("team")
 	await frames(3)
-	game.hud.menu.get_child(0).scroll_vertical = 500
+	game.hud.show_section("Loadouts")
+	game.hud.menu.get_child(0).scroll_vertical = 0
 	await frames(5)
 	await shot("equipment_choices")
 	game.world.survivors[0].pos = Vector2(1030, 790)

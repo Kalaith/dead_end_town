@@ -369,3 +369,17 @@ Evidence:
 - All 96 simulation scenarios and all 67 script loads pass; headless Godot editor/import passes. No combat or economy values changed.
 - Refreshed the standard ten-state tour and four firearm states at 1280x720. Inspected home, street_attack, bullet_workshop and planning; recaptured and inspected home after removing unnecessary full-health recovery text. Verified the existing staged shooting and assignment input tour.
 - Captures are staged, not human usability/playtesting acceptance. Remaining paused-screen simplification, full-game implementation and accessibility settings are future work.
+
+
+## 28 October 2026: G01 bounded production and focused pause pages
+
+Implementation:
+- Bullet bench now starts only after explicit one-batch/repeat choice, stops at a chosen stock target and keeps a configurable Materials reserve (default six). Stopping/lowering target never discards an already committed batch. Cancellation shows and pays its exact remaining return once. Discovery does not enable automatic spending.
+- Productive bullet workers now require and physically use the protected home-route network, consistent with the full-game facility contract. Lost routes/danger preserve bundles; the paused production page reports the block. The older bullet fixture now stages completed protected routes explicitly, and the physical-arrival scenario starts in a connected yard rather than on the exposed east road.
+- Paused Street, Team, Work, Loadouts, Town and Help pages replace the single long information column. F selects Team; J selects discovered bullet Work. Work exposes available stock, committed inputs, pending output and one relevant block. The live HUD receives no extra text.
+- Save schema 14 adds policy/targets/reserve. Schema 13 and earlier retain partial work/stocks; an existing Ammo assignment becomes bounded repeat-to-24. No completed facility is rebilled.
+
+Evidence:
+- All 101 simulation scenarios pass. Five production cases cover once/repeat/resume, mid-batch target/stop, reserve/spend/cancellation, unsafe-route reload/resume, discovery and schema-13 migration/invalid policies. Schema-12 partial-batch and lower historical fixtures still pass.
+- All 71 scripts load; Godot 4.7.2 headless editor/import passes. Windowed production capture exercises the connected mode/target controls and asserts stopped output at target. Inspected work_board.png, work_target_met.png and the simplified planning.png at 1280x720. Refreshed firearm and equipment captures for the separated pages.
+- This remains staged simulation/input/visual verification, not human balance or usability acceptance. G01 construction/repair migration and primary-role resumption remain incomplete; full campaign and release work remain ahead. No toolkit change, installation, export or publication.

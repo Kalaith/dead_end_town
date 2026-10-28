@@ -15,7 +15,7 @@ Everything happens in one continuous top-down world, and everyone stays active o
 - **Defend.** Zombies wander until someone comes within about 240 pixels, then head for the nearest person. They bite on contact and break gates and barricades they bump into. Raids arrive from the map edges and grow with your territory, and a warning tells you which side. If zombies hold a yard with nobody standing in it for eight seconds, you lose it, home included. Clear them and reclaim.
 - **Build.** Barricade the road, fence passages between yards, repair gates, tend a garden, restore a workshop. You approve each project at its site with **E** and spend materials once. After that you can hold **R** to work, or give the job to a survivor. Progress is shared, so two workers do not double the speed.
 - **Equip.** The garage hides a crowbar, sword, iron armour and shield. Restore the workshop, then choose loadouts for anyone. Every item is unique, so return it before someone else takes it.
-- **Shoot and supply.** The east house shelters Ellis, who gives you a pistol and six bullets. Ellis works and follows but never fights or guards. Aim with the mouse and right click to shoot; melee stays on left click/Space. Claim the ammunition workshop across the road, press F and assign a worker to craft six bullets per 15 seconds for two materials. Work pauses for danger, lost connection or missing materials.
+- **Shoot and supply.** The east house shelters Ellis, who gives you a pistol and six bullets. Ellis works and follows but never fights or guards. Aim with the mouse and right click to shoot; melee stays on left click/Space. Claim the ammunition workshop across the road, assign a worker with F and choose one batch or a stock target in J. Each batch makes six bullets per 15 work seconds for two materials. Production needs a protected home route and respects a six-material reserve; J can change the reserve, stop future batches or cancel the current one for its shown return.
 - **Eat.** The group shares a meal every 60 seconds, costing one food each. Missing a meal slows work to 60%, with no hunger damage. Food also pays for healing at home. A tended garden brings in more.
 
 ### Your first run
@@ -42,11 +42,12 @@ Hold the original four yards (home, garden, library and garage), give each a pro
 | Hold R | Repair or build at the nearest gate, passage, barricade or porch project |
 | Q | Collect a secured building's spare timber |
 | 1 / 2 / 3 / 4 | Whole team: Follow / Hold / Engage / Return home and guard (Ellis never fights or guards) |
-| F | Pause for individual orders and loadouts |
+| F | Pause for individual orders; loadouts have their own page |
+| J | Pause for bullet production, target and material reserve (after discovery) |
 | G | Post a survivor at a nearby barricade |
 | Esc / Tab | Pause and open the menu |
 
-The world pauses on the opening screen and in any menu. The pause menu shows the next objective, supplies, who is doing what, equipment and known route conditions. The street uses a small health bar, an ammo count when armed, urgent threat alerts and short nearby action/cost prompts. Flags, windows, crops and bars show state; detailed supplies and orders stay in pause.
+The world pauses on the opening screen and in any menu. The pause menu separates supplies/objectives, team, production, equipment, known routes and help into small pages. The street uses a small health bar, an ammo count when armed, urgent threat alerts and short nearby action/cost prompts. Flags, windows, crops and bars show state; detailed supplies and orders stay in pause.
 
 Saving is explicit from the pause menu and stored at `user://street.json`. Reopening starts a fresh street until you choose Load. Damaged saves fall back to a backup, and older save versions migrate automatically.
 

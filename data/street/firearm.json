@@ -8,6 +8,8 @@
     "hit_radius": 14,
     "material_cost": 2,
     "batch_bullets": 6,
-    "craft_seconds": 15
+    "craft_seconds": 15,
+    "material_reserve": 6,
+    "bullet_target": 24
   }
 }

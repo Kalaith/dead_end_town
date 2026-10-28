@@ -60,6 +60,7 @@ func tour() -> void:
 	game.paused = true
 	game.hud.refresh(game.world, true)
 	game.hud.show_menu()
+	game.hud.show_section("Team")
 	# Exercise actual assignment selector and verify Ellis's disabled guard choices.
 	var picker: OptionButton = game.hud.team_orders.rows.ellis.picker
 	for i: int in range(picker.item_count):
@@ -70,6 +71,6 @@ func tour() -> void:
 			return
 		if task == "ammo":
 			picker.item_selected.emit(i)
-	game.hud.menu.get_child(0).scroll_vertical = 200
+	game.hud.menu.get_child(0).scroll_vertical = 0
 	await frames(4)
 	await shot("bullet_orders")

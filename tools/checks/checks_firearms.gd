@@ -1,4 +1,6 @@
 extends RefCounted
+const NeighbourhoodChecks = preload("res://tools/checks/checks_neighbourhood.gd")
+const Production = preload("res://scripts/sim/production.gd")
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
@@ -11,8 +13,13 @@ static func prepared() -> RefCounted:
 	var w := World.new(Catalog.read())
 	for z: Dictionary in w.zombies:
 		z.hp = 0.0
-	for id: String in ["garden", "garage", "munitions", "residence"]:
+	for id: String in ["garden", "library", "garage", "munitions", "residence"]:
 		w.claim(id)
+	NeighbourhoodChecks.integrate(w)
+	for id: String in ["far_north", "far_south"]:
+		w.passages[id] = w.passages.north.duplicate(true)
+	w.rebuild_routes()
+	Production.configure(w, "repeat", 24, 6)
 	w.player.pos = Vector2(1800, 580)
 	w.aim = Vector2.RIGHT
 	w.food = 100
@@ -115,7 +122,7 @@ func check_ellis_refuses_every_guard_path_and_never_attacks() -> String:
 func check_assigned_worker_physically_arrives_and_crafts_one_shared_batch() -> String:
 	var w: RefCounted = prepared()
 	var a: Dictionary = Tasks.person(w, "ellis")
-	a.pos = Vector2(1800, 580)
+	a.pos = Vector2(1560, 760)
 	if not w.assign_survivor("ellis", "ammo"):
 		return "Cannot assign Ellis to unlocked bullet workshop."
 	var stock: int = w.materials

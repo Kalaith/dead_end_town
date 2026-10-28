@@ -3,6 +3,13 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 
 
 static func valid(data: Dictionary, catalog: Dictionary) -> bool:
+	var policy: Variant = data.get("production")
+	if not policy is Dictionary or policy.get("mode") not in ["stopped", "once", "repeat"]:
+		return false
+	if not Rules.integer_in(policy.get("target"), 0, 999) or not Rules.integer_in(policy.get("material_reserve"), 0, 999) or not policy.get("reason") is String:
+		return false
+	if policy.mode != "stopped" and not data.properties.munitions.looted:
+		return false
 	var ledger: Variant = data.get("orders")
 	if not ledger is Dictionary or not Rules.integer_in(ledger.get("sequence"), 0, 1000000000) or not ledger.get("sites") is Dictionary:
 		return false

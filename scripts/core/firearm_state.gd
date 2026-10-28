@@ -9,7 +9,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 		return
 	for key: String in ["range", "damage", "cooldown", "hit_radius", "craft_seconds"]:
 		rules.number_between(data.firearm, key, 0.01, 2000)
-	for key: String in ["gift_bullets", "material_cost", "batch_bullets"]:
+	for key: String in ["gift_bullets", "material_cost", "batch_bullets", "material_reserve", "bullet_target"]:
 		if not Rules.integer_in(data.firearm.get(key), 1, 100):
 			errors.append("Firearm %s must be a bounded positive integer." % key)
 	if data.firearm.get("gift_bullets") != 6:

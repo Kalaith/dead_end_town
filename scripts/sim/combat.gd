@@ -116,15 +116,17 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				if world.workshop.armour_done:
 					a.activity = "Workshop work complete"
 			"Ammo":
-				a.activity = "Crafting bullets" if world.materials >= int(world.catalog.firearm.material_cost) or Firearms.reserved(world) else "Bullet crafting paused - need materials"
-				if not world.properties.munitions.claimed or not world.connected("munitions"):
+				a.activity = "Crafting bullets" if Firearms.reserved(world) else "Bullet bench"
+				if not world.production.reason.is_empty():
+					a.activity = world.production.reason
+				if not world.properties.munitions.claimed or not world.safe_connected("munitions"):
 					a.activity = "Bullet crafting paused - reclaim the workshop route"
 					anchor = Routes.point(world.balance.home_respawn)
 			"Passage":
 				a.activity = "Passage build/repair"
 			"Roadwork":
 				a.activity = "Road defence work"
-	var productive: bool = (a.order == "Garden" and world.garden_done) or (a.order == "Workshop" and world.workshop.done)
+	var productive: bool = (a.order == "Garden" and world.garden_done) or (a.order == "Workshop" and world.workshop.done) or a.order == "Ammo"
 	if productive and not a.activity.begins_with("Sheltering"):
 		if not world.safe_connected(a.job):
 			a.activity = "Work paused - secure the physical home route"

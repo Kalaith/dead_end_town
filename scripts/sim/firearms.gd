@@ -1,5 +1,6 @@
 extends RefCounted
 ## Pistol ownership, physical ray shots and one shared ammunition workbench.
+const Production = preload("res://scripts/sim/production.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 
@@ -77,8 +78,8 @@ static func step(world: RefCounted, dt: float) -> void:
 	var reason: String = ""
 	if not world.properties.munitions.claimed:
 		reason = "Reclaim site"
-	elif not world.connected("munitions"):
-		reason = "Need home route"
+	elif not world.safe_connected("munitions"):
+		reason = "Secure home route"
 	elif world.remaining("munitions") > 0:
 		reason = "Clear nearby threats"
 	var executor: String = ""
@@ -92,12 +93,19 @@ static func step(world: RefCounted, dt: float) -> void:
 	if reason.is_empty() and executor.is_empty():
 		reason = "Need worker at bench"
 	if not reason.is_empty():
+		world.production.reason = reason
 		WorkOrders.block(world, "munitions", reason)
 		return
 	var rules: Dictionary = world.catalog.firearm
 	var recipe: Dictionary = {"id": "bullets", "kind": "production", "inputs": {"materials": int(rules.material_cost)}, "outputs": {"bullets": int(rules.batch_bullets)}, "seconds": float(rules.craft_seconds)}
 	if not reserved(world):
+		world.production.reason = Production.start_reason(world)
+		if not world.production.reason.is_empty():
+			return
 		if not WorkOrders.approve(world, "munitions", "munitions", recipe, site):
 			return
+	world.production.reason = ""
 	if WorkOrders.advance(world, "munitions", executor, dt):
+		if world.production.mode == "once":
+			world.production.mode = "stopped"
 		world.note("Ammunition workshop: %d bullets crafted." % int(rules.batch_bullets))

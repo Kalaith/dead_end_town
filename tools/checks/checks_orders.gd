@@ -1,4 +1,5 @@
 extends RefCounted
+const Tasks = preload("res://scripts/sim/tasks.gd")
 const Checks = preload("res://tools/checks/checks_firearms.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
@@ -18,7 +19,7 @@ func check_partial_schema_twelve_batch_migrates_without_another_debit() -> Strin
 	if loaded == null or Firearms.progress(loaded) != 7.0:
 		return "Prepaid legacy batch did not migrate."
 	loaded.assign_survivor("ellis", "ammo")
-	loaded.survivors[1].pos = Vector2(1800, 800)
+	Tasks.person(loaded, "ellis").pos = Vector2(1800, 800)
 	Firearms.step(loaded, 8.0)
 	if loaded.materials != int(old.materials) or int(loaded.firearms.bullets) != 12:
 		return "Migration charged again or lost output."
@@ -28,7 +29,7 @@ func check_partial_schema_twelve_batch_migrates_without_another_debit() -> Strin
 func check_cancelled_batch_refunds_once_and_cannot_also_complete() -> String:
 	var w: RefCounted = Checks.prepared()
 	w.assign_survivor("ellis", "ammo")
-	w.survivors[1].pos = Vector2(1800, 800)
+	Tasks.person(w, "ellis").pos = Vector2(1800, 800)
 	var stock: int = w.materials
 	Firearms.step(w, 3.0)
 	if int(WorkOrders.refund(Firearms.batch(w)).materials) != 1:
@@ -45,7 +46,7 @@ func check_cancelled_batch_refunds_once_and_cannot_also_complete() -> String:
 func check_destroyed_bundle_never_refunds_and_completion_never_repeats() -> String:
 	var w: RefCounted = Checks.prepared()
 	w.assign_survivor("ellis", "ammo")
-	w.survivors[1].pos = Vector2(1800, 800)
+	Tasks.person(w, "ellis").pos = Vector2(1800, 800)
 	Firearms.step(w, 2.0)
 	var stock: int = w.materials
 	WorkOrders.cancel(w, "munitions", true)
@@ -62,7 +63,7 @@ func check_destroyed_bundle_never_refunds_and_completion_never_repeats() -> Stri
 func check_order_handoff_releases_lease_and_preserves_shared_progress() -> String:
 	var w: RefCounted = Checks.prepared()
 	w.assign_survivor("ellis", "ammo")
-	w.survivors[1].pos = Vector2(1800, 800)
+	Tasks.person(w, "ellis").pos = Vector2(1800, 800)
 	Firearms.step(w, 3.0)
 	var stock: int = w.materials
 	w.assign_survivor("ellis", "hold")
@@ -78,7 +79,7 @@ func check_order_handoff_releases_lease_and_preserves_shared_progress() -> Strin
 func check_malformed_order_bundles_and_terminal_flags_are_rejected() -> String:
 	var w: RefCounted = Checks.prepared()
 	w.assign_survivor("ellis", "ammo")
-	w.survivors[1].pos = Vector2(1800, 800)
+	Tasks.person(w, "ellis").pos = Vector2(1800, 800)
 	Firearms.step(w, 2.0)
 	var save := SaveState.new(w.catalog)
 	var raw: Dictionary = save.snapshot(w)

@@ -42,6 +42,7 @@ func tour() -> void:
 	game.world.working = false
 	game.world.interact()
 	game.hud.show_menu()
+	game.hud.show_section("Team")
 	game.hud.refresh(game.world, true)
 	if not game.world.workshop.armour_done or not _hidden(game):
 		push_error("Equipment-before-rescue fixture failed.")

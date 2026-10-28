@@ -1,4 +1,5 @@
 extends RefCounted
+const Production = preload("res://scripts/sim/production.gd")
 const WorkOrderState = preload("res://scripts/core/work_order_state.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const FirearmState = preload("res://scripts/core/firearm_state.gd")
@@ -21,11 +22,11 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 13
+const SCHEMA: int = 14
 ## Saved world fields that are dictionaries and are copied, not shared.
-const COPIED_KEYS: Array[String] = ["orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
+const COPIED_KEYS: Array[String] = ["production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
+const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
 var catalog: Dictionary
 var store: RefCounted
 
@@ -70,6 +71,8 @@ func restore(raw: Dictionary) -> RefCounted:
 	var world := World.new(catalog)
 	for key: String in STATE_KEYS:
 		world.set(key, int(data[key]) if key in ["materials", "food", "downs"] else (data[key].duplicate(true) if key in COPIED_KEYS else data[key]))
+	world.production.target = int(data.production.target)
+	world.production.material_reserve = int(data.production.material_reserve)
 	world.orders.sequence = int(data.orders.sequence)
 	for order: Dictionary in world.orders.sites.values():
 		order.sequence = int(order.sequence)
@@ -100,7 +103,7 @@ func valid(data: Dictionary) -> bool:
 	if not data.get("roam_rng_state") is String or str(int(data.roam_rng_state)) != data.roam_rng_state:
 		return false
 	for key: String in STATE_KEYS:
-		if key in ["orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
+		if key in ["production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
 			continue
 		if key == "gate_repair_target":
 			if data.get(key) not in ["home", "garden", "library", "garage", "residence", "munitions"]:
@@ -207,6 +210,8 @@ func migrate(data: Dictionary) -> Dictionary:
 		return {}
 	var upgraded: Dictionary = data.duplicate(true)
 	var version: int = int(upgraded.schema_version)
+	if version == 13:
+		return _upgrade_production(upgraded)
 	if version == 12:
 		return _upgrade_orders(upgraded)
 	if version == 11:
@@ -407,5 +412,15 @@ func _upgrade_orders(data: Dictionary) -> Dictionary:
 		data.orders.sites.munitions.work_done = float(s.progress)
 	s.erase("reserved")
 	s.erase("progress")
+	data.schema_version = 13
+	return _upgrade_production(data)
+
+
+func _upgrade_production(data: Dictionary) -> Dictionary:
+	data.production = Production.initial(catalog)
+	if data.get("survivors") is Array:
+		for a: Variant in data.survivors:
+			if a is Dictionary and a.get("order") == "Ammo":
+				data.production.mode = "repeat"
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

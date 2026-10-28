@@ -1,4 +1,5 @@
 extends Control
+const ProductionMenu = preload("res://scripts/presentation/production_menu.gd")
 const LiveStatus = preload("res://scripts/presentation/live_status.gd")
 const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
 const Provisions = preload("res://scripts/sim/provisions.gd")
@@ -8,9 +9,15 @@ const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const UiKit = preload("res://addons/hatchery/ui/ui_kit.gd")
 const Palette = preload("res://addons/hatchery/ui/palette.gd")
 const TeamOrders = preload("res://scripts/presentation/team_orders.gd")
+signal production_requested(mode: String, target: int, reserve: int)
+signal production_cancelled
 signal requested(command: String)
 signal equipment_requested(actor_id: String, slot: String, item_id: String)
 signal assignment_requested(survivor_id: String, task: String)
+var sections: Dictionary = {}
+var section_buttons: Dictionary = {}
+var section: String = "Street"
+var work_menu: VBoxContainer
 var kit: RefCounted
 var live_status: Control
 var stats: Label
@@ -84,36 +91,60 @@ func _build_menu() -> void:
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_theme_constant_override("separation", 12)
 	scroll.add_child(column)
-	pause_title = kit.heading("ONE STREET. A PLACE TO BEGIN.", 24)
+	pause_title = kit.heading("DEAD END TOWN", 24)
 	column.add_child(pause_title)
-	column.add_child(kit.label("Search buildings and hold your ground.", 16))
-	objective = kit.label("", 17, Color("dfb36e"))
-	objective.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	column.add_child(objective)
 	first_button = kit.button("Begin", func() -> void: requested.emit("resume"), true)
 	column.add_child(first_button)
+	var tabs := HBoxContainer.new()
+	column.add_child(tabs)
+	for label: String in ["Street", "Team", "Work", "Loadouts", "Town", "Help"]:
+		var button: Button = kit.button(label, func() -> void: show_section(label))
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		tabs.add_child(button)
+		section_buttons[label] = button
+		var page := VBoxContainer.new()
+		page.add_theme_constant_override("separation", 12)
+		column.add_child(page)
+		sections[label] = page
+	objective = kit.label("", 18, Color("dfb36e"))
+	objective.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	sections.Street.add_child(objective)
 	watch_button = kit.button("Begin neighbourhood watch", func() -> void: requested.emit("watch"))
-	column.add_child(watch_button)
-	supplies = kit.label("", 16)
-	column.add_child(supplies)
-	routes_status = kit.label("", 13)
-	column.add_child(routes_status)
+	sections.Street.add_child(watch_button)
+	supplies = kit.label("", 18)
+	sections.Street.add_child(supplies)
+	routes_status = kit.label("", 18)
+	sections.Town.add_child(routes_status)
 	team_orders = TeamOrders.new()
-	column.add_child(team_orders)
+	sections.Team.add_child(team_orders)
 	team_orders.assigned.connect(func(id: String, task: String) -> void: assignment_requested.emit(id, task))
 	equipment_menu = EquipmentMenu.new()
-	column.add_child(equipment_menu)
+	sections.Loadouts.add_child(equipment_menu)
 	equipment_menu.chosen.connect(func(id: String, slot: String, item: String) -> void: equipment_requested.emit(id, slot, item))
-	column.add_child(kit.label("WASD / arrows  Move and face     Mouse  Aim\nRight click  Shoot pistol     Left click  Swing     Space  Swing forward (hold to repeat)\nE  Interact     R  Work     Q  Salvage     F  Orders/loadouts     G  Post guard\n1-4  Entire team: Follow / Hold / Engage / Home     Esc / Tab  Pause", 15))
+	work_menu = ProductionMenu.new()
+	sections.Work.add_child(work_menu)
+	work_menu.configured.connect(func(mode: String, target: int, reserve: int) -> void: production_requested.emit(mode, target, reserve))
+	work_menu.cancelled.connect(func() -> void: production_cancelled.emit())
+	sections.Help.add_child(kit.label("WASD / arrows  Move     Mouse  Aim\nRight click  Shoot     Left click / Space  Swing (hold to repeat)\nE  Interact     Hold R  Work     Q  Timber\nF  Team     J  Work     G  Post guard\n1–4  Follow / Hold / Engage / Home     Esc / Tab  Pause", 18))
 	var row := HBoxContainer.new()
-	column.add_child(row)
-	for entry: Array in [["Save street", "save"], ["Load saved street", "load"], ["New street", "new"]]:
+	sections.Street.add_child(row)
+	for entry: Array in [["Save", "save"], ["Load", "load"], ["New street", "new"]]:
 		var command: String = entry[1]
 		var button: Button = kit.button(entry[0], func() -> void: requested.emit(command))
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(button)
-	menu_status = kit.label("Playable greybox / keyboard and mouse / no audio yet", 14)
+	menu_status = kit.label("", 18)
+	menu_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(menu_status)
+	show_section("Street")
+
+
+func show_section(value: String) -> void:
+	section = value
+	for label: String in sections:
+		sections[label].visible = label == value
+		section_buttons[label].disabled = label == value
+	menu.get_child(0).scroll_vertical = 0
 
 
 func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
@@ -143,6 +174,10 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	if paused:
 		routes_status.text = Neighbourhood.summary(world)
 		routes_status.visible = not routes_status.text.is_empty()
+		section_buttons.Work.visible = world.properties.munitions.looted
+		if section == "Work" and not world.properties.munitions.looted:
+			show_section("Street")
+		work_menu.refresh(world)
 		team_orders.refresh(world)
 		equipment_menu.refresh(world)
 	var latest: String = world.messages.back() if not world.messages.is_empty() else ""
@@ -162,6 +197,6 @@ func _goal(world: RefCounted) -> String:
 
 func show_menu(intro: bool = false) -> void:
 	menu.visible = true
-	pause_title.text = "ONE STREET. A PLACE TO BEGIN." if intro else "THE STREET IS PAUSED"
-	first_button.text = "Begin" if intro else "Return to the street"
+	pause_title.text = "DEAD END TOWN" if intro else "PAUSED"
+	first_button.text = "Begin" if intro else "Resume"
 	first_button.grab_focus()
