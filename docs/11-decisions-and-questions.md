@@ -23,7 +23,8 @@ Baseline: 28 October 2026. The user reports that the slice is working well and a
 | D15 | Physical integration, equipment, useful food and a slice objective | Completed implementation request |
 | D16 | An eastern house gives a gun with exactly six bullets through a survivor who never fights or guards | Ellis expansion request |
 | D17 | Another building unlocks survivor bullet crafting | Ammunition workshop request |
-| D18 | Expand documentation into a design usable for the remaining game and make choices along the way | Current request |
+| D18 | Expand documentation into a design usable for the remaining game and make choices along the way | Full-design request |
+| D19 | Add one more character and a vehicle if absent | Follow-up design request; Rowan and a usable utility van |
 
 ## Full game decisions
 
@@ -31,7 +32,7 @@ Baseline: 28 October 2026. The user reports that the slice is working well and a
 | --- | --- | --- | --- |
 | F01 | One authored 24-property town; four districts of six | Enough distinct rewards without procedural content debt | 13, 15 |
 | F02 | 18 core sites and six optional sites; 2–3 hour core first-run target | Clear finish without compulsory map exhaustion | 13 |
-| F03 | Protagonist plus Mara, Paige, Ellis, June, Oliver, Theo, Nia | Seven identities with room for home defence and production | 05 |
+| F03 | Protagonist plus Mara, Paige, Ellis, June, Oliver, Theo, Nia, Rowan | Eight identities with room for home defence and production | 05 |
 | F04 | Fixed protagonist; maximum two followers | Readable action and people left at home | 03, 05 |
 | F05 | Ellis never fights or guards; all others use compatible equipment | Preserve requested identity without class locks | 05, 16 |
 | F06 | Shambler, Brute, Runner, Screecher, Armoured, Crawler, Spitter, Breaker | Each changes a concrete combat/defence decision | 14 |
@@ -55,6 +56,7 @@ Baseline: 28 October 2026. The user reports that the slice is working well and a
 | F24 | Stylised original 2D, 32-pixel base tile, layered equipment | Bounded art pipeline and recognisable cast | 08 |
 | F25 | Desktop keyboard/mouse with remapping/accessibility | Finish a defined input/platform target | 08, 09 |
 | F26 | No installs, toolkit edits, deployment or publication in design work | Project boundary | 09, 10 |
+| F27 | One optional utility van at depot; restore for 12 Materials/30 work seconds; player drives, two passengers | Useful travel without fleets, fuel stock, hauling or mandatory vehicle gates | 18 |
 
 Numbers are chosen starting values and may change through recorded tuning without reopening the creative foundations. An unmade asset or unperformed export test is implementation work, not an unresolved design decision.
 
@@ -68,7 +70,7 @@ Numbers are chosen starting values and may change through recorded tuning withou
 | Q04 pause | F22; all planning paused |
 | Q05 combat extras | F07 |
 | Q06 switching | F04; fixed protagonist |
-| Q07 companion/home coverage | Two followers; up to five others for work and defence |
+| Q07 companion/home coverage | Two followers; up to six others for work and defence |
 | Q08 property loss | F13 |
 | Q09 safe corridor | Held endpoints, actual route, required protection, no local hostile |
 | Q10 cancellation/reserves | Formula/defaults in 04 |
@@ -96,7 +98,7 @@ Implementers may adjust numerical balance within a milestone gate, recording val
 
 | Area | Initial target | Evidence before locking |
 | --- | --- | --- |
-| Food/work | Two growers sustain eight people with margin | 15-minute full-roster run including interruptions |
+| Food/work | Two growers sustain nine people; verify narrow pre-pump margin | 15-minute full-roster run including interruptions |
 | Defence | Two equipped defenders hold routine approaches | Three observed off-camera trials, inspect routes and health |
 | Freedom | 3–5 minutes away during stable midgame | Human session; count forced returns |
 | Enemy readability | Tell recognised by second encounter | Human explanation; no unavoidable first hit |

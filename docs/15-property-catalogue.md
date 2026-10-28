@@ -26,12 +26,12 @@ M/F/B/S/Med = Materials/Food/Bullets/Shells/Medicine. Search rewards below are f
 | museum | No | 20 | 2 | 0 | 0 | 0 | Recoverable museum iron/polearm set |
 | hall | Yes | 20 | 6 | 0 | 0 | 4 | relief_plan |
 | school | No | 20 | 10 | 0 | 0 | 4 | Supplies, secondary civic route |
-| depot | Yes | 36 | 4 | 12 | 0 | 0 | Nia, generator_coupler |
+| depot | Yes | 36 | 4 | 12 | 0 | 0 | Nia, generator_coupler, recoverable utility van (optional restoration) |
 | salvage | Yes | 24 | 2 | 0 | 0 | 0 | Sorting bench location |
 | pump | Yes | 24 | 2 | 0 | 0 | 0 | Waterworks restoration site |
 | substation | Yes | 24 | 2 | 0 | 0 | 0 | relay_coil on search, power site |
 | relay | Yes | 16 | 2 | 6 | 0 | 2 | Signal console |
-| assembly | Yes | 24 | 8 | 0 | 0 | 4 | Relief staging site |
+| assembly | Yes | 24 | 8 | 0 | 0 | 4 | Rowan, relief staging site |
 
 Key discoveries commit on search; core facilities still require approval/work in 16. Material caches include the former garage bonus explicitly. All finite rewards enter shared stock directly; no carrying/drop-bag ledger. Every table row must map to one persistent search flag, not separate flags that can grant the same gift twice.
 
@@ -150,7 +150,7 @@ Optional medicine/food, a two-door southern route and a cleared community space.
 
 ### depot — Delivery depot
 
-Nia and generator coupler. Separate loading lanes combine Runner and Armoured counters already taught. Static pallet stacks create approach choices. The coupler is permanent knowledge/equipment discovery used by substation restoration, not a supply consumed by each outage. No delivery-truck simulation.
+Nia and generator coupler. Separate loading lanes combine Runner and Armoured counters already taught. Static pallet stacks create approach choices. The coupler is permanent knowledge/equipment discovery used by substation restoration, not a supply consumed by each outage. One parked utility van can be restored for optional player travel under [18](18-vehicle.md); no delivery fleet or hauling simulation.
 
 ### salvage — Salvage yard
 
@@ -170,7 +170,7 @@ Final console, attacked only through actual approaches. Spitter and Armoured sta
 
 ### assembly — Relief assembly yard
 
-Core shelter and final south-side staging space. Wide geometry supports retreat, a casualty spot and an inside guard post. It is not a newly recruited population. Restoring tents/lighting creates the visual endpoint of communal growth. Its crossing to relay is a required final safe link; keeping optional adjacent school is helpful but unnecessary.
+Core shelter and final south-side staging space. Wide geometry supports retreat, a casualty spot and an inside guard post. Rowan shelters in its stores room and joins on search. This is one named rescue, not a newly recruited crowd. Restoring tents/lighting creates the visual endpoint of communal growth. Its crossing to relay is a required final safe link; keeping optional adjacent school is helpful but unnecessary.
 
 ## Per-site authoring checklist
 

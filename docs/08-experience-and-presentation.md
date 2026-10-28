@@ -83,4 +83,4 @@ Supply/attack assists can be offered as an explicit Relaxed preset: 25% less inc
 
 ## Presentation acceptance
 
-Inspect opening, pre-rescue library, post-rescue roster, full eight-person panel, enlarged work board, equipment transfer, shortage, blocked route, every new tell, three-front finale, defeat recovery and ending. Verify actual mouse/keyboard commands, no unknown reward leaks, no clipped text at 150%, readable colours/shapes and audio-muted alerts. Captures are staged evidence; human input/feel require separate playtesting. Use the project's fixed capture paths and labels.
+Inspect opening, pre-rescue library, post-rescue roster, full nine-person panel, enlarged work board, equipment transfer, shortage, blocked route, every new tell, three-front finale, defeat recovery and ending. Verify actual mouse/keyboard commands, no unknown reward leaks, no clipped text at 150%, readable colours/shapes and audio-muted alerts. Captures are staged evidence; human input/feel require separate playtesting. Use the project's fixed capture paths and labels.

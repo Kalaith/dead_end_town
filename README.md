@@ -74,7 +74,7 @@ You can also open `project.godot` in the editor. Headless checks and the staged 
 | [World and territory](docs/02-world-and-territory.md) | Claims, connections, loss and recovery |
 | [Combat and home defence](docs/03-combat-and-defence.md) | Player actions, squad orders, defence |
 | [Construction and jobs](docs/04-construction-and-jobs.md) | Shared work, jobs, interruptions |
-| [Survivors and growth](docs/05-survivors-and-growth.md) | Seven named survivors, rescue contracts and roles |
+| [Survivors and growth](docs/05-survivors-and-growth.md) | Eight named survivors, rescue contracts and roles |
 | [Buildings and economy](docs/06-buildings-and-economy.md) | Rewards, unlock chains, production |
 | [Zombies and pressure](docs/07-zombies-and-pressure.md) | Wandering, pursuit, raids |
 | [Experience and presentation](docs/08-experience-and-presentation.md) | Opening, interface, accessibility |
@@ -87,6 +87,7 @@ You can also open `project.godot` in the editor. Headless checks and the staged 
 | [Property catalogue](docs/15-property-catalogue.md) | Every building, reward, encounter and improvement |
 | [Equipment and recipes](docs/16-equipment-and-recipes.md) | Unique items, costs, work and prerequisites |
 | [Acceptance and balance](docs/17-acceptance-and-balance.md) | Funding/food examples, scenarios and human playtest gates |
+| [Vehicle design](docs/18-vehicle.md) | Recoverable utility van, travel, recovery and save rules |
 | [Progress](docs/PROGRESS.md) · [TODO](docs/TODO.md) | What is built and verified, and what is next |
 
-The full game design targets 24 properties, eight zombie kinds and seven survivors plus the player, with a core campaign and a finite relief-signal ending. It is documentation for future implementation; the runtime described above remains the six-property slice. Design numbers are chosen starting values with validation gates, while `PROGRESS.md` records what exists and was actually checked.
+The full game design targets 24 properties, eight zombie kinds and eight survivors plus the player, with a core campaign and a finite relief-signal ending. It is documentation for future implementation; the runtime described above remains the six-property slice. Design numbers are chosen starting values with validation gates, while `PROGRESS.md` records what exists and was actually checked.

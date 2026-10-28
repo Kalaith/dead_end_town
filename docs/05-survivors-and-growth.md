@@ -1,6 +1,6 @@
 # Named survivors and equipment-led growth
 
-Final full game roster: the protagonist and seven named survivors. Four people exist in the present slice: player, Mara, Paige, Ellis. June, Oliver, Theo and Nia are future content. No random recruits, relationship system, classes, XP, activity skills or survivor level-ups.
+Final full game roster: the protagonist and eight named survivors. Four people exist in the present slice: player, Mara, Paige, Ellis. June, Oliver, Theo, Nia and Rowan are future content. No random recruits, relationship system, classes, XP, activity skills or survivor level-ups.
 
 ## Roster
 
@@ -14,8 +14,9 @@ Final full game roster: the protagonist and seven named survivors. Four people e
 | oliver / Oliver | Greenhouse | Retired gardener; patient, observant, interested in what grows | Food production or general work | Green hat, rolled sleeves |
 | theo / Theo | Police-station side office | Delivery driver who sheltered there; brisk route observations | Mobile escort or relief guard | Orange courier jacket, shoulder strap |
 | nia / Nia | Depot service cabin | Electrical technician; likes explaining a repair once, then doing it | Salvage/power restoration or ranged post | Violet work shirt, safety goggles |
+| rowan / Rowan | Assembly-yard stores room | Community-centre caretaker; welcoming, practical, remembers where useful things are kept | Relief preparation, repairs or reserve guard | Cobalt work vest, cream sleeves, ring of oversized keys |
 
-The player and every survivor have 100 base health. Initial movement: player 190 pixels/second, survivors 145. No hidden background bonus to attack/work speed. Jobs require tools/facilities, never the “right” named person. June's medical knowledge gives context, not exclusive access; anyone can operate a restored clinic. Theo does not unlock vehicle simulation, Nia does not unlock wiring.
+The player and every survivor have 100 base health. Initial movement: player 190 pixels/second, survivors 145. No hidden background bonus to attack/work speed. Jobs require tools/facilities, never the “right” named person. June's medical knowledge gives context, not exclusive access; anyone can operate a restored clinic. Theo is not required to drive the [utility van](18-vehicle.md); Nia does not unlock wiring. Rowan does not grant exclusive access to the assembly shelter.
 
 All except Ellis can use every compatible melee/firearm/body/off-hand item. Ellis can carry protection and work tools but cannot equip weapons, attack, guard, draw aggro deliberately or receive an Engage order. Whole-team orders, emergency fallbacks, load, automation and job completion must preserve that restriction.
 
@@ -37,6 +38,7 @@ The rescued person becomes visible in roster/meal count immediately. Prior to re
 | Oliver | Greenhouse tool shed; tended plants visible through broken panes | Clear the yard, search shed | Start greenhouse work, freeing Mara/Paige for defence |
 | Theo | Side office marked by a courier bag, not a uniform | Defeat first Armoured group and search station | Ranged support or escort on the civic road |
 | Nia | Depot cabin beside a dismantled generator | Clear depot loading yard, search cabin | Explain coupler; restore salvage route or help defend |
+| Rowan | Stores room beside stacked folding beds at assembly | Clear assembly yard/room and search; no timed escort | Help restore the shelter or take over a defensive post |
 
 Mara is not rescued from the garage. She starts with the player, preserving the implemented opening. No final survivor is optional because the finale's community requirement includes everyone; every rescue site is on the mandatory path. No repeated rescue reward on loss/recapture/load.
 
@@ -64,10 +66,10 @@ Do not create sleep cycles, personal hunger bars, moods, homes, furniture needs 
 | Opening, 2 people | Player | Player/Mara briefly tend | Mara when not working | Player shares construction |
 | Hearth, 4 people | Player + Paige | Ellis | Mara | Bullet batches when food buffer permits |
 | Market, 6 people | Player + Paige | Oliver + Ellis if needed | Mara + June | Shift one person to treatment/build after threat clears |
-| Full, 8 people | Player + Theo + Paige | Oliver + Ellis | Mara + June | Nia salvage/repair; rotate through medicine/bullets |
-| Relief watch, 8 people | Player responds to siege | Oliver + Ellis | Mara + Paige + Theo at three launch posts | June treatment, Nia repair/production |
+| Full, 9 people | Player + Theo + Paige | Oliver + Ellis | Mara + June | Nia salvage/repair, Rowan rotating medicine/bullets/building |
+| Relief watch, 9 people | Player responds to siege | Oliver + Ellis | Mara + Paige + Theo at three launch posts | June treatment, Nia repair/production, Rowan reserve guard |
 
-These are examples, not forced roles. Two growers can sustain eight people under 06. The final watch deliberately brings expedition people back onto posts. Do not require every facility to have a dedicated permanent operator; finite stock buffers support switching a worker for a batch.
+These are examples, not forced roles. Two growers can sustain nine people under 06. The final watch deliberately brings expedition people back onto posts. Do not require every facility to have a dedicated permanent operator; finite stock buffers support switching a worker for a batch.
 
 ## Writing and presentation limits
 

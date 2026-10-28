@@ -96,6 +96,8 @@ M = Materials. All recipes require target held and locally safe; productive use 
 | restore_station_kit | garage bench | 8 M | 14 s | One riot body + station shield; station searched | Optional |
 | restore_firehall_axe | garage bench | 6 M | 12 s | Fire axe; firehall searched | Optional |
 | restore_museum_set | garage bench | 12 M | 20 s | Museum iron + polearm; museum searched | Optional |
+| restore_utility_van | depot service bay | 12 M | 30 s | One usable van; depot searched, working garage bench; rules in [18](18-vehicle.md) | Optional |
+| recover_utility_van | depot service bay | 6 M | 30 s | Relocate same empty van; working depot/garage, clear destination; hull unchanged; [18](18-vehicle.md) | Optional |
 | make_padding | home/garage bench | 4 M | 8 s | One padded body instance | Optional |
 
 The ammunition workshop becomes usable on claim/search with no restoration bill, preserving the slice. Search grants damaged/recoverable set flags for the station/museum/fire axe; restoration grants usable instances once. It must not grant both an immediately usable set and another set at restoration.

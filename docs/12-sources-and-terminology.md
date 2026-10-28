@@ -10,11 +10,11 @@ Current README, JSON, simulation modules, recent Git history and progress record
 
 ## Precedence and ownership
 
-User instructions override the design. AGENTS.md owns engineering/workflow rules. 01 and 11 own creative scope/decisions. Owning system documents specify behaviour; catalogues 14–16 own numerical content; 13 owns topology/finale; 17 owns acceptance examples. README explains the **current runtime**, and PROGRESS records actual evidence. Design does not prove implementation; implementation drift does not silently revise the design.
+User instructions override the design. AGENTS.md owns engineering/workflow rules. 01 and 11 own creative scope/decisions. Owning system documents specify behaviour; catalogues 14–16 and vehicle design 18 own numerical content; 13 owns topology/finale; 17 owns acceptance examples. README explains the **current runtime**, and PROGRESS records actual evidence. Design does not prove implementation; implementation drift does not silently revise the design.
 
 When a number changes, update its owning table and affected worked examples in the same change. Avoid appending a contradictory rule to the end of an older document. Historical PROGRESS entries remain history, explicitly superseded by later evidence. TODO points to next implementation work, not a second competing design.
 
-Earlier activity skill tracks, XP, eight-to-twelve-person colonies, possessional character switching, museum-exclusive original armour and unresolved alternative endings are superseded. This game has eight people total, fixed protagonist, optional second museum set and the relief-signal ending.
+Earlier activity skill tracks, XP, eight-to-twelve-person colonies, possessional character switching, museum-exclusive original armour and unresolved alternative endings are superseded. This game has nine people total, fixed protagonist, optional second museum set and the relief-signal ending.
 
 ## Glossary
 

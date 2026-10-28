@@ -75,7 +75,7 @@ Allocate schema numbers only when implementing changes. Keep per-step migrations
 
 ## Simulation scale and presentation events
 
-Target 60 fps on a recorded reference machine with 96 living zombies, eight people, 24 properties and the busiest legal special attacks. Measure the 106-actor migrated case too. This is a target, not verified performance. Keep the whole active world authoritative; no distant fight abstraction or tier handoff is needed for release scope unless profiling proves otherwise.
+Target 60 fps on a recorded reference machine with 96 living zombies, nine people, 24 properties and the busiest legal special attacks. Measure the 106-actor migrated case too. This is a target, not verified performance. Keep the whole active world authoritative; no distant fight abstraction or tier handoff is needed for release scope unless profiling proves otherwise.
 
 Presentation consumes typed events for discharge, hit, work, warning, discovery, loss, casualty and attempt transitions. Event IDs prevent replayed audio/rewards on load. Persistent state determines every visual; particles/sounds cannot spend stock. Fast visual interpolation can smooth 20 Hz without changing collision.
 

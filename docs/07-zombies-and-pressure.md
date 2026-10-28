@@ -26,6 +26,7 @@ Noise is a spatial event that influences existing living actors. It never adds p
 | Pistol | 550 px | 4 s | One source per shooter over 0.5 s |
 | Shotgun | 750 px | 5 s | One source per shooter over 0.5 s |
 | Screecher | 600 px | 4 s | One per successful call; cannot initiate another call |
+| Utility van engine | 450 px | 2 s | One source per moving van; refresh once/second; occupied targeting in [18](18-vehicle.md) |
 | Relay launch | 900 px | 8 s | One event at start; finale population remains fixed |
 
 Choose the largest `radius - distance` among in-range events, then newest event and stable ID. A newer weak noise does not repeatedly flip an actor away from a nearby person. An actor investigates one event at a time. Expired events cannot attract newly spawned migrants. One ordinary building footprint between source and listener halves effective radius; do not raycast arbitrary material acoustics in the first implementation. Open-front rooms use the building's same modifier.

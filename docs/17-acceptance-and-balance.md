@@ -50,11 +50,11 @@ Basic melee remains a valid counter for every core enemy, with movement/cover. D
 
 ## Food model
 
-At eight people: one meal costs eight every two minutes = four/minute. Two growers: 2/45 s garden + 4/60 s greenhouse = 6.67/minute; at 70% combined effective uptime = 4.67. Waterworks adds another 0.7/minute at that uptime. Optional allotment is extra resilience, not a hidden requirement.
+At nine people: one meal costs nine every two minutes = 4.5/minute. Two growers: 2/45 s garden + 4/60 s greenhouse = 6.67/minute; at 70% combined effective uptime = 4.67. Waterworks adds another 0.7/minute at that uptime. Pre-pump meal margin is only 0.17/minute at 70% uptime; stock buffers must cover treatment and interruptions. Optional allotment is extra resilience, not a hidden requirement.
 
-Illustrative 120-minute campaign roster: two people for 10 minutes, four for 25, six for 30, eight for 55. Approximate consumption is 10 + 50 + 90 + 220 = 370 Food. Exact discrete meal timing depends on rescue ticks and must be checked in the implementation scenario.
+Illustrative 120-minute campaign roster: two people for 10 minutes, four for 25, six for 30, nine for 55 (conservative early full-roster assumption). Approximate consumption is 10 + 50 + 90 + 247.5 = 397.5 Food. Exact discrete meal timing depends on rescue ticks and must be checked in the implementation scenario.
 
-Core finite Food is 61 plus eight starting = 69. Garden working from minute 8 at 70% uptime produces about 209 Food; greenhouse from minute 40 produces 224; pump from minute 90 adds 21. Total potential supply about 523 against 370 meals + 20 recovery + six medicine Food = 396. Repeating targets stop excess production; this is capacity headroom, not a claim that 127 surplus is physically stored.
+Core finite Food is 61 plus eight starting = 69. Garden working from minute 8 at 70% uptime produces about 209 Food; greenhouse from minute 40 produces 224; pump from minute 90 adds 21. Total potential supply about 523 against about 398 meals + 20 recovery + six medicine Food = 424. Repeating targets stop excess production; this is capacity headroom, not a claim that 99 surplus is physically stored.
 
 The early four-person interval is the tight part. Observe whether caches and garden interruptions create pressure without repeated work babysitting. If shortage becomes routine despite two growers, tune output/meal interval rather than adding hidden food gifts or disabling danger. If food never matters, reduce finite caches before increasing management complexity.
 
@@ -64,7 +64,7 @@ Automated fixtures may stage initial actors/resources for an isolated rule, but 
 
 | ID | Setup/action | Required invariant/outcome | Evidence mode |
 | --- | --- | --- | --- |
-| A01 | Validate all catalogues, unknown IDs, wrong types, prerequisite cycle | Fail clearly; 24 sites, 18 core, seven named companions, eight kinds | Headless/data |
+| A01 | Validate all catalogues, unknown IDs, wrong types, prerequisite cycle | Fail clearly; 24 sites, 18 core, eight named companions, eight kinds | Headless/data |
 | A02 | Remove all optional vertices, trace home connections | Every core site/facility/finale requirement still obtainable | Headless/graph |
 | A03 | Build adjacent crossing lines then remove one boundary; enter intervening alley | Only its crossing pauses; exposed alley never counts safe; no duplicate collider/refund | Headless + window |
 | A04 | Occupy yard for 7.9 s, contest, then 8 s unopposed | Timer resets on standing entry; downed actor cannot contest; home can fall | Headless |
@@ -101,6 +101,8 @@ Automated fixtures may stage initial actors/resources for an isolated rule, but 
 | A35 | Full 18-core route funded by authored rewards and real commands | Ledger conservation, no mandatory optional loot or injected resources | Integrated simulation |
 | A36 | Routine home defence while expedition is away | Two equipped defenders hold; work resumes without unsafe chase | Three human observations |
 | A37 | Full game start→ending→continue | Understandable next steps, 2–3-hour core target, no mandatory grind | First-time human run |
+
+Vehicle acceptance is specified in [18](18-vehicle.md), including occupied exits, barrier collision, casualty recovery and save migration. Its optional 12-Material restoration is outside the core ledger; choosing it from the 29-Material core margin leaves 17, including the required 12 launch reserve. No van repairs are assumed in that example.
 
 ## Human playtest scorecard
 

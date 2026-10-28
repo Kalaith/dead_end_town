@@ -58,7 +58,7 @@ Optional set (6): `grocer`, `allotment`, `diner`, `firehall`, `museum`, `school`
 
 All 12 northern sites are core, giving a continuous northern connection. The six core southern sites connect through their facing northern property; garage and munitions additionally share the existing southern chain. No optional site is a hidden bridge prerequisite. Optional southern holdings provide cross-links, supplies and alternate equipment.
 
-All seven survivors are at core sites. Optional sites cannot hold a required person, final component or exclusive mandatory recipe. Professions never act as keys; rescues are a campaign community objective.
+All eight survivors are at core sites. Optional sites cannot hold a required person, final component or exclusive mandatory recipe. Professions never act as keys; rescues are a campaign community objective.
 
 ## Act objectives
 
@@ -69,7 +69,7 @@ Objectives show discovered information. Before rescue use “Search the library�
 | I | Search six Hearth sites; restore garden/bench; rescue Paige and Ellis | First sustainable expedition and bullet production |
 | II | Recover hardware tools; rescue June/Oliver; restore clinic/greenhouse | Recovery, food margin, reinforced construction |
 | III | Search station; rescue Theo; restore radio; recover hall plan | Forecast approaches and learn signal requirements |
-| IV | Rescue Nia; restore salvage, pump, power and relay; secure assembly | Prepare three fronts and choose final defence |
+| IV | Rescue Nia and Rowan; restore salvage, pump, power and relay; secure assembly | Prepare three fronts and choose final defence |
 
 Act records are achievements, not geographic gates. Earlier discoveries count immediately when an objective is revealed. The original four-yard watch is optional Act I teaching content; it never blocks Market Row. A migrated slice-complete save retains that record without earning later acts.
 
@@ -83,14 +83,14 @@ No villain or conspiracy branch. The challenge is making a place dependable. Sho
 
 Begin **Open the relief signal** explicitly at the relay console with the player present. The paused panel lists every failed condition. Background migration scheduling stops during the attempt; living enemies remain. The three defence zones must be clear to start.
 
-1. All 18 core sites held, searched and safely connected to home; all seven survivors recruited and standing.
+1. All 18 core sites held, searched and safely connected to home; all eight survivors recruited and standing.
 2. Working garden, workshop, bullet bench, clinic, greenhouse, radio, salvage yard, waterworks, substation, relay and assembly shelter; none awaiting required restoration.
 3. Hardware tools, medical kit, growing kit, radio receiver, relief plan, generator coupler and relay coil deposited as permanent discoveries.
 4. Three named approach lines at full health: east road approach, north works alley, south works alley. Each has an inside post and retreat route to assembly.
 5. A standing recruited combatant at each approach post. Ellis never qualifies. All three placements are physically checked at start; the protagonist must be at the console and therefore cannot also satisfy a distant post. After launch the player is free to reinforce or replace anyone.
 6. Two meals available (2 × roster size Food), 24 Bullets or 8 Shells or an equivalent mix (1 Shell counts as 3 Bullets), 6 Medicine and 12 uncommitted Materials.
 
-The supply check neither spends nor permanently reserves stock. Meals, healing, firing and repair spend normally. With eight people, two meals means 16 Food. No named sword, armour or follower pairing is mandatory. Reinforcement and ranged equipment help; geometry and a capable melee team remain viable.
+The supply check neither spends nor permanently reserves stock. Meals, healing, firing and repair spend normally. With nine people, two meals means 18 Food. No named sword, armour or follower pairing is mandatory. Reinforcement and ranged equipment help; geometry and a capable melee team remain viable.
 
 ## Six-minute watch
 

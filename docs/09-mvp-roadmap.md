@@ -17,9 +17,9 @@ Preserve old discoveries and earned watch completion. A positive slice report do
 | G03: sustainable Market Row | June/Oliver, clinic/greenhouse, full food rates, recovery salvage | G02 | Six-person loop sustains food; no material/medical softlock; people work physically |
 | G04: mobile/attention threats | Runner, Screecher, noise and campaign migration scheduler | G03 | Telegraph/counter/reload checks; quiet/loud encounter visibly differs; home time remains useful |
 | G05: Civic choices | Theo, station/radio/hall, shotgun, riot gear, Armoured and Crawler | G04 | Flank/plate/shotgun rules, forecasts, two-follower limit and route choices work |
-| G06: late-game pressure | Nia, salvage/pump/power, Spitter, Breaker, guard alternate positions | G05 | Siege tell can be evaded; pool displaces guard; eight-person economy survives interruptions |
+| G06: late-game pressure | Nia and Rowan, salvage/pump/power and assembly rescue, Spitter, Breaker, guard alternate positions | G05 | Siege tell can be evaded; pool displaces guard; nine-person economy survives interruptions |
 | G07: relief ending | Relay/assembly, three posts, readiness, finite waves, failure/retry/continue | G06 | Full core campaign completes; no skipped arrivals or duplicate completion on reload |
-| G08: optional properties | Grocer, allotment, diner, firehall, museum, school and extra gear | G07 | Optional sites add routes/equipment and remain unnecessary to win |
+| G08: optional properties | Grocer, allotment, diner, firehall, museum, school, extra gear and optional utility van | G07 | Optional sites and van add routes/travel choices and remain unnecessary to win |
 | G09: production presentation | Modular art, interiors, layered gear, audio, remapping, accessibility | Art pilot can precede G03; final content after G08 | All states/tells/screens inspected with real input at fixed scale |
 | G10: release candidate | Save slots/recovery, full balance/performance pass, desktop packaging | G09 | Acceptance in 17, real complete human run and platform checks recorded |
 
@@ -37,6 +37,8 @@ G04–G06: introduce one enemy mechanic at a time with its tell/counter, then it
 
 G07: readiness query → start transaction → fixed attempt events → pause/load → outage grace/failure → emergency recovery → success/ending/continue. Verify failure as carefully as victory.
 
+G08: implement the van as a separate slice using [18](18-vehicle.md): discovery/repair → driving/collision → boarding/safe exit → loss/recovery/save migration. Keep the core campaign winnable on foot.
+
 G09: art/audio can progress as independent asset work, but system acceptance uses original procedural art until the art pilot passes. Do not delay a working gameplay commit for unfinished cosmetic assets.
 
 ## Save and migration strategy
@@ -51,7 +53,7 @@ At each major milestone run parse, simulation scenarios and headless editor/impo
 
 Record implementation, automated evidence, staged visual evidence, human observations and remaining uncertainty separately in PROGRESS. A scripted perfect-economy run proves accounting, not a fair campaign. Each working slice is committed immediately; finish with clean Git status. No pushing/publication unless requested.
 
-If scope or pacing misses the target, first shorten travel/work repetition, reduce redundant waves and cut optional facility variations. Preserve all seven named identities, the core route, meaningful counters, trusted home defence and the finite ending. Do not fill time with slower crafting or larger hit-point numbers. Reassess the 2–3-hour core target after a complete first-time run.
+If scope or pacing misses the target, first shorten travel/work repetition, reduce redundant waves and cut optional facility variations. Preserve all eight named identities, the core route, meaningful counters, trusted home defence and the finite ending. Do not fill time with slower crafting or larger hit-point numbers. Reassess the 2–3-hour core target after a complete first-time run.
 
 ## Release acceptance boundary
 

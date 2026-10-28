@@ -26,11 +26,12 @@ The emotional progression is trapped → capable → connected → dependable. P
 | Format | Godot 4.7.2, Compatibility, desktop keyboard/mouse, 1280×720 reference view |
 | Campaign | One authored town, 24 properties in four six-property districts |
 | Duration target | 2–3 hours for a first core campaign; 2.5–4 with optional sites; 1–2 on replay |
-| People | Protagonist plus seven named survivors; player plus at most two followers |
+| People | Protagonist plus eight named survivors; player plus at most two followers |
 | Enemies | Eight zombie kinds; six additions beyond the current Shambler and Brute |
 | Construction | Existing buildings, fixed improvement/fortification sockets, no freeform walls |
 | Economy | Materials, Food, Bullets, Shells and Medicine; unique key items and equipment |
 | Combat | Melee, pistol, shotgun, frontal passive shields; no stamina/dodge/reload/durability subsystem |
+| Vehicle | One optional recoverable utility van; player driving, two passengers, no fuel economy |
 | Ending | Restore the relief signal and defend three approaches for a finite six-minute watch |
 | After victory | Explicit ending, completion save and optional continued reclamation |
 | Presentation | Grounded stylised 2D; readable silhouettes and visible work; no gore dependency |
@@ -65,7 +66,7 @@ All clocks stop in menus and while closed. Recoveries preserve campaign progress
 
 ## Scope exclusions
 
-No multiplayer, procedural town generator, driveable vehicles, multiple storeys, day/night survival schedule, hunger deaths, permanent deaths, infection cures, relationship meters, betrayals, population recruitment, armour wear, loot rarity rolls, ammunition calibres, fuel deliveries, electrical wiring or distributed warehouse simulation. Building interiors are shallow open-front ground-floor rooms sharing the outdoor simulation, not separate maps.
+No multiplayer, procedural town generator, vehicle fleets/chases/ramming, multiple storeys, day/night survival schedule, hunger deaths, permanent deaths, infection cures, relationship meters, betrayals, population recruitment, armour wear, loot rarity rolls, ammunition calibres, fuel deliveries, electrical wiring or distributed warehouse simulation. Building interiors are shallow open-front ground-floor rooms sharing the outdoor simulation, not separate maps.
 
 No new system may enter by implication from a building name. A waterworks unlocks one visible town improvement; it does not create pipe placement. A depot supplies salvage, not a transport fleet.
 
@@ -90,6 +91,7 @@ Read this document and the [decision register](11-decisions-and-questions.md), t
 | [14 Zombie catalogue](14-zombie-catalogue.md) | Eight kinds, tells, attacks, counters and encounter budgets |
 | [15 Property catalogue](15-property-catalogue.md) | All 24 sites, unique rewards, improvements and encounters |
 | [16 Equipment and recipes](16-equipment-and-recipes.md) | Items, costs, prerequisites and production ledger |
+| [18 Vehicle](18-vehicle.md) | One utility van, discovery, travel limits, recovery and persistence |
 | [17 Acceptance and balance](17-acceptance-and-balance.md) | Reproducible scenarios, economy examples and playtest gates |
 
 [PROGRESS.md](PROGRESS.md) is the record of implementation and actual evidence. [TODO.md](TODO.md) is the immediate work queue. Neither a design decision nor the user's positive slice feedback proves a full campaign feature is implemented.
