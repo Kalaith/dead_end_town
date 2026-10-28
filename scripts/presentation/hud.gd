@@ -1,4 +1,5 @@
 extends Control
+const DefeatMenu = preload("res://scripts/presentation/defeat_menu.gd")
 const RescueMenu = preload("res://scripts/presentation/rescue_menu.gd")
 const ConstructionMenu = preload("res://scripts/presentation/construction_menu.gd")
 const ProductionMenu = preload("res://scripts/presentation/production_menu.gd")
@@ -36,6 +37,7 @@ var team_orders: VBoxContainer
 var supplies: Label
 var menu: PanelContainer
 var rescue_menu: PanelContainer
+var defeat_menu: PanelContainer
 var watch_button: Button
 var equipment_menu: VBoxContainer
 var town_map: VBoxContainer
@@ -84,6 +86,9 @@ func _ready() -> void:
 	rescue_menu = RescueMenu.new()
 	add_child(rescue_menu)
 	rescue_menu.chosen.connect(func(task: String) -> void: rescue_requested.emit(task))
+	defeat_menu = DefeatMenu.new()
+	add_child(defeat_menu)
+	defeat_menu.chosen.connect(func(command: String) -> void: requested.emit(command))
 
 
 func _panel(pos: Vector2, extent: Vector2) -> PanelContainer:
@@ -211,7 +216,9 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	radio.text = latest
 	radio.visible = not paused and message_seconds > 0 and not latest.is_empty()
 	rescue_menu.refresh(world)
-	menu.visible = paused and world.rescue_intro.is_empty()
+	rescue_menu.visible = rescue_menu.visible and not world.defeat_pending
+	defeat_menu.refresh(world, menu_status.text)
+	menu.visible = paused and world.rescue_intro.is_empty() and not world.defeat_pending
 
 
 func _goal(world: RefCounted) -> String:

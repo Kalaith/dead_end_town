@@ -1,4 +1,5 @@
 extends Node2D
+const Defeat = preload("res://scripts/sim/defeat.gd")
 const Clinic = preload("res://scripts/sim/clinic.gd")
 const Roster = preload("res://scripts/sim/roster.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
@@ -26,6 +27,7 @@ var paused: bool = true
 var resume_after_rescue: bool = false
 var accumulator: float = 0.0
 var completion_shown: bool = false
+var defeat_shown: bool = false
 var storage_enabled: bool = true
 var controls := PlayerControls.new()
 
@@ -71,6 +73,11 @@ func _ready() -> void:
 func _process(dt: float) -> void:
 	if world == null:
 		return
+	if world.defeat_pending:
+		paused = true
+		if not defeat_shown:
+			hud.menu_status.text = ""
+			defeat_shown = true
 	if not world.rescue_intro.is_empty():
 		if not paused:
 			resume_after_rescue = true
@@ -84,6 +91,11 @@ func _process(dt: float) -> void:
 		while accumulator >= step:
 			world.step(step)
 			accumulator -= step
+			if world.defeat_pending:
+				paused = true
+				hud.menu_status.text = ""
+				defeat_shown = true
+				break
 			if not world.rescue_intro.is_empty():
 				resume_after_rescue = true
 				paused = true
@@ -145,11 +157,25 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func command(value: String) -> void:
+	if world.defeat_pending and value not in ["recover", "load"]:
+		paused = true
+		hud.refresh(world, true)
+		return
 	if not world.rescue_intro.is_empty() and value in ["resume", "menu", "team", "work", "town", "watch"]:
 		paused = true
 		hud.refresh(world, true)
 		return
 	match value:
+		"recover":
+			if Defeat.recover(world):
+				defeat_shown = false
+				accumulator = 0.0
+				controls = PlayerControls.new()
+				camera.position = Vector2(clampf(world.player.pos.x, 640, float(world.catalog.bounds[0]) - 640), clampf(world.player.pos.y - 40, 360, 800))
+				camera.force_update_scroll()
+				hud.menu_status.text = ""
+				paused = false
+				hud.refresh(world, false)
 		"watch":
 			SliceObjective.start(world)
 			hud.menu_status.text = world.messages.back()
@@ -187,6 +213,7 @@ func command(value: String) -> void:
 			else:
 				world = save_state.restore(data)
 				completion_shown = false
+				defeat_shown = false
 				controls = PlayerControls.new()
 				view.world = world
 				accumulator = 0

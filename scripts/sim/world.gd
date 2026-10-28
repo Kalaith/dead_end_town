@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Defeat = preload("res://scripts/sim/defeat.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
 const HomeRest = preload("res://scripts/sim/home_rest.gd")
 const Clinic = preload("res://scripts/sim/clinic.gd")
@@ -61,6 +62,7 @@ var carry: Dictionary = Carrying.initial()
 var home_rest: Dictionary = HomeRest.initial()
 var alert: String = "SAFE"
 var downs: int = 0
+var defeat_pending: bool = false
 var workshop: Dictionary = Workshop.initial()
 var timber: Dictionary = Salvage.initial()
 var slice_state: Dictionary = SliceObjective.initial()
@@ -121,6 +123,11 @@ func note(message: String) -> void:
 
 
 func step(dt: float) -> void:
+	if defeat_pending:
+		return
+	if float(player.hp) <= 0:
+		Defeat.begin(self)
+		return
 	elapsed += dt
 	shot.left = maxf(0.0, float(shot.left) - dt)
 	for a: Dictionary in [player] + survivors + zombies:
@@ -135,6 +142,9 @@ func step(dt: float) -> void:
 	Exploration.update(self)
 	Jobs.step(self, dt)
 	Combat.step(self, dt)
+	if float(player.hp) <= 0:
+		Defeat.begin(self)
+		return
 	Territory.step(self, dt)
 	Provisions.step(self, dt)
 	HomeRest.step(self, dt)
@@ -218,6 +228,8 @@ func salvage() -> bool:
 
 
 func _context() -> String:
+	if not properties.home.claimed and player.pos.distance_to(Routes.point(balance.emergency_shelter)) < 50:
+		return ""
 	var passage: Dictionary = Neighbourhood.nearby(self)
 	if not passage.is_empty():
 		return Neighbourhood.context(self, passage)

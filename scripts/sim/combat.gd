@@ -56,14 +56,9 @@ static func step(world: RefCounted, dt: float) -> void:
 	for z: Dictionary in world.zombies:
 		if float(z.hp) > 0:
 			_zombie(world, z, dt)
+			if float(world.player.hp) <= 0:
+				return
 	Raiding.sweep(world)
-	if float(world.player.hp) <= 0:
-		world.abandon_carried()
-		world.downs += 1
-		world.player.hp = float(world.balance.player_health)
-		world.player.pos = Routes.point(world.balance.home_respawn)
-		world.move_input = Vector2.ZERO
-		world.note("You were pulled back home. The street and your discoveries are preserved.")
 
 
 static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:

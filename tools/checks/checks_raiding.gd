@@ -8,7 +8,7 @@ const Combat = preload("res://scripts/sim/combat.gd")
 func check_raider_settles_in_a_building_that_needs_zombies_then_wanders() -> String:
 	var w: RefCounted = _quiet()
 	w.balance.settle_percent = 100
-	w.player.hp = 0.0
+	w.player.pos = Vector2(30, 30)
 	var z: Dictionary = _raider(w, Vector2(1410, 580))
 	for i: int in range(2400):
 		w.step(0.05)
@@ -24,7 +24,7 @@ func check_raider_leaves_by_the_road_when_no_building_needs_zombies() -> String:
 	var w: RefCounted = _quiet()
 	for p: Dictionary in w.catalog.properties:
 		p.hidden_zombies = 0
-	w.player.hp = 0.0
+	w.player.pos = Vector2(30, 30)
 	var z: Dictionary = _raider(w, Vector2(1410, 580))
 	for i: int in range(6000):
 		w.step(0.05)

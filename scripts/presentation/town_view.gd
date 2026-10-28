@@ -38,6 +38,11 @@ func _draw() -> void:
 	for p: Dictionary in world.catalog.properties:
 		if Routes.rectangle(p.rect).grow(100).intersects(visible_world):
 			_property(p)
+	var shelter: Vector2 = Routes.point(world.balance.emergency_shelter)
+	draw_rect(Rect2(shelter + Vector2(-24, -54), Vector2(48, 14)), Color("394b4b"))
+	for x: int in [-18, 18]:
+		draw_line(shelter + Vector2(x, -40), shelter + Vector2(x, -12), Color("ab8860"), 4)
+	draw_rect(Rect2(shelter + Vector2(-16, -22), Vector2(32, 8)), Color("ab8860"))
 	NeighbourhoodView.paint(self, world)
 	RoadView.paint(self, world, font)
 	# Characters are sorted by their feet, including bodies on the ground.

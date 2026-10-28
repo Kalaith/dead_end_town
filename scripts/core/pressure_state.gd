@@ -82,7 +82,10 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 	var state: Dictionary = data.pressure
 	if not Rules.integer_in(state.get("wave"), 0, 1000000000) or not state.get("warned") is bool or not Rules.finite(state.get("next")):
 		return false
-	if float(state.next) < float(data.elapsed) or float(state.next) - float(data.elapsed) > maxf(float(catalog.pressure.interval_seconds), float(catalog.balance.approach_seconds)) + 0.001 or data.approach != (int(state.wave) > 0):
+	var overdue: bool = float(state.next) < float(data.elapsed)
+	if overdue and data.get("defeat_pending") == true and float(data.elapsed) - float(state.next) <= float(catalog.balance.step) + 0.001:
+		overdue = false
+	if overdue or float(state.next) - float(data.elapsed) > maxf(float(catalog.balance.recovery_migration_seconds), maxf(float(catalog.pressure.interval_seconds), float(catalog.balance.approach_seconds))) + 0.001 or data.approach != (int(state.wave) > 0):
 		return false
 	var residents: Dictionary = {}
 	var index: int = 0

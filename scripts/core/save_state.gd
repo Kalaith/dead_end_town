@@ -34,11 +34,11 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 24
+const SCHEMA: int = 25
 ## Saved world fields that are collections and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["carry", "home_rest", "clinic", "rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
+const STATE_KEYS: Array[String] = ["defeat_pending", "carry", "home_rest", "clinic", "rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
 var catalog: Dictionary
 var store: RefCounted
 
@@ -121,7 +121,7 @@ func valid(data: Dictionary) -> bool:
 			if not data.get("properties") is Dictionary or not data.properties.has(data.get(key)):
 				return false
 			continue
-		if key in ["approach", "garden_started", "garden_done", "repair_reserved"]:
+		if key in ["defeat_pending", "approach", "garden_started", "garden_done", "repair_reserved"]:
 			if not data.get(key) is bool:
 				return false
 		elif not Rules.finite(data.get(key)) or float(data[key]) < 0:
@@ -214,6 +214,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 24:
+		return _upgrade_defeat(upgraded)
 	if version == 23:
 		return _upgrade_recovery(upgraded)
 	if version == 22:
@@ -583,5 +585,11 @@ func _upgrade_clinic_work(data: Dictionary) -> Dictionary:
 func _upgrade_recovery(data: Dictionary) -> Dictionary:
 	data.carry = Carrying.initial()
 	data.home_rest = HomeRest.initial()
+	data.schema_version = 24
+	return _upgrade_defeat(data)
+
+
+func _upgrade_defeat(data: Dictionary) -> Dictionary:
+	data.defeat_pending = false
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}
