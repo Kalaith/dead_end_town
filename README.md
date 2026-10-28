@@ -46,7 +46,7 @@ Hold the original four yards (home, garden, library and garage), give each a pro
 | G | Post a survivor at a nearby barricade |
 | Esc / Tab | Pause and open the menu |
 
-The world pauses on the opening screen and in any menu. The pause menu shows the next objective, supplies, who is doing what, equipment and known route conditions. The street itself has almost no on-screen text: flags, windows, crops and bars show state, and prompts only appear near what you can use.
+The world pauses on the opening screen and in any menu. The pause menu shows the next objective, supplies, who is doing what, equipment and known route conditions. The street uses a small health bar, an ammo count when armed, urgent threat alerts and short nearby action/cost prompts. Flags, windows, crops and bars show state; detailed supplies and orders stay in pause.
 
 Saving is explicit from the pause menu and stored at `user://street.json`. Reopening starts a fresh street until you choose Load. Damaged saves fall back to a backup, and older save versions migrate automatically.
 

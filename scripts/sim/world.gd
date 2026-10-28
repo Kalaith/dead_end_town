@@ -74,7 +74,7 @@ func _init(data: Dictionary) -> void:
 			zombies.append(z)
 	Pressure.add_residents(self)
 	rebuild_routes()
-	note("Mara holds the home gate. Repair it with R, then open it with E.")
+	note("Mara has the gate. Hold R to repair.")
 
 
 static func actor(id: String, label: String, pos: Vector2, hp: float) -> Dictionary:
@@ -173,7 +173,7 @@ func safe_connected(id: String) -> bool:
 func context() -> String:
 	var text: String = _context()
 	if not Salvage.nearby(self).is_empty():
-		text += "   Q / Salvage timber (+%d materials)" % int(balance.timber_materials)
+		text += "   Q Timber (+%d materials)" % int(balance.timber_materials)
 	return text
 
 
@@ -191,23 +191,28 @@ func _context() -> String:
 	for p: Dictionary in catalog.properties:
 		if player.pos.distance_to(Routes.point(p.gate)) < 76:
 			if float(properties[p.id].gate_hp) <= 0:
-				return "R / Rebuild gate (%d materials, hold to work)" % int(balance.gate_repair_cost)
-			return "E / %s gate%s" % ["Close" if properties[p.id].open else "Open", "   |   R / Repair (%d materials)" % int(balance.gate_repair_cost)]
+				return "R Rebuild · %d materials" % int(balance.gate_repair_cost)
+			return "E %s%s" % ["Close" if properties[p.id].open else "Open", "   R Repair · %d materials" % int(balance.gate_repair_cost) if float(properties[p.id].gate_hp) < float(balance.gate_health) else ""]
 		if player.pos.distance_to(Routes.point(p.site)) < 85:
 			if p.id == "home" and properties.home.claimed:
-				return "E / Recover the team (%d food)" % int(balance.recovery_food)
+				var injured: bool = float(player.hp) < float(balance.player_health)
+				for a: Dictionary in survivors:
+					injured = injured or float(a.hp) < float(balance.survivor_health)
+				if not injured:
+					return ""
+				return "E Recover · %d food" % int(balance.recovery_food)
 			if remaining(p.id) > 0:
-				return "Clear the yard before searching"
+				return "Clear yard"
 			if not properties[p.id].claimed:
-				return "E / Search and secure property"
+				return "E Secure"
 			if p.id == "munitions":
-				return "F / Assign bullet crafting: %d materials for %d bullets every %ds" % [int(catalog.firearm.material_cost), int(catalog.firearm.batch_bullets), int(catalog.firearm.craft_seconds)]
+				return "F Bullets"
 			if p.id == "garage":
 				return Workshop.context(self)
 			if p.id == "garden" and not garden_done:
-				return "E / Start garden (%d materials)   |   R / Help build   |   F / Team orders" % int(balance.garden_cost)
+				return "R Build   F Assign" if garden_started else "E Garden · %d materials" % int(balance.garden_cost)
 			if p.id == "garden":
-				return "R / Tend garden   |   F / Assign a gardener"
+				return "R Tend   F Assign"
 			return ""
 	return ""
 

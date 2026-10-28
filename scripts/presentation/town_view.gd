@@ -171,9 +171,9 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		if weapon == "crowbar":
 			draw_line(grip + direction * 27, grip + direction * 27 + direction.orthogonal() * 10, Color("c1d1d0"), 4)
 		draw_circle(grip, 3, Color("d7b08b"))
-		if a.id != "you":
+		if a.id != "you" and a.pos.distance_to(world.player.pos) < 170:
 			_text(pos + Vector2(-16, -49), a.name, 13, CREAM)
-	if a.id == "ellis":
+	if a.id == "ellis" and a.pos.distance_to(world.player.pos) < 170:
 		_text(pos + Vector2(-16, -49), "Ellis", 13, CREAM)
 	if a.id == "you" and float(world.shot.left) > 0:
 		draw_line(pos + direction * 12, pos + direction * 32, INK, 7)

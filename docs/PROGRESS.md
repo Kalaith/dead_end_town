@@ -356,3 +356,16 @@ Evidence:
 - All 96 simulation scenarios pass, including five new migration, conservation, lease/handoff, terminal replay and malformed-ledger scenarios. All 66 scripts load; Godot 4.7.2 headless editor/import passes. File sizes and whitespace pass.
 - Ran the four-state firearm capture tour at 1280x720; inspected bullet_workshop.png. The tour exercises real right-click shooting and the connected survivor assignment selector. These are staged checks, not human playtesting.
 - Full G01, campaign expansion, balance, audio, performance and release verification remain outstanding. No installation, toolkit changes, export or publication.
+
+
+## 28 October 2026: sparse street interface
+
+Implementation:
+- Replaced the large HEALTH/HOME SAFE/BULLETS banner with a compact health symbol/bar and a bullet icon/count only after pistol discovery. Safe status is silent; threatened/lost property, attacked defences and incoming raids still show actionable text. Pause access is one small icon with an Esc tooltip.
+- Shortened nearby gate/workshop/garden/passage/barricade prompts to action, key and transaction cost/return. Removed repeated tutorials and percentages already shown by work bars. Undamaged gates do not advertise repair, and a healthy team does not advertise recovery. Nearby survivors retain their names; distant names no longer float over the world.
+- Explanations, stock and full team/loadout controls remain paused. Brief notifications wrap within a bounded area; assignments issued while paused do not replay as live banners.
+
+Evidence:
+- All 96 simulation scenarios and all 67 script loads pass; headless Godot editor/import passes. No combat or economy values changed.
+- Refreshed the standard ten-state tour and four firearm states at 1280x720. Inspected home, street_attack, bullet_workshop and planning; recaptured and inspected home after removing unnecessary full-health recovery text. Verified the existing staged shooting and assignment input tour.
+- Captures are staged, not human usability/playtesting acceptance. Remaining paused-screen simplification, full-game implementation and accessibility settings are future work.

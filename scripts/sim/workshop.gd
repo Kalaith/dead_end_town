@@ -16,20 +16,20 @@ static func safe(world: RefCounted) -> bool:
 static func context(world: RefCounted) -> String:
 	var state: Dictionary = world.workshop
 	if not safe(world):
-		return "Workshop unsafe / clear nearby shamblers before work or equipping"
+		return "Clear nearby threats"
 	if not state.started:
-		return "E / Restore workshop (%d materials)" % int(world.balance.workshop_cost)
+		return "E Workshop · %d materials" % int(world.balance.workshop_cost)
 	if not state.done:
-		return "R / Restore workshop %d%%   |   F / Team orders" % int(float(state.progress) / float(world.balance.workshop_seconds) * 100)
+		return "R Restore   F Assign"
 	if not state.armour_started:
-		return "E / Restore cached armour and shield (%d materials)" % int(world.balance.armour_cost)
+		return "E Restore gear · %d materials" % int(world.balance.armour_cost)
 	if not state.armour_done and not world.safe_connected("garage"):
-		return "Armour work paused / secure the workshop home route"
+		return "Secure home route"
 	if not state.armour_done:
-		return "R / Restore armour %d%%   |   F / Team orders" % int(float(state.armour_progress) / float(world.balance.armour_seconds) * 100)
-	if not state.equipped and world.equipment.iron.is_empty() and world.equipment.shield.is_empty():
-		return "E / Fit Paige's armour and shield   F / Choose loadouts" if world.properties.library.looted else "F / Choose loadouts at the bench"
-	return "F / Choose equipment for anyone at the bench"
+		return "R Restore   F Assign"
+	if not state.equipped and world.equipment.iron.is_empty() and world.equipment.shield.is_empty() and world.properties.library.looted:
+		return "E Equip Paige   F Loadouts"
+	return "F Loadouts"
 
 
 static func interact(world: RefCounted) -> void:

@@ -1,4 +1,5 @@
 extends Control
+const LiveStatus = preload("res://scripts/presentation/live_status.gd")
 const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
 const Provisions = preload("res://scripts/sim/provisions.gd")
 const EquipmentMenu = preload("res://scripts/presentation/equipment_menu.gd")
@@ -11,6 +12,7 @@ signal requested(command: String)
 signal equipment_requested(actor_id: String, slot: String, item_id: String)
 signal assignment_requested(survivor_id: String, task: String)
 var kit: RefCounted
+var live_status: Control
 var stats: Label
 var objective: Label
 var context_label: Label
@@ -39,19 +41,25 @@ func _ready() -> void:
 	palette.line = Color("3a534c")
 	kit = UiKit.new(palette)
 	theme = kit.theme()
-	var header: PanelContainer = _panel(Vector2(16, 16), Vector2(620, 48))
-	stats = kit.label("", 18)
-	header.add_child(stats)
-	var pause: Button = kit.button("Pause / Esc", func() -> void: requested.emit("menu"))
-	pause.position = Vector2(1134, 16)
-	pause.size = Vector2(130, 42)
+	live_status = LiveStatus.new()
+	live_status.position = Vector2(16, 16)
+	live_status.size = Vector2(220, 36)
+	add_child(live_status)
+	stats = kit.label("", 18, Color("ffac82"))
+	stats.position = Vector2(20, 60)
+	add_child(stats)
+	var pause: Button = kit.button("Ⅱ", func() -> void: requested.emit("menu"))
+	pause.position = Vector2(1220, 16)
+	pause.size = Vector2(44, 40)
+	pause.tooltip_text = "Pause (Esc)"
 	add_child(pause)
 	context_label = kit.label("", 17, Color("dfb36e"))
-	context_label.position = Vector2(20, 78)
+	context_label.position = Vector2(20, 100)
 	add_child(context_label)
 	radio = kit.label("", 16, Color("c6e5cd"))
-	radio.position = Vector2(20, 672)
-	radio.size = Vector2(1240, 36)
+	radio.position = Vector2(20, 640)
+	radio.size = Vector2(740, 64)
+	radio.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	radio.add_theme_color_override("font_shadow_color", Color("142426"))
 	radio.add_theme_constant_override("shadow_offset_x", 2)
 	radio.add_theme_constant_override("shadow_offset_y", 2)
@@ -109,20 +117,22 @@ func _build_menu() -> void:
 
 
 func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
-	stats.text = "HEALTH %d     HOME / %s" % [int(world.player.hp), world.alert]
+	live_status.refresh(world)
+	stats.text = ""
+	if world.alert != "SAFE":
+		stats.text = "Home breached" if world.alert == "BREACHED" else "Home threatened"
 	for p: Dictionary in world.catalog.properties:
-		if world.alert == "SAFE" and world.properties[p.id].claimed and world.remaining(p.id) > 0:
-			stats.text = "HEALTH %d     STREET / THREATENED" % int(world.player.hp)
+		if world.properties[p.id].claimed and world.remaining(p.id) > 0:
+			stats.text = p.name + " threatened"
 	for d: Dictionary in world.catalog.barricades:
-		if world.alert == "SAFE" and Roadworks.active(world.roadworks[d.id]) and Roadworks.danger(world, d):
-			stats.text = "HEALTH %d     STREET / THREATENED" % int(world.player.hp)
+		if Roadworks.active(world.roadworks[d.id]) and Roadworks.danger(world, d):
+			stats.text = d.name + " under attack"
+	if world.pressure.warned and stats.text.is_empty():
+		stats.text = "Raid · %ds" % ceili(float(world.pressure.next) - world.elapsed)
 	if not world.properties.home.claimed:
-		stats.text = "HEALTH %d     HOME / LOST" % int(world.player.hp)
-	if world.pressure.warned and stats.text.ends_with("SAFE"):
-		stats.text = "HEALTH %d     RAID / IN %ds" % [int(world.player.hp), ceili(float(world.pressure.next) - world.elapsed)]
-	if world.firearms.owned:
-		stats.text += "     BULLETS %d" % int(world.firearms.bullets)
-	stats.modulate = Color("e7dfc9") if world.alert == "SAFE" and not stats.text.contains("THREATENED") else Color("ffac82")
+		stats.text = "Home lost"
+	stats.visible = not paused and not stats.text.is_empty()
+	live_status.visible = not paused
 	objective.text = "NEXT / " + SliceObjective.next(world)
 	watch_button.visible = world.slice_state.phase == "preparing" and world.properties.garden.looted and world.properties.library.looted and world.properties.garage.looted
 	watch_button.disabled = not SliceObjective.readiness(world).is_empty()
@@ -138,7 +148,7 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	var latest: String = world.messages.back() if not world.messages.is_empty() else ""
 	if latest != last_message:
 		last_message = latest
-		message_seconds = 7.0
+		message_seconds = 0.0 if paused else 5.0
 	if not paused:
 		message_seconds = maxf(0.0, message_seconds - dt)
 	radio.text = latest

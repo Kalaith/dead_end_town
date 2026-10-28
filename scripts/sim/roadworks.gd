@@ -52,17 +52,18 @@ static func salvage(world: RefCounted, state: Dictionary) -> int:
 static func context(world: RefCounted, d: Dictionary) -> String:
 	var s: Dictionary = world.roadworks[d.id]
 	if not unlocked(world, d):
-		return "Road defence / secure both facing properties first"
+		return "Secure both yards"
 	match s.phase:
 		"empty":
-			return "E / Build %s (%d materials)" % [d.name, int(world.balance.barricade_cost)]
+			return "E Barricade · %d materials" % int(world.balance.barricade_cost)
 		"building":
 			if float(s.progress) >= float(world.balance.barricade_seconds) and _occupied(world, Routes.rectangle(d.rect)):
-				return "Barricade ready / step clear of its footprint to finish construction"
-			return "R / Build %d%%   F / Team orders   E / Cancel (+%d materials)" % [int(float(s.progress) / float(world.balance.barricade_seconds) * 100), salvage(world, s)]
+				return "Clear work area"
+			return "R Build   E Cancel (+%d)" % salvage(world, s)
 		"dismantling":
-			return "R / Dismantle %d%% (+%d materials)   F / Team orders   E / Keep barricade" % [int(float(s.progress) / float(world.balance.barricade_remove_seconds) * 100), salvage(world, s)]
-	return "E / Dismantle (+%d materials)   R / Repair (%d)   F / Assign repair   G / Post guard" % [salvage(world, s), int(world.balance.barricade_repair_cost)]
+			return "R Remove (+%d)   E Keep" % salvage(world, s)
+	var repair: String = "   R Repair · %d materials" % int(world.balance.barricade_repair_cost) if float(s.hp) < float(world.balance.barricade_health) else ""
+	return "E Remove (+%d)%s   G Guard" % [salvage(world, s), repair]
 
 
 static func interact(world: RefCounted, d: Dictionary) -> void:
@@ -135,7 +136,7 @@ static func post_guard(world: RefCounted) -> void:
 	chosen.job = ""
 	chosen.order = "Roadguard"
 	chosen.anchor = post
-	world.note("%s holds %s. Other guards keep their posts." % [chosen.name, d.name])
+	world.note("%s: %s" % [chosen.name, d.name])
 
 
 static func step(world: RefCounted, dt: float) -> void:

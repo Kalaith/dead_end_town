@@ -39,15 +39,16 @@ static func safe_work(world: RefCounted, d: Dictionary) -> bool:
 
 static func context(world: RefCounted, d: Dictionary) -> String:
 	if not owned(world, d):
-		return "Secure both yards before joining their fences"
+		return "Secure both yards"
 	var s: Dictionary = world.passages[d.id]
 	if not s.started:
-		return "E / Build fenced passage (%d materials)" % int(world.balance.passage_cost)
+		return "E Passage · %d materials" % int(world.balance.passage_cost)
 	if not s.done:
-		return "R / Build passage %d%%   E / Cancel   F / Assign worker" % int(float(s.progress) / float(world.balance.passage_seconds) * 100)
+		return "R Build   E Cancel   F Assign"
 	if float(s.hp) <= 0:
-		return "R / Rebuild passage gate (%d materials)   F / Assign repair" % int(world.balance.gate_repair_cost)
-	return "E / %s passage gate   R / Repair   F / Assign repair" % ("Close" if s.open else "Open")
+		return "R Rebuild · %d materials" % int(world.balance.gate_repair_cost)
+	var repair: String = "   R Repair · %d materials" % int(world.balance.gate_repair_cost) if float(s.hp) < float(world.balance.gate_health) else ""
+	return "E %s%s" % ["Close" if s.open else "Open", repair]
 
 
 static func interact(world: RefCounted, d: Dictionary) -> void:

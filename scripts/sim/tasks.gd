@@ -110,7 +110,7 @@ static func assign(world: RefCounted, id: String, task: String) -> bool:
 					a.order = "Roadguard"
 					a.anchor = Roadworks.guard_post(world, d)
 	a.activity = "Heading to " + label(world, a)
-	world.note("%s assigned: %s." % [a.name, label(world, a)])
+	world.note("%s: %s" % [a.name, label(world, a)])
 	return true
 
 
