@@ -1,4 +1,5 @@
 extends Node2D
+const Equipment = preload("res://scripts/sim/equipment.gd")
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
@@ -37,6 +38,7 @@ func _ready() -> void:
 	canvas.add_child(hud)
 	hud.requested.connect(command)
 	hud.assignment_requested.connect(assign_survivor)
+	hud.equipment_requested.connect(equip)
 	hud.show_menu(true)
 	hud.refresh(world, paused)
 	# Loading is explicit, so opening the prototype cannot overwrite a run.
@@ -136,5 +138,11 @@ func command(value: String) -> void:
 
 func assign_survivor(id: String, task: String) -> void:
 	world.assign_survivor(id, task)
+	hud.menu_status.text = world.messages.back()
+	hud.refresh(world, paused)
+
+
+func equip(id: String, slot: String, item: String) -> void:
+	Equipment.equip(world, id, slot, item)
 	hud.menu_status.text = world.messages.back()
 	hud.refresh(world, paused)

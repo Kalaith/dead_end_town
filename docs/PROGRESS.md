@@ -177,3 +177,16 @@ Evidence:
 - Ran Run.ps1 with capture_neighbourhood.gd at 1280x720 and inspected yard_passage.png and neighbourhood_routes.png. These are staged visual checks, not human playtesting.
 
 Remaining goal: equipment choices, useful food upkeep and the slice completion objective, plus the integrated verification/playtest handoff. General job queues, freeform building and full-town maps remain outside this step.
+
+
+## 28 October 2026: choose and transfer recovered equipment
+
+Implementation:
+- F/pause now offers loadouts for the protagonist and every recruited survivor once the workshop is restored. Bring the player and wearer to the connected, clear bench. Unique items must be returned to storage before another wearer takes them. Invalid, remote, downed and unsafe changes preserve ownership. Equipping never heals or spends supplies.
+- The garage supplies one crowbar; restoring its cache also restores one sword alongside the existing iron and shield. The bat remains the baseline. Crowbar: 50 damage, 82 reach, 0.85-second recovery, one target. Sword: 35 damage, 88 reach, 0.65-second recovery, up to two valid targets. Bat remains 30/76/0.48/one target. These initial values are validated content, not balance acceptance.
+- Iron and shield are independent choices for anyone. Iron halves damage and slows movement to 80%; shields halve frontal damage. Visible weapon silhouettes, iron and shields follow their actual wearer. Paige's original nearby E fitting remains a convenience when both pieces are stored.
+- Schema 9 migrates prior saves, assigning previously fitted armour/shield to Paige without generating extra items. Pause content scrolls rather than running outside the viewport.
+
+Evidence:
+- All 65 scenarios pass. Five new checks cover unique transfers and reload, refused changes, actual weapon target/damage/cadence differences, player/Mara protection and movement, and migration/malformed ownership.
+- Ran Run.ps1 with capture_equipment.gd at 1280x720; its connected selectors issued loadout commands and assertions checked ownership. Inspected equipment_choices.png and shared_equipment.png. These are staged UI/visual checks, not human input or balance review.

@@ -1,4 +1,5 @@
 extends "res://addons/hatchery/testing/capture_runner.gd"
+const NeighbourhoodChecks = preload("res://tools/checks/checks_neighbourhood.gd")
 const World = preload("res://scripts/sim/world.gd")
 
 func tour() -> void:
@@ -30,6 +31,7 @@ func tour() -> void:
 		z.hp = 0.0
 	game.world.claim("library")
 	game.world.claim("garage")
+	NeighbourhoodChecks.integrate(game.world)
 	game.world.player.pos = Vector2(1080, 800)
 	game.world.interact()
 	game.world.working = true

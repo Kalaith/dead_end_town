@@ -1,4 +1,5 @@
 extends RefCounted
+const Equipment = preload("res://scripts/sim/equipment.gd")
 const Wandering = preload("res://scripts/sim/wandering.gd")
 ## Spatial combat and bounded AI. Every actor stays active off camera.
 
@@ -15,25 +16,26 @@ static func strike(world: RefCounted, attacker: Dictionary, direction: Vector2) 
 	if direction.is_zero_approx():
 		direction = attacker.facing
 	direction = direction.normalized()
-	attacker.cooldown = float(world.balance.attack_cooldown)
+	var weapon: Dictionary = Equipment.stats(world, attacker)
+	attacker.cooldown = float(weapon.cooldown)
 	attacker.swing = 0.18
 	attacker.facing = direction
-	var target: Dictionary = {}
-	var nearest: float = INF
+	var candidates: Array[Dictionary] = []
 	for z: Dictionary in world.zombies:
 		var offset: Vector2 = z.pos - attacker.pos
-		if float(z.hp) <= 0 or offset.length() > float(world.balance.attack_reach):
+		if float(z.hp) <= 0 or offset.length() > float(weapon.reach):
 			continue
-		if direction.dot(offset.normalized()) < float(world.balance.attack_cone_dot) or not world.routes.line_clear(attacker.pos, z.pos, true):
+		if direction.dot(offset.normalized()) < float(weapon.cone) or not world.routes.line_clear(attacker.pos, z.pos, true):
 			continue
-		if offset.length_squared() < nearest:
-			nearest = offset.length_squared()
-			target = z
-	if not target.is_empty():
-		target.hp = maxf(0, float(target.hp) - float(world.balance.melee_damage))
+		candidates.append(z)
+	candidates.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return attacker.pos.distance_squared_to(a.pos) < attacker.pos.distance_squared_to(b.pos))
+	for i: int in range(mini(candidates.size(), int(weapon.targets))):
+		var target: Dictionary = candidates[i]
+		target.hp = maxf(0, float(target.hp) - float(weapon.damage))
 		target.flash = 0.18
 		target.cooldown = maxf(float(target.cooldown), 0.45)
-		target.pos = world.routes.move(target.pos, target.pos + direction * 18, 18)
+		target.pos = world.routes.move(target.pos, target.pos + direction * float(weapon.knockback), float(weapon.knockback))
+
 
 
 static func step(world: RefCounted, dt: float) -> void:
@@ -73,7 +75,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 			best = distance
 	if not target.is_empty():
 		a.activity = "Defending"
-		if best < float(world.balance.attack_reach):
+		if best < float(Equipment.stats(world, a).reach):
 			strike(world, a, a.pos.direction_to(target.pos))
 		elif a.order not in ["Guard", "Roadguard"] or (a.order == "Guard" and target.pos.y < 465):
 			_walk(world, a, target.pos, dt, _survivor_speed(world, a))
@@ -84,11 +86,11 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 	if a.order == "Guard" and not world.properties.home.open:
 		for z: Dictionary in world.zombies:
 			if float(z.hp) > 0 and z.pos.distance_to(Vector2(360, 490)) < 50 and a.pos.distance_to(Vector2(360, 445)) < 32 and float(a.cooldown) <= 0:
-				z.hp = maxf(0, float(z.hp) - float(world.balance.melee_damage))
+				z.hp = maxf(0, float(z.hp) - float(Equipment.stats(world, a).damage))
 				z.flash = 0.18
 				a.swing = 0.18
 				a.facing = a.pos.direction_to(z.pos)
-				a.cooldown = float(world.balance.attack_cooldown)
+				a.cooldown = float(Equipment.stats(world, a).cooldown)
 				a.activity = "Holding the barricade"
 				return
 	if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage"] and danger(world, anchor, 170):
@@ -145,14 +147,13 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 
 
 static func _survivor_speed(world: RefCounted, a: Dictionary) -> float:
-	var factor: float = float(world.balance.armour_speed_multiplier) if a.id == "paige" and world.workshop.equipped else 1.0
-	return float(world.balance.survivor_speed) * factor
+	return float(world.balance.survivor_speed) * Equipment.speed(world, a)
 
 
 static func incoming_damage(world: RefCounted, target: Dictionary, source: Vector2) -> float:
 	var damage: float = float(world.balance.zombie_damage)
-	if target.id == "paige" and world.workshop.equipped:
+	if Equipment.protected(world, target):
 		damage *= float(world.balance.armour_damage_multiplier)
-		if target.facing.dot(target.pos.direction_to(source)) > 0.2:
-			damage *= float(world.balance.shield_damage_multiplier)
+	if Equipment.shielded(world, target) and target.facing.dot(target.pos.direction_to(source)) > 0.2:
+		damage *= float(world.balance.shield_damage_multiplier)
 	return damage

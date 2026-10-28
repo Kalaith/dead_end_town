@@ -53,3 +53,10 @@ No XP allocation screen is needed. Equipment can change role immediately when sa
 Survivors are exploration rewards, not a recurring labour-generation system. Not every house contains someone. A rescue establishes the person in the world, removes the immediate danger, and returns them safely; claim ownership separately when appropriate.
 
 Keep dialogue short and cooperative. A librarian's enthusiasm about finally finding a shield can make an equipment upgrade memorable without creating a relationship subsystem. Optional personal interests may point toward buildings, but do not become compulsory mood-management quests.
+
+
+## Implemented loadout choices, 28 October 2026
+
+The restored workshop exposes paused F loadouts for the player, Mara and rescued Paige. Changing equipment requires both player and wearer at the clear bench with a protected home route. The garage crowbar and restored sword, iron and shield are unique items; return an item before transferring it. Each person retains a basic bat when no recovered weapon is selected. No item is duplicated or remotely swapped.
+
+Bat is fast and single-target; crowbar is slower and stronger with more knockback; restored sword reaches farther and can hit two valid enemies. Iron halves incoming damage and reduces speed by 20%; shield protection is independent and frontal. Any person can use either. This supplies equipment-led role choices without classes or XP.

@@ -1,5 +1,6 @@
 extends RefCounted
 ## The garage's first equipment chain: committed work and one physical loadout.
+const Equipment = preload("res://scripts/sim/equipment.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 
@@ -24,9 +25,9 @@ static func context(world: RefCounted) -> String:
 		return "E / Restore cached armour and shield (%d materials)" % int(world.balance.armour_cost)
 	if not state.armour_done:
 		return "R / Restore armour %d%%   |   F / Team orders" % int(float(state.armour_progress) / float(world.balance.armour_seconds) * 100)
-	if not state.equipped:
-		return "E / Fit Paige's armour and shield" if world.properties.library.claimed else "Armour and shield stored at the bench"
-	return ""
+	if not state.equipped and world.equipment.iron.is_empty() and world.equipment.shield.is_empty():
+		return "E / Fit Paige's armour and shield   F / Choose loadouts" if world.properties.library.looted else "F / Choose loadouts at the bench"
+	return "F / Choose equipment for anyone at the bench"
 
 
 static func interact(world: RefCounted) -> void:
@@ -41,12 +42,14 @@ static func interact(world: RefCounted) -> void:
 	elif state.done and not state.armour_started:
 		if _reserve(world, "armour_cost"):
 			state.armour_started = true
-			world.note("Cached iron armour and shield on the bench. Hold R or assign a survivor with F.")
-	elif state.armour_done and not state.equipped:
+			world.note("Cached sword, iron armour and shield on the bench. Hold R or assign a survivor with F.")
+	elif state.armour_done and not state.equipped and world.equipment.iron.is_empty() and world.equipment.shield.is_empty():
 		var site: Vector2 = Routes.point(world.definition("garage").site)
 		for a: Dictionary in world.survivors:
 			if a.id == "paige" and float(a.hp) > 0 and a.pos.distance_to(site) < 85:
-				state.equipped = true
+				if not Equipment.equip(world, a.id, "protection", "iron"):
+					return
+				Equipment.equip(world, a.id, "shield", "shield")
 				world.note("Paige: 'Now I can hold the door.' Iron armour and shield equipped.")
 				return
 		world.note("Bring Paige to the workshop to fit the armour." if world.properties.library.claimed else "Armour and shield stored at the bench.")
@@ -81,7 +84,7 @@ static func step(world: RefCounted, dt: float) -> void:
 	world.workshop[key] = minf(duration, float(world.workshop[key]) + dt)
 	if float(world.workshop[key]) >= duration:
 		world.workshop["armour_done" if armour else "done"] = true
-		var message: String = "Iron armour and shield ready." if armour else "Workshop restored. E at the bench starts restoring the cached armour and shield."
+		var message: String = "Sword, iron armour and shield ready." if armour else "Workshop restored. E at the bench starts restoring the cached armour and shield."
 		if armour and world.properties.library.claimed:
 			message += " Bring Paige to the bench and press E."
 		world.note(message)

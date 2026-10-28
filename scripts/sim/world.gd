@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Equipment = preload("res://scripts/sim/equipment.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Territory = preload("res://scripts/sim/territory.gd")
 const Pressure = preload("res://scripts/sim/pressure.gd")
@@ -33,6 +34,7 @@ var working: bool = false
 var alert: String = "SAFE"
 var downs: int = 0
 var workshop: Dictionary = Workshop.initial()
+var equipment: Dictionary = Equipment.initial()
 var passages: Dictionary
 var roadworks: Dictionary
 
@@ -92,7 +94,7 @@ func step(dt: float) -> void:
 	for a: Dictionary in [player] + survivors + zombies:
 		for key: String in ["cooldown", "flash", "swing"]:
 			a[key] = maxf(0.0, float(a[key]) - dt)
-	var travel: Vector2 = move_input * float(balance.player_speed) * dt
+	var travel: Vector2 = move_input * float(balance.player_speed) * Equipment.speed(self, player) * dt
 	player.pos = routes.move(player.pos, player.pos + travel, travel.length())
 	face_aim()
 	Combat.step(self, dt)

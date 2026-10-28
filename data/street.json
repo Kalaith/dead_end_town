@@ -2,6 +2,7 @@
   "schema_version": 1,
   "bounds": [1440, 1160],
   "balance": {
+    "equipment_range": 100,
     "passage_cost": 4,
     "passage_seconds": 6,
     "passage_range": 65,
@@ -142,6 +143,37 @@
     {"id":"garden_west","name":"Garden block west barricade","rect":[792,480,16,200],"center":[800,580],"site":[848,580],"requires":["garden","garage"]},
     {"id":"garden_east","name":"Garden block east barricade","rect":[1352,480,16,200],"center":[1360,580],"site":[1312,580],"requires":["garden","garage"]}
   ],
+  "equipment": {
+  "weapons": {
+    "bat": {
+      "name": "Bat",
+      "damage": 30,
+      "reach": 76,
+      "cooldown": 0.48,
+      "knockback": 18,
+      "cone": 0.2,
+      "targets": 1
+    },
+    "crowbar": {
+      "name": "Crowbar",
+      "damage": 50,
+      "reach": 82,
+      "cooldown": 0.85,
+      "knockback": 24,
+      "cone": 0.5,
+      "targets": 1
+    },
+    "sword": {
+      "name": "Restored sword",
+      "damage": 35,
+      "reach": 88,
+      "cooldown": 0.65,
+      "knockback": 12,
+      "cone": 0.15,
+      "targets": 2
+    }
+  }
+},
   "passages": [
   {
     "id": "north",

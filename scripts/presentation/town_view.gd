@@ -1,5 +1,6 @@
 extends Node2D
 ## Original procedural greybox art. No imported game assets.
+const Equipment = preload("res://scripts/sim/equipment.gd")
 const NeighbourhoodView = preload("res://scripts/presentation/neighbourhood_view.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const RoadView = preload("res://scripts/presentation/road_view.gd")
@@ -146,17 +147,23 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 	draw_rect(Rect2(pos + Vector2(-10, -22), Vector2(20, 20)), body)
 	draw_rect(Rect2(pos + Vector2(-10, -10), Vector2(20, 4)), body.darkened(0.3))
 	_head(pos + Vector2(0, -29), direction, zombie)
-	if not zombie and a.id == "paige" and world.workshop.equipped:
+	if not zombie and Equipment.protected(world, a):
 		_armour(pos, a.facing)
+	if not zombie and Equipment.shielded(world, a):
+		_shield(pos, a.facing)
 	if not zombie:
 		var grip: Vector2 = pos + Vector2(0, -14) + direction * 12
-		draw_line(grip, grip + direction * 27, Color("c7b68e"), 5)
+		var weapon: String = Equipment.weapon(world, a)
+		draw_line(grip, grip + direction * (36 if weapon == "sword" else 27), Color("c7b68e") if weapon == "bat" else Color("c1d1d0"), 5 if weapon != "sword" else 3)
+		if weapon == "crowbar":
+			draw_line(grip + direction * 27, grip + direction * 27 + direction.orthogonal() * 10, Color("c1d1d0"), 4)
 		draw_circle(grip, 3, Color("d7b08b"))
 		if a.id != "you":
 			_text(pos + Vector2(-16, -49), a.name, 13, CREAM)
 	if float(a.swing) > 0:
-		var half_angle: float = acos(float(world.balance.attack_cone_dot))
-		draw_arc(pos, float(world.balance.attack_reach), direction.angle() - half_angle, direction.angle() + half_angle, 24, CREAM, 3)
+		var stats: Dictionary = Equipment.stats(world, a)
+		var half_angle: float = acos(float(stats.cone))
+		draw_arc(pos, float(stats.reach), direction.angle() - half_angle, direction.angle() + half_angle, 24, CREAM, 3)
 	if float(a.hp) < (float(world.balance.zombie_health) if zombie else 100.0):
 		_meter(pos + Vector2(-15, 10), 30, float(a.hp) / (float(world.balance.zombie_health) if zombie else 100.0), RUST)
 
@@ -198,7 +205,7 @@ func _workshop(site: Vector2) -> void:
 	if state.done:
 		draw_line(bench + Vector2(10, 6), bench + Vector2(28, 6), CREAM, 4)
 		draw_circle(bench + Vector2(31, 6), 5, Color("a9b7b5"))
-	if world.properties.garage.claimed and not state.equipped:
+	if world.properties.garage.claimed and world.equipment.iron.is_empty():
 		# The unique recovered set remains physically visible until fitted.
 		draw_rect(Rect2(bench + Vector2(39, -3), Vector2(18, 23)), Color("c1d1d0") if state.armour_done else Color("837f71"))
 		draw_arc(bench + Vector2(48, -6), 7, PI, TAU, 12, CREAM, 3)
@@ -215,6 +222,9 @@ func _armour(pos: Vector2, facing: Vector2) -> void:
 	draw_arc(pos + Vector2(0, -29), 10, PI, TAU, 12, Color("b7c8ca"), 5)
 	# Keep Paige's purple scarf and face visible through the iron silhouette.
 	draw_line(pos + Vector2(-8, -22), pos + Vector2(8, -22), Color("b7a0c8"), 4)
+
+
+func _shield(pos: Vector2, facing: Vector2) -> void:
 	var shield: Vector2 = pos + facing * 17 + Vector2(-8, -12)
 	draw_circle(shield, 12, INK)
 	draw_circle(shield, 10, Color("a8babe"))

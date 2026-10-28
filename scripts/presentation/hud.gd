@@ -1,10 +1,12 @@
 extends Control
+const EquipmentMenu = preload("res://scripts/presentation/equipment_menu.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const UiKit = preload("res://addons/hatchery/ui/ui_kit.gd")
 const Palette = preload("res://addons/hatchery/ui/palette.gd")
 const TeamOrders = preload("res://scripts/presentation/team_orders.gd")
 signal requested(command: String)
+signal equipment_requested(actor_id: String, slot: String, item_id: String)
 signal assignment_requested(survivor_id: String, task: String)
 var kit: RefCounted
 var stats: Label
@@ -14,6 +16,7 @@ var radio: Label
 var team_orders: VBoxContainer
 var supplies: Label
 var menu: PanelContainer
+var equipment_menu: VBoxContainer
 var routes_status: Label
 var menu_status: Label
 var pause_title: Label
@@ -82,6 +85,9 @@ func _build_menu() -> void:
 	team_orders = TeamOrders.new()
 	column.add_child(team_orders)
 	team_orders.assigned.connect(func(id: String, task: String) -> void: assignment_requested.emit(id, task))
+	equipment_menu = EquipmentMenu.new()
+	column.add_child(equipment_menu)
+	equipment_menu.chosen.connect(func(id: String, slot: String, item: String) -> void: equipment_requested.emit(id, slot, item))
 	column.add_child(kit.label("WASD / arrows  Move and face     Mouse  Aim\nClick  Swing at cursor     Space  Swing forward (hold to repeat)\nE  Interact     Hold R  Work     F  Team orders     G  Post road guard\n1-4  Entire team: Follow / Hold / Engage / Home     Esc / Tab  Pause", 15))
 	first_button = kit.button("Begin", func() -> void: requested.emit("resume"), true)
 	column.add_child(first_button)
@@ -117,6 +123,7 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 		routes_status.text = Neighbourhood.summary(world)
 		routes_status.visible = not routes_status.text.is_empty()
 		team_orders.refresh(world)
+		equipment_menu.refresh(world)
 	var latest: String = world.messages.back() if not world.messages.is_empty() else ""
 	if latest != last_message:
 		last_message = latest
@@ -137,7 +144,7 @@ func _goal(world: RefCounted) -> String:
 	if world.workshop.armour_done:
 		if not world.properties.library.claimed:
 			return "The restored armour is stored at the workshop."
-		return "Bring Paige to the workshop; E fits her armour and shield."
+		return "Choose weapons, armour and shields at the workshop with F."
 	if world.workshop.armour_started:
 		return "Restore the armour with R or assign a survivor with F at the garage."
 	if world.workshop.done:

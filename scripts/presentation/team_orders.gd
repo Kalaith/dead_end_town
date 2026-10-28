@@ -1,5 +1,6 @@
 extends VBoxContainer
 ## Compact paused orders: one choice per survivor, no live management panel.
+const Equipment = preload("res://scripts/sim/equipment.gd")
 const Tasks = preload("res://scripts/sim/tasks.gd")
 signal assigned(survivor_id: String, task: String)
 var rows: Dictionary = {}
@@ -16,7 +17,7 @@ func refresh(world: RefCounted) -> void:
 		if fresh:
 			_create_row(a.id)
 		var row: Dictionary = rows[a.id]
-		var equipment: String = "Iron armour + shield" if a.id == "paige" and world.workshop.equipped else "Bat"
+		var equipment: String = Equipment.description(world, a)
 		row.status.text = "%s / %d health / %s\n%s" % [a.name, int(a.hp), equipment, a.activity]
 		var picker: OptionButton = row.picker
 		picker.disabled = float(a.hp) <= 0
