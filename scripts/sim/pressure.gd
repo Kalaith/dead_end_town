@@ -48,7 +48,10 @@ static func step(world: RefCounted) -> void:
 	for i: int in range(size):
 		var route_id: String = entries[i % entries.size()]
 		var pos: Vector2 = entry_position(world.catalog, entries, size, i)
-		var z: Dictionary = world.actor("wave%d_%s_%d" % [int(world.pressure.wave), route_id, i], "Shambler", pos, ZombieTypes.health(world.catalog))
+		var kind: String = special_kind(config, int(world.pressure.wave), i)
+		var z: Dictionary = world.actor("wave%d_%s_%d" % [int(world.pressure.wave), route_id, i], ZombieTypes.type_name(world.catalog, kind), pos, ZombieTypes.health(world.catalog, kind))
+		if kind != "":
+			z.kind = kind
 		z.home = "street"
 		z.raid = true
 		# Spawn at a real edge; the same random wandering applies to every zombie.
@@ -59,6 +62,18 @@ static func step(world: RefCounted) -> void:
 	world.pressure.wave = int(world.pressure.wave) + 1
 	world.pressure.next = world.elapsed + maxf(float(config.minimum_interval), float(config.interval_seconds) - (maxi(1, claims) - 1) * float(config.claim_interval_reduction))
 	world.pressure.warned = false
+
+
+## Special kinds take the first spawn slots of a wave, in the order authored.
+static func special_kind(config: Dictionary, wave: int, index: int) -> String:
+	var slot: int = 0
+	for entry: Dictionary in config.specials:
+		if wave < int(entry.from_wave):
+			continue
+		slot += int(entry.count)
+		if index < slot:
+			return entry.kind
+	return ""
 
 
 static func route_definition(data: Dictionary, id: String) -> Dictionary:

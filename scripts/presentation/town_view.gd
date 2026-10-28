@@ -142,8 +142,8 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 	if float(a.hp) <= 0:
 		draw_line(pos - Vector2(12, 0), pos + Vector2(12, 0), Color("575e4d") if zombie else RUST, 9)
 		return
-	_ellipse(pos + Vector2(1, 4), Vector2(15, 7), Color(0, 0, 0, 0.3))
-	var body: Color = Color("788357") if zombie else (Color("dfad62") if a.id == "you" else (Color("7daeb9") if a.id == "mara" else Color("b7a0c8")))
+	_ellipse(pos + Vector2(1, 4), Vector2(21, 9) if a.get("kind") == "brute" else Vector2(15, 7), Color(0, 0, 0, 0.3))
+	var body: Color = (Color("8a5a4a") if a.get("kind") == "brute" else Color("788357")) if zombie else (Color("dfad62") if a.id == "you" else (Color("7daeb9") if a.id == "mara" else Color("b7a0c8")))
 	if float(a.flash) > 0:
 		body = Color("fff0d5")
 	draw_line(pos + Vector2(-5, -3), pos + Vector2(-6, 3), INK, 5)
@@ -168,8 +168,8 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		var stats: Dictionary = Equipment.stats(world, a)
 		var half_angle: float = acos(float(stats.cone))
 		draw_arc(pos, float(stats.reach), direction.angle() - half_angle, direction.angle() + half_angle, 24, CREAM, 3)
-	if float(a.hp) < (ZombieTypes.max_health(world.catalog) if zombie else 100.0):
-		_meter(pos + Vector2(-15, 10), 30, float(a.hp) / (ZombieTypes.max_health(world.catalog) if zombie else 100.0), RUST)
+	if float(a.hp) < (ZombieTypes.full_health(world.catalog, a) if zombie else 100.0):
+		_meter(pos + Vector2(-15, 10), 30, float(a.hp) / (ZombieTypes.full_health(world.catalog, a) if zombie else 100.0), RUST)
 
 
 func _head(center: Vector2, direction: Vector2, zombie: bool) -> void:

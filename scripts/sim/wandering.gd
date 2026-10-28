@@ -40,7 +40,7 @@ static func _bump(world: RefCounted, z: Dictionary, intended: Vector2, direction
 		var fence_y: float = gate.y if gate.y == float(p.rect[1]) else gate.y - 8
 		var collision := Rect2(gate.x - 44, fence_y, 88, 8).grow(Routes.RADIUS)
 		if collision.has_point(intended) and float(z.cooldown) <= 0:
-			state.gate_hp = maxf(0.0, float(state.gate_hp) - float(world.balance.gate_damage))
+			state.gate_hp = maxf(0.0, float(state.gate_hp) - float(world.balance.gate_damage) * ZombieTypes.stat(world.catalog, z, "breach"))
 			z.cooldown = ZombieTypes.stat(world.catalog, z, "cooldown")
 			if float(state.gate_hp) <= 0:
 				world.rebuild_routes()

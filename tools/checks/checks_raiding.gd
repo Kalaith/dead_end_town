@@ -1,6 +1,8 @@
 extends RefCounted
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
+const SaveState = preload("res://scripts/core/save_state.gd")
+const Combat = preload("res://scripts/sim/combat.gd")
 
 
 func check_raider_settles_in_a_building_that_needs_zombies_then_wanders() -> String:
@@ -55,3 +57,27 @@ func _quiet() -> RefCounted:
 		a.hp = 0.0
 	w.pressure.next = 1.0e9
 	return w
+
+
+func check_first_raid_brings_a_saved_brute_that_hits_harder() -> String:
+	var w: RefCounted = _quiet()
+	w.pressure.next = 0.0
+	w.step(0.05)
+	var brutes: Array[Dictionary] = []
+	for z: Dictionary in w.zombies:
+		if z.get("kind") == "brute":
+			brutes.append(z)
+	if brutes.size() != 1 or float(brutes[0].hp) != 180.0 or not brutes[0].raid:
+		return "First raid did not bring exactly one full-health brute."
+	var save := SaveState.new(w.catalog)
+	var loaded: RefCounted = save.restore(JSON.parse_string(JSON.stringify(save.snapshot(w))))
+	if loaded == null:
+		return "A save holding a brute was refused."
+	var again: int = 0
+	for z: Dictionary in loaded.zombies:
+		again += 1 if z.get("kind") == "brute" else 0
+	if again != 1:
+		return "Brute kind was lost across save and load."
+	if Combat.incoming_damage(w, w.player, w.player.pos + Vector2.LEFT, brutes[0]) <= Combat.incoming_damage(w, w.player, w.player.pos + Vector2.LEFT):
+		return "Brute does not hit harder than a shambler."
+	return ""

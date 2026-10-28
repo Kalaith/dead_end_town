@@ -111,5 +111,5 @@ static func _zombie_types(data: Dictionary, errors: Array[String]) -> void:
 			continue
 		var rules := Rules.new(errors, "zombie " + id)
 		rules.text(type_data, "name")
-		for key: String in ["health", "speed", "damage", "cooldown"]:
+		for key: String in ["health", "speed", "damage", "cooldown", "breach"]:
 			rules.number_between(type_data, key, 0.001, 10000.0)

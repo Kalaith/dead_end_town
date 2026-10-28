@@ -9,6 +9,13 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	if not rules.object(data, "pressure"):
 		return
 	var config: Dictionary = data.pressure
+	if not config.get("specials") is Array:
+		errors.append("Pressure specials must be a list.")
+	else:
+		var types: Variant = data.get("zombies", {}).get("types", {})
+		for entry: Variant in config.specials:
+			if not entry is Dictionary or not types is Dictionary or not types.has(entry.get("kind")) or not Rules.whole(entry.get("from_wave")) or not Rules.whole(entry.get("count")) or int(entry.count) < 1 or int(entry.from_wave) < 0:
+				errors.append("Pressure special needs a known kind, a from_wave and a positive count.")
 	for key: String in ["warning_seconds", "interval_seconds", "claim_interval_reduction", "minimum_interval", "spawn_spacing"]:
 		rules.number_between(config, key, 1, 1000)
 	for key: String in ["base_size", "claim_size", "maximum_size", "living_cap"]:

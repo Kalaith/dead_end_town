@@ -59,3 +59,5 @@ The squad fires at residents in the garage. Nearby wanderers investigate the sho
 Day/night modifiers, special infected, siege bosses, and scheduled horde nights remain open or deferred. They should not enter the MVP until the basic pressure loop works.
 
 Zombie kinds are data: `data/zombies.json` defines each type's health, speed, damage and cooldown, and all movement and combat read them through `scripts/sim/zombie_types.gd` using the actor's optional `kind` (default Shambler). Adding a type needs a JSON entry plus a saved `kind` field on actors; behaviour differences can then branch on the kind.
+
+The Brute is the first non-default kind: 180 health, slower (38), bites for 18 on a 1.6 second cooldown and damages gates and barricades 2.5 times as hard. `pressure.specials` in `data/street/pressure.json` puts `count` of a kind into the first spawn slots of every raid from `from_wave` on, so the first raid already includes one. A non-default zombie stores `kind` on its actor; saves without it load as shamblers, so no schema bump was needed.

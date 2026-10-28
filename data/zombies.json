@@ -3,7 +3,8 @@
   "zombies": {
     "default": "shambler",
     "types": {
-      "shambler": {"name": "Shambler", "health": 60, "speed": 47, "damage": 9, "cooldown": 1.2}
+      "shambler": {"name": "Shambler", "health": 60, "speed": 47, "damage": 9, "cooldown": 1.2, "breach": 1.0},
+      "brute": {"name": "Brute", "health": 180, "speed": 38, "damage": 18, "cooldown": 1.6, "breach": 2.5}
     }
   }
 }

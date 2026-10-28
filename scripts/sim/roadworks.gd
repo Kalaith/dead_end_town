@@ -238,7 +238,7 @@ static func intercept(world: RefCounted, z: Dictionary, target: Vector2, dt: flo
 		if float(z.cooldown) <= 0:
 			if float(s.hp) == float(world.balance.barricade_health):
 				world.note("STREET / %s is under attack." % chosen.name)
-			s.hp = maxf(0.0, float(s.hp) - float(world.balance.gate_damage))
+			s.hp = maxf(0.0, float(s.hp) - float(world.balance.gate_damage) * ZombieTypes.stat(world.catalog, z, "breach"))
 			z.cooldown = ZombieTypes.stat(world.catalog, z, "cooldown")
 			if float(s.hp) <= 0:
 				world.roadworks[chosen.id] = empty()

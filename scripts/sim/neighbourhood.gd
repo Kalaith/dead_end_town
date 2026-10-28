@@ -153,7 +153,7 @@ static func bump(world: RefCounted, z: Dictionary, intended: Vector2) -> bool:
 			continue
 		if Routes.rectangle(d.gate).grow(Routes.RADIUS).has_point(intended):
 			if float(z.cooldown) <= 0:
-				s.hp = maxf(0, float(s.hp) - float(world.balance.gate_damage))
+				s.hp = maxf(0, float(s.hp) - float(world.balance.gate_damage) * ZombieTypes.stat(world.catalog, z, "breach"))
 				z.cooldown = ZombieTypes.stat(world.catalog, z, "cooldown")
 				if float(s.hp) <= 0:
 					world.rebuild_routes()

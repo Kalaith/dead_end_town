@@ -9,6 +9,7 @@
     "claim_size": 2,
     "maximum_size": 10,
     "living_cap": 36,
+    "specials": [{"kind": "brute", "from_wave": 0, "count": 1}],
     "spawn_spacing": 28,
     "routes": [
       {

@@ -134,6 +134,8 @@ func valid(data: Dictionary) -> bool:
 	for z: Variant in data.zombies:
 		if not z.get("raid") is bool or not z.get("home") is String:
 			return false
+		if z.has("kind") and (not z.kind is String or not catalog.zombies.types.has(z.kind) or float(z.hp) > ZombieTypes.health(catalog, z.kind)):
+			return false
 	if data.survivors.size() != (2 if data.properties.library.looted else 1):
 		return false
 	if data.survivors[0].id != "mara" or (data.survivors.size() == 2 and data.survivors[1].id != "paige"):
