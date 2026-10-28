@@ -3,6 +3,7 @@ const Routes = preload("res://scripts/sim/routes.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const Wandering = preload("res://scripts/sim/wandering.gd")
+const Raiding = preload("res://scripts/sim/raiding.gd")
 ## Spatial combat and bounded AI. Every actor stays active off camera.
 
 static func danger(world: RefCounted, pos: Vector2, radius: float) -> bool:
@@ -51,6 +52,7 @@ static func step(world: RefCounted, dt: float) -> void:
 	for z: Dictionary in world.zombies:
 		if float(z.hp) > 0:
 			_zombie(world, z, dt)
+	Raiding.sweep(world)
 	if float(world.player.hp) <= 0:
 		world.downs += 1
 		world.player.hp = float(world.balance.player_health)
@@ -159,7 +161,10 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 		return
 	if float(z.cooldown) < 0.7:
 		if target.is_empty():
-			Wandering.step(world, z, dt)
+			if z.raid:
+				Raiding.step(world, z, dt)
+			else:
+				Wandering.step(world, z, dt)
 		else:
 			Wandering.advance(world, z, target.pos, dt)
 

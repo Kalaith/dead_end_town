@@ -125,7 +125,7 @@ func check_raiders_attack_road_barricades_from_both_directions_and_breach() -> S
 		var z: Dictionary = w.zombies[0]
 		z.pos = Vector2(100 if index == 0 else 620, 580)
 		z.hp = 60.0
-		z.raid = true
+		z.raid = false  # forced roam heading; raiders path on their own
 		var id: String = w.catalog.barricades[index].id
 		_press(w, z, Vector2.LEFT if index == 0 else Vector2.RIGHT, 4.0)
 		if float(w.roadworks[id].hp) >= 180 or w.roadworks[id].phase != "ready":

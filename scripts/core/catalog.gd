@@ -32,6 +32,7 @@ static func problems(data: Dictionary) -> Array[String]:
 			rules.vec2(data.balance, key)
 		rules.number_between(data.balance, "zombie_notice_range", 29.0, 10000.0)
 		rules.number_between(data.balance, "roam_seed", 1, 2147483647)
+		rules.number_between(data.balance, "settle_percent", 0, 100)
 		rules.number_between(data.balance, "roam_turn_min", 0.05, 30)
 		rules.number_between(data.balance, "roam_turn_max", 0.05, 30)
 		if Rules.finite(data.balance.get("roam_turn_min")) and Rules.finite(data.balance.get("roam_turn_max")) and float(data.balance.roam_turn_min) > float(data.balance.roam_turn_max):
@@ -67,6 +68,8 @@ static func problems(data: Dictionary) -> Array[String]:
 			for neighbor: Variant in p.neighbors:
 				if not ids.has(neighbor):
 					errors.append("Unknown property neighbor.")
+		if not Rules.finite(p.get("hidden_zombies")) or float(p.hidden_zombies) < 0 or float(p.hidden_zombies) != floorf(float(p.hidden_zombies)):
+			errors.append("Property %s needs a whole hidden zombie quota." % p.get("id"))
 		for key: String in ["zombies", "reinforcements"]:
 			if not rules.list(p, key):
 				continue
