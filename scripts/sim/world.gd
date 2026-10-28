@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Provisions = preload("res://scripts/sim/provisions.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Territory = preload("res://scripts/sim/territory.gd")
@@ -34,6 +35,7 @@ var working: bool = false
 var alert: String = "SAFE"
 var downs: int = 0
 var workshop: Dictionary = Workshop.initial()
+var provisions: Dictionary = Provisions.initial()
 var equipment: Dictionary = Equipment.initial()
 var passages: Dictionary
 var roadworks: Dictionary
@@ -99,10 +101,12 @@ func step(dt: float) -> void:
 	face_aim()
 	Combat.step(self, dt)
 	Territory.step(self, dt)
-	Neighbourhood.step(self, dt)
-	_work(dt)
-	Workshop.step(self, dt)
-	Roadworks.step(self, dt)
+	Provisions.step(self, dt)
+	var work_dt: float = dt * Provisions.work_rate(self)
+	Neighbourhood.step(self, work_dt)
+	_work(work_dt)
+	Workshop.step(self, work_dt)
+	Roadworks.step(self, work_dt)
 	Pressure.step(self)
 	var next_alert: String = "SAFE"
 	for z: Dictionary in zombies:
@@ -162,7 +166,7 @@ func context() -> String:
 			return "E / %s gate%s" % ["Close" if properties[p.id].open else "Open", "   |   R / Repair (3 materials)" if p.id == "home" else ""]
 		if player.pos.distance_to(Routes.point(p.site)) < 85:
 			if p.id == "home" and properties.home.claimed:
-				return "E / Rest at home and recover the team"
+				return "E / Recover the team (%d food)" % int(balance.recovery_food)
 			if remaining(p.id) > 0:
 				return "Clear the yard before searching"
 			if not properties[p.id].claimed:
@@ -202,15 +206,7 @@ func interact() -> void:
 			return
 		if player.pos.distance_to(Routes.point(p.site)) < 85:
 			if p.id == "home" and state.claimed:
-				if alert != "SAFE":
-					note("Resolve the home approach before resting.")
-					return
-				player.hp = float(balance.player_health)
-				for a: Dictionary in survivors:
-					if float(a.hp) <= 0:
-						a.pos = Vector2(310, 370)
-					a.hp = float(balance.survivor_health)
-				note("Team recovered at home. No offline time passes.")
+				Provisions.recover(self)
 				return
 			if not state.claimed:
 				claim(p.id)
@@ -244,6 +240,7 @@ func claim(id: String) -> bool:
 		note(definition(id).name + " / Reclaimed. Previous improvements preserved.")
 		return true
 	properties[id].looted = true
+	food += int(definition(id).food_cache)
 	materials += int(balance.claim_materials)
 	if id == "garage":
 		materials += 12
@@ -317,7 +314,8 @@ func _work(dt: float) -> void:
 		harvest += dt
 		if harvest >= float(balance.food_seconds):
 			harvest -= float(balance.food_seconds)
-			food += 2
+			food += int(balance.food_yield)
+			provisions.harvested += int(balance.food_yield)
 
 
 func post_road_guard() -> void:

@@ -61,3 +61,10 @@ Keep a protected minimum material reserve for automatic maintenance. Explain wha
 ## Preventing dead ends
 
 Place enough accessible salvage for essential recovery. Keep a basic repair option independent of the advanced workshop. Recoverable key discoveries must survive loss of their original building. A lost food facility should create a recovery problem with alternatives, not an immediate unwinnable state.
+
+
+## Implemented food loop, 28 October 2026
+
+One shared meal every 60 active seconds costs one food per current person. Garden/library/garage searches contain 4/3/2 food once. Garden tending yields two food per 20 work seconds only with a protected home connection. A shortage reduces work to 60% without health loss; delivering enough food pays one meal and restores normal work. There is no accumulated hunger debt or individual ration interface.
+
+Recovery at the safe home porch costs two food for the injured team. Healthy rest and failed attempts consume nothing. Food state is saved and never advances offline. Values are initial playtest tuning.

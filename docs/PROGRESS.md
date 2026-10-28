@@ -190,3 +190,16 @@ Implementation:
 Evidence:
 - All 65 scenarios pass. Five new checks cover unique transfers and reload, refused changes, actual weapon target/damage/cadence differences, player/Mara protection and movement, and migration/malformed ownership.
 - Ran Run.ps1 with capture_equipment.gd at 1280x720; its connected selectors issued loadout commands and assertions checked ownership. Inspected equipment_choices.png and shared_equipment.png. These are staged UI/visual checks, not human input or balance review.
+
+
+## 28 October 2026: shared meals and recovery supplies
+
+Implementation:
+- One community meal every 60 active seconds consumes one food per person (two initially, three after rescue). Search caches contain food once; recapture never repeats them. Pause/loading consume no time.
+- A missed meal slows construction, repairs, restoration and gardening to 60%, without hunger damage or death. A low-food warning precedes shortage. Enough new food pays one shared meal, restores normal work and restarts the clock; missed meals never become accumulating debt.
+- Home recovery costs two food only when someone needs healing. Unsafe/insufficient attempts change nothing; repeated rest while healthy costs nothing. Garden delivery still needs a safe physical connection and records actual harvested portions for the coming slice objective.
+- Schema 10 preserves meal timing, shortage/warning state and harvested food. Older saves keep their stock and start a fresh meal interval without retroactive cache rewards.
+
+Evidence:
+- All 70 scenarios pass; five new checks cover roster meal costs/no hunger injury, slowed actual workshop work and garden recovery, transactional recovery, unique caches and mid-meal reload, plus migration/malformed clocks.
+- Ran Run.ps1 with capture_provisions.gd at 1280x720 and inspected food_shortage.png and food_recovery.png. Staged pause/recovery UI, not human balance acceptance.

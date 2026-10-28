@@ -1,4 +1,6 @@
 extends RefCounted
+const ProvisionsState = preload("res://scripts/core/provisions_state.gd")
+const Provisions = preload("res://scripts/sim/provisions.gd")
 const EquipmentState = preload("res://scripts/core/equipment_state.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const NeighbourhoodState = preload("res://scripts/core/neighbourhood_state.gd")
@@ -12,23 +14,23 @@ const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "workshop", "roadworks", "pressure", "passages", "equipment"]
+const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions"]
 var catalog: Dictionary
 var store: RefCounted
 
 
 func _init(data: Dictionary, path: String = "user://street.json") -> void:
 	catalog = data
-	store = JsonSave.new(path, 9, valid)
+	store = JsonSave.new(path, 10, valid)
 	store.migrate = migrate
 	store.schema_key = "schema_version"
 	store.block_on_damage = true
 
 
 func snapshot(world: RefCounted) -> Dictionary:
-	var result: Dictionary = {"schema_version": 9, "roam_rng_state": str(world.roam_rng.state), "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
+	var result: Dictionary = {"schema_version": 10, "roam_rng_state": str(world.roam_rng.state), "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
 	for key: String in STATE_KEYS:
-		result[key] = world.get(key).duplicate(true) if key in ["workshop", "roadworks", "pressure", "passages", "equipment"] else world.get(key)
+		result[key] = world.get(key).duplicate(true) if key in ["workshop", "roadworks", "pressure", "passages", "equipment", "provisions"] else world.get(key)
 	for a: Dictionary in world.survivors:
 		result.survivors.append(_encode_actor(a))
 	for z: Dictionary in world.zombies:
@@ -51,12 +53,13 @@ func _decode_actor(a: Dictionary) -> Dictionary:
 
 
 func restore(raw: Dictionary) -> RefCounted:
-	var data: Dictionary = migrate(raw) if raw.get("schema_version") in [1, 2, 3, 4, 5, 6, 7, 8] else raw
+	var data: Dictionary = migrate(raw) if raw.get("schema_version") in [1, 2, 3, 4, 5, 6, 7, 8, 9] else raw
 	if not valid(data):
 		return null
 	var world := World.new(catalog)
 	for key: String in STATE_KEYS:
-		world.set(key, int(data[key]) if key in ["materials", "food", "downs"] else (data[key].duplicate(true) if key in ["workshop", "roadworks", "pressure", "passages", "equipment"] else data[key]))
+		world.set(key, int(data[key]) if key in ["materials", "food", "downs"] else (data[key].duplicate(true) if key in ["workshop", "roadworks", "pressure", "passages", "equipment", "provisions"] else data[key]))
+	world.provisions.harvested = int(data.provisions.harvested)
 	world.roam_rng.state = int(data.roam_rng_state)
 	world.properties = data.properties.duplicate(true)
 	world.player = _decode_actor(data.player)
@@ -73,12 +76,12 @@ func restore(raw: Dictionary) -> RefCounted:
 
 
 func valid(data: Dictionary) -> bool:
-	if not Rules.integer_in(data.get("schema_version"), 9, 9):
+	if not Rules.integer_in(data.get("schema_version"), 10, 10):
 		return false
 	if not data.get("roam_rng_state") is String or str(int(data.roam_rng_state)) != data.roam_rng_state:
 		return false
 	for key: String in STATE_KEYS:
-		if key in ["workshop", "roadworks", "pressure", "passages", "equipment"]:
+		if key in ["workshop", "roadworks", "pressure", "passages", "equipment", "provisions"]:
 			continue
 		if key in ["approach", "garden_started", "garden_done", "repair_reserved"]:
 			if not data.get(key) is bool:
@@ -138,7 +141,7 @@ func valid(data: Dictionary) -> bool:
 		return false
 	if data.player.id != "you":
 		return false
-	return PressureState.valid(data, catalog) and NeighbourhoodState.valid(data, catalog) and EquipmentState.valid(data)
+	return PressureState.valid(data, catalog) and NeighbourhoodState.valid(data, catalog) and EquipmentState.valid(data) and ProvisionsState.valid(data, catalog)
 
 
 func _valid_actor(a: Variant, max_health: float) -> bool:
@@ -167,10 +170,12 @@ func _valid_actor(a: Variant, max_health: float) -> bool:
 
 
 func migrate(data: Dictionary) -> Dictionary:
-	if not Rules.integer_in(data.get("schema_version"), 1, 8):
+	if not Rules.integer_in(data.get("schema_version"), 1, 9):
 		return {}
 	var upgraded: Dictionary = data.duplicate(true)
 	var version: int = int(upgraded.schema_version)
+	if version == 9:
+		return _upgrade_provisions(upgraded)
 	if version == 8:
 		return _upgrade_equipment(upgraded)
 	if version == 7:
@@ -305,4 +310,10 @@ func _upgrade_equipment(data: Dictionary) -> Dictionary:
 		data.equipment.iron = "paige"
 		data.equipment.shield = "paige"
 	data.schema_version = 9
+	return _upgrade_provisions(data)
+
+
+func _upgrade_provisions(data: Dictionary) -> Dictionary:
+	data.provisions = Provisions.initial()
+	data.schema_version = 10
 	return data if valid(data) else {}

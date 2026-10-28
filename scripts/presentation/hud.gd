@@ -1,4 +1,5 @@
 extends Control
+const Provisions = preload("res://scripts/sim/provisions.gd")
 const EquipmentMenu = preload("res://scripts/presentation/equipment_menu.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
@@ -116,7 +117,7 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 		stats.text = "HEALTH %d     RAID / IN %ds" % [int(world.player.hp), ceili(float(world.pressure.next) - world.elapsed)]
 	stats.modulate = Color("e7dfc9") if world.alert == "SAFE" and not stats.text.contains("THREATENED") else Color("ffac82")
 	objective.text = "NEXT / " + _goal(world)
-	supplies.text = "STOCKPILE / %d materials     %d food" % [world.materials, world.food]
+	supplies.text = "STOCKPILE / %d materials     %d food\n%s" % [world.materials, world.food, Provisions.summary(world)]
 	context_label.text = world.context()
 	context_label.visible = not paused and not context_label.text.is_empty()
 	if paused:
