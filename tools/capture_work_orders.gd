@@ -1,4 +1,6 @@
 extends "res://addons/hatchery/testing/capture_runner.gd"
+const RoadChecks = preload("res://tools/checks/checks_road_orders.gd")
+const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const RestorationChecks = preload("res://tools/checks/checks_restoration.gd")
 const Restoration = preload("res://scripts/sim/restoration.gd")
 const Checks = preload("res://tools/checks/checks_passage_orders.gd")
@@ -55,5 +57,23 @@ func tour() -> void:
 	game.hud.construction_menu.rows["restore:workshop"].cancel.pressed.emit()
 	if game.world.materials <= stock or game.world.workshop.started:
 		push_error("Restoration cancellation did not reach the simulation")
+		quit(1)
+		return
+
+	game.world = RoadChecks.prepared()
+	Roadworks.step(game.world, 8.0)
+	game.world.interact()
+	Roadworks.step(game.world, 1.0)
+	game.view.world = game.world
+	game.view.queue_redraw()
+	game.hud.refresh(game.world, true)
+	game.hud.menu_status.text = ""
+	game.hud.show_section("Work")
+	await frames(3)
+	await shot("road_removal_board")
+	stock = game.world.materials
+	game.hud.construction_menu.rows["road:home_east"].cancel.pressed.emit()
+	if game.world.materials != stock or not Roadworks.active(game.world.roadworks.home_east):
+		push_error("Keeping a barricade paid salvage or lost collision")
 		quit(1)
 		return

@@ -1,4 +1,5 @@
 extends VBoxContainer
+const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 signal cancelled(socket: String)
@@ -26,10 +27,18 @@ func refresh(world: RefCounted) -> void:
 		for d: Dictionary in world.catalog.passages:
 			if d.id == order.target:
 				title = d.name
+		for d: Dictionary in world.catalog.barricades:
+			if d.id == order.target:
+				title = ("Remove · " if order.recipe == "road_remove" else "") + str(d.name)
 		row.label.text = "%s · %d%% · %d materials committed" % [title, int(100 * float(order.work_done) / float(order.work_required)), int(order.inputs.materials)]
 		if not str(order.blocked_reason).is_empty():
 			row.label.text += "\n" + str(order.blocked_reason)
 		row.cancel.text = "Cancel · +%d materials" % int(WorkOrders.refund(order).materials)
+		if order.recipe == "road_remove":
+			row.label.text = "%s · %d%% · return %d materials" % [title, int(100 * float(order.work_done) / float(order.work_required)), Roadworks.salvage(world, world.roadworks[order.target])]
+			if not str(order.blocked_reason).is_empty():
+				row.label.text += "\n" + str(order.blocked_reason)
+			row.cancel.text = "Keep barricade"
 	for socket: String in rows.keys():
 		if socket not in active:
 			remove_child(rows[socket].container)

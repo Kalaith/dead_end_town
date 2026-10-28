@@ -1,6 +1,6 @@
 extends RefCounted
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
-const IDS: Array[String] = ["bullets", "passage", "garden", "workshop", "armour"]
+const IDS: Array[String] = ["bullets", "passage", "garden", "workshop", "armour", "road_build", "road_remove"]
 
 
 static func definition(catalog: Dictionary, id: String) -> Dictionary:
@@ -41,7 +41,7 @@ static func content(catalog: Dictionary, errors: Array[String]) -> void:
 			errors.append("Missing recipe balance source.")
 			continue
 		var source: Dictionary = catalog[entry.source]
-		if not entry.get("cost") is String or not Rules.integer_in(source.get(entry.get("cost", "")), 1, 10000):
+		if not entry.get("cost") is String or not Rules.integer_in(source.get(entry.get("cost", "")), 0, 10000):
 			errors.append("Recipe needs a whole implemented material cost.")
 		if not entry.get("seconds") is String or not Rules.finite(source.get(entry.get("seconds", ""))) or float(source.get(entry.get("seconds", ""), 0)) <= 0:
 			errors.append("Recipe needs positive implemented work seconds.")

@@ -26,6 +26,9 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 		var state: Dictionary = data.passages[id]
 		if state.started and not state.done and not ledger.sites.has("passage:" + id):
 			return false
+	for id: String in data.roadworks:
+		if data.roadworks[id].phase in ["building", "dismantling"] and not ledger.sites.has("road:" + id):
+			return false
 	for id: String in ["garden", "workshop", "armour"]:
 		var flags: Array = _restoration(data, id)
 		if flags[0] and not flags[1] and not ledger.sites.has("restore:" + id):
@@ -42,6 +45,17 @@ static func _restoration(data: Dictionary, id: String) -> Array:
 
 
 static func _valid_site(o: Dictionary, data: Dictionary, catalog: Dictionary) -> bool:
+	if o.recipe in ["road_build", "road_remove"]:
+		if o.socket != "road:" + str(o.target) or not data.roadworks.has(o.target):
+			return false
+		var state: Dictionary = data.roadworks[o.target]
+		if o.phase in ["approved", "working", "blocked"]:
+			return state.phase == ("building" if o.recipe == "road_build" else "dismantling") and float(state.progress) == float(o.work_done)
+		if o.phase == "destroyed":
+			return state.phase == "empty"
+		if o.phase == "completed":
+			return state.phase == ("ready" if o.recipe == "road_build" else "empty")
+		return state.phase == ("empty" if o.recipe == "road_build" else "ready")
 	if o.recipe in ["garden", "workshop", "armour"]:
 		var flags: Array = _restoration(data, o.recipe)
 		if o.socket != "restore:" + str(o.recipe) or o.target != ("garden" if o.recipe == "garden" else "garage"):

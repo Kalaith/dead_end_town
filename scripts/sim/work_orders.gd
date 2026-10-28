@@ -94,6 +94,11 @@ static func refund(order: Dictionary) -> Dictionary:
 static func cancel(world: RefCounted, socket: String, destroyed: bool = false) -> bool:
 	var order: Dictionary = current(world, socket)
 	if not pending(order):
+		if destroyed and not order.is_empty() and order.phase in ["completed", "cancelled"] and order.kind == "construction":
+			order.phase = "destroyed"
+			order.output_granted = false
+			order.salvage_paid = false
+			return true
 		return false
 	if not destroyed:
 		for stock: String in refund(order):

@@ -52,6 +52,26 @@
         "output": "",
         "count": "",
         "kind": "construction"
+      },
+      {
+        "id": "road_build",
+        "name": "Barricade",
+        "source": "balance",
+        "cost": "barricade_cost",
+        "seconds": "barricade_seconds",
+        "output": "",
+        "count": "",
+        "kind": "construction"
+      },
+      {
+        "id": "road_remove",
+        "name": "Remove barricade",
+        "source": "balance",
+        "cost": "barricade_remove_cost",
+        "seconds": "barricade_remove_seconds",
+        "output": "",
+        "count": "",
+        "kind": "construction"
       }
     ]
   }

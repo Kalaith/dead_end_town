@@ -55,6 +55,7 @@
     "barricade_cost": 8,
     "barricade_health": 180,
     "barricade_seconds": 8,
+    "barricade_remove_cost": 0,
     "barricade_remove_seconds": 4,
     "barricade_salvage": 0.75,
     "barricade_work_range": 85,

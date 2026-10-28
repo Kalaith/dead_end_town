@@ -1,5 +1,7 @@
 extends RefCounted
 ## Temporary street defences. All work, damage and salvage are authoritative.
+const WorkOrders = preload("res://scripts/sim/work_orders.gd")
+const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 
@@ -67,6 +69,8 @@ static func context(world: RefCounted, d: Dictionary) -> String:
 
 
 static func interact(world: RefCounted, d: Dictionary) -> void:
+	if float(world.player.hp) <= 0 or nearby(world).get("id") != d.id:
+		return
 	var s: Dictionary = world.roadworks[d.id]
 	if not unlocked(world, d):
 		world.note("Secure both properties facing this stretch of road before fortifying it.")
@@ -77,27 +81,40 @@ static func interact(world: RefCounted, d: Dictionary) -> void:
 	match s.phase:
 		"empty":
 			var cost: int = int(world.balance.barricade_cost)
-			if world.materials < cost:
+			if not WorkOrders.approve(world, "road:" + str(d.id), d.id, WorkRecipes.recipe(world.catalog, "road_build"), Routes.point(d.site)):
 				world.note("Road barricade needs %d materials; stockpile has %d." % [cost, world.materials])
 				return
-			world.materials -= cost
 			s.phase = "building"
 			world.note("%s committed. Hold R or assign a survivor with F." % d.name)
-		"building":
-			var refund: int = salvage(world, s)
-			world.materials += refund
-			world.roadworks[d.id] = empty()
-			_release(world, d.id)
-			world.note("Unfinished barricade removed. Recovered %d materials." % refund)
+		"building", "dismantling":
+			cancel(world, "road:" + str(d.id))
 		"ready":
+			if not WorkOrders.approve(world, "road:" + str(d.id), d.id, WorkRecipes.recipe(world.catalog, "road_remove"), Routes.point(d.site)):
+				world.note("Finish a project before approving more work.")
+				return
 			s.phase = "dismantling"
 			s.progress = 0.0
 			s.repair_reserved = false
-			world.note("Dismantling approved. Hold R or assign a survivor; collision stays until finished.")
-		"dismantling":
-			s.phase = "ready"
-			s.progress = 0.0
-			world.note("Barricade kept. No salvage collected.")
+			world.note("Removal approved. Hold R or assign a worker.")
+
+
+static func cancel(world: RefCounted, socket: String) -> bool:
+	if not socket.begins_with("road:"):
+		return false
+	var id: String = socket.trim_prefix("road:")
+	if not world.roadworks.has(id):
+		return false
+	var s: Dictionary = world.roadworks[id]
+	if s.phase not in ["building", "dismantling"] or not WorkOrders.cancel(world, socket):
+		return false
+	if s.phase == "building":
+		world.roadworks[id] = empty()
+	else:
+		s.phase = "ready"
+		s.progress = 0.0
+	_release(world, id)
+	world.note("Work cancelled. Barricade kept." if s.phase == "ready" else "Blueprint cancelled. Materials returned.")
+	return true
 
 
 static func assign(world: RefCounted, d: Dictionary, survivor_id: String = "mara") -> void:
@@ -142,41 +159,46 @@ static func post_guard(world: RefCounted) -> void:
 static func step(world: RefCounted, dt: float) -> void:
 	for d: Dictionary in world.catalog.barricades:
 		var s: Dictionary = world.roadworks[d.id]
-		if s.phase == "empty" or not unlocked(world, d) or danger(world, d):
+		var socket: String = "road:" + str(d.id)
+		if s.phase == "empty":
 			continue
-		var executor: bool = world.working and world.player.pos.distance_to(Routes.point(d.center)) < float(world.balance.barricade_work_range)
+		if not unlocked(world, d) or danger(world, d):
+			WorkOrders.block(world, socket, "Reclaim site" if not unlocked(world, d) else "Clear nearby threats")
+			continue
+		var executor: String = "you" if world.working and float(world.player.hp) > 0 and world.player.pos.distance_to(Routes.point(d.center)) < float(world.balance.barricade_work_range) else ""
 		for a: Dictionary in world.survivors:
-			if a.order == "Roadwork" and a.job == d.id and float(a.hp) > 0 and a.pos.distance_to(Routes.point(d.site)) < 40:
-				executor = true
-		if not executor:
+			if executor == "you":
+				break
+			if a.order == "Roadwork" and a.job == d.id and float(a.hp) > 0 and a.pos.distance_to(Routes.point(d.site)) < 40 and not a.activity.begins_with("Sheltering") and (executor.is_empty() or str(a.id) < executor):
+				executor = a.id
+		if executor.is_empty():
+			WorkOrders.block(world, socket, "Need worker at site")
 			continue
 		if s.phase == "ready":
 			_repair(world, d, s, dt)
+			continue
+		var removed: bool = s.phase == "dismantling"
+		var completed: bool = WorkOrders.advance(world, socket, executor, dt, removed or not _occupied(world, Routes.rectangle(d.rect)))
+		s.progress = float(WorkOrders.current(world, socket).work_done)
+		if not completed:
+			continue
+		if removed:
+			var refund: int = salvage(world, s)
+			world.materials += refund
+			world.roadworks[d.id] = empty()
+			world.note("Road open. +%d materials." % refund)
 		else:
-			var duration: float = float(world.balance.barricade_seconds if s.phase == "building" else world.balance.barricade_remove_seconds)
-			s.progress = minf(duration, float(s.progress) + dt)
-			if float(s.progress) < duration:
-				continue
-			var removed: bool = s.phase == "dismantling"
-			if s.phase == "building":
-				if _occupied(world, Routes.rectangle(d.rect)):
-					continue
-				s.phase = "ready"
-				s.hp = float(world.balance.barricade_health)
-				s.progress = 0.0
-				world.note("%s holds the road. E here approves dismantling for salvage." % d.name)
-			else:
-				var refund: int = salvage(world, s)
-				world.materials += refund
-				world.roadworks[d.id] = empty()
-				world.note("Road reopened. Recovered %d materials for the next defensive line." % refund)
-			world.rebuild_routes()
-			_release(world, d.id, removed)
+			s.phase = "ready"
+			s.hp = float(world.balance.barricade_health)
+			s.progress = 0.0
+			world.note("%s ready." % d.name)
+		world.rebuild_routes()
+		_release(world, d.id, removed)
 
 
 static func _occupied(world: RefCounted, rect: Rect2) -> bool:
 	for a: Dictionary in [world.player] + world.survivors + world.zombies:
-		if float(a.hp) > 0 and rect.grow(Routes.RADIUS).has_point(a.pos):
+		if (not a.has("raid") or float(a.hp) > 0) and rect.grow(Routes.RADIUS).has_point(a.pos):
 			return true
 	return false
 
@@ -244,6 +266,7 @@ static func intercept(world: RefCounted, z: Dictionary, target: Vector2, dt: flo
 			s.hp = maxf(0.0, float(s.hp) - float(world.balance.gate_damage) * ZombieTypes.stat(world.catalog, z, "breach"))
 			z.cooldown = ZombieTypes.stat(world.catalog, z, "cooldown")
 			if float(s.hp) <= 0:
+				WorkOrders.cancel(world, "road:" + str(chosen.id), true)
 				world.roadworks[chosen.id] = empty()
 				_release(world, chosen.id, true)
 				world.rebuild_routes()

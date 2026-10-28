@@ -412,3 +412,17 @@ Evidence:
 - All 111 simulation scenarios pass. Five new cases cover all three cancellation paths, loss/reclaim/final completion after reload, prepaid schema-15 migrations, board/remote/downed approval rejection, recipe validation and projection drift. Updated older fixtures that previously invented partial construction without a paid order; completed-fixture staging remains explicit.
 - All 77 scripts load and Godot 4.7.2 headless editor/import passes. Ran the work-order capture tour and standard ten-state construction/equipment tour at 1280x720; inspected restoration_work_board.png and the restored workshop/equipment states. The work-board cancellation button is exercised through its connected command.
 - Automated/staged evidence does not establish human feel or full-campaign balance. G01 road build/removal, bounded repairs and primary-role/queue resumption remain; full-game content and release gates remain incomplete. No toolkit edits, installations, exports or publication.
+
+
+## 28 October 2026: G01 road construction and removal orders
+
+Implementation:
+- Road builds and removals use the shared ledger and recipe catalogue. Loss, nearby danger or absent workers suspend one paid project with a visible block reason. Player and AI share one site rate; new barriers wait for downed people as well as standing actors.
+- Dismantling retains collision until its terminal tick. The return is calculated from current health at completion, so damage during the job reduces salvage. Keeping the barricade pays nothing; breach after keeping or during removal destroys the work without a second return.
+- The existing paused Work page shows road progress and removal return, with a single Keep barricade action. No new live HUD fields. Removal is a zero-input explicit order; its time and cost reference validated JSON.
+- Schema 17 maps old partial road builds/removals without debiting stock, changing progress or granting salvage. Completed legacy structures stay present.
+
+Evidence:
+- All 115 simulation scenarios pass. Four new road cases cover downed footprints/loss, damage and mid-removal JSON reload/once-only salvage, cancelled removal followed by breach, and schema-16 build/removal migration.
+- All 78 scripts load; Godot 4.7.2 headless editor/import passes. Ran the work-order and standard ten-state tours at 1280x720; inspected road_removal_board.png and street construction/removal states. The connected Keep button is asserted to preserve the barrier without payment.
+- Verification remains staged/automated, not human balance/feel acceptance. Bounded repairs, roles/resumption and queue policy remain G01 work before the full-town expansion. No toolkit edits, installations, exports or publication.
