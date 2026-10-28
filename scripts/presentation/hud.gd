@@ -39,7 +39,7 @@ func _ready() -> void:
 	palette.line = Color("3a534c")
 	kit = UiKit.new(palette)
 	theme = kit.theme()
-	var header: PanelContainer = _panel(Vector2(16, 16), Vector2(440, 48))
+	var header: PanelContainer = _panel(Vector2(16, 16), Vector2(620, 48))
 	stats = kit.label("", 18)
 	header.add_child(stats)
 	var pause: Button = kit.button("Pause / Esc", func() -> void: requested.emit("menu"))
@@ -96,7 +96,7 @@ func _build_menu() -> void:
 	equipment_menu = EquipmentMenu.new()
 	column.add_child(equipment_menu)
 	equipment_menu.chosen.connect(func(id: String, slot: String, item: String) -> void: equipment_requested.emit(id, slot, item))
-	column.add_child(kit.label("WASD / arrows  Move and face     Mouse  Aim\nClick  Swing at cursor     Space  Swing forward (hold to repeat)\nE  Interact     R  Work     Q  Salvage     F  Orders/loadouts     G  Post guard\n1-4  Entire team: Follow / Hold / Engage / Home     Esc / Tab  Pause", 15))
+	column.add_child(kit.label("WASD / arrows  Move and face     Mouse  Aim\nRight click  Shoot pistol     Left click  Swing     Space  Swing forward (hold to repeat)\nE  Interact     R  Work     Q  Salvage     F  Orders/loadouts     G  Post guard\n1-4  Entire team: Follow / Hold / Engage / Home     Esc / Tab  Pause", 15))
 	var row := HBoxContainer.new()
 	column.add_child(row)
 	for entry: Array in [["Save street", "save"], ["Load saved street", "load"], ["New street", "new"]]:
@@ -120,6 +120,8 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 		stats.text = "HEALTH %d     HOME / LOST" % int(world.player.hp)
 	if world.pressure.warned and stats.text.ends_with("SAFE"):
 		stats.text = "HEALTH %d     RAID / IN %ds" % [int(world.player.hp), ceili(float(world.pressure.next) - world.elapsed)]
+	if world.firearms.owned:
+		stats.text += "     BULLETS %d" % int(world.firearms.bullets)
 	stats.modulate = Color("e7dfc9") if world.alert == "SAFE" and not stats.text.contains("THREATENED") else Color("ffac82")
 	objective.text = "NEXT / " + SliceObjective.next(world)
 	watch_button.visible = world.slice_state.phase == "preparing" and world.properties.garden.looted and world.properties.library.looted and world.properties.garage.looted

@@ -92,6 +92,6 @@ static func step(world: RefCounted, dt: float) -> void:
 		world.note(message)
 		for a: Dictionary in world.survivors:
 			if a.order == "Build" and a.job == "garage":
-				a.order = "Home"
+				a.order = "Hold" if a.id == "ellis" else "Home"
 				a.job = ""
 

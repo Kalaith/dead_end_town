@@ -1,4 +1,5 @@
 extends RefCounted
+const Firearms = preload("res://scripts/sim/firearms.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
@@ -15,6 +16,8 @@ static func danger(world: RefCounted, pos: Vector2, radius: float) -> bool:
 
 
 static func strike(world: RefCounted, attacker: Dictionary, direction: Vector2) -> void:
+	if Firearms.civilian(attacker):
+		return
 	if float(attacker.cooldown) > 0 or float(attacker.hp) <= 0:
 		return
 	if direction.is_zero_approx():
@@ -69,13 +72,13 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 			anchor = Routes.point(world.balance.mara_start)
 		"Follow", "Engage":
 			anchor = world.player.pos + Vector2(-38, 24)
-		"Build", "Garden", "Workshop":
+		"Build", "Garden", "Workshop", "Ammo":
 			anchor = world.routes.point(world.definition(a.job).site)
 	var target: Dictionary = {}
 	var best: float = 150 if a.order != "Engage" else 220
 	for z: Dictionary in world.zombies:
 		var distance: float = a.pos.distance_to(z.pos)
-		if float(z.hp) > 0 and distance < best and z.pos.distance_to(anchor) < 180 and world.routes.line_clear(a.pos, z.pos, true):
+		if not Firearms.civilian(a) and float(z.hp) > 0 and distance < best and z.pos.distance_to(anchor) < 180 and world.routes.line_clear(a.pos, z.pos, true):
 			target = z
 			best = distance
 	if not target.is_empty():
@@ -88,7 +91,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 			_walk(world, a, anchor, dt, _survivor_speed(world, a))
 		return
 	# A low barricade allows a gate guard to hit the attacker leaning over it.
-	if a.order == "Guard" and not world.properties.home.open:
+	if not Firearms.civilian(a) and a.order == "Guard" and not world.properties.home.open:
 		for z: Dictionary in world.zombies:
 			if float(z.hp) > 0 and z.pos.distance_to(Vector2(360, 490)) < 50 and a.pos.distance_to(Routes.point(world.balance.mara_start)) < 32 and float(a.cooldown) <= 0:
 				z.hp = maxf(0, float(z.hp) - float(Equipment.stats(world, a).damage))
@@ -98,7 +101,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.cooldown = float(Equipment.stats(world, a).cooldown)
 				a.activity = "Holding the barricade"
 				return
-	if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage"] and danger(world, anchor, 170):
+	if (a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Ammo"] and danger(world, anchor, 170)) or (Firearms.civilian(a) and danger(world, a.pos, 170)):
 		anchor = Routes.point(world.balance.home_respawn)
 		a.activity = "Sheltering - work preserved"
 	else:
@@ -112,6 +115,11 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.activity = "Workshop work" if (world.workshop.started and not world.workshop.done) or (world.workshop.armour_started and not world.workshop.armour_done) else "Workshop ready - approve next job"
 				if world.workshop.armour_done:
 					a.activity = "Workshop work complete"
+			"Ammo":
+				a.activity = "Crafting bullets" if world.materials >= int(world.catalog.firearm.material_cost) or world.firearms.reserved else "Bullet crafting paused - need materials"
+				if not world.properties.munitions.claimed or not world.connected("munitions"):
+					a.activity = "Bullet crafting paused - reclaim the workshop route"
+					anchor = Routes.point(world.balance.home_respawn)
 			"Passage":
 				a.activity = "Passage build/repair"
 			"Roadwork":
@@ -132,7 +140,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 	if a.pos.distance_to(anchor) > (4.0 if a.order == "Roadguard" else 24.0):
 		var old: Vector2 = a.pos
 		_walk(world, a, anchor, dt, _survivor_speed(world, a))
-		if old.is_equal_approx(a.pos):
+		if old.is_equal_approx(a.pos) and not a.activity.begins_with("Sheltering"):
 			a.activity = "Route blocked - check gate"
 	elif a.order == "Home":
 		a.order = "Guard"

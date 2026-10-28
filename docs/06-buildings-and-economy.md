@@ -68,3 +68,8 @@ Place enough accessible salvage for essential recovery. Keep a basic repair opti
 One shared meal every 60 active seconds costs one food per current person. Garden/library/garage searches contain 4/3/2 food once. Garden tending yields two food per 20 work seconds only with a protected home connection. A shortage reduces work to 60% without health loss; delivering enough food pays one meal and restores normal work. There is no accumulated hunger debt or individual ration interface.
 
 Recovery at the safe home porch costs two food for the injured team. Healthy rest and failed attempts consume nothing. Food state is saved and never advances offline. Values are initial playtest tuning.
+
+
+## Implemented eastern expansion
+
+Two properties extend the authored street: the east house north of the road and the ammunition workshop opposite it. Existing clearance, connected claims, physical gates, occupation and one-time search rewards apply. The house rescues Ellis and grants the player a pistol plus exactly six bullets once. The workshop requires no separate restoration charge: claiming it unlocks Craft bullets in F. Any living survivor can take the job. An on-site worker reserves two materials and completes six bullets after 15 work seconds. No worker, local danger, lost home ownership connection or an unclaimed workshop pauses production; material shortages prevent starting another batch. Several workers share one batch rate. Bullets, reserved materials and partial work persist through save/load. Initial tuning lives in data/street/firearm.json. The original four-yard finish is unchanged.

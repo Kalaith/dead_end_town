@@ -57,7 +57,7 @@ static func interact(world: RefCounted, d: Dictionary) -> void:
 		world.passages[d.id] = initial(world.catalog)[d.id]
 		for a: Dictionary in world.survivors:
 			if a.order == "Passage" and a.job == d.id:
-				a.order = "Home"
+				a.order = "Hold" if a.id == "ellis" else "Home"
 				a.job = ""
 		world.note("Passage cancelled. Unused materials returned; existing fences remain.")
 		return

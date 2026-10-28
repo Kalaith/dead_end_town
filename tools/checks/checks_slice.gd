@@ -126,6 +126,8 @@ func check_complete_street_builds_from_authored_supplies_without_free_structures
 		if w.roadworks[d.id].phase != "ready":
 			return "Authored supplies failed to build " + d.id
 	for d: Dictionary in w.catalog.passages:
+		if d.id not in ["north", "south"]:
+			continue
 		w.player.pos = w.routes.point(d.sites[0])
 		w.interact()
 		w.working = true

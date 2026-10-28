@@ -60,3 +60,8 @@ Keep dialogue short and cooperative. A librarian's enthusiasm about finally find
 The restored workshop exposes paused F loadouts for the player, Mara and rescued Paige. Changing equipment requires both player and wearer at the clear bench with a protected home route. The garage crowbar and restored sword, iron and shield are unique items; return an item before transferring it. Each person retains a basic bat when no recovered weapon is selected. No item is duplicated or remotely swapped.
 
 Bat is fast and single-target; crowbar is slower and stronger with more knockback; restored sword reaches farther and can hit two valid enemies. Iron halves incoming damage and reduces speed by 20%; shield protection is independent and frontal. Any person can use either. This supplies equipment-led role choices without classes or XP.
+
+
+## Implemented extension: Ellis
+
+Search and claim the cleared east house to recruit Ellis once and receive a pistol with six bullets. Ellis never attacks, cannot guard home or a road post, and cannot accept Engage. Whole-team combat orders preserve this restriction. Ellis can follow, hold, build, garden, work at the garage or craft bullets, and attempts shelter when danger approaches. F shows disabled combat/guard choices with a reason. Protective gear can still help Ellis survive.

@@ -30,7 +30,7 @@ func refresh(world: RefCounted) -> void:
 				continue
 			picker.set_meta("signature", signature)
 			picker.clear()
-			picker.disabled = not reason.is_empty()
+			picker.disabled = not reason.is_empty() or (a.id == "ellis" and slot == "weapon")
 			picker.tooltip_text = reason if not reason.is_empty() else "Change " + slot + " at the bench"
 			var ids: Array = ["bat", "crowbar", "sword"] if slot == "weapon" else (["none", "iron"] if slot == "protection" else ["none", "shield"])
 			for id: String in ids:

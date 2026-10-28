@@ -8,11 +8,15 @@ static func initial() -> Dictionary:
 
 static func readiness(world: RefCounted) -> String:
 	for p: Dictionary in world.catalog.properties:
+		if p.id in ["residence", "munitions"]:
+			continue
 		if not world.properties[p.id].claimed:
 			return "Reclaim all four properties. Search cleared porches with E."
 		if world.remaining(p.id) > 0:
 			return "Clear the occupied yards before the neighbourhood watch."
 	for p: Dictionary in world.catalog.properties:
+		if p.id in ["residence", "munitions"]:
+			continue
 		if not world.safe_connected(p.id):
 			return "Connect every yard to home through fenced passages and defended crossings."
 	if not world.garden_done:

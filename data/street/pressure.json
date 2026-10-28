@@ -8,14 +8,14 @@
     "base_size": 4,
     "claim_size": 2,
     "maximum_size": 10,
-    "living_cap": 36,
+    "living_cap": 48,
     "specials": [{"kind": "brute", "from_wave": 0, "count": 1}],
     "spawn_spacing": 28,
     "routes": [
       {
         "id": "east",
         "name": "east road",
-        "entry": [1410, 580],
+        "entry": [2130, 580],
         "spread": [0, 1]
       },
       {

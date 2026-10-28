@@ -12,7 +12,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	for key: String in ["passages", "crossings"]:
 		if not rules.list(data, key, false):
 			continue
-		var expected: Array = ["north", "south"] if key == "passages" else ["west", "east"]
+		var expected: Array = ["north", "south", "far_north", "far_south"] if key == "passages" else ["west", "east"]
 		if rules.unique_ids(data[key]) != expected:
 			errors.append("Missing authored neighbourhood links.")
 		for raw: Variant in data[key]:
@@ -23,7 +23,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 			rules.text(d, "name")
 			_rect(d.get("area"), errors)
 			if rules.list(d, "requires", false):
-				var pairs: Array = [["home", "garden"], ["library", "garage"]] if key == "passages" else [["home", "library"], ["garden", "garage"]]
+				var pairs: Array = [["home", "garden"], ["library", "garage"], ["garden", "residence"], ["garage", "munitions"]] if key == "passages" else [["home", "library"], ["garden", "garage"]]
 				if not expected.has(d.get("id")) or d.requires != pairs[expected.find(d.get("id"))]:
 					errors.append("Neighbourhood link has incorrect property endpoints.")
 			if key == "passages":

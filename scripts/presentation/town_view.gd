@@ -17,18 +17,18 @@ const RUST := Color("d88c63")
 func _draw() -> void:
 	if world == null:
 		return
-	draw_rect(Rect2(0, 0, 1440, 1160), Color("293a34"))
-	for x: int in range(0, 1440, 32):
+	draw_rect(Rect2(0, 0, int(world.catalog.bounds[0]), 1160), Color("293a34"))
+	for x: int in range(0, int(world.catalog.bounds[0]), 32):
 		for y: int in range(0, 1160, 32):
 			var shade: float = float((x * 7 + y * 13) % 23) / 300.0
 			draw_rect(Rect2(x + 2, y + 2, 28, 28), Color(0.16 + shade, 0.22 + shade, 0.18 + shade))
-	draw_rect(Rect2(0, 500, 1440, 160), Color("353e3e"))
+	draw_rect(Rect2(0, 500, int(world.catalog.bounds[0]), 160), Color("353e3e"))
 	# The two exposed alleys feed the road between the property blocks.
 	draw_rect(Rect2(660, 0, 120, 500), Color("45473d"))
 	draw_rect(Rect2(660, 660, 120, 500), Color("45473d"))
-	draw_rect(Rect2(0, 500, 1440, 7), Color("7b8174"))
-	draw_rect(Rect2(0, 653, 1440, 7), Color("7b8174"))
-	for x: int in range(0, 1440, 100):
+	draw_rect(Rect2(0, 500, int(world.catalog.bounds[0]), 7), Color("7b8174"))
+	draw_rect(Rect2(0, 653, int(world.catalog.bounds[0]), 7), Color("7b8174"))
+	for x: int in range(0, int(world.catalog.bounds[0]), 100):
 		draw_rect(Rect2(x + 10, 577, 50, 5), Color("ada47b"))
 	for p: Dictionary in world.catalog.properties:
 		_property(p)
@@ -39,6 +39,9 @@ func _draw() -> void:
 	actors.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.pos.y < b.pos.y)
 	for a: Dictionary in actors:
 		_actor(a, a.has("raid"))
+	if float(world.shot.left) > 0:
+		draw_line(world.shot.from, world.shot.to, Color("ffe7a0"), 3)
+		draw_circle(world.shot.from, 9, Color("fff0b0"))
 
 
 func _property(p: Dictionary) -> void:
@@ -84,6 +87,11 @@ func _property(p: Dictionary) -> void:
 		_meter(gate + Vector2(-44, 20), 88, float(state.gate_hp) / float(world.balance.gate_health), accent)
 	if p.id == "garden":
 		_garden(rect, site)
+	if p.id == "munitions" and state.claimed:
+		draw_rect(Rect2(site + Vector2(65, 0), Vector2(80, 25)), Color("ab8860"))
+		for i: int in range(6):
+			draw_line(site + Vector2(75 + i * 10, 3), site + Vector2(75 + i * 10, 18), Color("dfb36e"), 4)
+		_meter(site + Vector2(65, 33), 80, float(world.firearms.progress) / float(world.catalog.firearm.craft_seconds), TEAL)
 	if p.id == "garage":
 		_workshop(site)
 	if float(state.occupation) > 0:
@@ -143,7 +151,7 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		draw_line(pos - Vector2(12, 0), pos + Vector2(12, 0), Color("575e4d") if zombie else RUST, 9)
 		return
 	_ellipse(pos + Vector2(1, 4), Vector2(21, 9) if a.get("kind") == "brute" else Vector2(15, 7), Color(0, 0, 0, 0.3))
-	var body: Color = (Color("8a5a4a") if a.get("kind") == "brute" else Color("788357")) if zombie else (Color("dfad62") if a.id == "you" else (Color("7daeb9") if a.id == "mara" else Color("b7a0c8")))
+	var body: Color = (Color("8a5a4a") if a.get("kind") == "brute" else Color("788357")) if zombie else (Color("dfad62") if a.id == "you" else (Color("7daeb9") if a.id == "mara" else (Color("91b69e") if a.id == "ellis" else Color("b7a0c8"))))
 	if float(a.flash) > 0:
 		body = Color("fff0d5")
 	draw_line(pos + Vector2(-5, -3), pos + Vector2(-6, 3), INK, 5)
@@ -155,7 +163,7 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		_armour(pos, a.facing)
 	if not zombie and Equipment.shielded(world, a):
 		_shield(pos, a.facing)
-	if not zombie:
+	if not zombie and a.id != "ellis" and not (a.id == "you" and float(world.shot.left) > 0):
 		var grip: Vector2 = pos + Vector2(0, -14) + direction * 12
 		var weapon: String = Equipment.weapon(world, a)
 		draw_line(grip, grip + direction * (36 if weapon == "sword" else 27), Color("c7b68e") if weapon == "bat" else Color("c1d1d0"), 5 if weapon != "sword" else 3)
@@ -164,6 +172,10 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		draw_circle(grip, 3, Color("d7b08b"))
 		if a.id != "you":
 			_text(pos + Vector2(-16, -49), a.name, 13, CREAM)
+	if a.id == "ellis":
+		_text(pos + Vector2(-16, -49), "Ellis", 13, CREAM)
+	if a.id == "you" and float(world.shot.left) > 0:
+		draw_line(pos + direction * 12, pos + direction * 32, INK, 7)
 	if float(a.swing) > 0:
 		var stats: Dictionary = Equipment.stats(world, a)
 		var half_angle: float = acos(float(stats.cone))

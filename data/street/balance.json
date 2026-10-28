@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "bounds": [1440, 1160],
+  "bounds": [2160, 1160],
   "balance": {
     "garage_bonus_materials": 12,
     "home_gate_start_factor": 0.65,

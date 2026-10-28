@@ -2,7 +2,7 @@
 
 Reclaim a zombie-infested street, one property at a time, with a small group of survivors who work and fight together.
 
-**Status: playable greybox slice (28 October 2026).** One continuous four-property street with combat, territory, building, equipment, food and a finish. It is a vertical slice, not a full campaign, and it has had only partial human playtesting. See [progress and verification](docs/PROGRESS.md) for exactly what has and has not been checked.
+**Status: playable greybox slice (28 October 2026).** One continuous six-property street with combat, territory, building, equipment, food and a finish. It is a vertical slice, not a full campaign, and it has had only partial human playtesting. See [progress and verification](docs/PROGRESS.md) for exactly what has and has not been checked.
 
 ## The game
 
@@ -15,6 +15,7 @@ Everything happens in one continuous top-down world, and everyone stays active o
 - **Defend.** Zombies wander until someone comes within about 240 pixels, then head for the nearest person. They bite on contact and break gates and barricades they bump into. Raids arrive from the map edges and grow with your territory, and a warning tells you which side. If zombies hold a yard with nobody standing in it for eight seconds, you lose it, home included. Clear them and reclaim.
 - **Build.** Barricade the road, fence passages between yards, repair gates, tend a garden, restore a workshop. You approve each project at its site with **E** and spend materials once. After that you can hold **R** to work, or give the job to a survivor. Progress is shared, so two workers do not double the speed.
 - **Equip.** The garage hides a crowbar, sword, iron armour and shield. Restore the workshop, then choose loadouts for anyone. Every item is unique, so return it before someone else takes it.
+- **Shoot and supply.** The east house shelters Ellis, who gives you a pistol and six bullets. Ellis works and follows but never fights or guards. Aim with the mouse and right click to shoot; melee stays on left click/Space. Claim the ammunition workshop across the road, press F and assign a worker to craft six bullets per 15 seconds for two materials. Work pauses for danger, lost connection or missing materials.
 - **Eat.** The group shares a meal every 60 seconds, costing one food each. Missing a meal slows work to 60%, with no hunger damage. Food also pays for healing at home. A tended garden brings in more.
 
 ### Your first run
@@ -27,7 +28,7 @@ Everything happens in one continuous top-down world, and everyone stays active o
 
 ### Finishing: a street worth keeping
 
-Hold all four yards, give each a protected route home, harvest four garden food, restore the equipment cache, deploy a recovered weapon plus iron and shield, keep everyone standing, and keep a shared meal in reserve. Then choose **Begin neighbourhood watch** in the pause menu at home and keep those conditions for 60 seconds. Any setback resets the watch. Completing it pauses with **Continue the street**, and the finish is kept.
+Hold the original four yards (home, garden, library and garage), give each a protected route home, harvest four garden food, restore the equipment cache, deploy a recovered weapon plus iron and shield, keep everyone standing, and keep a shared meal in reserve. Then choose **Begin neighbourhood watch** in the pause menu at home and keep those conditions for 60 seconds. Any setback resets the watch. Completing it pauses with **Continue the street**, and the finish is kept.
 
 ## Controls
 
@@ -35,11 +36,12 @@ Hold all four yards, give each a protected route home, harvest four garden food,
 | --- | --- |
 | WASD / arrows | Move and face |
 | Mouse / left click | Aim and swing toward the cursor |
+| Right click | Shoot the recovered pistol toward the cursor (one bullet per shot) |
 | Space | Swing in your movement direction (or last facing); hold to repeat |
 | E | Interact: open or close gates, search, approve work, cancel a blueprint |
 | Hold R | Repair or build at the nearest gate, passage, barricade or porch project |
 | Q | Collect a secured building's spare timber |
-| 1 / 2 / 3 / 4 | Whole team: Follow / Hold / Engage / Return home and guard |
+| 1 / 2 / 3 / 4 | Whole team: Follow / Hold / Engage / Return home and guard (Ellis never fights or guards) |
 | F | Pause for individual orders and loadouts |
 | G | Post a survivor at a nearby barricade |
 | Esc / Tab | Pause and open the menu |
@@ -50,7 +52,7 @@ Saving is explicit from the pause menu and stored at `user://street.json`. Reope
 
 ## Not in the slice
 
-Explorable interiors, firearms, audio, production art, noise-driven zombies, general build queues and freeform construction, remapping and gamepad, and a full campaign ending. The neighbourhood-watch finish ends this slice, not the game.
+Explorable interiors, audio, production art, noise-driven zombies, general build queues and freeform construction, remapping and gamepad, and a full campaign ending. The neighbourhood-watch finish ends this slice, not the game.
 
 ## Run from source
 

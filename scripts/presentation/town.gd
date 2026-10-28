@@ -61,15 +61,17 @@ func _process(dt: float) -> void:
 		while accumulator >= step:
 			world.step(step)
 			accumulator -= step
-	var target := Vector2(clampf(world.player.pos.x, 640, 800), clampf(world.player.pos.y - 40, 360, 800))
+	var target := Vector2(clampf(world.player.pos.x, 640, float(world.catalog.bounds[0]) - 640), clampf(world.player.pos.y - 40, 360, 800))
 	camera.position = camera.position.lerp(target, 1.0 - exp(-dt * 8))
 	if not paused:
 		# Use the current camera transform and actor position, including on frames
 		# shorter than one fixed step, before accepting an attack.
 		camera.force_update_scroll()
-		world.aim = controls.direction(world.move_input, get_global_mouse_position() - world.player.pos, world.aim, Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT), Input.is_physical_key_pressed(KEY_SPACE))
+		world.aim = controls.direction(world.move_input, get_global_mouse_position() - world.player.pos, world.aim, Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) or Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT), Input.is_physical_key_pressed(KEY_SPACE))
 		world.face_aim()
-		if Input.is_action_pressed("attack"):
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+			world.shoot()
+		elif Input.is_action_pressed("attack"):
 			world.attack()
 	if world.slice_state.phase == "complete" and not completion_shown:
 		completion_shown = true

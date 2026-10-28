@@ -1,4 +1,6 @@
 extends RefCounted
+const FirearmState = preload("res://scripts/core/firearm_state.gd")
+const Firearms = preload("res://scripts/sim/firearms.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const Salvage = preload("res://scripts/sim/salvage.gd")
 const SliceState = preload("res://scripts/core/slice_state.gd")
@@ -17,11 +19,11 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 11
+const SCHEMA: int = 12
 ## Saved world fields that are dictionaries and are copied, not shared.
-const COPIED_KEYS: Array[String] = ["workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber"]
+const COPIED_KEYS: Array[String] = ["workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "gate_repair_target"]
+const STATE_KEYS: Array[String] = ["materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
 var catalog: Dictionary
 var store: RefCounted
 
@@ -66,6 +68,7 @@ func restore(raw: Dictionary) -> RefCounted:
 	var world := World.new(catalog)
 	for key: String in STATE_KEYS:
 		world.set(key, int(data[key]) if key in ["materials", "food", "downs"] else (data[key].duplicate(true) if key in COPIED_KEYS else data[key]))
+	world.firearms.bullets = int(data.firearms.bullets)
 	world.slice_state.downs = int(data.slice_state.downs)
 	world.provisions.harvested = int(data.provisions.harvested)
 	world.roam_rng.state = int(data.roam_rng_state)
@@ -89,10 +92,10 @@ func valid(data: Dictionary) -> bool:
 	if not data.get("roam_rng_state") is String or str(int(data.roam_rng_state)) != data.roam_rng_state:
 		return false
 	for key: String in STATE_KEYS:
-		if key in ["workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber"]:
+		if key in ["workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
 			continue
 		if key == "gate_repair_target":
-			if data.get(key) not in ["home", "garden", "library", "garage"]:
+			if data.get(key) not in ["home", "garden", "library", "garage", "residence", "munitions"]:
 				return false
 			continue
 		if key in ["approach", "garden_started", "garden_done", "repair_reserved"]:
@@ -105,7 +108,7 @@ func valid(data: Dictionary) -> bool:
 			return false
 	if not _valid_workshop(data):
 		return false
-	if not data.get("properties") is Dictionary or data.properties.size() != 4:
+	if not data.get("properties") is Dictionary or data.properties.size() != catalog.properties.size():
 		return false
 	for p: Dictionary in catalog.properties:
 		var state: Variant = data.properties.get(p.id)
@@ -136,9 +139,17 @@ func valid(data: Dictionary) -> bool:
 			return false
 		if z.has("kind") and (not z.kind is String or not catalog.zombies.types.has(z.kind) or float(z.hp) > ZombieTypes.health(catalog, z.kind)):
 			return false
-	if data.survivors.size() != (2 if data.properties.library.looted else 1):
-		return false
-	if data.survivors[0].id != "mara" or (data.survivors.size() == 2 and data.survivors[1].id != "paige"):
+	var expected: Array[String] = ["mara"]
+	if data.properties.library.looted:
+		expected.append("paige")
+	if data.properties.residence.looted:
+		expected.append("ellis")
+	var actual: Array[String] = []
+	for a: Dictionary in data.survivors:
+		actual.append(a.id)
+	expected.sort()
+	actual.sort()
+	if actual != expected:
 		return false
 	if float(data.garden_progress) > float(catalog.balance.work_seconds) or (data.garden_done and not data.garden_started):
 		return false
@@ -155,7 +166,7 @@ func valid(data: Dictionary) -> bool:
 		return false
 	if data.player.id != "you":
 		return false
-	return PressureState.valid(data, catalog) and NeighbourhoodState.valid(data, catalog) and EquipmentState.valid(data) and ProvisionsState.valid(data, catalog) and SliceState.valid(data, catalog)
+	return FirearmState.valid(data, catalog) and PressureState.valid(data, catalog) and NeighbourhoodState.valid(data, catalog) and EquipmentState.valid(data) and ProvisionsState.valid(data, catalog) and SliceState.valid(data, catalog)
 
 
 func _valid_actor(a: Variant, max_health: float) -> bool:
@@ -166,7 +177,7 @@ func _valid_actor(a: Variant, max_health: float) -> bool:
 	for key: String in ["id", "name", "activity"]:
 		if not Rules.nonempty(a.get(key)):
 			return false
-	if a.get("order") not in ["Guard", "Follow", "Hold", "Engage", "Home", "Build", "Roadwork", "Roadguard", "Garden", "Workshop", "Passage"]:
+	if a.get("order") not in ["Guard", "Follow", "Hold", "Engage", "Home", "Build", "Roadwork", "Roadguard", "Garden", "Workshop", "Passage", "Ammo"]:
 		return false
 	for key: String in VECTOR_KEYS:
 		if not Rules.is_vec2(a.get(key)):
@@ -188,6 +199,8 @@ func migrate(data: Dictionary) -> Dictionary:
 		return {}
 	var upgraded: Dictionary = data.duplicate(true)
 	var version: int = int(upgraded.schema_version)
+	if version == 11:
+		return _upgrade_firearms(upgraded)
 	if version == 10:
 		return _upgrade_slice(upgraded)
 	if version == 9:
@@ -248,6 +261,8 @@ func _valid_workshop(data: Dictionary) -> bool:
 
 func _valid_task(a: Dictionary, data: Dictionary) -> bool:
 	match a.order:
+		"Ammo":
+			return a.job == "munitions" and data.properties.munitions.looted
 		"Garden":
 			return a.job == "garden" and data.garden_started
 		"Workshop":
@@ -340,4 +355,23 @@ func _upgrade_slice(data: Dictionary) -> Dictionary:
 	data.timber = Salvage.initial()
 	data.slice_state = SliceObjective.initial()
 	data.schema_version = 11
+	return _upgrade_firearms(data)
+
+
+func _upgrade_firearms(data: Dictionary) -> Dictionary:
+	if not data.get("properties") is Dictionary or not data.get("passages") is Dictionary or not data.get("zombies") is Array:
+		return {}
+	var fresh := World.new(catalog)
+	for id: String in ["residence", "munitions"]:
+		if data.properties.has(id):
+			continue
+		data.properties[id] = fresh.properties[id].duplicate(true)
+		for z: Dictionary in fresh.zombies:
+			if z.home == id:
+				data.zombies.append(_encode_actor(z))
+	for id: String in fresh.passages:
+		if not data.passages.has(id):
+			data.passages[id] = fresh.passages[id].duplicate(true)
+	data.firearms = Firearms.initial()
+	data.schema_version = SCHEMA
 	return data if valid(data) else {}

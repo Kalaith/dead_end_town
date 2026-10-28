@@ -63,6 +63,7 @@ func check_expansion_increases_size_frequency_and_spreads_edge_arrivals() -> Str
 
 func check_raid_population_and_corpse_storage_stay_bounded() -> String:
 	var w := World.new(Catalog.read())
+	var resident_count: int = w.zombies.size()
 	var save := SaveState.new(w.catalog)
 	for i: int in range(80):
 		w.elapsed = float(w.pressure.next)
@@ -71,7 +72,7 @@ func check_raid_population_and_corpse_storage_stay_bounded() -> String:
 		for z: Dictionary in w.zombies:
 			if float(z.hp) > 0:
 				living += 1
-		if living > 36 or w.zombies.size() > 60 or not save.valid(save.snapshot(w)):
+		if living > int(w.catalog.pressure.living_cap) or w.zombies.size() > resident_count + int(w.catalog.pressure.living_cap) or not save.valid(save.snapshot(w)):
 			return "Raid cap or bounded save validation failed."
 		if i % 7 == 0:
 			for z: Dictionary in w.zombies:

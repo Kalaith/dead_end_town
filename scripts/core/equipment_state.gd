@@ -30,6 +30,8 @@ static func valid(data: Dictionary) -> bool:
 	var wearers: Array[String] = ["", "you", "mara"]
 	if data.properties.library.looted:
 		wearers.append("paige")
+	if data.properties.residence.looted:
+		wearers.append("ellis")
 	for id: String in ["crowbar", "sword", "iron", "shield"]:
 		if not data.equipment.get(id) is String or not wearers.has(data.equipment[id]):
 			return false

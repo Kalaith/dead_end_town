@@ -1,5 +1,6 @@
 extends RefCounted
 ## Named survivor orders share physical work sites, never a global worker slot.
+const Firearms = preload("res://scripts/sim/firearms.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 
@@ -11,13 +12,15 @@ static func person(world: RefCounted, id: String) -> Dictionary:
 	return {}
 
 
-static func options(world: RefCounted) -> Array[Dictionary]:
+static func options(world: RefCounted, a: Dictionary = {}) -> Array[Dictionary]:
 	var result: Array[Dictionary] = [
 		{"id": "home", "label": "Guard home"},
 		{"id": "follow", "label": "Follow me"},
 		{"id": "hold", "label": "Hold current position"},
 		{"id": "engage", "label": "Engage nearby threats"},
 	]
+	if world.properties.munitions.claimed:
+		result.append({"id": "ammo", "label": "Craft bullets (%d materials / %d bullets)" % [int(world.catalog.firearm.material_cost), int(world.catalog.firearm.batch_bullets)]})
 	if world.properties.garden.claimed:
 		result.append({"id": "garden", "label": "Garden: build and tend"})
 	if world.properties.garage.claimed:
@@ -34,14 +37,18 @@ static func options(world: RefCounted) -> Array[Dictionary]:
 		if world.passages[d.id].started:
 			result.append({"id": "passage:" + d.id, "label": "Build/repair: " + d.name})
 	for entry: Dictionary in result:
-		entry.reason = unavailable(world, entry.id)
+		entry.reason = unavailable(world, entry.id, a)
 	return result
 
 
-static func unavailable(world: RefCounted, task: String) -> String:
+static func unavailable(world: RefCounted, task: String, a: Dictionary = {}) -> String:
+	if not a.is_empty() and Firearms.civilian(a) and (task in ["home", "engage"] or task.begins_with("guard:")):
+		return "Ellis cannot fight or take a guard role"
 	match task:
 		"home", "follow", "hold", "engage":
 			return ""
+		"ammo":
+			return "Claim the ammunition workshop first" if not world.properties.munitions.claimed else ""
 		"garden":
 			return "Approve garden at its porch first" if not world.garden_started else ""
 		"garage":
@@ -66,12 +73,16 @@ static func assign(world: RefCounted, id: String, task: String) -> bool:
 	if float(a.hp) <= 0:
 		world.note("Recover %s at home before assigning work." % a.name)
 		return false
-	var reason: String = unavailable(world, task)
+	var reason: String = unavailable(world, task, a)
 	if not reason.is_empty():
 		world.note(reason + ".")
 		return false
 	a.job = ""
 	match task:
+		"ammo":
+			a.order = "Ammo"
+			a.job = "munitions"
+			a.anchor = Routes.point(world.definition("munitions").site)
 		"home":
 			a.order = "Home"
 		"garden", "garage":
@@ -105,6 +116,8 @@ static func assign(world: RefCounted, id: String, task: String) -> bool:
 
 static func selected(world: RefCounted, a: Dictionary) -> String:
 	match a.order:
+		"Ammo":
+			return "ammo"
 		"Garden":
 			return "garden"
 		"Workshop", "Build":

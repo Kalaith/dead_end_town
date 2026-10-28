@@ -45,7 +45,7 @@ static func speed(world: RefCounted, a: Dictionary) -> float:
 
 
 static func description(world: RefCounted, a: Dictionary) -> String:
-	var result: String = world.catalog.equipment.weapons[weapon(world, a)].name
+	var result: String = "Noncombatant" if a.id == "ellis" else world.catalog.equipment.weapons[weapon(world, a)].name
 	if protected(world, a):
 		result += " + iron"
 	if shielded(world, a):
@@ -71,6 +71,9 @@ static func equip(world: RefCounted, actor_id: String, slot: String, item: Strin
 	var blocked: String = reason(world, actor_id)
 	if not blocked.is_empty():
 		world.note(blocked)
+		return false
+	if actor_id == "ellis" and slot == "weapon":
+		world.note("Ellis does not use weapons. Assign useful work instead.")
 		return false
 	var valid: bool = (slot == "weapon" and item in ["bat", "crowbar", "sword"]) or (slot == "protection" and item in ["none", "iron"]) or (slot == "shield" and item in ["none", "shield"])
 	if not valid or not unlocked(world, item):

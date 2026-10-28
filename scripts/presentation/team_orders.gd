@@ -8,11 +8,11 @@ var option_signature: String = ""
 
 
 func refresh(world: RefCounted) -> void:
-	var choices: Array[Dictionary] = Tasks.options(world)
-	var signature: String = JSON.stringify(choices)
+	var signature: String = JSON.stringify(Tasks.options(world))
 	var changed: bool = signature != option_signature
 	option_signature = signature
 	for a: Dictionary in world.survivors:
+		var choices: Array[Dictionary] = Tasks.options(world, a)
 		var fresh: bool = not rows.has(a.id)
 		if fresh:
 			_create_row(a.id)

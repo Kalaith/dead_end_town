@@ -118,6 +118,8 @@ static func post_guard(world: RefCounted) -> void:
 	var chosen: Dictionary = {}
 	var best: float = INF
 	for a: Dictionary in world.survivors:
+		if a.id == "ellis":
+			continue
 		if float(a.hp) <= 0:
 			continue
 		if a.order == "Roadguard" and a.anchor.distance_to(post) < 10:
@@ -197,7 +199,7 @@ static func _repair(world: RefCounted, d: Dictionary, s: Dictionary, dt: float) 
 static func _release(world: RefCounted, id: String, remove_guard: bool = false) -> void:
 	for a: Dictionary in world.survivors:
 		if a.order == "Roadwork" and a.job == id:
-			a.order = "Home"
+			a.order = "Hold" if a.id == "ellis" else "Home"
 			a.job = ""
 	if not remove_guard:
 		return
@@ -205,7 +207,7 @@ static func _release(world: RefCounted, id: String, remove_guard: bool = false) 
 		if d.id == id:
 			for a: Dictionary in world.survivors:
 				if a.order == "Roadguard" and a.anchor.distance_to(guard_post(world, d)) < 10:
-					a.order = "Home"
+					a.order = "Hold" if a.id == "ellis" else "Home"
 					a.job = ""
 
 

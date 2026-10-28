@@ -18,6 +18,8 @@ func _street() -> RefCounted:
 static func integrate(w: RefCounted) -> void:
 	# Explicit authored completed defences for unrelated production fixtures.
 	for d: Dictionary in w.catalog.passages:
+		if d.id not in ["north", "south"]:
+			continue
 		w.passages[d.id] = {"started": true, "progress": float(w.balance.passage_seconds), "done": true, "open": true, "hp": float(w.balance.gate_health), "repair_reserved": false}
 	for p: Dictionary in w.properties.values():
 		p.open = true

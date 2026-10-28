@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Firearms = preload("res://scripts/sim/firearms.gd")
 const Salvage = preload("res://scripts/sim/salvage.gd")
 const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
 const Provisions = preload("res://scripts/sim/provisions.gd")
@@ -13,6 +14,8 @@ const Combat = preload("res://scripts/sim/combat.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
+var firearms: Dictionary = Firearms.initial()
+var shot: Dictionary = {"from": Vector2.ZERO, "to": Vector2.ZERO, "left": 0.0}
 var roam_rng := RandomNumberGenerator.new()
 var catalog: Dictionary
 var balance: Dictionary
@@ -99,6 +102,7 @@ func note(message: String) -> void:
 
 func step(dt: float) -> void:
 	elapsed += dt
+	shot.left = maxf(0.0, float(shot.left) - dt)
 	for a: Dictionary in [player] + survivors + zombies:
 		for key: String in ["cooldown", "flash", "swing"]:
 			a[key] = maxf(0.0, float(a[key]) - dt)
@@ -112,6 +116,7 @@ func step(dt: float) -> void:
 	Neighbourhood.step(self, work_dt)
 	_work(work_dt)
 	Workshop.step(self, work_dt)
+	Firearms.step(self, work_dt)
 	Roadworks.step(self, work_dt)
 	Pressure.step(self)
 	SliceObjective.step(self, dt)
@@ -126,6 +131,10 @@ func step(dt: float) -> void:
 
 func attack() -> void:
 	Combat.strike(self, player, aim)
+
+
+func shoot() -> bool:
+	return Firearms.shoot(self)
 
 
 func face_aim() -> void:
@@ -189,6 +198,8 @@ func _context() -> String:
 				return "Clear the yard before searching"
 			if not properties[p.id].claimed:
 				return "E / Search and secure property"
+			if p.id == "munitions":
+				return "F / Assign bullet crafting: %d materials for %d bullets every %ds" % [int(catalog.firearm.material_cost), int(catalog.firearm.batch_bullets), int(catalog.firearm.craft_seconds)]
 			if p.id == "garage":
 				return Workshop.context(self)
 			if p.id == "garden" and not garden_done:
@@ -263,6 +274,10 @@ func claim(id: String) -> bool:
 	if id == "garage":
 		materials += int(balance.garage_bonus_materials)
 		note("Garage recovered: tools, cached armour and %d extra materials. Restore the workshop here with E." % int(balance.garage_bonus_materials))
+	elif id == "residence":
+		Firearms.rescue(self)
+	elif id == "munitions":
+		note("Ammunition workshop unlocked. F assigns a worker: %d materials makes %d bullets in %ds." % [int(catalog.firearm.material_cost), int(catalog.firearm.batch_bullets), int(catalog.firearm.craft_seconds)])
 	elif id == "library":
 		var paige: Dictionary = actor("paige", "Paige", Routes.point(definition(id).site) + Vector2(35, 0), float(balance.survivor_health))
 		paige.order = "Follow"
@@ -275,6 +290,11 @@ func claim(id: String) -> bool:
 
 func order(value: String) -> void:
 	for a: Dictionary in survivors:
+		if Firearms.civilian(a) and value in ["Engage", "Home", "Guard"]:
+			a.order = "Hold"
+			a.job = ""
+			a.anchor = Routes.point(balance.home_respawn) if value == "Home" else a.pos
+			continue
 		a.order = value
 		a.job = ""
 		a.anchor = a.pos if value == "Hold" else player.pos
@@ -333,7 +353,7 @@ func _work(dt: float) -> void:
 				note("Food garden ready. Assign a gardener with F, or hold R here to tend it.")
 				for a: Dictionary in survivors:
 					if a.order == "Build" and a.job == "garden":
-						a.order = "Home"
+						a.order = "Hold" if a.id == "ellis" else "Home"
 						a.job = ""
 	if garden_done and garden_tended() and safe_connected("garden") and not Combat.danger(self, Routes.point(definition("garden").site), 230):
 		harvest += dt

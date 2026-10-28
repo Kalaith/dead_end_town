@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "firearm": {
+    "gift_bullets": 6,
+    "range": 620,
+    "damage": 90,
+    "cooldown": 0.65,
+    "hit_radius": 14,
+    "material_cost": 2,
+    "batch_bullets": 6,
+    "craft_seconds": 15
+  }
+}

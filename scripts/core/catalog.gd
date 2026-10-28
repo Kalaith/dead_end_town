@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authored content is validated before the simulation starts.
+const FirearmState = preload("res://scripts/core/firearm_state.gd")
 const SliceState = preload("res://scripts/core/slice_state.gd")
 const ProvisionsState = preload("res://scripts/core/provisions_state.gd")
 const EquipmentState = preload("res://scripts/core/equipment_state.gd")
@@ -10,7 +11,7 @@ const JsonIO = preload("res://addons/hatchery/core/json_io.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 
 ## Authored content is split by topic so no one file outgrows review. Add a file here when adding a topic.
-const FILES: Array[String] = ["street/balance.json", "street/pressure.json", "street/roads.json", "street/equipment.json", "street/properties.json", "zombies.json"]
+const FILES: Array[String] = ["street/firearm.json", "street/balance.json", "street/pressure.json", "street/roads.json", "street/equipment.json", "street/properties.json", "zombies.json"]
 
 
 static func read() -> Dictionary:
@@ -58,8 +59,8 @@ static func problems(data: Dictionary) -> Array[String]:
 	if not rules.list(data, "properties", false):
 		return errors
 	var ids: Array = rules.unique_ids(data.properties)
-	if ids != ["home", "garden", "library", "garage"]:
-		errors.append("The first street needs home, garden, library and garage in order.")
+	if ids != ["home", "garden", "library", "garage", "residence", "munitions"]:
+		errors.append("The street needs home, garden, library, garage, residence and munitions in order.")
 	for raw: Variant in data.properties:
 		if not raw is Dictionary:
 			errors.append("Property must be an object.")
@@ -93,6 +94,7 @@ static func problems(data: Dictionary) -> Array[String]:
 	NeighbourhoodState.content(data, errors)
 	EquipmentState.content(data, errors)
 	ProvisionsState.content(data, errors)
+	FirearmState.content(data, errors)
 	SliceState.content(data, errors)
 	return errors
 
