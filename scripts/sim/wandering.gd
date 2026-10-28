@@ -1,5 +1,6 @@
 extends RefCounted
 ## Independent local wandering: no pursuit, property destination or pathfinding.
+const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 
@@ -23,6 +24,8 @@ static func step(world: RefCounted, z: Dictionary, dt: float) -> void:
 
 static func _bump(world: RefCounted, z: Dictionary, intended: Vector2, direction: Vector2, dt: float) -> void:
 	if Roadworks.intercept(world, z, z.pos + direction * float(world.balance.barricade_attack_reach) * 2, dt):
+		return
+	if Neighbourhood.bump(world, z, intended):
 		return
 	for p: Dictionary in world.catalog.properties:
 		var state: Dictionary = world.properties[p.id]

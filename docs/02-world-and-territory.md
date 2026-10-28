@@ -57,3 +57,10 @@ Disconnected stock is unavailable for new orders. For the MVP, keep the single p
 ## World continuity
 
 Expedition and home share a clock, threat events, and persistent identities. Camera distance must not cancel an attack or regenerate loot. Initially keep the whole small prototype active. Later simulation tiers must preserve the same outcomes and entry routes; see [Godot implementation](10-godot-implementation.md).
+
+
+## Implemented neighbourhood links, 28 October 2026
+
+Build a northern or southern fenced passage from its yard-side work positions with E, then R or a named F assignment. Completion removes the two side-fence segments, adds enclosing rails and a closed gate. E opens or closes it; R repairs it. Existing property ownership never removes fences for free. The construction costs 4 materials and takes 6 seconds; cancelling returns unused materials.
+
+The four-property map has four explicit links: two yard passages and two street crossings. A crossing requires both facing properties, both end barricades, open yard entrances and no living zombie in its corridor. A passage requires both properties, completed construction, an open intact gate and no corridor occupant. A home-rooted traversal excludes lost and occupied yards and can choose an alternate route. Garden food delivery requires this safe connection. Local construction remains possible before integration. Known link conditions appear in pause, with no permanent map labels.

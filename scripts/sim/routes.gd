@@ -16,7 +16,7 @@ static func rectangle(value: Array) -> Rect2:
 	return Rect2(float(value[0]), float(value[1]), float(value[2]), float(value[3]))
 
 
-func rebuild(definitions: Array, properties: Dictionary, size: Vector2, defences: Array[Rect2] = []) -> void:
+func rebuild(definitions: Array, properties: Dictionary, size: Vector2, defences: Array[Rect2] = [], openings: Array[Rect2] = [], passage_walls: Array[Rect2] = []) -> void:
 	road_walls = defences
 	bounds = size
 	walls.clear()
@@ -24,8 +24,8 @@ func rebuild(definitions: Array, properties: Dictionary, size: Vector2, defences
 		var rect: Rect2 = rectangle(p.rect)
 		var gate: Vector2 = point(p.gate)
 		walls.append(rectangle(p.building))
-		walls.append(Rect2(rect.position, Vector2(8, rect.size.y)))
-		walls.append(Rect2(Vector2(rect.end.x - 8, rect.position.y), Vector2(8, rect.size.y)))
+		_side_wall(Rect2(rect.position, Vector2(8, rect.size.y)), openings)
+		_side_wall(Rect2(Vector2(rect.end.x - 8, rect.position.y), Vector2(8, rect.size.y)), openings)
 		var gate_top: bool = gate.y == rect.position.y
 		var fence_y: float = rect.position.y if gate_top else rect.end.y - 8
 		var back_y: float = rect.end.y - 8 if gate_top else rect.position.y
@@ -34,6 +34,7 @@ func rebuild(definitions: Array, properties: Dictionary, size: Vector2, defences
 		walls.append(Rect2(gate.x + 44, fence_y, rect.end.x - gate.x - 44, 8))
 		if not properties[p.id].open and float(properties[p.id].gate_hp) > 0:
 			walls.append(Rect2(gate.x - 44, fence_y, 88, 8))
+	walls.append_array(passage_walls)
 	grid.region = Rect2i(0, 0, int(bounds.x / CELL), int(bounds.y / CELL))
 	grid.cell_size = Vector2(CELL, CELL)
 	grid.offset = Vector2(CELL / 2, CELL / 2)
@@ -88,5 +89,22 @@ func line_clear(from: Vector2, to: Vector2, over_low_barriers: bool = false) -> 
 		if Geometry2D.segment_intersects_segment(from, to, wall.end, Vector2(wall.position.x, wall.end.y)) != null:
 			return false
 		if Geometry2D.segment_intersects_segment(from, to, Vector2(wall.position.x, wall.end.y), wall.position) != null:
+			return false
+	return true
+
+
+func _side_wall(rect: Rect2, openings: Array[Rect2]) -> void:
+	for opening: Rect2 in openings:
+		if rect.intersects(opening):
+			walls.append(Rect2(rect.position, Vector2(rect.size.x, opening.position.y - rect.position.y)))
+			walls.append(Rect2(rect.position.x, opening.end.y, rect.size.x, rect.end.y - opening.end.y))
+			return
+	walls.append(rect)
+
+
+func travel_clear(from: Vector2, to: Vector2) -> bool:
+	var steps: int = maxi(1, ceili(from.distance_to(to) / (RADIUS * 0.5)))
+	for i: int in range(steps + 1):
+		if not walkable(from.lerp(to, float(i) / float(steps))):
 			return false
 	return true

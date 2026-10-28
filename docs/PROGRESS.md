@@ -162,3 +162,18 @@ The user reports that occupiers stop after taking a property and asks for all zo
 - The simulation owns a seeded RandomNumberGenerator. Schema 7 stores its full integer state as text to avoid JSON precision loss, plus heading/turn clocks. Schemas 1â€“6 migrate while preserving actors, occupation, equipment, resources and work. Existing migrant destination/lane metadata may remain in older actors but does not direct movement. Unused pursuit/alley travel tuning was removed from the active catalog.
 - All 54 scenarios pass. Six new scenarios cover nearest single-target hits/cooldown/knockback, fence obstruction, continued movement and multiple headings after territory loss, identical motion despite nearby people, mid-wander JSON reload with preserved RNG sequence (small floating clock rounding tolerance), schema-6 migration and malformed wandering data. Earlier directed-raid checks now exercise local guards, staged collision headings/breach, and actual random alley arrivals; they no longer assert purposeful attacks. The command-driven garden check now seeks scattered occupants and returns to the porch rather than waiting for zombies to pursue. Existing armour, task, save-backup and territory checks pass.
 - Godot 4.7.2 parse and headless editor/import checks pass. Ran Run.ps1 with the toolkit capture runner at 1280x720. Inspected wander_occupation.png and wander_dispersed.png across six seconds of real windowed simulation after staged loss, plus single_target_swing.png with an assertion that one shambler was damaged. Refreshed the standard capture tour. These are scripted visual/motion checks, not human playtesting or acceptance of the new difficulty. No audio/device/export checks, toolkit edits, installations, deployment or publication.
+
+
+## 28 October 2026: physical neighbourhood passages
+
+Implementation:
+- Both northern yards and both southern yards can be joined by approved fenced passages (4 materials, 6 seconds). Player and named-worker labour shares progress. Completion explicitly opens the existing side fences and adds physical rails and a closable gate. Blueprints leave fences intact; cancellation refunds unused materials. Gate occupancy, breach and committed repair survive save/load.
+- Safe home connectivity is now distinct from ownership adjacency. Protected street crossings need both end barricades, usable yard gates and a clear corridor. Passage links need held endpoints and an open intact gate. Alternate routes work around a lost corner; losing home or every valid route pauses garden delivery without erasing harvest progress. Local construction can still proceed before a protected connection exists.
+- Pause lists known route conditions without revealing unsearched rewards. Passage work appears in individual orders. Movement now checks actor width before using a straight route, avoiding a fence-rail corner trap.
+- Schema 8 migrates schemas 1–7 with empty passage construction; existing progress and resources remain. The shared toolkit is unchanged.
+
+Evidence:
+- All 60 headless scenarios pass, including six new passage/connection scenarios: cost/handoff/cancel/reload, real actor traversal and flank collision, crossing boundary/gate/hostile conditions, alternate routes and production pause/resume, occupancy/breach/repair, and migration/malformed data.
+- Ran Run.ps1 with capture_neighbourhood.gd at 1280x720 and inspected yard_passage.png and neighbourhood_routes.png. These are staged visual checks, not human playtesting.
+
+Remaining goal: equipment choices, useful food upkeep and the slice completion objective, plus the integrated verification/playtest handoff. General job queues, freeform building and full-town maps remain outside this step.

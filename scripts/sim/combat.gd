@@ -91,7 +91,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.cooldown = float(world.balance.attack_cooldown)
 				a.activity = "Holding the barricade"
 				return
-	if a.order in ["Build", "Garden", "Workshop", "Roadwork"] and danger(world, anchor, 170):
+	if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage"] and danger(world, anchor, 170):
 		anchor = Vector2(360, 350)
 		a.activity = "Sheltering - work preserved"
 	else:
@@ -105,6 +105,8 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.activity = "Workshop work" if (world.workshop.started and not world.workshop.done) or (world.workshop.armour_started and not world.workshop.armour_done) else "Workshop ready - approve next job"
 				if world.workshop.armour_done:
 					a.activity = "Workshop work complete"
+			"Passage":
+				a.activity = "Passage build/repair"
 			"Roadwork":
 				a.activity = "Road defence work"
 	if a.pos.distance_to(anchor) > (4.0 if a.order == "Roadguard" else 24.0):
@@ -118,7 +120,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 
 
 static func _walk(world: RefCounted, a: Dictionary, target: Vector2, dt: float, speed: float) -> void:
-	var next: Vector2 = target if world.routes.line_clear(a.pos, target) else world.routes.waypoint(a.pos, target)
+	var next: Vector2 = target if world.routes.travel_clear(a.pos, target) else world.routes.waypoint(a.pos, target)
 	if float(a.swing) <= 0:
 		a.facing = a.pos.direction_to(next)
 	a.pos = world.routes.move(a.pos, next, speed * dt)

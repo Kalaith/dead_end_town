@@ -1,5 +1,7 @@
 extends Node2D
 ## Original procedural greybox art. No imported game assets.
+const NeighbourhoodView = preload("res://scripts/presentation/neighbourhood_view.gd")
+const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const RoadView = preload("res://scripts/presentation/road_view.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 var world: RefCounted
@@ -28,6 +30,7 @@ func _draw() -> void:
 		draw_rect(Rect2(x + 10, 577, 50, 5), Color("ada47b"))
 	for p: Dictionary in world.catalog.properties:
 		_property(p)
+	NeighbourhoodView.paint(self, world)
 	RoadView.paint(self, world, font)
 	# Characters are sorted by their feet, including bodies on the ground.
 	var actors: Array = [world.player] + world.survivors + world.zombies
@@ -95,9 +98,18 @@ func _fence(rect: Rect2, gate: Vector2, state: Dictionary, accent: Color) -> voi
 		else:
 			draw_line(Vector2(rect.position.x, y), Vector2(rect.end.x, y), Color("968168"), 7)
 	for x: float in [rect.position.x, rect.end.x]:
-		draw_line(Vector2(x, rect.position.y), Vector2(x, rect.end.y), Color("968168"), 7)
+		var opening := Rect2()
+		for area: Rect2 in Neighbourhood.openings(world):
+			if area.intersects(Rect2(x - 8, rect.position.y, 16, rect.size.y)):
+				opening = area
+		if opening.has_area():
+			draw_line(Vector2(x, rect.position.y), Vector2(x, opening.position.y), Color("968168"), 7)
+			draw_line(Vector2(x, opening.end.y), Vector2(x, rect.end.y), Color("968168"), 7)
+		else:
+			draw_line(Vector2(x, rect.position.y), Vector2(x, rect.end.y), Color("968168"), 7)
 		for y: int in range(int(rect.position.y), int(rect.end.y) + 1, 40):
-			draw_rect(Rect2(x - 6, y - 6, 12, 12), Color("b09a75"))
+			if not opening.has_area() or y < opening.position.y or y > opening.end.y:
+				draw_rect(Rect2(x - 6, y - 6, 12, 12), Color("b09a75"))
 	if float(state.gate_hp) > 0:
 		var end: Vector2 = gate + (Vector2(-44, -60) if state.open else Vector2(44, 0))
 		draw_line(gate - Vector2(44, 0), end, accent.darkened(0.2), 9)

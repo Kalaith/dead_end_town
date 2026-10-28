@@ -1,4 +1,5 @@
 extends Control
+const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const UiKit = preload("res://addons/hatchery/ui/ui_kit.gd")
 const Palette = preload("res://addons/hatchery/ui/palette.gd")
@@ -13,6 +14,7 @@ var radio: Label
 var team_orders: VBoxContainer
 var supplies: Label
 var menu: PanelContainer
+var routes_status: Label
 var menu_status: Label
 var pause_title: Label
 var first_button: Button
@@ -61,9 +63,13 @@ func _panel(pos: Vector2, extent: Vector2) -> PanelContainer:
 
 func _build_menu() -> void:
 	menu = _panel(Vector2(200, 48), Vector2(880, 624))
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	menu.add_child(scroll)
 	var column := VBoxContainer.new()
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_theme_constant_override("separation", 12)
-	menu.add_child(column)
+	scroll.add_child(column)
 	pause_title = kit.heading("ONE STREET. A PLACE TO BEGIN.", 24)
 	column.add_child(pause_title)
 	column.add_child(kit.label("Search buildings and hold your ground.", 16))
@@ -71,6 +77,8 @@ func _build_menu() -> void:
 	column.add_child(objective)
 	supplies = kit.label("", 16)
 	column.add_child(supplies)
+	routes_status = kit.label("", 13)
+	column.add_child(routes_status)
 	team_orders = TeamOrders.new()
 	column.add_child(team_orders)
 	team_orders.assigned.connect(func(id: String, task: String) -> void: assignment_requested.emit(id, task))
@@ -106,6 +114,8 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	context_label.text = world.context()
 	context_label.visible = not paused and not context_label.text.is_empty()
 	if paused:
+		routes_status.text = Neighbourhood.summary(world)
+		routes_status.visible = not routes_status.text.is_empty()
 		team_orders.refresh(world)
 	var latest: String = world.messages.back() if not world.messages.is_empty() else ""
 	if latest != last_message:

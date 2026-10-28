@@ -2,6 +2,10 @@
   "schema_version": 1,
   "bounds": [1440, 1160],
   "balance": {
+    "passage_cost": 4,
+    "passage_seconds": 6,
+    "passage_range": 65,
+    "passage_danger_range": 60,
     "step": 0.05,
     "territory_fall_seconds": 8,
     "roam_seed": 38171,
@@ -138,6 +142,134 @@
     {"id":"garden_west","name":"Garden block west barricade","rect":[792,480,16,200],"center":[800,580],"site":[848,580],"requires":["garden","garage"]},
     {"id":"garden_east","name":"Garden block east barricade","rect":[1352,480,16,200],"center":[1360,580],"site":[1312,580],"requires":["garden","garage"]}
   ],
+  "passages": [
+  {
+    "id": "north",
+    "name": "Northern yard passage",
+    "requires": [
+      "home",
+      "garden"
+    ],
+    "area": [
+      628,
+      352,
+      184,
+      96
+    ],
+    "sites": [
+      [
+        600,
+        400
+      ],
+      [
+        840,
+        400
+      ]
+    ],
+    "rails": [
+      [
+        632,
+        352,
+        176,
+        8
+      ],
+      [
+        632,
+        440,
+        176,
+        8
+      ]
+    ],
+    "gate": [
+      712,
+      360,
+      16,
+      80
+    ]
+  },
+  {
+    "id": "south",
+    "name": "Southern yard passage",
+    "requires": [
+      "library",
+      "garage"
+    ],
+    "area": [
+      628,
+      712,
+      184,
+      96
+    ],
+    "sites": [
+      [
+        600,
+        760
+      ],
+      [
+        840,
+        760
+      ]
+    ],
+    "rails": [
+      [
+        632,
+        712,
+        176,
+        8
+      ],
+      [
+        632,
+        800,
+        176,
+        8
+      ]
+    ],
+    "gate": [
+      712,
+      720,
+      16,
+      80
+    ]
+  }
+],
+  "crossings": [
+  {
+    "id": "west",
+    "name": "Western street crossing",
+    "requires": [
+      "home",
+      "library"
+    ],
+    "barriers": [
+      "home_west",
+      "home_east"
+    ],
+    "area": [
+      88,
+      472,
+      544,
+      216
+    ]
+  },
+  {
+    "id": "east",
+    "name": "Eastern street crossing",
+    "requires": [
+      "garden",
+      "garage"
+    ],
+    "barriers": [
+      "garden_west",
+      "garden_east"
+    ],
+    "area": [
+      808,
+      472,
+      544,
+      216
+    ]
+  }
+],
   "properties": [
     {"id":"home","name":"01 / HOME","rect":[80,80,560,400],"building":[180,150,350,155],"gate":[360,480],"site":[360,350],"post":[360,452],"neighbors":["garden","library"],"reward":"Home stockpile","reinforcements":[],"zombies":[]},
     {"id":"garden","name":"02 / GARDEN HOUSE","rect":[800,80,560,400],"building":[900,150,350,155],"gate":[1080,480],"site":[1080,350],"post":[1080,452],"neighbors":["home","garage"],"reward":"Food garden","reinforcements":[[870,350],[940,440],[1220,440],[1300,350]],"zombies":[[980,365],[1170,380],[1080,430]]},

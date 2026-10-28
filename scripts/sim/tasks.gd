@@ -30,6 +30,9 @@ static func options(world: RefCounted) -> Array[Dictionary]:
 			result.append({"id": "work:" + d.id, "label": "Work: " + d.name})
 		if Roadworks.active(s):
 			result.append({"id": "guard:" + d.id, "label": "Guard: " + d.name})
+	for d: Dictionary in world.catalog.passages:
+		if world.passages[d.id].started:
+			result.append({"id": "passage:" + d.id, "label": "Build/repair: " + d.name})
 	for entry: Dictionary in result:
 		entry.reason = unavailable(world, entry.id)
 	return result
@@ -49,6 +52,9 @@ static func unavailable(world: RefCounted, task: String) -> String:
 			return "Approve work here first" if s.phase == "empty" or (s.phase == "ready" and float(s.hp) >= float(world.balance.barricade_health)) else ""
 		if task == "guard:" + d.id:
 			return "Build this barricade first" if not Roadworks.active(world.roadworks[d.id]) else ""
+	if task.begins_with("passage:"):
+		var id: String = task.trim_prefix("passage:")
+		return "Approve passage here first" if not world.passages.has(id) or not world.passages[id].started else ""
 	return "Unknown assignment"
 
 
@@ -76,6 +82,14 @@ static func assign(world: RefCounted, id: String, task: String) -> bool:
 			a.order = task.capitalize()
 			a.anchor = a.pos if task == "hold" else world.player.pos
 		_:
+			if task.begins_with("passage:"):
+				a.order = "Passage"
+				a.job = task.trim_prefix("passage:")
+				for d: Dictionary in world.catalog.passages:
+					if d.id == a.job:
+						var left: Vector2 = Routes.point(d.sites[0])
+						var right: Vector2 = Routes.point(d.sites[1])
+						a.anchor = left if a.pos.distance_to(left) <= a.pos.distance_to(right) else right
 			for d: Dictionary in world.catalog.barricades:
 				if task == "work:" + d.id:
 					a.order = "Roadwork"
@@ -95,6 +109,8 @@ static func selected(world: RefCounted, a: Dictionary) -> String:
 			return "garden"
 		"Workshop", "Build":
 			return a.job
+		"Passage":
+			return "passage:" + a.job
 		"Roadwork":
 			return "work:" + a.job
 		"Roadguard":

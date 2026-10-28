@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Territory = preload("res://scripts/sim/territory.gd")
 const Pressure = preload("res://scripts/sim/pressure.gd")
 const Tasks = preload("res://scripts/sim/tasks.gd")
@@ -32,6 +33,7 @@ var working: bool = false
 var alert: String = "SAFE"
 var downs: int = 0
 var workshop: Dictionary = Workshop.initial()
+var passages: Dictionary
 var roadworks: Dictionary
 
 
@@ -39,6 +41,7 @@ func _init(data: Dictionary) -> void:
 	catalog = data
 	balance = data.balance
 	roam_rng.seed = int(balance.roam_seed)
+	passages = Neighbourhood.initial(data)
 	roadworks = Roadworks.initial(data)
 	pressure = Pressure.initial(data)
 	materials = int(balance.starting_materials)
@@ -68,7 +71,7 @@ func rebuild_routes() -> void:
 	for d: Dictionary in catalog.barricades:
 		if Roadworks.active(roadworks[d.id]):
 			defences.append(Routes.rectangle(d.rect))
-	routes.rebuild(catalog.properties, properties, Routes.point(catalog.bounds), defences)
+	routes.rebuild(catalog.properties, properties, Routes.point(catalog.bounds), defences, Neighbourhood.openings(self), Neighbourhood.obstacles(self))
 
 
 func definition(id: String) -> Dictionary:
@@ -94,6 +97,7 @@ func step(dt: float) -> void:
 	face_aim()
 	Combat.step(self, dt)
 	Territory.step(self, dt)
+	Neighbourhood.step(self, dt)
 	_work(dt)
 	Workshop.step(self, dt)
 	Roadworks.step(self, dt)
@@ -138,7 +142,14 @@ func connected(id: String) -> bool:
 	return reached.has(id)
 
 
+func safe_connected(id: String) -> bool:
+	return Neighbourhood.safe_connected(self, id)
+
+
 func context() -> String:
+	var passage: Dictionary = Neighbourhood.nearby(self)
+	if not passage.is_empty():
+		return Neighbourhood.context(self, passage)
 	var defence: Dictionary = Roadworks.nearby(self)
 	if not defence.is_empty():
 		return Roadworks.context(self, defence)
@@ -165,6 +176,10 @@ func context() -> String:
 
 
 func interact() -> void:
+	var passage: Dictionary = Neighbourhood.nearby(self)
+	if not passage.is_empty():
+		Neighbourhood.interact(self, passage)
+		return
 	var defence: Dictionary = Roadworks.nearby(self)
 	if not defence.is_empty():
 		Roadworks.interact(self, defence)
@@ -296,7 +311,7 @@ func _work(dt: float) -> void:
 					if a.order == "Build" and a.job == "garden":
 						a.order = "Home"
 						a.job = ""
-	if garden_done and garden_tended() and connected("garden") and not Combat.danger(self, Routes.point(definition("garden").site), 230):
+	if garden_done and garden_tended() and safe_connected("garden") and not Combat.danger(self, Routes.point(definition("garden").site), 230):
 		harvest += dt
 		if harvest >= float(balance.food_seconds):
 			harvest -= float(balance.food_seconds)

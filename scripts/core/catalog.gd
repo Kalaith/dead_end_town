@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authored content is validated before the simulation starts.
+const NeighbourhoodState = preload("res://scripts/core/neighbourhood_state.gd")
 const PressureState = preload("res://scripts/core/pressure_state.gd")
 const RoadState = preload("res://scripts/core/road_state.gd")
 const JsonIO = preload("res://addons/hatchery/core/json_io.gd")
@@ -65,4 +66,5 @@ static func problems(data: Dictionary) -> Array[String]:
 					errors.append("Invalid zombie position.")
 	PressureState.content(data, errors)
 	RoadState.content(data, errors)
+	NeighbourhoodState.content(data, errors)
 	return errors

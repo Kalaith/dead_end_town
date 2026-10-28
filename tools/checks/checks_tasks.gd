@@ -1,4 +1,5 @@
 extends RefCounted
+const NeighbourhoodChecks = preload("res://tools/checks/checks_neighbourhood.gd")
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
@@ -10,6 +11,9 @@ func _street() -> RefCounted:
 		z.hp = 0.0
 	for id: String in ["garden", "library", "garage"]:
 		w.claim(id)
+	NeighbourhoodChecks.integrate(w)
+	for id: String in ["home_west", "home_east"]:
+		w.roadworks[id] = {"phase": "empty", "progress": 0.0, "hp": 0.0, "repair_reserved": false}
 	w.properties.home.open = true
 	w.rebuild_routes()
 	w.player.pos = Vector2(1080, 350)
