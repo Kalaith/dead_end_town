@@ -1,4 +1,5 @@
 extends RefCounted
+const Screecher = preload("res://scripts/sim/screecher.gd")
 const Runner = preload("res://scripts/sim/runner.gd")
 ## Bounded, deterministic map-edge migrations. Cleared residents never respawn.
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
@@ -21,6 +22,8 @@ static func add_residents(world: RefCounted) -> void:
 				z.hp = ZombieTypes.health(world.catalog, z.kind)
 				if z.kind == "runner":
 					z.runner = Runner.initial()
+				elif z.kind == "screecher":
+					z.screecher = Screecher.initial()
 			world.zombies.append(z)
 
 
@@ -61,6 +64,8 @@ static func step(world: RefCounted) -> void:
 			z.kind = kind
 			if kind == "runner":
 				z.runner = Runner.initial()
+			elif kind == "screecher":
+				z.screecher = Screecher.initial()
 		z.home = "street"
 		z.raid = true
 		# Spawn at a real edge; the same random wandering applies to every zombie.

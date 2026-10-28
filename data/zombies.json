@@ -5,6 +5,18 @@
     "types": {
       "shambler": {"name": "Shambler", "health": 60, "speed": 47, "damage": 9, "cooldown": 1.2, "breach": 1.0},
       "brute": {"name": "Brute", "health": 180, "speed": 38, "damage": 18, "cooldown": 1.6, "breach": 2.5},
+      "screecher": {
+        "name": "Screecher",
+        "health": 75,
+        "speed": 42,
+        "damage": 6,
+        "cooldown": 1.5,
+        "breach": 0.5,
+        "call_tell": 1.5,
+        "call_retry": 4,
+        "call_cooldown": 18,
+        "call_pulse": 1
+      },
       "runner": {
         "name": "Runner",
         "health": 45,

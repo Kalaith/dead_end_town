@@ -682,3 +682,15 @@ Evidence and boundary:
 - Before the deletion request, six focused attention checks passed and quiet_approach.png/loud_approach.png were inspected at 1280x720, including the right-click shooting path. The then-current full run had 208 passing cases and one strict snapshot comparison failure, addressed by integer normalisation after review. No automated simulation or scripted staging is recreated or rerun after the user's request.
 - Current script loading passes for 81 scripts and editor/import succeeds. Direct computer use opened the real game, selected Begin and paused through Escape; the opening, normal street and paused supplies were inspected. That limited direct session does not establish full campaign combat, acoustic route acceptance or save continuation. Whitespace and file/function limits pass.
 - Screecher calls and bounded campaign scheduling remain G04 work; G05–G10 remain unfinished. No toolkit edits, installation, exports, push or publication.
+
+## 28 October 2026: interruptible Screecher call (G04 partial, visual acceptance pending)
+
+Implementation:
+- Clinic's first living resident is now a Screecher with two Shambler companions. Within ordinary personal notice range it plants for a 1.5-second inhale, then emits a radius-600, four-second investigation event for existing actors. It deals no call damage and creates no enemies. Successful calls wait 18 seconds; damaging melee or pistol hits interrupt the inhale and impose four seconds before retry. Leaving personal notice cancels the inhale. Noise and remembered positions cannot initiate calls.
+- Its original procedural scarf, raised hands, INHALE progress ring and expanding CALL pulse are implemented. The existing home-gate defender shortcut now interrupts both special kinds and emits its melee impact, matching ordinary strikes.
+- Schema 34 preserves inhale, retry and pulse. Existing living clinic stand-ins upgrade in place without increasing saved health; defeated residents remain unchanged. Noise/memory and old actors/rewards remain conserved. Invalid phases and timers reject loading.
+
+Evidence and boundary:
+- All 83 scripts load and headless editor/import succeeds; whitespace and size limits pass. No automated simulations or scripted staging tours were created or run.
+- Direct computer use was stopped by the user with Escape. No further computer-use input follows that stop. The new Screecher drawings and encounter have not been inspected live, and its interruption/reload behavior has not been exercised through direct play. These remain explicit acceptance work; no visual, human balance or full-G04 completion claim is made.
+- Campaign migration scheduling remains the next G04 implementation slice. G05–G10 remain unfinished. No installation, toolkit edits, exports, push or publication.

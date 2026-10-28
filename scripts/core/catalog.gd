@@ -1,4 +1,5 @@
 extends RefCounted
+const ScreecherState = preload("res://scripts/core/screecher_state.gd")
 const AttentionState = preload("res://scripts/core/attention_state.gd")
 const RunnerState = preload("res://scripts/core/runner_state.gd")
 ## Authored content is validated before the simulation starts.
@@ -82,6 +83,7 @@ static func problems(data: Dictionary) -> Array[String]:
 	_zombie_types(data, errors)
 	RunnerState.content(data, errors)
 	AttentionState.content(data, errors)
+	ScreecherState.content(data, errors)
 	if not rules.list(data, "properties", false):
 		return errors
 	var ids: Array = rules.unique_ids(data.properties)

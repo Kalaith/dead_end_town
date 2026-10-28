@@ -1,4 +1,5 @@
 extends RefCounted
+const ScreecherState = preload("res://scripts/core/screecher_state.gd")
 const AttentionState = preload("res://scripts/core/attention_state.gd")
 const Acoustics = preload("res://scripts/sim/noise.gd")
 const RunnerState = preload("res://scripts/core/runner_state.gd")
@@ -45,7 +46,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 33
+const SCHEMA: int = 34
 ## Saved world fields that are collections and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -175,7 +176,7 @@ func valid(data: Dictionary) -> bool:
 			return false
 		ids.append(a.id)
 	for z: Variant in data.zombies:
-		if not RunnerState.valid(z, catalog):
+		if not RunnerState.valid(z, catalog) or not ScreecherState.valid(z, catalog):
 			return false
 		if not z.get("raid") is bool or not z.get("home") is String:
 			return false
@@ -235,6 +236,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 33:
+		return _upgrade_screechers(upgraded)
 	if version == 32:
 		return _upgrade_attention(upgraded)
 	if version == 31:
@@ -702,5 +705,11 @@ func _upgrade_runners(data: Dictionary) -> Dictionary:
 func _upgrade_attention(data: Dictionary) -> Dictionary:
 	data.noise = Acoustics.initial()
 	data.memories = {}
+	return _upgrade_screechers(data)
+
+
+func _upgrade_screechers(data: Dictionary) -> Dictionary:
+	if not ScreecherState.migrate(data, catalog):
+		return {}
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

@@ -9,7 +9,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	rules.number_between(data.attention, "memory_seconds", 0.1, 30)
 	if not rules.object(data.attention, "events"):
 		return
-	for key: String in ["impact", "work", "pistol"]:
+	for key: String in ["impact", "work", "pistol", "screecher"]:
 		if not rules.object(data.attention.events, key):
 			continue
 		for field: String in ["radius", "lifetime", "refresh"]:

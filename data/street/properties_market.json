@@ -103,6 +103,7 @@
     },
     {
       "id": "clinic",
+      "resident_kinds": ["screecher", "shambler", "shambler"],
       "core": true,
       "available": true,
       "food_cache": 4,

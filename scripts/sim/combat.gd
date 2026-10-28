@@ -1,4 +1,5 @@
 extends RefCounted
+const Screecher = preload("res://scripts/sim/screecher.gd")
 const Acoustics = preload("res://scripts/sim/noise.gd")
 const Runner = preload("res://scripts/sim/runner.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
@@ -43,6 +44,7 @@ static func strike(world: RefCounted, attacker: Dictionary, direction: Vector2) 
 		target.hp = maxf(0, float(target.hp) - float(weapon.damage))
 		target.flash = 0.18
 		Runner.interrupt(world, target)
+		Screecher.interrupt(world, target)
 		target.cooldown = maxf(float(target.cooldown), 0.45)
 		target.pos = world.routes.move(target.pos, target.pos + direction * float(weapon.knockback), float(weapon.knockback))
 	if not candidates.is_empty():
@@ -99,6 +101,9 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 			if float(z.hp) > 0 and z.pos.distance_to(Vector2(360, 490)) < 50 and a.pos.distance_to(Routes.point(world.balance.mara_start)) < 32 and float(a.cooldown) <= 0:
 				z.hp = maxf(0, float(z.hp) - float(Equipment.stats(world, a).damage))
 				z.flash = 0.18
+				Runner.interrupt(world, z)
+				Screecher.interrupt(world, z)
+				Acoustics.emit(world, a.id, "impact", a.pos)
 				a.swing = 0.18
 				a.facing = a.pos.direction_to(z.pos)
 				a.cooldown = float(Equipment.stats(world, a).cooldown)
@@ -179,6 +184,8 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 			best = distance
 	Acoustics.observe(world, z, target)
 	if Runner.step(world, z, target, dt):
+		return
+	if Screecher.step(world, z, target, dt):
 		return
 	if not target.is_empty() and best < 29.0 and world.routes.line_clear(z.pos, target.pos) and float(z.cooldown) <= 0:
 		target.hp = maxf(0.0, float(target.hp) - incoming_damage(world, target, z.pos, z))

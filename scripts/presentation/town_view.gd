@@ -197,6 +197,8 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		return
 	if zombie and a.get("kind") == "runner":
 		_runner_tell(a)
+	if zombie and a.get("kind") == "screecher":
+		_screecher_tell(a)
 	_ellipse(pos + Vector2(1, 4), Vector2(21, 9) if a.get("kind") == "brute" else Vector2(15, 7), Color(0, 0, 0, 0.3))
 	var body: Color = (Color("8a5a4a") if a.get("kind") == "brute" else Color("788357")) if zombie else (Color("dfad62") if a.id == "you" else (Color("7daeb9") if a.id == "mara" else (Color("91b69e") if a.id == "ellis" else Color("9dc1ce") if a.id == "june" else Color("b7a0c8"))))
 	if float(a.flash) > 0:
@@ -206,6 +208,12 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 	draw_rect(Rect2(pos + Vector2(-10, -22), Vector2(20, 20)), body)
 	draw_rect(Rect2(pos + Vector2(-10, -10), Vector2(20, 4)), body.darkened(0.3))
 	_head(pos + Vector2(0, -29), direction, zombie)
+	if zombie and a.get("kind") == "screecher":
+		draw_line(pos + Vector2(-10, -23), pos + Vector2(10, -23), RUST, 5)
+		draw_line(pos + Vector2(7, -23), pos + Vector2(13, -8), RUST, 5)
+		if a.screecher.phase == "inhale":
+			draw_line(pos + Vector2(-13, -11), pos + Vector2(-8, -30), CREAM, 4)
+			draw_line(pos + Vector2(13, -11), pos + Vector2(8, -30), CREAM, 4)
 	if zombie and a.get("kind") == "runner":
 		# Narrow shoulders and a forward diagonal sash identify it without colour.
 		draw_line(pos + Vector2(-6, -22), pos + Vector2(6, -3), CREAM, 3)
@@ -269,6 +277,24 @@ func _runner_tell(a: Dictionary) -> void:
 	if state.phase == "tell":
 		_text(a.pos + Vector2(-25, -57), "LUNGE", 13, CREAM)
 		_meter(a.pos + Vector2(-22, -50), 44, 1.0 - float(state.left) / float(world.catalog.zombies.types.runner.lunge_tell), CREAM)
+
+
+func _screecher_tell(a: Dictionary) -> void:
+	var state: Dictionary = a.screecher
+	var config: Dictionary = world.catalog.zombies.types.screecher
+	if state.phase == "inhale":
+		var progress: float = 1.0 - float(state.left) / float(config.call_tell)
+		draw_arc(a.pos, 23, -PI / 2, -PI / 2 + TAU * progress, 32, CREAM, 3)
+		for side: int in [-1, 1]:
+			draw_line(a.pos + Vector2(side * 33, -32), a.pos + Vector2(side * 23, -24), CREAM, 2)
+		_text(a.pos + Vector2(-27, -57), "INHALE", 13, CREAM)
+	if float(state.pulse) > 0:
+		var progress: float = 1.0 - float(state.pulse) / float(config.call_pulse)
+		var radius: float = float(world.catalog.attention.events.screecher.radius)
+		for i: int in range(2):
+			var reach: float = 25 + maxf(0.0, progress - i * 0.15) * radius
+			draw_arc(a.pos, reach, 0, TAU, 64, CREAM, 2)
+		_text(a.pos + Vector2(-21, -57), "CALL", 13, CREAM)
 
 
 func _head(center: Vector2, direction: Vector2, zombie: bool) -> void:

@@ -1,4 +1,5 @@
 extends RefCounted
+const Screecher = preload("res://scripts/sim/screecher.gd")
 const Acoustics = preload("res://scripts/sim/noise.gd")
 const Runner = preload("res://scripts/sim/runner.gd")
 ## Pistol ownership, physical ray shots and one shared ammunition workbench.
@@ -59,6 +60,7 @@ static func shoot(world: RefCounted) -> bool:
 		target.hp = maxf(0.0, float(target.hp) - float(rules.damage))
 		target.flash = 0.18
 		Runner.interrupt(world, target)
+		Screecher.interrupt(world, target)
 		target.cooldown = maxf(float(target.cooldown), 0.45)
 		endpoint = origin + direction * nearest
 	world.shot = {"from": origin, "to": endpoint, "left": 0.12}
