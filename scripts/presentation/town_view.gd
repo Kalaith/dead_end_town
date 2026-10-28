@@ -195,6 +195,8 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 			return
 		draw_line(pos - Vector2(12, 0), pos + Vector2(12, 0), Color("575e4d") if zombie else RUST, 9)
 		return
+	if zombie and a.get("kind") == "runner":
+		_runner_tell(a)
 	_ellipse(pos + Vector2(1, 4), Vector2(21, 9) if a.get("kind") == "brute" else Vector2(15, 7), Color(0, 0, 0, 0.3))
 	var body: Color = (Color("8a5a4a") if a.get("kind") == "brute" else Color("788357")) if zombie else (Color("dfad62") if a.id == "you" else (Color("7daeb9") if a.id == "mara" else (Color("91b69e") if a.id == "ellis" else Color("9dc1ce") if a.id == "june" else Color("b7a0c8"))))
 	if float(a.flash) > 0:
@@ -204,6 +206,10 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 	draw_rect(Rect2(pos + Vector2(-10, -22), Vector2(20, 20)), body)
 	draw_rect(Rect2(pos + Vector2(-10, -10), Vector2(20, 4)), body.darkened(0.3))
 	_head(pos + Vector2(0, -29), direction, zombie)
+	if zombie and a.get("kind") == "runner":
+		# Narrow shoulders and a forward diagonal sash identify it without colour.
+		draw_line(pos + Vector2(-6, -22), pos + Vector2(6, -3), CREAM, 3)
+		draw_line(pos + Vector2(-13, -16), pos + direction * 23 + Vector2(0, -20), Color("9caa73"), 4)
 	if not zombie and a.id == "oliver":
 		draw_rect(Rect2(pos + Vector2(-9, -40), Vector2(18, 9)), Color("698e50"))
 		draw_line(pos + Vector2(-14, -31), pos + Vector2(14, -31), Color("9dceb3"), 3)
@@ -243,6 +249,26 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		draw_arc(pos, float(stats.reach), direction.angle() - half_angle, direction.angle() + half_angle, 24, CREAM, 3)
 	if float(a.hp) < (ZombieTypes.full_health(world.catalog, a) if zombie else 100.0):
 		_meter(pos + Vector2(-15, 10), 30, float(a.hp) / (ZombieTypes.full_health(world.catalog, a) if zombie else 100.0), RUST)
+
+
+func _runner_tell(a: Dictionary) -> void:
+	var state: Dictionary = a.runner
+	if state.phase not in ["tell", "dash", "recover"]:
+		return
+	if state.phase == "recover":
+		draw_arc(a.pos, 20, 0, TAU, 24, CREAM, 2)
+		return
+	var direction := Vector2(float(state.dx), float(state.dy))
+	var length: float = float(world.catalog.zombies.types.runner.lunge_distance) if state.phase == "tell" else float(state.distance)
+	var end: Vector2 = a.pos + direction * length
+	for side: float in [-1.0, 1.0]:
+		var offset: Vector2 = direction.orthogonal() * 15 * side
+		draw_line(a.pos + offset, end + offset, INK, 5)
+		draw_line(a.pos + offset, end + offset, CREAM, 2)
+		draw_line(end, end - direction * 13 + offset, CREAM, 3)
+	if state.phase == "tell":
+		_text(a.pos + Vector2(-25, -57), "LUNGE", 13, CREAM)
+		_meter(a.pos + Vector2(-22, -50), 44, 1.0 - float(state.left) / float(world.catalog.zombies.types.runner.lunge_tell), CREAM)
 
 
 func _head(center: Vector2, direction: Vector2, zombie: bool) -> void:

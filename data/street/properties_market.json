@@ -3,6 +3,7 @@
   "properties": [
     {
       "id": "hardware",
+      "resident_kinds": ["runner", "shambler", "shambler"],
       "core": true,
       "available": true,
       "food_cache": 2,
@@ -201,6 +202,7 @@
     },
     {
       "id": "greenhouse",
+      "resident_kinds": ["runner", "shambler", "shambler"],
       "core": true,
       "available": true,
       "food_cache": 8,

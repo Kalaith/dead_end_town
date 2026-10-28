@@ -1,4 +1,5 @@
 extends RefCounted
+const Runner = preload("res://scripts/sim/runner.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
@@ -40,6 +41,7 @@ static func strike(world: RefCounted, attacker: Dictionary, direction: Vector2) 
 		var target: Dictionary = candidates[i]
 		target.hp = maxf(0, float(target.hp) - float(weapon.damage))
 		target.flash = 0.18
+		Runner.interrupt(world, target)
 		target.cooldown = maxf(float(target.cooldown), 0.45)
 		target.pos = world.routes.move(target.pos, target.pos + direction * float(weapon.knockback), float(weapon.knockback))
 
@@ -172,6 +174,8 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 		if float(a.hp) > 0 and distance < best:
 			target = a
 			best = distance
+	if Runner.step(world, z, target, dt):
+		return
 	if not target.is_empty() and best < 29.0 and world.routes.line_clear(z.pos, target.pos) and float(z.cooldown) <= 0:
 		target.hp = maxf(0.0, float(target.hp) - incoming_damage(world, target, z.pos, z))
 		target.flash = 0.18

@@ -1,4 +1,5 @@
 extends RefCounted
+const RunnerState = preload("res://scripts/core/runner_state.gd")
 ## Authored content is validated before the simulation starts.
 const FieldMedicineState = preload("res://scripts/core/field_medicine_state.gd")
 const MedicineState = preload("res://scripts/core/medicine_state.gd")
@@ -78,6 +79,7 @@ static func problems(data: Dictionary) -> Array[String]:
 			if float(b.legacy_repair_seconds) * float(b.gate_repair_rate) < maxf(float(b.gate_health), float(b.barricade_health)):
 				errors.append("Legacy repair capacity must preserve a prepaid full repair.")
 	_zombie_types(data, errors)
+	RunnerState.content(data, errors)
 	if not rules.list(data, "properties", false):
 		return errors
 	var ids: Array = rules.unique_ids(data.properties)

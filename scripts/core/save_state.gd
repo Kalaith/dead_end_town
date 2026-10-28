@@ -1,4 +1,5 @@
 extends RefCounted
+const RunnerState = preload("res://scripts/core/runner_state.gd")
 const FieldMedicineState = preload("res://scripts/core/field_medicine_state.gd")
 const CompanionRescueState = preload("res://scripts/core/companion_rescue_state.gd")
 const MedicineState = preload("res://scripts/core/medicine_state.gd")
@@ -42,7 +43,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 31
+const SCHEMA: int = 32
 ## Saved world fields that are collections and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -169,6 +170,8 @@ func valid(data: Dictionary) -> bool:
 			return false
 		ids.append(a.id)
 	for z: Variant in data.zombies:
+		if not RunnerState.valid(z, catalog):
+			return false
 		if not z.get("raid") is bool or not z.get("home") is String:
 			return false
 		if z.has("kind") and (not z.kind is String or not catalog.zombies.types.has(z.kind) or float(z.hp) > ZombieTypes.health(catalog, z.kind)):
@@ -225,6 +228,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 31:
+		return _upgrade_runners(upgraded)
 	if version == 30:
 		return _upgrade_greenhouse_work(upgraded)
 	if version == 29:
@@ -676,5 +681,11 @@ func _upgrade_greenhouse_work(data: Dictionary) -> Dictionary:
 	# Preserve the fraction of the old 20-second harvest and 60-second meal clocks.
 	data.harvest = float(data.harvest) / 20.0 * float(catalog.balance.food_seconds)
 	data.provisions.clock = float(data.provisions.clock) / 60.0 * float(catalog.balance.meal_seconds)
+	return _upgrade_runners(data)
+
+
+func _upgrade_runners(data: Dictionary) -> Dictionary:
+	if not RunnerState.migrate(data, catalog):
+		return {}
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

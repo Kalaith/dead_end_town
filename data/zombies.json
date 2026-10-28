@@ -4,7 +4,21 @@
     "default": "shambler",
     "types": {
       "shambler": {"name": "Shambler", "health": 60, "speed": 47, "damage": 9, "cooldown": 1.2, "breach": 1.0},
-      "brute": {"name": "Brute", "health": 180, "speed": 38, "damage": 18, "cooldown": 1.6, "breach": 2.5}
+      "brute": {"name": "Brute", "health": 180, "speed": 38, "damage": 18, "cooldown": 1.6, "breach": 2.5},
+      "runner": {
+        "name": "Runner",
+        "health": 45,
+        "speed": 105,
+        "damage": 8,
+        "cooldown": 1.4,
+        "breach": 0.5,
+        "lunge_range": 110,
+        "lunge_tell": 0.7,
+        "lunge_distance": 85,
+        "lunge_speed": 260,
+        "lunge_recovery": 0.8,
+        "lunge_cooldown": 4
+      }
     }
   }
 }
