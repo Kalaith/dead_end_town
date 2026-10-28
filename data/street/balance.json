@@ -103,6 +103,11 @@
     "defeat_survivor_health": 25,
     "recovery_clear_radius": 120,
     "recovery_relocate_distance": 240,
-    "recovery_migration_seconds": 90
+    "recovery_migration_seconds": 90,
+    "medicine_material_cost": 1,
+    "medicine_food_cost": 2,
+    "medicine_batch": 2,
+    "medicine_seconds": 30,
+    "medicine_target": 8
   }
 }

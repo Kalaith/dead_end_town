@@ -1,4 +1,5 @@
 extends RefCounted
+const Medicine = preload("res://scripts/sim/medicine.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
@@ -96,6 +97,7 @@ static func step(world: RefCounted, dt: float) -> void:
 					world.finish_job(a)
 		return
 	if not blocked.is_empty():
+		Medicine.block(world, blocked)
 		return
 	# Only one present patient receives one effective site rate, regardless of workers.
 	var ids: Array = world.clinic.patients.keys()
@@ -107,6 +109,7 @@ static func step(world: RefCounted, dt: float) -> void:
 			continue
 		if a.id == world.carry.patient or a.pos.distance_to(site(world)) >= 70:
 			continue
+		Medicine.block(world, "Treat present patients first")
 		var paid: Dictionary = world.clinic.patients[id]
 		paid.progress = minf(float(world.balance.treatment_seconds), float(paid.progress) + dt)
 		if paid.progress >= float(world.balance.treatment_seconds):
@@ -114,6 +117,7 @@ static func step(world: RefCounted, dt: float) -> void:
 			world.clinic.patients.erase(id)
 			world.note(a.name + " recovered at the clinic.")
 		return
+	Medicine.step(world, worker, site(world), dt)
 
 
 static func cancel(world: RefCounted, socket: String) -> bool:
@@ -133,7 +137,8 @@ static func context(world: RefCounted) -> String:
 		return "R Restore · %d%%" % int(100 * float(world.clinic.progress) / float(world.balance.clinic_seconds))
 	var a: Dictionary = patient(world)
 	if a.is_empty():
-		return ""
+		var order: Dictionary = WorkOrders.current(world, "clinic_medicine")
+		return "R Medicine · %d%%" % int(100 * float(order.work_done) / float(order.work_required)) if WorkOrders.pending(order) else ""
 	if world.clinic.patients.has(a.id):
 		return "R Treat %s · %d%%" % [a.name, int(100 * float(world.clinic.patients[a.id].progress) / float(world.balance.treatment_seconds))]
 	return "E Treat %s · %d medicine" % [a.name, int(world.balance.treatment_cost)]

@@ -1,5 +1,6 @@
 extends RefCounted
 ## Authoritative fixed-step state. Presentation sends commands only.
+const Medicine = preload("res://scripts/sim/medicine.gd")
 const RecoverySalvage = preload("res://scripts/sim/recovery_salvage.gd")
 const Defeat = preload("res://scripts/sim/defeat.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
@@ -43,6 +44,7 @@ var routes := Routes.new()
 var materials: int
 var food: int
 var medicine: int = 0
+var medicine_production: Dictionary
 var clinic: Dictionary = Clinic.initial()
 var rescue_intro: String = ""
 var elapsed: float = 0.0
@@ -78,6 +80,7 @@ func _init(data: Dictionary) -> void:
 	catalog = data
 	balance = data.balance
 	production = Production.initial(data)
+	medicine_production = Medicine.initial(data)
 	roam_rng.seed = int(balance.roam_seed)
 	passages = Neighbourhood.initial(data)
 	roadworks = Roadworks.initial(data)

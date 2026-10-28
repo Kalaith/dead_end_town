@@ -1,5 +1,6 @@
 extends Node2D
 ## Original procedural greybox art. No imported game assets.
+const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
@@ -117,6 +118,11 @@ func _property(p: Dictionary) -> void:
 		draw_rect(Rect2(bed.position + Vector2(4, 4), Vector2(12, 24)), CREAM)
 		if world.clinic.started and not world.clinic.done:
 			_meter(site + Vector2(76, 28), 64, float(world.clinic.progress) / float(world.balance.clinic_seconds), TEAL)
+		var batch: Dictionary = WorkOrders.current(world, "clinic_medicine")
+		if WorkOrders.pending(batch):
+			for x: int in range(3):
+				draw_rect(Rect2(site + Vector2(82 + x * 18, -29), Vector2(8, 12)), Color("9dc1ce"))
+			_meter(site + Vector2(76, 28), 64, float(batch.work_done) / float(batch.work_required), TEAL)
 	if p.id == "garage":
 		_workshop(site)
 	if float(state.occupation) > 0:

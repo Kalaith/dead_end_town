@@ -71,6 +71,8 @@ static func _valid_site(o: Dictionary, data: Dictionary, catalog: Dictionary) ->
 		if o.phase == "completed":
 			return flags[1]
 		return not flags[0] and not flags[1]
+	if o.recipe == "medicine":
+		return o.socket == "clinic_medicine" and o.target == "clinic" and data.clinic.done
 	if o.recipe == "bullets":
 		return o.socket == "munitions" and o.target == "munitions" and data.properties.munitions.looted
 	for d: Dictionary in catalog.passages:
@@ -99,13 +101,7 @@ static func _valid_order(o: Dictionary, catalog: Dictionary) -> bool:
 		return false
 	if o.get("phase") not in ["approved", "working", "blocked", "completed", "cancelled", "destroyed"]:
 		return false
-	if not _bundle(o.get("inputs"), "materials", int(recipe.inputs.materials)):
-		return false
-	if not o.get("outputs") is Dictionary:
-		return false
-	if not recipe.outputs.is_empty() and not _bundle(o.outputs, "bullets", int(recipe.outputs.bullets)):
-		return false
-	if recipe.outputs.is_empty() and not o.outputs.is_empty():
+	if not _bundle(o.get("inputs"), recipe.inputs) or not _bundle(o.get("outputs"), recipe.outputs):
 		return false
 	if not Rules.finite(o.get("work_required")) or float(o.work_required) != float(recipe.seconds):
 		return false
@@ -124,5 +120,10 @@ static func _valid_order(o: Dictionary, catalog: Dictionary) -> bool:
 	return true
 
 
-static func _bundle(value: Variant, key: String, count: int) -> bool:
-	return value is Dictionary and value.size() == 1 and Rules.integer_in(value.get(key), count, count)
+static func _bundle(value: Variant, expected: Dictionary) -> bool:
+	if not value is Dictionary or value.size() != expected.size():
+		return false
+	for stock: String in expected:
+		if not Rules.integer_in(value.get(stock), int(expected[stock]), int(expected[stock])):
+			return false
+	return true

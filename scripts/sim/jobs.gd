@@ -1,5 +1,6 @@
 extends RefCounted
 ## Persistent duties and temporary work. Guard/follower orders never join this queue.
+const Medicine = preload("res://scripts/sim/medicine.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Repairs = preload("res://scripts/sim/repairs.gd")
@@ -212,6 +213,8 @@ static func _choose(world: RefCounted, a: Dictionary) -> String:
 			return "garden"
 		if (world.production.mode == "once" or (world.production.mode == "repeat" and int(world.firearms.bullets) < int(world.production.target))) and world.properties.munitions.looted and world.safe_connected("munitions"):
 			return "ammo"
+		if world.clinic.done and world.safe_connected("clinic") and Medicine.needed(world):
+			return "clinic"
 	return ""
 
 
@@ -231,6 +234,8 @@ static func _needed(world: RefCounted, a: Dictionary) -> bool:
 		return not s.is_empty() and float(s.gate_hp) < float(world.balance.gate_health)
 	if task == "garden":
 		return world.garden_started and (not world.garden_done or (a.duty.return_task == "general" and world.food < food_target(world)))
+	if task == "clinic" and a.duty.return_task == "general":
+		return Medicine.needed(world)
 	if task == "ammo":
 		return world.production.mode == "once" or (world.production.mode == "repeat" and int(world.firearms.bullets) < int(world.production.target))
 	return false

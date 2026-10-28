@@ -13,6 +13,8 @@ const UiKit = preload("res://addons/hatchery/ui/ui_kit.gd")
 const Palette = preload("res://addons/hatchery/ui/palette.gd")
 const TeamOrders = preload("res://scripts/presentation/team_orders.gd")
 signal rescue_requested(task: String)
+signal medicine_requested(mode: String, target: int, reserve: int)
+signal medicine_cancelled
 signal production_requested(mode: String, target: int, reserve: int)
 signal work_prioritised(socket: String, value: bool)
 signal work_cancelled(socket: String)
@@ -27,6 +29,7 @@ var section_buttons: Dictionary = {}
 var section: String = "Street"
 var construction_menu: VBoxContainer
 var work_menu: VBoxContainer
+var medicine_menu: VBoxContainer
 var kit: RefCounted
 var live_status: Control
 var stats: Label
@@ -148,6 +151,11 @@ func _build_menu() -> void:
 	sections.Work.add_child(work_menu)
 	work_menu.configured.connect(func(mode: String, target: int, reserve: int) -> void: production_requested.emit(mode, target, reserve))
 	work_menu.cancelled.connect(func() -> void: production_cancelled.emit())
+	medicine_menu = ProductionMenu.new()
+	medicine_menu.medicine_mode = true
+	sections.Work.add_child(medicine_menu)
+	medicine_menu.configured.connect(func(mode: String, target: int, reserve: int) -> void: medicine_requested.emit(mode, target, reserve))
+	medicine_menu.cancelled.connect(func() -> void: medicine_cancelled.emit())
 	sections.Help.add_child(kit.label("WASD / arrows  Move     Mouse  Aim\nRight click  Shoot     Left click / Space  Swing (hold to repeat)\nE  Interact / drop     Hold E  Carry casualty\nHold R  Work     Q  Timber\nF  Team     J  Work     M  Town     G  Post guard\n1–4  Follow / Hold / Engage / Home     Esc / Tab  Pause", 18))
 	var row := HBoxContainer.new()
 	sections.Street.add_child(row)
@@ -199,12 +207,15 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	if paused:
 		if section == "Town":
 			town_map.refresh(world)
-		section_buttons.Work.visible = world.properties.munitions.looted or ConstructionMenu.available(world)
+		section_buttons.Work.visible = world.clinic.done or world.properties.munitions.looted or ConstructionMenu.available(world)
 		construction_menu.refresh(world)
 		work_menu.visible = world.properties.munitions.looted
 		if section == "Work" and not section_buttons.Work.visible:
 			show_section("Street")
 		work_menu.refresh(world)
+		medicine_menu.visible = world.clinic.done
+		if medicine_menu.visible:
+			medicine_menu.refresh(world)
 		team_orders.refresh(world)
 		equipment_menu.refresh(world)
 	var latest: String = world.messages.back() if not world.messages.is_empty() else ""

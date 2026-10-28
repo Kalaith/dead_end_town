@@ -1,4 +1,5 @@
 extends Node2D
+const Medicine = preload("res://scripts/sim/medicine.gd")
 const Defeat = preload("res://scripts/sim/defeat.gd")
 const Clinic = preload("res://scripts/sim/clinic.gd")
 const Roster = preload("res://scripts/sim/roster.gd")
@@ -54,6 +55,8 @@ func _ready() -> void:
 	hud.requested.connect(command)
 	hud.rescue_requested.connect(dismiss_rescue)
 	hud.production_requested.connect(configure_production)
+	hud.medicine_requested.connect(configure_medicine)
+	hud.medicine_cancelled.connect(cancel_medicine)
 	hud.production_cancelled.connect(cancel_production)
 	hud.work_cancelled.connect(cancel_work)
 	hud.work_located.connect(locate_work)
@@ -181,7 +184,7 @@ func command(value: String) -> void:
 			hud.menu_status.text = world.messages.back()
 			hud.refresh(world, paused)
 		"work":
-			if world.properties.munitions.looted or ConstructionMenu.available(world):
+			if world.clinic.done or world.properties.munitions.looted or ConstructionMenu.available(world):
 				paused = true
 				hud.refresh(world, true)
 				hud.show_menu()
@@ -284,4 +287,16 @@ func dismiss_rescue(task: String) -> void:
 	if Roster.dismiss(world, task):
 		paused = not resume_after_rescue
 		resume_after_rescue = false
+		hud.refresh(world, paused)
+
+
+func configure_medicine(mode: String, target: int, reserve: int) -> void:
+	if Medicine.configure(world, mode, target, reserve):
+		hud.menu_status.text = ""
+		hud.refresh(world, paused)
+
+
+func cancel_medicine() -> void:
+	if Medicine.cancel(world):
+		hud.menu_status.text = ""
 		hud.refresh(world, paused)

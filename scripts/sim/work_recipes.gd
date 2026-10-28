@@ -1,6 +1,6 @@
 extends RefCounted
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
-const IDS: Array[String] = ["bullets", "passage", "garden", "workshop", "armour", "road_build", "road_remove", "repair_line", "gate_rebuild", "legacy_repair", "clinic"]
+const IDS: Array[String] = ["bullets", "passage", "garden", "workshop", "armour", "road_build", "road_remove", "repair_line", "gate_rebuild", "legacy_repair", "clinic", "medicine"]
 
 
 static func definition(catalog: Dictionary, id: String) -> Dictionary:
@@ -16,7 +16,10 @@ static func recipe(catalog: Dictionary, id: String) -> Dictionary:
 	var outputs: Dictionary = {}
 	if not str(entry.output).is_empty():
 		outputs[entry.output] = int(source[entry.count])
-	return {"id": id, "kind": entry.kind, "inputs": {"materials": int(source[entry.cost])}, "outputs": outputs, "seconds": float(source[entry.seconds])}
+	var inputs: Dictionary = {"materials": int(source[entry.cost])}
+	if id == "medicine":
+		inputs.food = int(source[entry.food_cost])
+	return {"id": id, "kind": entry.kind, "inputs": inputs, "outputs": outputs, "seconds": float(source[entry.seconds])}
 
 
 static func content(catalog: Dictionary, errors: Array[String]) -> void:
@@ -48,5 +51,8 @@ static func content(catalog: Dictionary, errors: Array[String]) -> void:
 		if entry.get("id") == "bullets":
 			if entry.source != "firearm" or entry.kind != "production" or entry.get("output") != "bullets" or entry.get("count") != "batch_bullets":
 				errors.append("Bullet recipe must produce the implemented bullet batch.")
+		elif entry.get("id") == "medicine":
+			if entry.source != "balance" or entry.kind != "production" or entry.get("output") != "medicine" or entry.get("count") != "medicine_batch" or entry.get("food_cost") != "medicine_food_cost" or not Rules.integer_in(source.get("medicine_food_cost"), 1, 1000):
+				errors.append("Medicine must use the implemented material/food batch.")
 		elif entry.get("output") != "" or entry.get("count") != "" or entry.kind != ("repair" if entry.id in ["repair_line", "legacy_repair"] else "construction") or entry.source != "balance":
 			errors.append("Construction cannot invent resource outputs.")

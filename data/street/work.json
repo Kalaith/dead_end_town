@@ -112,6 +112,17 @@
         "output": "",
         "count": "",
         "kind": "construction"
+      },
+      {
+        "id": "medicine",
+        "name": "Medicine",
+        "source": "balance",
+        "cost": "medicine_material_cost",
+        "food_cost": "medicine_food_cost",
+        "seconds": "medicine_seconds",
+        "output": "medicine",
+        "count": "medicine_batch",
+        "kind": "production"
       }
     ]
   }
