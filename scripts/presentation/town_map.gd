@@ -1,10 +1,12 @@
 extends VBoxContainer
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
+const Preview = preload("res://scripts/presentation/town_map_preview.gd")
 const MapDrawing = preload("res://scripts/presentation/town_map_drawing.gd")
 var selected: String = "home"
 var sites: Dictionary = {}
 var drawing: Control
 var detail: Label
+var preview: Control
 var world: RefCounted
 
 
@@ -12,10 +14,20 @@ func _ready() -> void:
 	drawing = MapDrawing.new()
 	drawing.custom_minimum_size = Vector2(800, 208)
 	add_child(drawing)
+	var local := HBoxContainer.new()
+	local.add_theme_constant_override("separation", 16)
+	add_child(local)
 	detail = Label.new()
+	detail.custom_minimum_size.x = 380
+	detail.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	detail.add_theme_font_size_override("font_size", 18)
 	detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	add_child(detail)
+	local.add_child(detail)
+	preview = Preview.new()
+	preview.custom_minimum_size = Vector2(400, 176)
+	preview.clip_contents = true
+	preview.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	local.add_child(preview)
 
 
 func refresh(value: RefCounted) -> void:
@@ -65,6 +77,9 @@ func _update_detail() -> void:
 	drawing.world = world
 	drawing.selected = selected
 	drawing.queue_redraw()
+	preview.world = world
+	preview.selected = selected
+	preview.queue_redraw()
 
 
 func locate(value: RefCounted, point: Vector2) -> void:

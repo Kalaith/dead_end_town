@@ -496,3 +496,10 @@ Evidence:
 - Board assignment goes through authoritative validation, rejecting downed workers, lost/unsafe sites and completed/unapproved work. It preserves the worker's regular duty and any existing temporary return, never approves or rebills a project, and shares the same resumption helper with automatic scheduling. Pickers refresh only when eligibility changes, so ordinary paused frames do not reset an open choice.
 - All 137 scenarios pass, including two new assignment/reload/completion and rejection cases. All 95 scripts load; headless editor/import passes. The connected windowed work-board tour selects Mara through the actual picker, asserts her garden return, opens Show and checks the world snapshot remains identical. Inspected work_assignment.png and work_location.png at 1280x720; no live HUD addition.
 - Local map preview, later district content and human usability/balance remain unfinished. No toolkit changes, installations or publication.
+
+
+## 28 October 2026: local map preview
+
+- Selected known sites now have a compact physical-layout preview beside their route details. It reads current collision walls, passage openings, gates, barrier footprints and gate damage. It reveals no unknown parcels, enemies or rewards, and uses no additional labels.
+- The map and work-board windowed tours pass their pause/world-snapshot/selection assertions; inspected the updated work_location.png at 1280x720. All 96 scripts load and headless editor/import passes. The prior 137-scenario simulation result remains applicable: this slice changes presentation only.
+- G02's geometry, discovery, overview and board access are implemented. Human navigation usability remains unverified; new district content and the rest of the full game remain incomplete.
