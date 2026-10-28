@@ -481,3 +481,10 @@ Evidence:
 - All 135 simulation scenarios pass, including full topology/core-only connectivity, actual movement from the west edge to the east works, six-site save expansion, persistent discovery, and every path-grid cell against collision plus removed-barrier recovery. Existing fixture checks retain their original six-site scope.
 - All 91 scripts load; Godot 4.7.2 headless editor/import passes. The windowed town tour stages three 1280x720 captures and asserts shell interaction cannot claim or pay rewards. Inspected market_row_shells.png and east_works_shells.png; the live HUD remains health, pause and one nearby prompt.
 - Captures and automated traversal are not human playtesting or a full-town performance benchmark. The paused map/board access, new district content, full campaign balance and release acceptance remain unfinished. No toolkit edits, installations, exports or publication.
+
+
+## 28 October 2026: paused known-town map
+
+- M opens the Town page with only discovered parcels, held-ground shape marks, the player position and actual usable/blocked links. Selecting or keyboard-focusing a seen parcel shows its name, ownership and adjacent known route conditions; unknown sites have no buttons, names or contents. No live HUD fields were added.
+- The connected windowed map tour verifies M opens pause, all saved state stays identical across 20 presentation frames, unseen Clinic remains hidden, and map selection never moves the player or changes simulation. Inspected known_town.png and scouted_town.png at 1280x720. All 135 simulation scenarios pass; all 93 scripts load and headless editor/import passes.
+- This first overview provides selection and route status. A local preview and board location/assignment are still follow-up work. Human map usability remains unverified; the full game is still in development.

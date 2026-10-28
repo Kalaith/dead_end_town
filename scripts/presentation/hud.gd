@@ -5,7 +5,7 @@ const LiveStatus = preload("res://scripts/presentation/live_status.gd")
 const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
 const Provisions = preload("res://scripts/sim/provisions.gd")
 const EquipmentMenu = preload("res://scripts/presentation/equipment_menu.gd")
-const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
+const TownMap = preload("res://scripts/presentation/town_map.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const UiKit = preload("res://addons/hatchery/ui/ui_kit.gd")
 const Palette = preload("res://addons/hatchery/ui/palette.gd")
@@ -33,7 +33,7 @@ var supplies: Label
 var menu: PanelContainer
 var watch_button: Button
 var equipment_menu: VBoxContainer
-var routes_status: Label
+var town_map: VBoxContainer
 var menu_status: Label
 var pause_title: Label
 var first_button: Button
@@ -117,8 +117,8 @@ func _build_menu() -> void:
 	sections.Street.add_child(watch_button)
 	supplies = kit.label("", 18)
 	sections.Street.add_child(supplies)
-	routes_status = kit.label("", 18)
-	sections.Town.add_child(routes_status)
+	town_map = TownMap.new()
+	sections.Town.add_child(town_map)
 	team_orders = TeamOrders.new()
 	sections.Team.add_child(team_orders)
 	team_orders.assigned.connect(func(id: String, task: String) -> void: assignment_requested.emit(id, task))
@@ -133,7 +133,7 @@ func _build_menu() -> void:
 	sections.Work.add_child(work_menu)
 	work_menu.configured.connect(func(mode: String, target: int, reserve: int) -> void: production_requested.emit(mode, target, reserve))
 	work_menu.cancelled.connect(func() -> void: production_cancelled.emit())
-	sections.Help.add_child(kit.label("WASD / arrows  Move     Mouse  Aim\nRight click  Shoot     Left click / Space  Swing (hold to repeat)\nE  Interact     Hold R  Work     Q  Timber\nF  Team     J  Work     G  Post guard\n1–4  Follow / Hold / Engage / Home     Esc / Tab  Pause", 18))
+	sections.Help.add_child(kit.label("WASD / arrows  Move     Mouse  Aim\nRight click  Shoot     Left click / Space  Swing (hold to repeat)\nE  Interact     Hold R  Work     Q  Timber\nF  Team     J  Work     M  Town     G  Post guard\n1–4  Follow / Hold / Engage / Home     Esc / Tab  Pause", 18))
 	var row := HBoxContainer.new()
 	sections.Street.add_child(row)
 	for entry: Array in [["Save", "save"], ["Load", "load"], ["New street", "new"]]:
@@ -180,8 +180,8 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	context_label.text = world.context()
 	context_label.visible = not paused and not context_label.text.is_empty()
 	if paused:
-		routes_status.text = Neighbourhood.summary(world)
-		routes_status.visible = not routes_status.text.is_empty()
+		if section == "Town":
+			town_map.refresh(world)
 		section_buttons.Work.visible = world.properties.munitions.looted or ConstructionMenu.available(world)
 		construction_menu.refresh(world)
 		work_menu.visible = world.properties.munitions.looted

@@ -43,7 +43,8 @@ Hold the original four yards (home, garden, library and garage), give each a pro
 | Q | Collect a secured building's spare timber |
 | 1 / 2 / 3 / 4 | Whole team: Follow / Hold / Engage / Resume home duty (Ellis never fights or guards) |
 | F | Pause for individual orders; loadouts have their own page |
-| J | Pause for bullet production, target and material reserve (after discovery) |
+| J | Pause for approved work and bullet production (after discovery) |
+| M | Pause for the known-town map; select a seen site for route conditions |
 | G | Post a survivor at a nearby barricade |
 | Esc / Tab | Pause and open the menu |
 

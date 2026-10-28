@@ -120,6 +120,8 @@ func _unhandled_input(event: InputEvent) -> void:
 					command("team")
 				KEY_J:
 					command("work")
+				KEY_M:
+					command("town")
 	if not paused and event.is_action_pressed("interact"):
 		world.interact()
 
@@ -136,6 +138,11 @@ func command(value: String) -> void:
 				hud.refresh(world, true)
 				hud.show_menu()
 				hud.show_section("Work")
+		"town":
+			paused = true
+			hud.show_menu()
+			hud.show_section("Town")
+			hud.refresh(world, true)
 		"team":
 			paused = true
 			hud.refresh(world, paused)
