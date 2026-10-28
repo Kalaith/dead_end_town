@@ -220,3 +220,19 @@ Evidence:
 - These are automated simulation and staged windowed UI/visual checks. The construction fixture uses enemy clearance and delayed raids; the completion capture stages the final fraction of its watch. Human playtesting of these four additions, full-run difficulty, exports/browser/device/audio and performance benchmarking remain unverified.
 
 The requested implementation is ready for another user test. docs/09-mvp-roadmap.md records the suggested test route and feedback points. The larger campaign, interiors, firearm/audio and general job/recipe systems remain outside this completed slice step.
+
+
+## 28 October 2026: nearby people override wandering
+
+The user clarifies that zombies should wander only until someone is nearby, then head toward that person with priority over wandering. This supersedes the earlier rule that people never redirect movement.
+
+Implementation:
+- Every living zombie selects the nearest standing player or survivor within a validated, content-owned 240-pixel notice range each step. That person immediately overrides the current random heading. Downed people are ignored; wandering resumes when nobody is in range. Existing bite/stagger recovery still applies.
+- Pursuit heads directly toward the person using the same physical movement and defence-bump rules as wandering. It cannot cross solid fences, gates or barricades, and only bites within clear contact reach. Zombies can damage blocking defences. No noise investigation, remembered targets or route finding was added.
+- Awareness is derived from current positions, so save schema 11 and the existing saved wander/RNG state remain unchanged. Current movement documentation now reflects this clarification.
+
+Evidence:
+- All 80 simulation scenarios pass. Replaced the previous no-pursuit assertion with immediate heading override/nearest living target coverage, and added range exit/resumed wandering, closed-gate damage/open-gate contact bites/cooldown, and invalid awareness-content checks. The garden command scenario now brings Mara and actively clears attracted threats around the worksite before completing construction; no enemy removal or balance reduction is used.
+- All 56 scripts load; Godot 4.7.2 headless editor/import and file/function size checks pass.
+- Ran Run.ps1 with capture_pursuit.gd through the toolkit runner at 1280x720 and inspected pursuit_spotted.png and pursuit_approach.png. The staged zombie initially faces away, then advances toward the stationary player during two seconds of windowed simulation, with an assertion checking its movement and facing.
+- These are automated and staged windowed checks. Human input, combat feel and balance acceptance remain unverified. No installation, toolkit edits, exports, deployment or publication.

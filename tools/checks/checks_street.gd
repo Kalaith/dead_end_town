@@ -191,6 +191,7 @@ func check_save_store_recovers_previous_valid_street():
 
 func check_playable_garden_loop_through_movement_combat_and_interaction():
 	var w := World.new(Catalog.read())
+	w.order("Follow")
 	if not _travel(w, Vector2(360, 430)):
 		return "Cannot approach home gate."
 	w.working = true
@@ -202,7 +203,7 @@ func check_playable_garden_loop_through_movement_combat_and_interaction():
 		return "Cannot open repaired gate."
 	if not _travel(w, Vector2(1080, 350)):
 		return "Cannot traverse continuous street into garden."
-	# Seek scattered occupants instead of waiting for them to pursue the player.
+	# Seek scattered occupants with Mara assisting against nearby pursuers.
 	for i: int in range(2400):
 		var nearest: float = INF
 		var target: Vector2 = w.player.pos
@@ -225,10 +226,23 @@ func check_playable_garden_loop_through_movement_combat_and_interaction():
 		return "Cannot claim cleared garden at porch."
 	w.interact()
 	w.working = true
-	for i: int in range(260):
+	# Clear threats near the worksite too: pursuit can draw in outside shamblers.
+	for i: int in range(2400):
+		var site := Vector2(1080, 350)
+		var target: Vector2 = site
+		var nearest: float = INF
+		for z: Dictionary in w.zombies:
+			if float(z.hp) > 0 and z.pos.distance_to(site) < 170 and w.player.pos.distance_to(z.pos) < nearest:
+				nearest = w.player.pos.distance_to(z.pos)
+				target = z.pos
+		w.move_input = w.player.pos.direction_to(w.routes.waypoint(w.player.pos, target)) if (nearest > 45 and nearest < INF) or (nearest == INF and w.player.pos.distance_to(site) > 8) else Vector2.ZERO
+		_fight(w)
 		w.step(0.05)
+		if w.garden_done:
+			break
+	w.move_input = Vector2.ZERO
 	if not w.garden_done or w.downs != 0:
-		return "Garden loop cannot finish without a defeat."
+		return "Garden loop incomplete: built=%s, progress=%s, downs=%s, hp=%s, elapsed=%s." % [w.garden_done, w.garden_progress, w.downs, w.player.hp, w.elapsed]
 	return ""
 
 

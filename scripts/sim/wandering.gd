@@ -1,5 +1,5 @@
 extends RefCounted
-## Independent local wandering: no pursuit, property destination or pathfinding.
+## Idle wandering and local pursuit share physical collision and defence damage.
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
@@ -10,7 +10,11 @@ static func step(world: RefCounted, z: Dictionary, dt: float) -> void:
 	if float(z.roam_left) <= 0:
 		z.roam_angle = world.roam_rng.randf_range(-PI, PI)
 		z.roam_left = world.roam_rng.randf_range(float(world.balance.roam_turn_min), float(world.balance.roam_turn_max))
-	var direction: Vector2 = Vector2.from_angle(float(z.roam_angle))
+	advance(world, z, z.pos + Vector2.from_angle(float(z.roam_angle)) * 100.0, dt)
+
+
+static func advance(world: RefCounted, z: Dictionary, target: Vector2, dt: float) -> void:
+	var direction: Vector2 = z.pos.direction_to(target)
 	z.facing = direction
 	var travel: float = float(world.balance.zombie_speed) * dt
 	var intended: Vector2 = z.pos + direction * travel

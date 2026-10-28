@@ -4,15 +4,15 @@
 
 Following feedback that zombies are not a threat, the greybox has 24 residents across its three reclaimable properties and recurring edge migrations. Waves start at 45 active seconds with a 12-second directional radio warning. A five-wave cycle introduces east, west, north/east, south/west and four-edge attacks. Each extra claimed property adds two migrants and removes eight seconds from the next interval: 4Ã¢â‚¬â€œ10 zombies every 65Ã¢â‚¬â€œ41 seconds, capped at 36 living zombies across the map.
 
-All zombies now wander independently, including residents, edge arrivals and occupiers after a property falls. Random headings last 0.8â€“2.8 seconds; collision triggers another choice. They have no people, porch, road-junction or property destination and never pursue. They bite only on physical contact and damage a closed gate or built road barricade when wandering into it. Walls still block movement. Lost yards remain places to wander through, rather than rally points. Defeated residents stay cleared; new zombies still arrive at physical map edges under the existing budget. Eight seconds of unopposed occupation inside a claimed yard causes loss.
+All zombies now wander independently, including residents, edge arrivals and occupiers after a property falls. Random headings last 0.8â€“2.8 seconds; collision triggers another choice. The nearest living player or survivor within 240 pixels immediately overrides idle wandering. Zombies head directly toward that person, reselecting the nearest living target each step, and resume wandering when nobody is nearby. They have no fixed porch, road-junction or property destination. They bite only on physical contact and damage a closed gate or built road barricade when moving into it, including while pursuing someone. Walls still block movement. Lost yards remain places to wander through, rather than rally points. Defeated residents stay cleared; new zombies still arrive at physical map edges under the existing budget. Eight seconds of unopposed occupation inside a claimed yard causes loss.
 
-The world owns a seeded RandomNumberGenerator; save schema 7 preserves its full integer state as text plus each actor's heading and remaining turn clock. The same seed and commands reproduce the same motion; loading resumes the random sequence. Values live in `data/street.json`. See [PROGRESS.md](PROGRESS.md) for verification and limits. The noise/pursuit ideas below are earlier proposals, superseded by the user's current direction that all zombie movement should be aimless.
+The world owns a seeded RandomNumberGenerator; save schema 7 preserves its full integer state as text plus each actor's heading and remaining turn clock. The same seed and commands reproduce the same motion; loading resumes the random sequence. Values live in `data/street.json`. See [PROGRESS.md](PROGRESS.md) for verification and limits. The noise ideas below remain earlier proposals. Current pursuit uses proximity alone, without noise, remembered destinations or route finding.
 
 ## Threat inhabitants
 
 Residents occupy buildings and yards until disturbed. Wanderers move through streets and openings. Hordes are travelling groups that can redirect toward substantial activity. These are behaviour roles, not necessarily three distinct monster species.
 
-The current slow archetype wanders, bites on contact, bumps defences, staggers when struck and falls when defeated. Investigation, pursuit and sound destinations are outside the current movement rule.
+The current slow archetype wanders, bites on contact, bumps defences, staggers when struck and falls when defeated. Nearby-person pursuit takes priority over wandering; investigation and sound destinations remain outside the current movement rule.
 
 ## Noise events
 

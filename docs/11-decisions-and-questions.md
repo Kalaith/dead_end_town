@@ -16,7 +16,7 @@
 | D10 | Direct survivors individually, such as Mara gardening and Paige working at the workshop while the player guards | User request after recruiting Paige, 28 October 2026 |
 | D11 | Increase resident numbers, recurring raids and attack directions so each territory gain feels fought for | User feedback that zombies are not a threat, 28 October 2026 |
 | D15 | Implement physical neighbourhood integration, equipment choices, useful food and a clear slice objective, then return for user testing | User implementation request, 28 October 2026 |
-| D14 | All zombies wander randomly without a fixed destination; basic player melee hits one zombie per swing | User feedback about stationary occupiers and overly strong attacks, 28 October 2026 |
+| D14 | All zombies wander when idle; nearby living people override wandering; basic player melee hits one zombie per swing | User feedback about stationary occupiers and overly strong attacks, 28 October 2026 |
 | D13 | Undefended buildings fall quickly to zombie occupation; physical security buys time | User feedback that zombies cannot retake territory, 28 October 2026 |
 | D12 | Remove map status/count/reward text and reveal Paige only when rescued | User requests less screen text and discovery without spoilers, 28 October 2026 |
 
@@ -40,7 +40,7 @@ The current map treats home/library and garden/garage as facing pairs. Each pair
 
 The first street now has 7 garden residents, 7 library residents and 10 garage residents. The first migration enters at 45 active seconds. A 12-second radio warning names its origins. The repeating sequence is east; west; north + east; south + west; all four edges. Initial waves have 4 zombies, adding 2 per claimed property beyond home, up to 10. Intervals start at 65 seconds and fall by 8 seconds per additional property (41 at full ownership, configured floor 40). These are tuning defaults in `data/street.json`, awaiting human balance review.
 
-Migrations enter at authored map edges and now wander randomly like residents. The earlier nearest-property destination, mandatory alley-to-road travel and pursuit have been superseded by D14. The total living population is capped at 36; excess arrivals are skipped, rather than queued into a sudden backlog. Residents stay defeated. Save schema 5 preserves the wave clock, warning and travel phase; older saves keep claimed yards cleared and get 65 active seconds of preparation. Noise and a final reclamation objective remain future work. Territory loss is implemented below.
+Migrations enter at authored map edges and now wander randomly like residents. The earlier nearest-property destination and mandatory alley-to-road travel have been superseded by D14; local pursuit overrides idle wandering. The total living population is capped at 36; excess arrivals are skipped, rather than queued into a sudden backlog. Residents stay defeated. Save schema 5 preserves the wave clock, warning and travel phase; older saves keep claimed yards cleared and get 65 active seconds of preparation. Noise and a final reclamation objective remain future work. Territory loss is implemented below.
 
 ## Territory loss default, 28 October 2026
 
@@ -48,7 +48,7 @@ Eight active seconds of unopposed living zombie occupation inside a claimed yard
 
 ## Wandering and melee defaults, 28 October 2026
 
-All shamblers choose independent random headings every 0.8–2.8 active seconds and turn again if blocked. No person, entrance or occupation point supplies a movement goal. They bite on contact and damage gates/barricades they bump into. The seeded generator and heading clocks persist in schema 7, with migration from schemas 1–6. Basic melee hits the nearest legal zombie once per swing; surviving enemies in the same cone are untouched. These movement intervals are initial tuning; no future weapon or cleave upgrade is implemented.
+All shamblers choose independent random headings every 0.8–2.8 active seconds and turn again if blocked. The nearest living player or survivor within 240 pixels takes priority immediately and supplies a local movement goal, even through an unfinished wander heading. Downed people are ignored. Zombies head directly toward that person, with physical collision and bump damage against blocking defences; they do not find routes around walls. When nobody is in range, idle wandering resumes. Entrances and occupation points are not fixed destinations. They bite on contact and damage gates/barricades they bump into. The seeded generator and heading clocks persist in schema 7, with migration from schemas 1–6. Basic melee hits the nearest legal zombie once per swing; surviving enemies in the same cone are untouched. These movement intervals are initial tuning; no future weapon or cleave upgrade is implemented.
 
 ## Proposed defaults used across this package
 

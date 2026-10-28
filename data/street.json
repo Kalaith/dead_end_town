@@ -20,6 +20,7 @@
     "player_speed": 190,
     "survivor_speed": 145,
     "zombie_speed": 47,
+    "zombie_notice_range": 240,
     "player_health": 100,
     "survivor_health": 100,
     "zombie_health": 60,

@@ -143,21 +143,24 @@ static func _walk(world: RefCounted, a: Dictionary, target: Vector2, dt: float, 
 
 
 static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
-	# Bite only someone physically within reach. People never set movement goals.
+	# Nearby living people override wandering, even during an unfinished roam heading.
 	var target: Dictionary = {}
-	var best: float = 29.0
+	var best: float = float(world.balance.zombie_notice_range)
 	for a: Dictionary in [world.player] + world.survivors:
 		var distance: float = z.pos.distance_to(a.pos)
-		if float(a.hp) > 0 and distance < best and world.routes.line_clear(z.pos, a.pos):
+		if float(a.hp) > 0 and distance < best:
 			target = a
 			best = distance
-	if not target.is_empty() and float(z.cooldown) <= 0:
+	if not target.is_empty() and best < 29.0 and world.routes.line_clear(z.pos, target.pos) and float(z.cooldown) <= 0:
 		target.hp = maxf(0.0, float(target.hp) - incoming_damage(world, target, z.pos))
 		target.flash = 0.18
 		z.cooldown = float(world.balance.zombie_cooldown)
 		return
 	if float(z.cooldown) < 0.7:
-		Wandering.step(world, z, dt)
+		if target.is_empty():
+			Wandering.step(world, z, dt)
+		else:
+			Wandering.advance(world, z, target.pos, dt)
 
 
 static func _survivor_speed(world: RefCounted, a: Dictionary) -> float:

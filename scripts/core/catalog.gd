@@ -25,6 +25,7 @@ static func problems(data: Dictionary) -> Array[String]:
 	rules.vec2(data, "bounds")
 	if rules.object(data, "balance"):
 		rules.number_between(data.balance, "attack_cone_dot", -1.0, 0.99)
+		rules.number_between(data.balance, "zombie_notice_range", 29.0, 10000.0)
 		rules.number_between(data.balance, "roam_seed", 1, 2147483647)
 		rules.number_between(data.balance, "roam_turn_min", 0.05, 30)
 		rules.number_between(data.balance, "roam_turn_max", 0.05, 30)

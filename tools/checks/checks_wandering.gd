@@ -2,6 +2,7 @@ extends RefCounted
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
+const Combat = preload("res://scripts/sim/combat.gd")
 const Territory = preload("res://scripts/sim/territory.gd")
 
 
@@ -59,20 +60,83 @@ func check_residents_keep_wandering_after_their_property_falls() -> String:
 	return ""
 
 
-func check_moving_people_do_not_redirect_wandering_zombies() -> String:
-	var a: RefCounted = _quiet()
-	var b: RefCounted = _quiet()
-	for w: RefCounted in [a, b]:
-		w.zombies[0].hp = 60.0
-		w.zombies[0].pos = Vector2(500, 580)
-	for i: int in range(200):
-		# Visible and within old awareness, but outside contact range.
-		b.player.pos = b.zombies[0].pos + Vector2(-100, 0)
-		a.step(0.05)
-		b.step(0.05)
-		if a.zombies[0].pos != b.zombies[0].pos or a.zombies[0].roam_angle != b.zombies[0].roam_angle:
-			return "Zombie redirected toward a nearby person."
+func check_nearby_people_override_wandering_and_nearest_living_person_wins() -> String:
+	var w: RefCounted = _quiet()
+	var z: Dictionary = w.zombies[0]
+	z.hp = 60.0
+	z.pos = Vector2(500, 580)
+	z.roam_angle = 0.0
+	z.roam_left = 2.0
+	w.player.pos = Vector2(400, 580)
+	var rng_before: int = w.roam_rng.state
+	Combat._zombie(w, z, 0.05)
+	if z.pos.x >= 500 or z.facing.x > -0.99 or w.roam_rng.state != rng_before:
+		return "Nearby player did not immediately override the opposite roam heading."
+	var survivor: Dictionary = w.survivors[0]
+	survivor.hp = 100.0
+	survivor.pos = z.pos + Vector2(50, 0)
+	var before: Vector2 = z.pos
+	Combat._zombie(w, z, 0.05)
+	if z.pos.x <= before.x:
+		return "Zombie ignored a nearer living survivor."
+	survivor.hp = 0.0
+	before = z.pos
+	Combat._zombie(w, z, 0.05)
+	if z.pos.x >= before.x:
+		return "Downed survivor distracted zombie from a living person."
 	return ""
+
+
+func check_out_of_range_people_restore_idle_wandering() -> String:
+	var w: RefCounted = _quiet()
+	var z: Dictionary = w.zombies[0]
+	z.hp = 60.0
+	z.pos = Vector2(500, 580)
+	z.roam_angle = 0.0
+	z.roam_left = 2.0
+	w.player.pos = Vector2(400, 580)
+	Combat._zombie(w, z, 0.05)
+	w.player.pos = Vector2(100, 580)
+	var before: Vector2 = z.pos
+	Combat._zombie(w, z, 0.05)
+	if z.pos.x <= before.x or float(z.roam_left) >= 2.0:
+		return "Wandering did not resume when the person left awareness range."
+	return ""
+
+
+func check_pursuit_respects_gates_and_bites_only_on_clear_contact() -> String:
+	var w: RefCounted = _quiet()
+	var z: Dictionary = w.zombies[0]
+	z.hp = 60.0
+	z.pos = Vector2(360, 510)
+	w.player.pos = Vector2(360, 450)
+	var gate_hp: float = w.properties.home.gate_hp
+	for i: int in range(20):
+		z.cooldown = 0.0
+		Combat._zombie(w, z, 0.05)
+	if float(w.player.hp) != 100.0 or z.pos.y < 491 or float(w.properties.home.gate_hp) >= gate_hp:
+		return "Pursuer crossed a gate, bit through it or failed to damage the blocking gate."
+	w.properties.home.open = true
+	w.rebuild_routes()
+	z.cooldown = 0.0
+	for i: int in range(40):
+		Combat._zombie(w, z, 0.05)
+	if float(w.player.hp) >= 100.0:
+		return "Pursuer failed to cross the open entrance and bite on contact."
+	var hp: float = w.player.hp
+	Combat._zombie(w, z, 0.05)
+	return "Bite cooldown was bypassed." if float(w.player.hp) != hp else ""
+
+
+func check_notice_range_content_must_be_valid() -> String:
+	for value: Variant in [null, "near", -1, 0]:
+		var data: Dictionary = Catalog.read()
+		data.balance.zombie_notice_range = value
+		if Catalog.problems(data).is_empty():
+			return "Malformed awareness range accepted."
+	var data: Dictionary = Catalog.read()
+	data.balance.erase("zombie_notice_range")
+	return "Missing awareness range accepted." if Catalog.problems(data).is_empty() else ""
 
 
 func check_mid_wander_json_reload_preserves_random_sequence() -> String:
