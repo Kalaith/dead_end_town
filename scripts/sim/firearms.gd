@@ -1,4 +1,5 @@
 extends RefCounted
+const Acoustics = preload("res://scripts/sim/noise.gd")
 const Runner = preload("res://scripts/sim/runner.gd")
 ## Pistol ownership, physical ray shots and one shared ammunition workbench.
 const Roster = preload("res://scripts/sim/roster.gd")
@@ -38,6 +39,7 @@ static func shoot(world: RefCounted) -> bool:
 	world.player.cooldown = float(rules.cooldown)
 	world.firearms.bullets = int(world.firearms.bullets) - 1
 	var origin: Vector2 = world.player.pos
+	Acoustics.emit(world, world.player.id, "pistol", origin)
 	var endpoint: Vector2 = origin + direction * float(rules.range)
 	# Sample the same solid geometry used by melee: closed gates and fences stop shots.
 	for distance: int in range(1, ceili(float(rules.range)) + 1):

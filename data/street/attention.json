@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "attention": {
+    "memory_seconds": 4,
+    "events": {
+      "impact": {"radius": 120, "lifetime": 1.5, "refresh": 0.5},
+      "work": {"radius": 200, "lifetime": 2, "refresh": 1},
+      "pistol": {"radius": 550, "lifetime": 4, "refresh": 0.5}
+    }
+  }
+}

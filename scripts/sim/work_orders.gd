@@ -1,4 +1,5 @@
 extends RefCounted
+const Acoustics = preload("res://scripts/sim/noise.gd")
 ## One prepaid bundle and one executor per socket. Terminal records prevent replayed refunds.
 
 
@@ -65,6 +66,8 @@ static func advance(world: RefCounted, socket: String, executor: String, dt: flo
 	order.executor = executor
 	order.blocked_reason = ""
 	order.phase = "working"
+	if order.kind in ["construction", "repair"]:
+		Acoustics.emit(world, str(order.target), "work", Vector2(float(order.stand[0]), float(order.stand[1])))
 	order.work_done = minf(float(order.work_required), float(order.work_done) + dt)
 	if float(order.work_done) < float(order.work_required):
 		return false

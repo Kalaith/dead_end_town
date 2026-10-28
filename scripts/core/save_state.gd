@@ -1,4 +1,6 @@
 extends RefCounted
+const AttentionState = preload("res://scripts/core/attention_state.gd")
+const Acoustics = preload("res://scripts/sim/noise.gd")
 const RunnerState = preload("res://scripts/core/runner_state.gd")
 const FieldMedicineState = preload("res://scripts/core/field_medicine_state.gd")
 const CompanionRescueState = preload("res://scripts/core/companion_rescue_state.gd")
@@ -43,11 +45,11 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 32
+const SCHEMA: int = 33
 ## Saved world fields that are collections and are copied, not shared.
-const COPIED_KEYS: Array[String] = ["growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
+const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "defeat_pending", "carry", "home_rest", "clinic", "rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
+const STATE_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "defeat_pending", "carry", "home_rest", "clinic", "rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
 var catalog: Dictionary
 var store: RefCounted
 
@@ -93,6 +95,9 @@ func restore(raw: Dictionary) -> RefCounted:
 	for key: String in STATE_KEYS:
 		world.set(key, int(data[key]) if key in ["materials", "food", "medicine", "downs"] else (data[key].duplicate(true) if key in COPIED_KEYS else data[key]))
 	world.production.target = int(data.production.target)
+	world.noise.sequence = int(data.noise.sequence)
+	for event: Dictionary in world.noise.events:
+		event.id = int(event.id)
 	world.medicine_production.target = int(data.medicine_production.target)
 	world.production.material_reserve = int(data.production.material_reserve)
 	world.orders.sequence = int(data.orders.sequence)
@@ -125,7 +130,7 @@ func valid(data: Dictionary) -> bool:
 	if not data.get("roam_rng_state") is String or str(int(data.roam_rng_state)) != data.roam_rng_state:
 		return false
 	for key: String in STATE_KEYS:
-		if key in ["growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "rescue_intro", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
+		if key in ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "rescue_intro", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
 			continue
 		if key == "gate_repair_target":
 			if not data.get("properties") is Dictionary or not data.properties.has(data.get(key)):
@@ -176,6 +181,8 @@ func valid(data: Dictionary) -> bool:
 			return false
 		if z.has("kind") and (not z.kind is String or not catalog.zombies.types.has(z.kind) or float(z.hp) > ZombieTypes.health(catalog, z.kind)):
 			return false
+	if not AttentionState.valid(data, catalog):
+		return false
 	if not RosterState.valid(data, catalog) or not DiscoveryState.valid(data, catalog) or not ClinicState.valid(data, catalog) or not RecoveryState.valid(data, catalog) or not RecoverySalvageState.valid(data, catalog) or not MedicineState.valid(data) or not CompanionRescueState.valid(data, catalog) or not FieldMedicineState.valid(data, catalog):
 		return false
 	if float(data.garden_progress) > float(catalog.balance.work_seconds) or (data.garden_done and not data.garden_started):
@@ -228,6 +235,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 32:
+		return _upgrade_attention(upgraded)
 	if version == 31:
 		return _upgrade_runners(upgraded)
 	if version == 30:
@@ -687,5 +696,11 @@ func _upgrade_greenhouse_work(data: Dictionary) -> Dictionary:
 func _upgrade_runners(data: Dictionary) -> Dictionary:
 	if not RunnerState.migrate(data, catalog):
 		return {}
+	return _upgrade_attention(data)
+
+
+func _upgrade_attention(data: Dictionary) -> Dictionary:
+	data.noise = Acoustics.initial()
+	data.memories = {}
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

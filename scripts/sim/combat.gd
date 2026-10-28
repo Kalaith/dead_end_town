@@ -1,4 +1,5 @@
 extends RefCounted
+const Acoustics = preload("res://scripts/sim/noise.gd")
 const Runner = preload("res://scripts/sim/runner.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
@@ -44,6 +45,8 @@ static func strike(world: RefCounted, attacker: Dictionary, direction: Vector2) 
 		Runner.interrupt(world, target)
 		target.cooldown = maxf(float(target.cooldown), 0.45)
 		target.pos = world.routes.move(target.pos, target.pos + direction * float(weapon.knockback), float(weapon.knockback))
+	if not candidates.is_empty():
+		Acoustics.emit(world, attacker.id, "impact", attacker.pos)
 
 
 
@@ -171,9 +174,10 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 	var best: float = float(world.balance.zombie_notice_range)
 	for a: Dictionary in [world.player] + world.survivors:
 		var distance: float = z.pos.distance_to(a.pos)
-		if float(a.hp) > 0 and distance < best:
+		if float(a.hp) > 0 and (distance < best or (not target.is_empty() and distance == best and str(a.id) < str(target.id))):
 			target = a
 			best = distance
+	Acoustics.observe(world, z, target)
 	if Runner.step(world, z, target, dt):
 		return
 	if not target.is_empty() and best < 29.0 and world.routes.line_clear(z.pos, target.pos) and float(z.cooldown) <= 0:
@@ -183,7 +187,14 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 		return
 	if float(z.cooldown) < 0.7:
 		if target.is_empty():
-			if z.raid:
+			var investigation: Dictionary = Acoustics.destination(world, z)
+			if not investigation.is_empty():
+				var point: Vector2 = investigation.position
+				if z.pos.distance_to(point) > 12:
+					var next: Vector2 = point if world.routes.travel_clear(z.pos, point) else world.routes.waypoint(z.pos, point)
+					# If no path is open, approach the obstruction physically.
+					Wandering.advance(world, z, point if next.is_equal_approx(z.pos) else next, dt)
+			elif z.raid:
 				Raiding.step(world, z, dt)
 			else:
 				Wandering.step(world, z, dt)

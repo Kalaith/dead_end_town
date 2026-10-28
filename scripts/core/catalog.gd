@@ -1,4 +1,5 @@
 extends RefCounted
+const AttentionState = preload("res://scripts/core/attention_state.gd")
 const RunnerState = preload("res://scripts/core/runner_state.gd")
 ## Authored content is validated before the simulation starts.
 const FieldMedicineState = preload("res://scripts/core/field_medicine_state.gd")
@@ -22,7 +23,7 @@ const JsonIO = preload("res://addons/hatchery/core/json_io.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 
 ## Authored content is split by topic so no one file outgrows review. Add a file here when adding a topic.
-const FILES: Array[String] = ["street/recovery.json", "street/survivors.json", "street/town.json", "street/work.json", "street/firearm.json", "street/balance.json", "street/pressure.json", "street/roads.json", "street/equipment.json", "street/properties.json", "zombies.json", "street/properties_market.json", "street/properties_civic.json", "street/properties_works.json", "street/roads_hearth_east.json", "street/roads_market.json", "street/roads_civic.json", "street/roads_works.json", "street/passages_market.json", "street/passages_civic.json", "street/passages_works.json"]
+const FILES: Array[String] = ["street/attention.json", "street/recovery.json", "street/survivors.json", "street/town.json", "street/work.json", "street/firearm.json", "street/balance.json", "street/pressure.json", "street/roads.json", "street/equipment.json", "street/properties.json", "zombies.json", "street/properties_market.json", "street/properties_civic.json", "street/properties_works.json", "street/roads_hearth_east.json", "street/roads_market.json", "street/roads_civic.json", "street/roads_works.json", "street/passages_market.json", "street/passages_civic.json", "street/passages_works.json"]
 
 
 static func read() -> Dictionary:
@@ -80,6 +81,7 @@ static func problems(data: Dictionary) -> Array[String]:
 				errors.append("Legacy repair capacity must preserve a prepaid full repair.")
 	_zombie_types(data, errors)
 	RunnerState.content(data, errors)
+	AttentionState.content(data, errors)
 	if not rules.list(data, "properties", false):
 		return errors
 	var ids: Array = rules.unique_ids(data.properties)

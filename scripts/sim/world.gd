@@ -1,4 +1,5 @@
 extends RefCounted
+const Acoustics = preload("res://scripts/sim/noise.gd")
 ## Authoritative fixed-step state. Presentation sends commands only.
 const FieldMedicine = preload("res://scripts/sim/field_medicine.gd")
 const CompanionRescue = preload("res://scripts/sim/companion_rescue.gd")
@@ -33,6 +34,8 @@ const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 var production: Dictionary
+var noise: Dictionary = Acoustics.initial()
+var memories: Dictionary = {}
 var orders: Dictionary = WorkOrders.initial()
 var firearms: Dictionary = Firearms.initial()
 var shot: Dictionary = {"from": Vector2.ZERO, "to": Vector2.ZERO, "left": 0.0}
@@ -142,6 +145,7 @@ func step(dt: float) -> void:
 		Defeat.begin(self)
 		return
 	elapsed += dt
+	Acoustics.age(self)
 	shot.left = maxf(0.0, float(shot.left) - dt)
 	for a: Dictionary in [player] + survivors + zombies:
 		for key: String in ["cooldown", "flash", "swing"]:
