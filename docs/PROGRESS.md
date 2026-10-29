@@ -293,3 +293,9 @@ Still needing development (second look, most important first):
 - The empty pocket north of the west-road corner (x 40-310, y 0-500) is now a road room holding the Warden's and Foreman's posts and the wide roadblock/exit at its top (posts 175,300 / 175,260; leashes 290 / 380; escorts either side). Players reach it from the top street, so the boss still guards the only way out, but the fight has a room rather than a strip of road. It is smaller than the suburb's bridge: the pocket is bounded by the lot fences, so a bigger arena would need moved lots or a larger map.
 - `sim_boss`: the dodging bot still wins in all three areas (office 49 s at full health, works 81 s with 60 left); the non-dodging bot still loses. A first, tighter works layout made the dodging bot lose, hence the longer works leash. Parse, catalog, boss, office, industrial, travel, save and pressure checks pass; `office_warden` and `works_foreman` were looked at (the tour camera clips the roadblock at the top edge).
 - Not played. Feel on both is unknown.
+
+## 30 October 2026: pressure measured (not tuned)
+
+- New `tools/sim_pressure.gd`: takes the lots beside home, stands still (player cannot die, survivors keep their guard orders) and logs living raiders and waves every two minutes for 20 minutes.
+- Result (raiders/wave): suburb 6/w1 at 4 min, 17/w3 at 10, 26/w5 at 20; office 5/w1, 15/w2, 41/w5; works 8/w1, 13/w2, 32/w5. A wave lands about every four minutes in all three, nobody clears them, and the home gate barely drops (86-93 of 104) so raiders mostly gather rather than break in. The office and works are heavier than the suburb at the same minute, which suits later areas.
+- Nothing was changed: there is no target to tune to without play. Questions this shows for a human run: do idle raiders that never breach feel like pressure, and is a wave every four minutes right once the player is fighting?
