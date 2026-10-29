@@ -20,6 +20,8 @@ Areas 2 and 3 are outlined only. Area 1 is designed here in enough detail to bui
 
 ## Area 1: the suburb
 
+Reference for the intended feel: [Sanctuary Hills](reference/sanctuary_hills_map.webp): a looped road with a central market roundabout, houses inside and outside the loop, one entrance (a bridge), a bounded settlement. The layout below was first drawn as one straight street and rejected; it is being redrawn on this model.
+
 A **cul-de-sac**: one straight street, west to east, about 5,840 × 1,160 pixels (roughly 30 seconds end to end). Home is at the back (west end); the baboon holds the east mouth.
 
 ```text
