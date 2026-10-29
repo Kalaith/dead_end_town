@@ -92,7 +92,7 @@ Claim, occupation and loss; safe connection and production; work orders; economy
 2. Generalise the map model to per-area lot graphs (no behaviour change for the current strip).
 3. Area layer, per-area bounds and the schema migration.
 4. Author the suburb.
-5. Rework pressure onto entrances; finish and commit the scheduler.
+5. Rework pressure onto entrances; finish and commit the scheduler. (done, see PROGRESS)
 6. Optional advisory summary in the pause menu.
 7. Baboon boss at the exit.
 8. Area transition.

@@ -732,3 +732,9 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 - Engine: fence cutting now handles horizontal (back) fences so passages can join lots back to back; streets draw vertical roads and a plaza; recovery-pile and shelter validators check "open road near home" instead of the old strip's coordinates; search rewards, route ids and link counts are generic.
 - Checks: catalog 0 problems (including the bridge route's physical path), 87 scripts load, `check_save.gd` 6/6. In the running game: home in the north-east corner, the ring road corner and east side road render, the island rows sit back to back with a double fence, and centre-line paint stops at the corner.
 - Not seen: the plaza's planted centre after a draw-order fix, the bridge end, the west road and the rear gates working (a passage there has never been built in play). Simulated movement into the street was unreliable, so the south and west of the ring were not walked. Rear passage building, link reasons for rear gates and the pressure tuning remain to be checked.
+
+## 29 October 2026: pressure on the ring road (step 5)
+
+- The scheduler needed no engine change: bands already follow held core lots (`town.json` `bands`), routes are the area's authored entrances, and enemy statistics are untouched. The single south-west bridge route is validated for a physical path into the road.
+- Added `tools/check_pressure.gd` (headless): home alone is band 0; the first claim schedules an event from the bridge route only; zombies are admitted within ten minutes at the bridge entry and a minute later have moved most of the way up the west road toward the settlement. All pass.
+- Not tuned: band budgets and intervals have not been balanced against play on this layout, and only the first event was run. The baboon (step 7) will sit on the road the horde uses.
