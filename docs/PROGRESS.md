@@ -311,3 +311,8 @@ Still needing development (second look, most important first):
 
 - Stock above the 40-per-kind carry cap already stayed in the area you left. It is now visible: arrival says "Left behind in <area>: ...", and at an area's entrance the prompt reads "E Go back · stores waiting: 60 materials, ..." (`Boss.stored` / `Boss.waiting`). No schema change; nothing is added to the stock, so this is a reminder, not a reward.
 - `check_travel` asserts both texts. Not done: anything that accrues while away (a garden that keeps growing, pressure on the area you left), and the prompt only names the previous area's stores, not the next one's. Whether a stockpile alone is a real reason to return is a design question for play.
+
+## 30 October 2026: gardens keep growing while you are away
+
+- Time played in other areas counts as time away (`AreaTravel._played`: this area's clock plus every frozen area's). A frozen record remembers `left_total`; on return a finished garden yields one food per `away_food_seconds` (90, `balance.json`) of absence, never pushing food above the carry cap (40), and the arrival note says how much. Records from older saves lack `left_total` and grow nothing. No schema change.
+- `check_travel` covers it (900 s away gives 10 food). Not done: production by clinic, workshop or ammunition bench while away, and pressure on an area left behind; both stay frozen. Rates are unplayed guesses.

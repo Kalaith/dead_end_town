@@ -15,17 +15,21 @@ static func travel(world: RefCounted, saves: RefCounted, to_data: Dictionary) ->
 	var cap: int = int(world.balance.area_carry_cap)
 	var carried: Dictionary = {"materials": mini(world.materials, cap), "food": mini(world.food, cap), "medicine": mini(world.medicine, cap), "bullets": mini(int(world.firearms.bullets), cap)}
 	var frozen: Dictionary = world.frozen.duplicate(true)
+	var total: float = _played(world)
 	var destination: RefCounted
 	var returning: bool = frozen.has(to_data.area.id)
+	var away: float = 0.0
 	if returning:
 		destination = SaveState.new(to_data, saves.store.path).restore(frozen[to_data.area.id])
 		if destination == null:
 			return null
+		away = total - float(frozen[to_data.area.id].get("left_total", total))
 		frozen.erase(to_data.area.id)
 	else:
 		destination = World.new(to_data)
 	var record: Dictionary = saves.snapshot(world)
 	record.frozen = {}
+	record.left_total = total
 	record.materials = world.materials - int(carried.materials)
 	record.food = world.food - int(carried.food)
 	record.medicine = world.medicine - int(carried.medicine)
@@ -52,10 +56,29 @@ static func travel(world: RefCounted, saves: RefCounted, to_data: Dictionary) ->
 	destination.player.hp = world.player.hp
 	_arrive(world, destination)
 	destination.note("%s / Arrived. Your team came with you." % str(to_data.area.name))
+	_regrow(destination, away)
 	var left: String = Boss.stored(record)
 	if not left.is_empty():
 		destination.note("Left behind in %s: %s. Go back for it when you need it." % [str(world.catalog.area.name), left])
 	return destination
+
+
+## Seconds played across every area, so time spent elsewhere counts as time away from this one.
+static func _played(world: RefCounted) -> float:
+	var total: float = float(world.elapsed)
+	for record: Variant in world.frozen.values():
+		total += float(record.get("elapsed", 0.0))
+	return total
+
+
+## A finished garden keeps growing while you are away: one food per `away_food_seconds`, never above the carry cap.
+static func _regrow(destination: RefCounted, away: float) -> void:
+	if away <= 0.0 or not destination.garden_done:
+		return
+	var grown: int = mini(int(away / float(destination.balance.away_food_seconds)), maxi(0, int(destination.balance.area_carry_cap) - destination.food))
+	if grown > 0:
+		destination.food += grown
+		destination.note("While you were away the garden grew %d food." % grown)
 
 
 ## Going forward arrives at the destination's entrance; going back arrives at the exit that was used.

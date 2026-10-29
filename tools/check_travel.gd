@@ -66,6 +66,22 @@ func _round_trip(data: Dictionary, annex: Dictionary) -> void:
 	_expect("the exit leads back to the frozen area", back != null and back.area == "suburb" and back.frozen.has("office") and not back.frozen.has("suburb"))
 	_expect("the first area is as it was left", back != null and Boss.defeated(back) and back.materials == 55 and back.survivors.size() == world.survivors.size())
 	_expect("the player arrives at the exit they used", back != null and Boss.at_exit(back))
+	# Time spent in the second area counts as time away from the first: a finished garden grows food meanwhile.
+	var w2 := World.new(data)
+	Boss.find(w2).hp = 0.0
+	w2.garden_started = true
+	w2.garden_done = true
+	w2.garden_progress = float(data.balance.work_seconds)
+	w2.properties.garden.looted = true
+	w2.properties.garden.claimed_once = true
+	w2.properties.garden.claimed = true
+	w2.food = 0
+	var away: RefCounted = AreaTravel.travel(w2, saves, annex)
+	away.elapsed = 900.0
+	var carried_food: int = away.food
+	var home: RefCounted = AreaTravel.travel(away, annex_saves, data)
+	_expect("a garden grows food while you are away (%d)" % (home.food if home != null else -1), home != null and home.food == carried_food + 10)
+
 
 
 func _expect(label: String, ok: bool) -> void:

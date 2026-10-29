@@ -3,6 +3,7 @@
   "balance": {
     "garage_bonus_materials": 12,
     "area_carry_cap": 40,
+    "away_food_seconds": 90,
     "home_gate_start_factor": 0.65,
     "home_alert_radius": 180,
     "scout_range": 640,
