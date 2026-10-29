@@ -5,6 +5,7 @@ const Facility = preload("res://scripts/sim/facility.gd")
 const FieldMedicine = preload("res://scripts/sim/field_medicine.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
+const Vehicle = preload("res://scripts/sim/vehicle.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const NeighbourhoodView = preload("res://scripts/presentation/neighbourhood_view.gd")
@@ -87,6 +88,7 @@ func _draw() -> void:
 		if Routes.rectangle(p.rect).grow(100).intersects(visible_world):
 			_property(p)
 	_spits()
+	_vehicle()
 	var shelter: Vector2 = Routes.point(world.balance.emergency_shelter)
 	draw_rect(Rect2(shelter + Vector2(-24, -54), Vector2(48, 14)), Color("394b4b"))
 	for x: int in [-18, 18]:
@@ -242,6 +244,8 @@ func _garden(rect: Rect2, site: Vector2) -> void:
 
 
 func _actor(a: Dictionary, zombie: bool) -> void:
+	if a.id == "you" and Vehicle.driving(world):
+		return
 	var pos: Vector2 = a.pos
 	var direction: Vector2 = a.facing
 	if float(a.hp) <= 0:
@@ -430,6 +434,24 @@ func _spitter_tell(a: Dictionary) -> void:
 	draw_line(point + Vector2(-8, 0), point + Vector2(8, 0), CREAM, 2)
 	draw_line(point + Vector2(0, -8), point + Vector2(0, 8), CREAM, 2)
 	_text(a.pos + Vector2(-20, -57), "AIM", 13, CREAM)
+
+
+func _vehicle() -> void:
+	if not bool(world.vehicle.present):
+		return
+	var config: Dictionary = world.catalog.vehicle
+	var length: float = float(config.half_length)
+	var width: float = float(config.half_width)
+	var wrecked: bool = float(world.vehicle.hull) <= 0
+	draw_set_transform(Vehicle.pos(world), float(world.vehicle.heading), Vector2.ONE)
+	draw_rect(Rect2(-length, -width, length * 2, width * 2), Color("4a4f52") if wrecked else Color("4f7a9a"))
+	draw_rect(Rect2(-length * 0.55, -width + 2, length * 0.9, width * 2 - 4), Color("6b6f6f") if wrecked else CREAM)
+	draw_rect(Rect2(length * 0.4, -width + 3, length * 0.45, width * 2 - 6), INK)
+	draw_rect(Rect2(-length, -width, length * 2, width * 2), INK, false, 2.0)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	if Vehicle.near(world) or Vehicle.driving(world):
+		var hull: float = float(world.vehicle.hull) / float(config.hull)
+		_meter(Vehicle.pos(world) + Vector2(-22, -width - 14), 44, hull, CREAM)
 
 
 func _spits() -> void:

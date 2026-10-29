@@ -177,4 +177,28 @@ User feedback: the suburb was still too easy. Every suburb lot now starts with t
 - Survivors below 40% health with a zombie within 90 px now fall back (away from it, else to the home respawn) instead of fighting on. Lifting a downed person now needs no zombie within 60 px (was 170 of either party), and the prompt says "Zombie too close to lift <name>" instead of silently stalling.
 - New zombie kind `spitter` (85 health, notice 340 px): it stands at 140-340 px with a clear shot, aims 0.9 s at a committed point, and lobs a 240 px/s glob (8 damage) that leaves a 42 px pool lasting 4 s (4 damage per second, one shared one-second cooldown per person so pools never stack). Walls stop globs, low barriers do not; a hit during the aim cancels it with a 3 s retry. Drawn with an aim ring, dashed pool edge and a throat sac.
 - Office district: a resident Spitter in the Bank Branch teaches the kind; templates `lobby_spit` and `floor_spit`; special cap 2. New `tools/check_spitter.gd` (11 checks) passes; catalog, save, office, pressure, boss, travel, industrial and passage checks pass.
-- Not done: globs and pools are transient (not saved; a load drops any in flight). Armour fully halves pool damage but a shield does not reduce the direct hit (design says it should for the glob only; the code applies shield to the direct hit, which matches). Survivor guards do not step aside from pools, and workers do not flee marked areas. None of this has been played, and the retreat/lift changes have only been checked by the existing suites, not a dedicated test.
+- Not done: globs and pools are transient (not saved; a load drops any in flight). Armour and a facing shield reduce the direct hit; only armour reduces pool ticks, as designed. Survivor guards do not step aside from pools, and workers do not flee marked areas. None of this has been played, and the retreat/lift changes have only been checked by the existing suites, not a dedicated test.
+
+## 30 October 2026: an ending screen
+
+- Pressing E at the works' final gate now sets `world.campaign_ended` (transient, not saved) and the HUD shows `ending_menu.gd`: the closing line, how many survivors came through, minutes played and times downed. "Keep exploring" resumes; "New street" starts over. All other commands are blocked while it is up, like the defeat panel.
+- `check_industrial` now expects the flag instead of a message. Scripts load (110) and the industrial and boss checks pass. The screen itself has not been seen in the running game.
+
+## 30 October 2026: the van (driving slice), schema 41
+
+- Rewrote the head of `18-vehicle.md` to the area model and built a first slice (see its "Current state"). The office has a van parked beside its start; E boards, W/S/A/D drive it, E leaves when stopped. Hull 300, damaged by adjacent zombies (7 x breach) and Spitter globs; a wrecked van ejects the driver. Engine noise draws zombies. New `data/street/vehicle.json`, `scripts/sim/vehicle.gd`, `scripts/core/vehicle_state.gd`; save schema 41 (older saves, including frozen areas, gain an undriven van) and an `engine` attention event.
+- `tools/check_vehicle.gd` (15 checks) and `tools/check_rescue_feel.gd` (6 checks) pass, as do the catalog, save, office, pressure, boss, travel, industrial, passage and spitter checks.
+- Not done: how it handles in a real window (stopping distance numbers are right on paper, 49 px from top speed), followers do not ride along and cannot keep up, passengers, repair, recovery and any reason to drive beyond speed. The van has not been seen drawn.
+
+## 30 October 2026: scripted boss fights (`tools/sim_boss.gd`)
+
+A kiting bot with the starting bat, alone, against each boss with its escorts removed (not a human, and without followers, armour or firearms). It attacks from about 60 px, backs off inside 52 px and, when "dodging", sidesteps across the lunge lane during the tell and dash.
+
+| Area | Boss | Dodging | Not dodging |
+| --- | --- | --- | --- |
+| suburb | baboon, 1500 | won in 29 s, no damage | died at 21 s with 270 left |
+| office | Warden, 2200 | won in 53 s, 32 health left | died at 17 s with 1210 left |
+| industrial | Foreman, 3200 | won in 71 s, 60 health left | died at 17 s with 2180 left |
+
+- All three are beatable with the bat alone if the lunge is read, and punishing if it is not, which is the intended shape. The baboon costs a perfect dodger nothing, so it may be easy for a skilled player; the Warden is the harshest on the bat. Real feel is still a human question.
+- Found while writing it: at the baboon's post the straight line from the east side is blocked by a wall, so a player approaching from there cannot hit it and it cannot hit them (the bot picks an open side). Whether the post is meant to be that shielded is not decided.

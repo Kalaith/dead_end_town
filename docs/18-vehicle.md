@@ -1,5 +1,15 @@
 # One recoverable utility van
 
+## Current state (30 October 2026): driving slice
+
+The design below was written for the old strip (depot service bay, Nia, Rowan, 18 core sites) and is partly stale. Under the area model the van is data: an area declares `vehicle_bay` (position, heading) and gets one van, parked and working from the start; only the office has one. Shared numbers are in `data/street/vehicle.json`.
+
+Implemented (schema 41): boarding with E when stopped and near; W/S throttle and reverse, A/D steer; the specified speeds, acceleration, braking and turn rate; a swept 54 x 28 footprint blocked by walls, gates, barricades, people and zombies; an `engine` noise (radius 450, 2 s); zombies and Spitter globs damaging the 300-point hull instead of the driver; ejection when it is wrecked.
+
+Not implemented: discovery and restoration, passengers, hull repair, recovery to a depot, downed occupants (a wrecked van just ejects an unharmed driver). The sections below remain the intent, to be re-fitted to areas. The van does not cross areas.
+
+Original text follows.
+
 Future design, added at the user's request on 28 October 2026. The current slice has no usable vehicle. The firehall's parked appliance remains scenery. This document owns the single usable vehicle's behaviour and numerical starting values; it does not claim implementation or playtested driving.
 
 ## Discovery and purpose

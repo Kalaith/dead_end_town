@@ -8,6 +8,13 @@
     2440,
     2180
   ],
+  "vehicle_bay": {
+    "position": [
+      2080,
+      365
+    ],
+    "heading_degrees": 0
+  },
   "balance": {
     "player_start": [
       2040,

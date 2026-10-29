@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "vehicle": {
+    "hull": 300,
+    "forward": 300,
+    "reverse": 140,
+    "accel": 500,
+    "brake": 800,
+    "turn_degrees": 150,
+    "half_length": 27,
+    "half_width": 14,
+    "enter_range": 60,
+    "exit_clearance": 24
+  }
+}

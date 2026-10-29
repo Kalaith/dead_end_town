@@ -143,7 +143,10 @@ static func interact(world: RefCounted) -> void:
 	if not defeated(world):
 		world.note("The baboon still holds the bridge road.")
 	elif destination(world.catalog).is_empty():
-		world.note(str(world.catalog.exit.line) if _final(world.catalog) else "Nothing lies beyond the bridge yet.")
+		if _final(world.catalog):
+			world.campaign_ended = true
+		else:
+			world.note("Nothing lies beyond the bridge yet.")
 	elif float(world.exit_pending) > 0:
 		world.exit_pending = 0.0
 		world.travel_requested = destination(world.catalog)

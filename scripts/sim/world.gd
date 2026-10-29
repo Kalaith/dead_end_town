@@ -8,6 +8,7 @@ const Medicine = preload("res://scripts/sim/medicine.gd")
 const RecoverySalvage = preload("res://scripts/sim/recovery_salvage.gd")
 const Defeat = preload("res://scripts/sim/defeat.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
+const Vehicle = preload("res://scripts/sim/vehicle.gd")
 const HomeRest = preload("res://scripts/sim/home_rest.gd")
 const FoodGrowing = preload("res://scripts/sim/food_growing.gd")
 const Greenhouse = preload("res://scripts/sim/greenhouse.gd")
@@ -82,6 +83,7 @@ var aim := Vector2.DOWN
 var working: bool = false
 var interacting: bool = false
 var carry: Dictionary = Carrying.initial()
+var vehicle: Dictionary
 var spits: Array[Dictionary] = []
 var spit_hits: Dictionary = {}
 var home_rest: Dictionary = HomeRest.initial()
@@ -89,6 +91,7 @@ var recovery_salvage: Dictionary = RecoverySalvage.initial()
 var alert: String = "SAFE"
 var downs: int = 0
 var defeat_pending: bool = false
+var campaign_ended: bool = false
 var workshop: Dictionary = Workshop.initial()
 var timber: Dictionary = Salvage.initial()
 var slice_state: Dictionary = SliceObjective.initial()
@@ -106,6 +109,7 @@ func _init(data: Dictionary) -> void:
 	medicine_production = Medicine.initial(data)
 	roam_rng.seed = int(balance.roam_seed)
 	passages = Neighbourhood.initial(data)
+	vehicle = Vehicle.initial(data)
 	roadworks = Roadworks.initial(data)
 	pressure = Pressure.initial(data)
 	materials = int(balance.starting_materials)
@@ -165,10 +169,12 @@ func step(dt: float) -> void:
 	for a: Dictionary in [player] + survivors + zombies:
 		for key: String in ["cooldown", "flash", "swing"]:
 			a[key] = maxf(0.0, float(a[key]) - dt)
-	if Carrying.occupied(self):
+	if Carrying.occupied(self) or Vehicle.driving(self):
 		working = false
 	var travel: Vector2 = move_input * float(balance.player_speed) * Equipment.speed(self, player) * (float(balance.carry_speed_factor) if Carrying.occupied(self) else 1.0) * dt
-	player.pos = routes.move(player.pos, player.pos + travel, travel.length())
+	if not Vehicle.driving(self):
+		player.pos = routes.move(player.pos, player.pos + travel, travel.length())
+	Vehicle.step(self, dt)
 	Carrying.step(self, dt)
 	face_aim()
 	Exploration.update(self)
@@ -213,13 +219,13 @@ func step(dt: float) -> void:
 
 
 func attack() -> void:
-	if Carrying.occupied(self):
+	if Carrying.occupied(self) or Vehicle.driving(self):
 		return
 	Combat.strike(self, player, aim)
 
 
 func shoot() -> bool:
-	return Firearms.shoot(self)
+	return false if Vehicle.driving(self) else Firearms.shoot(self)
 
 
 func face_aim() -> void:
@@ -264,6 +270,9 @@ func context() -> String:
 				var name: String = str(Carrying.nearby(self).name)
 				return service + " · Hold E Carry" + ("" if service.contains(name) else " " + name)
 		return carry_text
+	var van_text: String = Vehicle.context(self)
+	if not van_text.is_empty():
+		return van_text
 	var recovery_text: String = RecoverySalvage.context(self)
 	if not recovery_text.is_empty():
 		return recovery_text
@@ -329,6 +338,8 @@ func interact() -> void:
 	if float(player.hp) <= 0:
 		return
 	if Carrying.press(self):
+		return
+	if Vehicle.press(self):
 		return
 	if Boss.at_exit(self):
 		Boss.interact(self)

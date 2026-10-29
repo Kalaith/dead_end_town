@@ -1,6 +1,7 @@
 extends RefCounted
 const Screecher = preload("res://scripts/sim/screecher.gd")
 const Spitter = preload("res://scripts/sim/spitter.gd")
+const Vehicle = preload("res://scripts/sim/vehicle.gd")
 const Facility = preload("res://scripts/sim/facility.gd")
 const Acoustics = preload("res://scripts/sim/noise.gd")
 const Runner = preload("res://scripts/sim/runner.gd")
@@ -204,7 +205,7 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 		return
 	if Spitter.step(world, z, target, dt):
 		return
-	if not target.is_empty() and best < 29.0 and world.routes.line_clear(z.pos, target.pos) and float(z.cooldown) <= 0:
+	if not target.is_empty() and best < 29.0 and world.routes.line_clear(z.pos, target.pos) and float(z.cooldown) <= 0 and not (target.id == "you" and Vehicle.driving(world)):
 		target.hp = maxf(0.0, float(target.hp) - incoming_damage(world, target, z.pos, z))
 		target.flash = 0.18
 		z.cooldown = ZombieTypes.stat(world.catalog, z, "cooldown")

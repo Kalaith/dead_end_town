@@ -3,6 +3,7 @@ extends RefCounted
 ## Globs and pools are transient hazards; they are not saved, only the spitter's own intent is.
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
+const Vehicle = preload("res://scripts/sim/vehicle.gd")
 
 
 static func initial() -> Dictionary:
@@ -87,6 +88,10 @@ static func _fly(world: RefCounted, s: Dictionary, config: Dictionary, dt: float
 		if not world.routes.line_clear(pos, next, true):
 			_splash(world, pos, config, null)
 			return true
+		if Vehicle.driving(world) and next.distance_to(Vehicle.pos(world)) < 30:
+			Vehicle.hit(world, float(config.spit_damage))
+			_splash(world, next, config, null)
+			return true
 		for person: Dictionary in [world.player] + world.survivors:
 			if float(person.hp) > 0 and next.distance_to(person.pos) < 18:
 				_splash(world, next, config, person)
@@ -117,7 +122,7 @@ static func _splash(world: RefCounted, at: Vector2, config: Dictionary, victim: 
 static func _pool_tick(world: RefCounted, s: Dictionary, config: Dictionary) -> void:
 	var centre := Vector2(float(s.x), float(s.y))
 	for person: Dictionary in [world.player] + world.survivors:
-		if float(person.hp) <= 0 or person.pos.distance_to(centre) > float(config.pool_radius):
+		if float(person.hp) <= 0 or (person.id == "you" and Vehicle.driving(world)) or person.pos.distance_to(centre) > float(config.pool_radius):
 			continue
 		if world.elapsed - float(world.spit_hits.get(person.id, -10.0)) < 0.99:
 			continue

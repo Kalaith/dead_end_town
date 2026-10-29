@@ -39,7 +39,7 @@ func _init() -> void:
 	arrived.player.pos = Boss.exit_rect(works).get_center()
 	arrived.step(0.1)
 	arrived.interact()
-	_expect("the main gate ends the campaign with its line", arrived.messages.back() == str(works.exit.line) and arrived.travel_requested == "")
+	_expect("the main gate ends the campaign with its line", arrived.campaign_ended and arrived.travel_requested == "")
 	quit(failures)
 
 

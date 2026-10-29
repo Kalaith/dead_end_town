@@ -87,6 +87,8 @@ func _process(dt: float) -> void:
 		return
 	if world.travel_requested != "":
 		_travel(world.travel_requested)
+	if world.campaign_ended:
+		paused = true
 	if world.defeat_pending:
 		paused = true
 		if not defeat_shown:
@@ -165,6 +167,16 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func command(value: String) -> void:
+	if world.campaign_ended:
+		if value == "resume":
+			world.campaign_ended = false
+			paused = false
+			hud.refresh(world, false)
+			return
+		if value != "new":
+			paused = true
+			hud.refresh(world, true)
+			return
 	if world.defeat_pending and value not in ["recover", "load"]:
 		paused = true
 		hud.refresh(world, true)
