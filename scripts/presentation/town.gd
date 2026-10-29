@@ -12,7 +12,6 @@ const Restoration = preload("res://scripts/sim/restoration.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const ConstructionMenu = preload("res://scripts/presentation/construction_menu.gd")
 const Production = preload("res://scripts/sim/production.gd")
-const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
@@ -29,7 +28,6 @@ var hud: Control
 var paused: bool = true
 var resume_after_rescue: bool = false
 var accumulator: float = 0.0
-var completion_shown: bool = false
 var defeat_shown: bool = false
 var storage_enabled: bool = true
 var controls := PlayerControls.new()
@@ -127,12 +125,6 @@ func _process(dt: float) -> void:
 			world.shoot()
 		elif Input.is_action_pressed("attack"):
 			world.attack()
-	if world.slice_state.phase == "complete" and not completion_shown:
-		completion_shown = true
-		paused = true
-		hud.show_menu()
-		hud.pause_title.text = "A STREET WORTH KEEPING / SLICE COMPLETE"
-		hud.first_button.text = "Continue the street"
 	view.queue_redraw()
 	hud.refresh(world, paused, dt)
 
@@ -176,7 +168,7 @@ func command(value: String) -> void:
 		paused = true
 		hud.refresh(world, true)
 		return
-	if not world.rescue_intro.is_empty() and value in ["resume", "menu", "team", "work", "town", "watch"]:
+	if not world.rescue_intro.is_empty() and value in ["resume", "menu", "team", "work", "town"]:
 		paused = true
 		hud.refresh(world, true)
 		return
@@ -191,10 +183,6 @@ func command(value: String) -> void:
 				hud.menu_status.text = ""
 				paused = false
 				hud.refresh(world, false)
-		"watch":
-			SliceObjective.start(world)
-			hud.menu_status.text = world.messages.back()
-			hud.refresh(world, paused)
 		"work":
 			if world.clinic.done or world.properties.munitions.looted or ConstructionMenu.available(world):
 				paused = true
@@ -228,7 +216,6 @@ func command(value: String) -> void:
 				hud.menu_status.text = "No saved street yet." if save_state.store.last_error.is_empty() else save_state.store.last_error
 			else:
 				world = save_state.restore(data)
-				completion_shown = false
 				defeat_shown = false
 				controls = PlayerControls.new()
 				view.world = world
@@ -264,7 +251,6 @@ func _enter(next: RefCounted, data: Dictionary) -> void:
 	save_state.store.enabled = storage_enabled
 	world = next
 	view.world = world
-	completion_shown = false
 	defeat_shown = false
 	controls = PlayerControls.new()
 	accumulator = 0.0

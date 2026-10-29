@@ -198,7 +198,6 @@ func step(dt: float) -> void:
 	Boss.step(self, dt)
 	Carrying.sync(self)
 	CompanionRescue.sync(self)
-	SliceObjective.step(self, dt)
 	var next_alert: String = "SAFE"
 	for z: Dictionary in zombies:
 		if float(z.hp) > 0 and z.pos.distance_to(Routes.point(balance.home_alert_center)) < float(balance.home_alert_radius):

@@ -97,5 +97,5 @@ Claim, occupation and loss; safe connection and production; work orders; economy
 7. Baboon boss at the exit. (done, see PROGRESS)
 8. Area transition. (done, see PROGRESS)
 9. Office district, then industrial area, each with its own boss or gate.
-10. Retire the old slice and watch.
+10. Retire the old slice and watch. (done, see PROGRESS)
 11. Verification by playing the real game, proportionate to each change (see `AGENTS.md`).

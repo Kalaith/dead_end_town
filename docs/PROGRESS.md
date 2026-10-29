@@ -75,3 +75,10 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 - The baboon's first-pass design is recorded in `14-zombie-catalogue.md`.
 - Found but not yet addressed: the baboon fight has never been played or simulated with a player and team (a bare-handed player is expected to lose); pressure bands and intervals are untuned on the ring layout; the retired slice/watch UI is still in the menu (step 10); the plaza, rear gates and the west/south of the ring have never been walked; and a second area needs the property-id and validator generalisation noted under step 8.
 - Review pass 1b, baboon health 700 -> 1500. A scripted fight (player swinging a bat and walking at it, escorts removed, no dodging, scratch script not kept) killed the 700-health baboon in about 6 s with Mara engaging and lost to it alone in 8 s. At 1500 health the player alone still loses (1020 left when they fall) and player plus Mara win in about 13 s with the player at 74 health, because the baboon mostly attacks the nearer person. Still easy for a prepared team; real play, armour, shield and ammunition are untested, so the number is provisional.
+
+## 29 October 2026: retire the slice and watch (step 10)
+
+- The neighbourhood watch is gone: the pause-menu button, the `watch` command, the completion screen and the slice's per-step update (and its call from defeat). `slice_objective.gd` keeps only `readiness` and `next`. The objective line now guides to the baboon once the yards are reclaimed ("Prepared. When you choose, face the baboon at the bridge...") and to the exit once it is down.
+- `slice_state` stays in the world and save as an inert record (phase stays "preparing") so schemas and old saves are unchanged; `catalog.slice` data is unused. Removing both is a later clean-up.
+- Checked: scripts load, catalog, save, pressure, boss and travel checks pass; the pause menu renders without the button (`docs/verification/street_start.png`). Not checked: the objective text in each state in play.
+- Remaining review items: second-area generalisation (step 9 prerequisite), pressure tuning, real play of the baboon fight and an unwalked ring.

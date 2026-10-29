@@ -43,7 +43,6 @@ var supplies: Label
 var menu: PanelContainer
 var rescue_menu: PanelContainer
 var defeat_menu: PanelContainer
-var watch_button: Button
 var equipment_menu: VBoxContainer
 var town_map: VBoxContainer
 var menu_status: Label
@@ -132,8 +131,6 @@ func _build_menu() -> void:
 	objective = kit.label("", 18, Color("dfb36e"))
 	objective.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	sections.Street.add_child(objective)
-	watch_button = kit.button("Begin neighbourhood watch", func() -> void: requested.emit("watch"))
-	sections.Street.add_child(watch_button)
 	supplies = kit.label("", 18)
 	sections.Street.add_child(supplies)
 	readiness = kit.label("", 18)
@@ -201,9 +198,6 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	stats.visible = not paused and not stats.text.is_empty()
 	live_status.visible = not paused
 	objective.text = "NEXT / " + SliceObjective.next(world)
-	watch_button.visible = world.slice_state.phase == "preparing" and world.properties.garden.looted and world.properties.library.looted and world.properties.garage.looted
-	watch_button.disabled = not SliceObjective.readiness(world).is_empty()
-	watch_button.tooltip_text = SliceObjective.readiness(world)
 	supplies.text = "STOCKPILE / %d materials     %d food\n%s" % [world.materials, world.food, Provisions.summary(world)]
 	if world.properties.clinic.looted:
 		supplies.text += "\n%d medicine" % world.medicine

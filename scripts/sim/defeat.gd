@@ -4,7 +4,6 @@ const CompanionRescue = preload("res://scripts/sim/companion_rescue.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
-const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
 
 
 static func begin(world: RefCounted) -> void:
@@ -15,7 +14,6 @@ static func begin(world: RefCounted) -> void:
 	world.move_input = Vector2.ZERO
 	world.working = false
 	world.interacting = false
-	SliceObjective.step(world, 0.0)
 
 
 static func destination(world: RefCounted) -> Dictionary:
