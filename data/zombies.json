@@ -51,7 +51,7 @@
       },
       "baboon": {
         "name": "Undead baboon",
-        "health": 700,
+        "health": 1500,
         "speed": 70,
         "damage": 26,
         "cooldown": 1.5,
