@@ -11,8 +11,15 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	rules.vec2(data.balance, "emergency_shelter")
 	if Rules.is_vec2(data.balance.get("emergency_shelter")):
 		var point: Array = data.balance.emergency_shelter
-		if float(point[0]) < 12 or float(point[0]) > 60 or float(point[1]) < 520 or float(point[1]) > 640:
-			errors.append("Emergency shelter must stay on the open west road outside home.")
+		var spot := Vector2(float(point[0]), float(point[1]))
+		var near_home: bool = false
+		var inside_lot: bool = false
+		for p: Dictionary in data.get("properties", []):
+			var rect := Rect2(float(p.rect[0]), float(p.rect[1]), float(p.rect[2]), float(p.rect[3]))
+			inside_lot = inside_lot or rect.has_point(spot)
+			near_home = near_home or (p.id == "home" and rect.get_center().distance_to(spot) <= 700)
+		if inside_lot or not near_home:
+			errors.append("Emergency shelter must stay on open road within reach of home.")
 	for key: String in ["defeat_player_health", "defeat_survivor_health"]:
 		rules.number_between(data.balance, key, 1, 100)
 	for key: String in ["recovery_clear_radius", "recovery_relocate_distance", "recovery_migration_seconds"]:

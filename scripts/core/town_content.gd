@@ -86,8 +86,8 @@ static func _core_route(data: Dictionary, links: Array, core_ids: Array[String],
 static func _streets(data: Dictionary, errors: Array[String]) -> void:
 	for raw: Variant in data.town.streets:
 		var rect: Variant = raw.get("rect") if raw is Dictionary else null
-		if not rect is Array or rect.size() != 4 or raw.get("kind") not in ["road", "alley"]:
-			errors.append("Street needs a rectangle and a road or alley kind.")
+		if not rect is Array or rect.size() != 4 or raw.get("kind") not in ["road", "alley", "plaza"]:
+			errors.append("Street needs a rectangle and a road, alley or plaza kind.")
 			continue
 		for n: Variant in rect:
 			if not Rules.finite(n):

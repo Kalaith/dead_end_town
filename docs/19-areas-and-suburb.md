@@ -20,21 +20,25 @@ Areas 2 and 3 are outlined only. Area 1 is designed here in enough detail to bui
 
 ## Area 1: the suburb
 
-Reference for the intended feel: [Sanctuary Hills](reference/sanctuary_hills_map.webp): a looped road with a central market roundabout, houses inside and outside the loop, one entrance (a bridge), a bounded settlement. The layout below was first drawn as one straight street and rejected; it is being redrawn on this model.
-
-A **cul-de-sac**: one straight street, west to east, about 5,840 × 1,160 pixels (roughly 30 seconds end to end). Home is at the back (west end); the baboon holds the east mouth.
+Modelled on [Sanctuary Hills](reference/sanctuary_hills_map.webp): a **ring road** around an island of lots, a **market roundabout** at the back, **one entrance** (a bridge) guarded by the boss, and a bounded settlement. The first layout, one straight street, was rejected as "still one long street".
 
 ```text
-col:      0        1        2         3         4         5          6
-N:     [home]  [garden][residence][hardware][clinic][greenhouse][corner house]  ← NE alley
-       ============= ONE STREET (dead end at the west) =============  [roadblock + baboon] → exit
-S:    [library][garage][munitions][No. 8]  [No. 10]  [No. 12]   [half-built]    ← SE alley
+                top street                                  east
+ outer N  [hardware][residence][garden][HOME]                 ring
+ ══════════════════════════════════════════════╗             road
+ island N [house_a][munitions][garage][library]║   ◉ plaza    ║
+          ─ rear fences, with a gate each ─    ║  (market)    ║
+ island S [clinic][greenhouse][No.12][corner]  ║              ║
+ ══════════════════════════════════════════════╝
+ outer S  [No.14][No.10][No.16][half-built]
+ west road ▼  bridge approach: BABOON, the only way out
 ```
 
-- 14 lots. The original nine keep their identities and positions: home, library, garden, garage, residence, munitions, hardware, clinic, greenhouse. Five are houses with loot: No. 8, No. 10, No. 12, the corner house, and the **half-built house**, which holds a large cache of building materials (48).
-- Ten lots are core (all nine originals plus the corner house); No. 8, No. 10, No. 12 and the half-built house are optional.
-- 19 links (a street ladder): 7 crossings and 12 fenced passages, each with its own passage or road barriers. Adjacency is the explicit `links` graph.
-- **Pressure comes from one end only.** Two alley mouths at the east end, either side of the roadblock, are the entrances. Everything else is quiet, so home at the back stays the fallback and the push is eastward toward the boss. The roadblock itself spawns nothing.
+- About 3,360 × 2,180. 16 lots: the nine originals with unchanged identities (home, garden, library, garage, residence, munitions, hardware, clinic, greenhouse) plus No. 8, 10, 12, 14, 16, the corner house and the half-built house (48 Materials, close to home).
+- **Home is in the north-east corner**, the far side from the bridge, near the plaza. The player pushes west along the top street, down the west road, and east along the bottom street toward the bridge. Every lot is reachable two ways round the ring.
+- 24 links: 12 same-row passages, 8 street crossings (top and bottom street) and 4 **rear gates** between the back-to-back island rows. Ten lots are core (the originals plus No. 8, which bridges to the clinic).
+- Gates only face a horizontal street, so the ring's side roads have no lots. The plaza is drawn but has no function yet.
+- **Pressure comes from one end only**: the bridge, at the south-west corner. A wide approach strip runs along the bottom edge so a formation fits. The baboon holds the bridge road, so the horde passes it on the way in. Pressure timing and band numbers are not yet tuned for this size (step 5).
 - The roadblock, baboon and exit gate are not built yet (see Delivery order).
 
 ### Preparing for the boss

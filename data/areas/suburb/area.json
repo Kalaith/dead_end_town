@@ -6,39 +6,39 @@
     "note": "Interim: the original street strip, until the suburb grid is authored."
   },
   "bounds": [
-    5840,
-    1160
+    3360,
+    2180
   ],
   "balance": {
     "player_start": [
-      360,
+      2760,
       365
     ],
     "mara_start": [
-      360,
+      2760,
       445
     ],
     "home_respawn": [
-      360,
+      2760,
       350
     ],
     "home_alert_center": [
-      360,
+      2760,
       480
     ],
     "emergency_shelter": [
-      30,
+      2430,
       580
     ]
   },
   "recovery_salvage": {
     "sites": {
       "home": [
-        180,
+        2580,
         350
       ],
       "west": [
-        30,
+        2430,
         610
       ]
     }

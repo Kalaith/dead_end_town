@@ -20,8 +20,23 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 		rules.vec2(c.sites, id)
 	if not Rules.is_vec2(c.sites.get("home")) or not Rules.is_vec2(c.sites.get("west")):
 		return
-	if Routes.point(c.sites.home) != Vector2(180, 350) or Routes.point(c.sites.west) != Vector2(30, 610):
-		errors.append("Recovery piles must use their authored clear work points.")
+	var home: Rect2 = Routes.rectangle(_home(data).rect)
+	if not home.has_point(Routes.point(c.sites.home)) or _in_lot(data, Routes.point(c.sites.west)) or Routes.point(c.sites.west).distance_to(home.get_center()) > 700:
+		errors.append("Recovery piles need a home-yard pile and a pile on open road near home.")
+
+
+static func _home(data: Dictionary) -> Dictionary:
+	for p: Dictionary in data.properties:
+		if p.id == "home":
+			return p
+	return {}
+
+
+static func _in_lot(data: Dictionary, point: Vector2) -> bool:
+	for p: Dictionary in data.properties:
+		if Routes.rectangle(p.rect).has_point(point):
+			return true
+	return false
 
 
 static func valid(data: Dictionary, catalog: Dictionary) -> bool:

@@ -7,35 +7,19 @@
     "spawn_spacing": 28,
     "routes": [
       {
-        "id": "north_east",
-        "name": "north-east alley",
+        "id": "south_west",
+        "name": "south-west bridge road",
         "entry": [
-          5040,
-          30
+          300,
+          2150
         ],
         "spread": [
           1,
           0
         ],
         "approach": [
-          5040,
-          580
-        ]
-      },
-      {
-        "id": "south_east",
-        "name": "south-east alley",
-        "entry": [
-          5040,
-          1130
-        ],
-        "spread": [
-          1,
-          0
-        ],
-        "approach": [
-          5040,
-          580
+          140,
+          1600
         ]
       }
     ],

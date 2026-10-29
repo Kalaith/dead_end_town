@@ -1,117 +1,81 @@
 {
   "schema_version": 1,
-  "barricades": [
-    {
-      "id": "home_west",
-      "name": "Home block west barricade",
-      "rect": [
-        72,
-        480,
-        16,
-        200
-      ],
-      "center": [
-        80,
-        580
-      ],
-      "site": [
-        128,
-        580
-      ],
-      "requires": [
-        "home",
-        "library"
-      ]
-    },
-    {
-      "id": "home_east",
-      "name": "Home block east barricade",
-      "rect": [
-        632,
-        480,
-        16,
-        200
-      ],
-      "center": [
-        640,
-        580
-      ],
-      "site": [
-        592,
-        580
-      ],
-      "requires": [
-        "home",
-        "library"
-      ]
-    },
-    {
-      "id": "garden_west",
-      "name": "Garden block west barricade",
-      "rect": [
-        792,
-        480,
-        16,
-        200
-      ],
-      "center": [
-        800,
-        580
-      ],
-      "site": [
-        848,
-        580
-      ],
-      "requires": [
-        "garden",
-        "garage"
-      ]
-    },
-    {
-      "id": "garden_east",
-      "name": "Garden block east barricade",
-      "rect": [
-        1352,
-        480,
-        16,
-        200
-      ],
-      "center": [
-        1360,
-        580
-      ],
-      "site": [
-        1312,
-        580
-      ],
-      "requires": [
-        "garden",
-        "garage"
-      ]
-    }
-  ],
   "crossings": [
     {
-      "id": "west",
-      "name": "Western street crossing",
+      "id": "hardware_crossing",
+      "name": "Hardware store crossing",
       "requires": [
-        "home",
-        "library"
+        "hardware",
+        "house_a"
       ],
       "barriers": [
-        "home_west",
-        "home_east"
+        "hardware_west",
+        "hardware_east"
       ],
       "area": [
-        88,
+        328,
         472,
         544,
         216
       ]
     },
     {
-      "id": "east",
-      "name": "Eastern street crossing",
+      "id": "clinic_crossing",
+      "name": "Clinic crossing",
+      "requires": [
+        "clinic",
+        "house_e"
+      ],
+      "barriers": [
+        "clinic_west",
+        "clinic_east"
+      ],
+      "area": [
+        328,
+        1492,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "residence_crossing",
+      "name": "05 / EAST HOUSE crossing",
+      "requires": [
+        "residence",
+        "munitions"
+      ],
+      "barriers": [
+        "residence_west",
+        "residence_east"
+      ],
+      "area": [
+        1048,
+        472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "greenhouse_crossing",
+      "name": "Greenhouse crossing",
+      "requires": [
+        "greenhouse",
+        "house_b"
+      ],
+      "barriers": [
+        "greenhouse_west",
+        "greenhouse_east"
+      ],
+      "area": [
+        1048,
+        1492,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "garden_crossing",
+      "name": "02 / GARDEN HOUSE crossing",
       "requires": [
         "garden",
         "garage"
@@ -121,188 +85,418 @@
         "garden_east"
       ],
       "area": [
-        808,
+        1768,
         472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "house_c_crossing",
+      "name": "Number 12 crossing",
+      "requires": [
+        "house_c",
+        "house_f"
+      ],
+      "barriers": [
+        "house_c_west",
+        "house_c_east"
+      ],
+      "area": [
+        1768,
+        1492,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "home_crossing",
+      "name": "01 / HOME crossing",
+      "requires": [
+        "home",
+        "library"
+      ],
+      "barriers": [
+        "home_west",
+        "home_east"
+      ],
+      "area": [
+        2488,
+        472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "house_d_crossing",
+      "name": "Corner house crossing",
+      "requires": [
+        "house_d",
+        "unfinished"
+      ],
+      "barriers": [
+        "house_d_west",
+        "house_d_east"
+      ],
+      "area": [
+        2488,
+        1492,
         544,
         216
       ]
     }
   ],
-  "passages": [
+  "barricades": [
     {
-      "id": "north",
-      "name": "Northern yard passage",
-      "requires": [
-        "home",
-        "garden"
-      ],
-      "area": [
-        628,
-        352,
-        184,
-        96
-      ],
-      "sites": [
-        [
-          600,
-          400
-        ],
-        [
-          840,
-          400
-        ]
-      ],
-      "rails": [
-        [
-          632,
-          352,
-          176,
-          8
-        ],
-        [
-          632,
-          440,
-          176,
-          8
-        ]
-      ],
-      "gate": [
-        712,
-        360,
+      "id": "hardware_west",
+      "name": "Hardware store west barricade",
+      "rect": [
+        312,
+        480,
         16,
-        80
+        200
+      ],
+      "center": [
+        320,
+        580
+      ],
+      "site": [
+        368,
+        580
+      ],
+      "requires": [
+        "hardware",
+        "house_a"
       ]
     },
     {
-      "id": "south",
-      "name": "Southern yard passage",
-      "requires": [
-        "library",
-        "garage"
-      ],
-      "area": [
-        628,
-        712,
-        184,
-        96
-      ],
-      "sites": [
-        [
-          600,
-          760
-        ],
-        [
-          840,
-          760
-        ]
-      ],
-      "rails": [
-        [
-          632,
-          712,
-          176,
-          8
-        ],
-        [
-          632,
-          800,
-          176,
-          8
-        ]
-      ],
-      "gate": [
-        712,
-        720,
+      "id": "hardware_east",
+      "name": "Hardware store east barricade",
+      "rect": [
+        872,
+        480,
         16,
-        80
+        200
+      ],
+      "center": [
+        880,
+        580
+      ],
+      "site": [
+        832,
+        580
+      ],
+      "requires": [
+        "hardware",
+        "house_a"
       ]
     },
     {
-      "id": "far_north",
-      "name": "Eastern northern passage",
+      "id": "clinic_west",
+      "name": "Clinic west barricade",
+      "rect": [
+        312,
+        1500,
+        16,
+        200
+      ],
+      "center": [
+        320,
+        1600
+      ],
+      "site": [
+        368,
+        1600
+      ],
+      "requires": [
+        "clinic",
+        "house_e"
+      ]
+    },
+    {
+      "id": "clinic_east",
+      "name": "Clinic east barricade",
+      "rect": [
+        872,
+        1500,
+        16,
+        200
+      ],
+      "center": [
+        880,
+        1600
+      ],
+      "site": [
+        832,
+        1600
+      ],
+      "requires": [
+        "clinic",
+        "house_e"
+      ]
+    },
+    {
+      "id": "residence_west",
+      "name": "05 / EAST HOUSE west barricade",
+      "rect": [
+        1032,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        1040,
+        580
+      ],
+      "site": [
+        1088,
+        580
+      ],
+      "requires": [
+        "residence",
+        "munitions"
+      ]
+    },
+    {
+      "id": "residence_east",
+      "name": "05 / EAST HOUSE east barricade",
+      "rect": [
+        1592,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        1600,
+        580
+      ],
+      "site": [
+        1552,
+        580
+      ],
+      "requires": [
+        "residence",
+        "munitions"
+      ]
+    },
+    {
+      "id": "greenhouse_west",
+      "name": "Greenhouse west barricade",
+      "rect": [
+        1032,
+        1500,
+        16,
+        200
+      ],
+      "center": [
+        1040,
+        1600
+      ],
+      "site": [
+        1088,
+        1600
+      ],
+      "requires": [
+        "greenhouse",
+        "house_b"
+      ]
+    },
+    {
+      "id": "greenhouse_east",
+      "name": "Greenhouse east barricade",
+      "rect": [
+        1592,
+        1500,
+        16,
+        200
+      ],
+      "center": [
+        1600,
+        1600
+      ],
+      "site": [
+        1552,
+        1600
+      ],
+      "requires": [
+        "greenhouse",
+        "house_b"
+      ]
+    },
+    {
+      "id": "garden_west",
+      "name": "02 / GARDEN HOUSE west barricade",
+      "rect": [
+        1752,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        1760,
+        580
+      ],
+      "site": [
+        1808,
+        580
+      ],
       "requires": [
         "garden",
-        "residence"
-      ],
-      "area": [
-        1348,
-        352,
-        184,
-        96
-      ],
-      "sites": [
-        [
-          1320,
-          400
-        ],
-        [
-          1560,
-          400
-        ]
-      ],
-      "rails": [
-        [
-          1352,
-          352,
-          176,
-          8
-        ],
-        [
-          1352,
-          440,
-          176,
-          8
-        ]
-      ],
-      "gate": [
-        1432,
-        360,
-        16,
-        80
+        "garage"
       ]
     },
     {
-      "id": "far_south",
-      "name": "Eastern southern passage",
-      "requires": [
-        "garage",
-        "munitions"
-      ],
-      "area": [
-        1348,
-        712,
-        184,
-        96
-      ],
-      "sites": [
-        [
-          1320,
-          760
-        ],
-        [
-          1560,
-          760
-        ]
-      ],
-      "rails": [
-        [
-          1352,
-          712,
-          176,
-          8
-        ],
-        [
-          1352,
-          800,
-          176,
-          8
-        ]
-      ],
-      "gate": [
-        1432,
-        720,
+      "id": "garden_east",
+      "name": "02 / GARDEN HOUSE east barricade",
+      "rect": [
+        2312,
+        480,
         16,
-        80
+        200
+      ],
+      "center": [
+        2320,
+        580
+      ],
+      "site": [
+        2272,
+        580
+      ],
+      "requires": [
+        "garden",
+        "garage"
+      ]
+    },
+    {
+      "id": "house_c_west",
+      "name": "Number 12 west barricade",
+      "rect": [
+        1752,
+        1500,
+        16,
+        200
+      ],
+      "center": [
+        1760,
+        1600
+      ],
+      "site": [
+        1808,
+        1600
+      ],
+      "requires": [
+        "house_c",
+        "house_f"
+      ]
+    },
+    {
+      "id": "house_c_east",
+      "name": "Number 12 east barricade",
+      "rect": [
+        2312,
+        1500,
+        16,
+        200
+      ],
+      "center": [
+        2320,
+        1600
+      ],
+      "site": [
+        2272,
+        1600
+      ],
+      "requires": [
+        "house_c",
+        "house_f"
+      ]
+    },
+    {
+      "id": "home_west",
+      "name": "01 / HOME west barricade",
+      "rect": [
+        2472,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        2480,
+        580
+      ],
+      "site": [
+        2528,
+        580
+      ],
+      "requires": [
+        "home",
+        "library"
+      ]
+    },
+    {
+      "id": "home_east",
+      "name": "01 / HOME east barricade",
+      "rect": [
+        3032,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        3040,
+        580
+      ],
+      "site": [
+        2992,
+        580
+      ],
+      "requires": [
+        "home",
+        "library"
+      ]
+    },
+    {
+      "id": "house_d_west",
+      "name": "Corner house west barricade",
+      "rect": [
+        2472,
+        1500,
+        16,
+        200
+      ],
+      "center": [
+        2480,
+        1600
+      ],
+      "site": [
+        2528,
+        1600
+      ],
+      "requires": [
+        "house_d",
+        "unfinished"
+      ]
+    },
+    {
+      "id": "house_d_east",
+      "name": "Corner house east barricade",
+      "rect": [
+        3032,
+        1500,
+        16,
+        200
+      ],
+      "center": [
+        3040,
+        1600
+      ],
+      "site": [
+        2992,
+        1600
+      ],
+      "requires": [
+        "house_d",
+        "unfinished"
       ]
     }
   ]

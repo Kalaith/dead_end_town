@@ -723,3 +723,12 @@ Evidence and limits:
 - Saves now use `user://suburb.json`. The old `street.json` is never read or touched, so there is no damaged-save error and saving stays on. The schema stays 36.
 - Checks: catalog 0 problems (including each route's physical approach to the road), 87 scripts load, `tools/check_save.gd` 6/6, editor import clean. The real game launches and the home end renders as before.
 - Not seen: the east end, new houses, half-built house and alley mouths in the running game. A manual walk was impractical (closed gate, residents on every lot). The migration scheduler's route and band logic is untouched beyond validation; its rework onto this layout (step 5) and the baboon and exit (steps 7-8) remain.
+
+## 29 October 2026: ring-road suburb (step 4, redone)
+
+User feedback: the straight cul-de-sac was still one long street. Reference: Sanctuary Hills (`docs/reference/sanctuary_hills_map.webp`). Replaced it with a ring.
+
+- `data/areas/suburb/` now holds 16 lots in four rows (outer north, island north, island south, outer south) around a rectangular ring road with a plaza at the east, 3,360 × 2,180. Files are consolidated to `area`, `town`, `pressure`, `properties`, `roads`, `passages`. Existing lot identities and names are kept; home moved to the north-east corner. 24 links, including four rear gates between the island rows. One pressure route enters from the south-west bridge.
+- Engine: fence cutting now handles horizontal (back) fences so passages can join lots back to back; streets draw vertical roads and a plaza; recovery-pile and shelter validators check "open road near home" instead of the old strip's coordinates; search rewards, route ids and link counts are generic.
+- Checks: catalog 0 problems (including the bridge route's physical path), 87 scripts load, `check_save.gd` 6/6. In the running game: home in the north-east corner, the ring road corner and east side road render, the island rows sit back to back with a double fence, and centre-line paint stops at the corner.
+- Not seen: the plaza's planted centre after a draw-order fix, the bridge end, the west road and the rear gates working (a passage there has never been built in play). Simulated movement into the street was unreliable, so the south and west of the ring were not walked. Rear passage building, link reasons for rear gates and the pressure tuning remain to be checked.

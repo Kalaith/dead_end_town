@@ -2,36 +2,222 @@
   "schema_version": 1,
   "properties": [
     {
-      "id": "home",
-      "food_cache": 0,
-      "name": "01 / HOME",
+      "id": "hardware",
+      "resident_kinds": [
+        "runner",
+        "shambler",
+        "shambler"
+      ],
+      "core": true,
+      "available": true,
+      "food_cache": 2,
+      "name": "Hardware store",
       "rect": [
-        80,
+        320,
         80,
         560,
         400
       ],
       "building": [
-        180,
+        420,
         150,
         350,
         155
       ],
       "gate": [
-        360,
+        600,
         480
       ],
       "site": [
-        360,
+        600,
         350
       ],
       "post": [
-        360,
+        600,
         452
       ],
       "neighbors": [
-        "library",
-        "garden"
+        "residence",
+        "house_a"
+      ],
+      "reward": "Construction tools and a long spear",
+      "reinforcements": [
+        [
+          450,
+          355
+        ],
+        [
+          700,
+          385
+        ],
+        [
+          800,
+          430
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 32,
+        "line": "Hardware tools and a long spear recovered.",
+        "medicine": 0,
+        "survivor": ""
+      }
+    },
+    {
+      "id": "residence",
+      "food_cache": 4,
+      "name": "05 / EAST HOUSE",
+      "rect": [
+        1040,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        1140,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        1320,
+        480
+      ],
+      "site": [
+        1320,
+        350
+      ],
+      "post": [
+        1320,
+        452
+      ],
+      "neighbors": [
+        "hardware",
+        "garden",
+        "munitions"
+      ],
+      "reward": "A survivor and a pistol",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": [
+        [
+          1220,
+          365
+        ],
+        [
+          1410,
+          380
+        ],
+        [
+          1320,
+          430
+        ]
+      ],
+      "core": true,
+      "available": true
+    },
+    {
+      "id": "garden",
+      "food_cache": 4,
+      "name": "02 / GARDEN HOUSE",
+      "rect": [
+        1760,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        1860,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        2040,
+        480
+      ],
+      "site": [
+        2040,
+        350
+      ],
+      "post": [
+        2040,
+        452
+      ],
+      "neighbors": [
+        "residence",
+        "home",
+        "garage"
+      ],
+      "reward": "Food garden",
+      "reinforcements": [
+        [
+          1830,
+          350
+        ],
+        [
+          1900,
+          440
+        ],
+        [
+          2180,
+          440
+        ],
+        [
+          2260,
+          350
+        ]
+      ],
+      "hidden_zombies": 8,
+      "zombies": [
+        [
+          1940,
+          365
+        ],
+        [
+          2130,
+          380
+        ],
+        [
+          2040,
+          430
+        ]
+      ],
+      "core": true,
+      "available": true
+    },
+    {
+      "id": "home",
+      "food_cache": 0,
+      "name": "01 / HOME",
+      "rect": [
+        2480,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        2580,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        2760,
+        480
+      ],
+      "site": [
+        2760,
+        350
+      ],
+      "post": [
+        2760,
+        452
+      ],
+      "neighbors": [
+        "garden",
+        "library"
       ],
       "reward": "Home stockpile",
       "reinforcements": [],
@@ -41,139 +227,117 @@
       "available": true
     },
     {
-      "id": "garden",
-      "food_cache": 4,
-      "name": "02 / GARDEN HOUSE",
-      "rect": [
-        800,
-        80,
-        560,
-        400
-      ],
-      "building": [
-        900,
-        150,
-        350,
-        155
-      ],
-      "gate": [
-        1080,
-        480
-      ],
-      "site": [
-        1080,
-        350
-      ],
-      "post": [
-        1080,
-        452
-      ],
-      "neighbors": [
-        "garage",
-        "home",
-        "residence"
-      ],
-      "reward": "Food garden",
-      "reinforcements": [
-        [
-          870,
-          350
-        ],
-        [
-          940,
-          440
-        ],
-        [
-          1220,
-          440
-        ],
-        [
-          1300,
-          350
-        ]
-      ],
-      "hidden_zombies": 8,
-      "zombies": [
-        [
-          980,
-          365
-        ],
-        [
-          1170,
-          380
-        ],
-        [
-          1080,
-          430
-        ]
-      ],
+      "id": "house_a",
       "core": true,
-      "available": true
-    },
-    {
-      "id": "library",
+      "available": true,
       "food_cache": 3,
-      "name": "03 / LIBRARY",
+      "name": "Number 8",
       "rect": [
-        80,
+        320,
         680,
         560,
         400
       ],
       "building": [
-        180,
+        420,
         870,
         350,
         155
       ],
       "gate": [
-        360,
+        600,
         680
       ],
       "site": [
-        360,
+        600,
         800
       ],
       "post": [
-        360,
+        600,
         710
       ],
       "neighbors": [
-        "home",
-        "garage"
+        "munitions",
+        "hardware",
+        "clinic"
       ],
-      "reward": "Rescue Paige",
+      "reward": "Household supplies",
       "reinforcements": [
         [
-          150,
+          510,
           760
         ],
         [
-          220,
-          820
+          680,
+          760
         ],
         [
-          500,
-          820
-        ],
-        [
-          570,
-          750
+          600,
+          830
         ]
       ],
-      "hidden_zombies": 8,
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 12,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 8 searched."
+      }
+    },
+    {
+      "id": "munitions",
+      "food_cache": 4,
+      "name": "06 / AMMUNITION WORKSHOP",
+      "rect": [
+        1040,
+        680,
+        560,
+        400
+      ],
+      "building": [
+        1140,
+        870,
+        350,
+        155
+      ],
+      "gate": [
+        1320,
+        680
+      ],
+      "site": [
+        1320,
+        800
+      ],
+      "post": [
+        1320,
+        710
+      ],
+      "neighbors": [
+        "house_a",
+        "garage",
+        "residence",
+        "greenhouse"
+      ],
+      "reward": "Bullet crafting",
+      "reinforcements": [],
+      "hidden_zombies": 0,
       "zombies": [
         [
-          260,
+          1230,
           760
         ],
         [
-          460,
-          780
+          1400,
+          760
         ],
         [
-          360,
-          735
+          1320,
+          830
+        ],
+        [
+          1460,
+          820
         ]
       ],
       "core": true,
@@ -184,77 +348,78 @@
       "food_cache": 2,
       "name": "04 / GARAGE",
       "rect": [
-        800,
+        1760,
         680,
         560,
         400
       ],
       "building": [
-        900,
+        1860,
         870,
         350,
         155
       ],
       "gate": [
-        1080,
+        2040,
         680
       ],
       "site": [
-        1080,
+        2040,
         800
       ],
       "post": [
-        1080,
+        2040,
         710
       ],
       "neighbors": [
-        "garden",
+        "munitions",
         "library",
-        "munitions"
+        "garden",
+        "house_c"
       ],
       "reward": "Tools and armour cache",
       "reinforcements": [
         [
-          870,
+          1830,
           750
         ],
         [
-          940,
+          1900,
           820
         ],
         [
-          1260,
+          2220,
           750
         ],
         [
-          1300,
+          2260,
           830
         ],
         [
-          1080,
+          2040,
           730
         ],
         [
-          1190,
+          2150,
           820
         ]
       ],
       "hidden_zombies": 10,
       "zombies": [
         [
-          990,
+          1950,
           760
         ],
         [
-          1160,
+          2120,
           760
         ],
         [
-          1080,
+          2040,
           830
         ],
         [
-          1220,
+          2180,
           820
         ]
       ],
@@ -262,114 +427,560 @@
       "available": true
     },
     {
-      "id": "residence",
-      "food_cache": 4,
-      "name": "05 / EAST HOUSE",
+      "id": "library",
+      "food_cache": 3,
+      "name": "03 / LIBRARY",
       "rect": [
-        1520,
-        80,
-        560,
-        400
-      ],
-      "building": [
-        1620,
-        150,
-        350,
-        155
-      ],
-      "gate": [
-        1800,
-        480
-      ],
-      "site": [
-        1800,
-        350
-      ],
-      "post": [
-        1800,
-        452
-      ],
-      "neighbors": [
-        "munitions",
-        "garden",
-        "hardware"
-      ],
-      "reward": "A survivor and a pistol",
-      "reinforcements": [],
-      "hidden_zombies": 0,
-      "zombies": [
-        [
-          1700,
-          365
-        ],
-        [
-          1890,
-          380
-        ],
-        [
-          1800,
-          430
-        ]
-      ],
-      "core": true,
-      "available": true
-    },
-    {
-      "id": "munitions",
-      "food_cache": 4,
-      "name": "06 / AMMUNITION WORKSHOP",
-      "rect": [
-        1520,
+        2480,
         680,
         560,
         400
       ],
       "building": [
-        1620,
+        2580,
         870,
         350,
         155
       ],
       "gate": [
-        1800,
+        2760,
         680
       ],
       "site": [
-        1800,
+        2760,
         800
       ],
       "post": [
-        1800,
+        2760,
         710
       ],
       "neighbors": [
-        "residence",
         "garage",
-        "house_a"
+        "home",
+        "house_d"
       ],
-      "reward": "Bullet crafting",
-      "reinforcements": [],
-      "hidden_zombies": 0,
+      "reward": "Rescue Paige",
+      "reinforcements": [
+        [
+          2550,
+          760
+        ],
+        [
+          2620,
+          820
+        ],
+        [
+          2900,
+          820
+        ],
+        [
+          2970,
+          750
+        ]
+      ],
+      "hidden_zombies": 8,
       "zombies": [
         [
-          1710,
+          2660,
           760
         ],
         [
-          1880,
-          760
+          2860,
+          780
         ],
         [
-          1800,
-          830
-        ],
-        [
-          1940,
-          820
+          2760,
+          735
         ]
       ],
       "core": true,
       "available": true
+    },
+    {
+      "id": "clinic",
+      "resident_kinds": [
+        "screecher",
+        "shambler",
+        "shambler"
+      ],
+      "core": true,
+      "available": true,
+      "food_cache": 4,
+      "name": "Clinic",
+      "rect": [
+        320,
+        1100,
+        560,
+        400
+      ],
+      "building": [
+        420,
+        1170,
+        350,
+        155
+      ],
+      "gate": [
+        600,
+        1500
+      ],
+      "site": [
+        600,
+        1370
+      ],
+      "post": [
+        600,
+        1472
+      ],
+      "neighbors": [
+        "greenhouse",
+        "house_e",
+        "house_a"
+      ],
+      "reward": "Medical supplies and a survivor",
+      "reinforcements": [
+        [
+          450,
+          1375
+        ],
+        [
+          670,
+          1405
+        ],
+        [
+          790,
+          1450
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 12,
+        "medicine": 12,
+        "survivor": "june",
+        "line": "Medical supplies recovered."
+      }
+    },
+    {
+      "id": "greenhouse",
+      "resident_kinds": [
+        "runner",
+        "shambler",
+        "shambler"
+      ],
+      "core": true,
+      "available": true,
+      "food_cache": 8,
+      "name": "Greenhouse",
+      "rect": [
+        1040,
+        1100,
+        560,
+        400
+      ],
+      "building": [
+        1140,
+        1170,
+        350,
+        155
+      ],
+      "gate": [
+        1320,
+        1500
+      ],
+      "site": [
+        1320,
+        1370
+      ],
+      "post": [
+        1320,
+        1472
+      ],
+      "neighbors": [
+        "clinic",
+        "house_c",
+        "house_b",
+        "munitions"
+      ],
+      "reward": "Growing kit and a survivor",
+      "reinforcements": [
+        [
+          1170,
+          1375
+        ],
+        [
+          1390,
+          1405
+        ],
+        [
+          1510,
+          1450
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 16,
+        "medicine": 0,
+        "survivor": "oliver",
+        "line": "Growing kit and food recovered."
+      }
+    },
+    {
+      "id": "house_c",
+      "core": false,
+      "available": true,
+      "food_cache": 3,
+      "name": "Number 12",
+      "rect": [
+        1760,
+        1100,
+        560,
+        400
+      ],
+      "building": [
+        1860,
+        1170,
+        350,
+        155
+      ],
+      "gate": [
+        2040,
+        1500
+      ],
+      "site": [
+        2040,
+        1370
+      ],
+      "post": [
+        2040,
+        1472
+      ],
+      "neighbors": [
+        "greenhouse",
+        "house_d",
+        "house_f",
+        "garage"
+      ],
+      "reward": "Household supplies and spare timber",
+      "reinforcements": [
+        [
+          1890,
+          1375
+        ],
+        [
+          2140,
+          1405
+        ],
+        [
+          2240,
+          1450
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 16,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 12 searched."
+      }
+    },
+    {
+      "id": "house_d",
+      "core": false,
+      "available": true,
+      "food_cache": 3,
+      "name": "Corner house",
+      "rect": [
+        2480,
+        1100,
+        560,
+        400
+      ],
+      "building": [
+        2580,
+        1170,
+        350,
+        155
+      ],
+      "gate": [
+        2760,
+        1500
+      ],
+      "site": [
+        2760,
+        1370
+      ],
+      "post": [
+        2760,
+        1472
+      ],
+      "neighbors": [
+        "house_c",
+        "unfinished",
+        "library"
+      ],
+      "reward": "Household supplies and a clear view east",
+      "reinforcements": [
+        [
+          2610,
+          1375
+        ],
+        [
+          2860,
+          1405
+        ],
+        [
+          2960,
+          1450
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 18,
+        "medicine": 0,
+        "survivor": "",
+        "line": "The corner house searched."
+      }
+    },
+    {
+      "id": "house_e",
+      "name": "Number 14",
+      "reward": "Household supplies",
+      "food_cache": 3,
+      "search": {
+        "materials": 12,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 14 searched."
+      },
+      "rect": [
+        320,
+        1700,
+        560,
+        400
+      ],
+      "building": [
+        420,
+        1890,
+        350,
+        155
+      ],
+      "gate": [
+        600,
+        1700
+      ],
+      "site": [
+        600,
+        1820
+      ],
+      "post": [
+        600,
+        1730
+      ],
+      "reinforcements": [
+        [
+          510,
+          1780
+        ],
+        [
+          680,
+          1780
+        ],
+        [
+          600,
+          1850
+        ]
+      ],
+      "zombies": [],
+      "hidden_zombies": 0,
+      "core": false,
+      "available": true,
+      "neighbors": [
+        "house_b",
+        "clinic"
+      ]
+    },
+    {
+      "id": "house_b",
+      "core": false,
+      "available": true,
+      "food_cache": 3,
+      "name": "Number 10",
+      "rect": [
+        1040,
+        1700,
+        560,
+        400
+      ],
+      "building": [
+        1140,
+        1890,
+        350,
+        155
+      ],
+      "gate": [
+        1320,
+        1700
+      ],
+      "site": [
+        1320,
+        1820
+      ],
+      "post": [
+        1320,
+        1730
+      ],
+      "neighbors": [
+        "house_e",
+        "house_f",
+        "greenhouse"
+      ],
+      "reward": "Household supplies",
+      "reinforcements": [
+        [
+          1230,
+          1780
+        ],
+        [
+          1400,
+          1780
+        ],
+        [
+          1320,
+          1850
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 12,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 10 searched."
+      }
+    },
+    {
+      "id": "house_f",
+      "name": "Number 16",
+      "reward": "Household supplies",
+      "food_cache": 3,
+      "search": {
+        "materials": 14,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 16 searched."
+      },
+      "rect": [
+        1760,
+        1700,
+        560,
+        400
+      ],
+      "building": [
+        1860,
+        1890,
+        350,
+        155
+      ],
+      "gate": [
+        2040,
+        1700
+      ],
+      "site": [
+        2040,
+        1820
+      ],
+      "post": [
+        2040,
+        1730
+      ],
+      "reinforcements": [
+        [
+          1950,
+          1780
+        ],
+        [
+          2120,
+          1780
+        ],
+        [
+          2040,
+          1850
+        ]
+      ],
+      "zombies": [],
+      "hidden_zombies": 0,
+      "core": false,
+      "available": true,
+      "neighbors": [
+        "house_b",
+        "unfinished",
+        "house_c"
+      ]
+    },
+    {
+      "id": "unfinished",
+      "core": false,
+      "available": true,
+      "food_cache": 0,
+      "name": "Half-built house",
+      "rect": [
+        2480,
+        1700,
+        560,
+        400
+      ],
+      "building": [
+        2580,
+        1890,
+        350,
+        155
+      ],
+      "gate": [
+        2760,
+        1700
+      ],
+      "site": [
+        2760,
+        1820
+      ],
+      "post": [
+        2760,
+        1730
+      ],
+      "neighbors": [
+        "house_f",
+        "house_d"
+      ],
+      "reward": "Stacked building materials",
+      "reinforcements": [
+        [
+          2670,
+          1780
+        ],
+        [
+          2840,
+          1780
+        ],
+        [
+          2760,
+          1850
+        ],
+        [
+          2950,
+          1950
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 48,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Building materials recovered from the half-built house."
+      }
     }
   ]
 }

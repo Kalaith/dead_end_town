@@ -32,7 +32,7 @@ func rebuild(definitions: Array, properties: Dictionary, size: Vector2, defences
 		var gate_top: bool = gate.y == rect.position.y
 		var fence_y: float = rect.position.y if gate_top else rect.end.y - 8
 		var back_y: float = rect.end.y - 8 if gate_top else rect.position.y
-		walls.append(Rect2(rect.position.x, back_y, rect.size.x, 8))
+		_side_wall(Rect2(rect.position.x, back_y, rect.size.x, 8), openings)
 		walls.append(Rect2(rect.position.x, fence_y, gate.x - 44 - rect.position.x, 8))
 		walls.append(Rect2(gate.x + 44, fence_y, rect.end.x - gate.x - 44, 8))
 		if not properties[p.id].open and float(properties[p.id].gate_hp) > 0:
@@ -110,11 +110,17 @@ func line_clear(from: Vector2, to: Vector2, over_low_barriers: bool = false) -> 
 	return true
 
 
+## Adds a fence run, cut along its length where a passage opening crosses it. Side fences run
+## north-south and back fences east-west, so a passage can join lots either beside or behind each other.
 func _side_wall(rect: Rect2, openings: Array[Rect2]) -> void:
 	for opening: Rect2 in openings:
 		if rect.intersects(opening):
-			walls.append(Rect2(rect.position, Vector2(rect.size.x, opening.position.y - rect.position.y)))
-			walls.append(Rect2(rect.position.x, opening.end.y, rect.size.x, rect.end.y - opening.end.y))
+			if rect.size.y >= rect.size.x:
+				walls.append(Rect2(rect.position, Vector2(rect.size.x, opening.position.y - rect.position.y)))
+				walls.append(Rect2(rect.position.x, opening.end.y, rect.size.x, rect.end.y - opening.end.y))
+			else:
+				walls.append(Rect2(rect.position, Vector2(opening.position.x - rect.position.x, rect.size.y)))
+				walls.append(Rect2(opening.end.x, rect.position.y, rect.end.x - opening.end.x, rect.size.y))
 			return
 	walls.append(rect)
 

@@ -20,17 +20,51 @@ const TEAL := Color("9dceb3")
 const RUST := Color("d88c63")
 
 
-## Streets are authored rectangles; roads get kerbs and a centre line, alleys stay plain.
-func _street(rect: Rect2, road: bool) -> void:
-	if not rect.intersects(visible_world):
-		return
-	draw_rect(rect, Color("353e3e") if road else Color("45473d"))
-	if not road:
-		return
-	draw_rect(Rect2(rect.position, Vector2(rect.size.x, 7)), Color("7b8174"))
-	draw_rect(Rect2(rect.position + Vector2(0, rect.size.y - 7), Vector2(rect.size.x, 7)), Color("7b8174"))
-	for x: int in range(int(rect.position.x), int(rect.end.x), 100):
-		draw_rect(Rect2(x + 10, rect.get_center().y - 3, 50, 5), Color("ada47b"))
+## Streets are authored rectangles. Alleys are plain, roads get kerbs and a centre line, and a plaza is a round
+## junction with a planted island. Kerbs go down first so where roads meet they join without a wall line.
+func _streets() -> void:
+	var roads: Array[Rect2] = []
+	var plazas: Array[Rect2] = []
+	for street: Dictionary in world.catalog.town.streets:
+		var rect: Rect2 = Routes.rectangle(street.rect)
+		if not rect.intersects(visible_world):
+			continue
+		if street.kind == "alley":
+			draw_rect(rect, Color("45473d"))
+		elif street.kind == "road":
+			roads.append(rect)
+		else:
+			plazas.append(rect)
+	for rect: Rect2 in roads:
+		draw_rect(rect, Color("7b8174"))
+	for rect: Rect2 in roads:
+		draw_rect(rect.grow(-7), Color("353e3e"))
+	for rect: Rect2 in plazas:
+		_plaza(rect)
+	for rect: Rect2 in roads:
+		if rect.size.x >= rect.size.y:
+			for x: int in range(int(rect.position.x), int(rect.end.x) - 70, 100):
+				_dash(Rect2(x + 10, rect.get_center().y - 3, 50, 5), plazas)
+		else:
+			for y: int in range(int(rect.position.y), int(rect.end.y) - 70, 100):
+				_dash(Rect2(rect.get_center().x - 3, y + 10, 5, 50), plazas)
+
+
+## Centre-line paint stops at a plaza instead of crossing its planted island.
+func _dash(dash: Rect2, plazas: Array[Rect2]) -> void:
+	for plaza: Rect2 in plazas:
+		if plaza.get_center().distance_to(dash.get_center()) < minf(plaza.size.x, plaza.size.y) / 2.0:
+			return
+	draw_rect(dash, Color("ada47b"))
+
+
+func _plaza(rect: Rect2) -> void:
+	var centre: Vector2 = rect.get_center()
+	var radius: float = minf(rect.size.x, rect.size.y) / 2.0
+	draw_circle(centre, radius, Color("7b8174"))
+	draw_circle(centre, radius - 7, Color("353e3e"))
+	draw_circle(centre, radius * 0.45, Color("7b8174"))
+	draw_circle(centre, radius * 0.45 - 7, Color("3b5a43"))
 
 
 func _draw() -> void:
@@ -44,8 +78,7 @@ func _draw() -> void:
 		for y: int in range(maxi(0, floori(visible_world.position.y / 32) * 32), mini(height, ceili(visible_world.end.y / 32) * 32), 32):
 			var shade: float = float((x * 7 + y * 13) % 23) / 300.0
 			draw_rect(Rect2(x + 2, y + 2, 28, 28), Color(0.16 + shade, 0.22 + shade, 0.18 + shade))
-	for street: Dictionary in world.catalog.town.streets:
-		_street(Routes.rectangle(street.rect), street.kind == "road")
+	_streets()
 	for p: Dictionary in world.catalog.properties:
 		if Routes.rectangle(p.rect).grow(100).intersects(visible_world):
 			_property(p)
@@ -160,7 +193,15 @@ func _fence(rect: Rect2, gate: Vector2, state: Dictionary, accent: Color) -> voi
 			draw_line(Vector2(rect.position.x, y), Vector2(gate.x - 44, y), Color("968168"), 7)
 			draw_line(Vector2(gate.x + 44, y), Vector2(rect.end.x, y), Color("968168"), 7)
 		else:
-			draw_line(Vector2(rect.position.x, y), Vector2(rect.end.x, y), Color("968168"), 7)
+			var cut := Rect2()
+			for area: Rect2 in Neighbourhood.openings(world):
+				if area.intersects(Rect2(rect.position.x, y - 8, rect.size.x, 16)):
+					cut = area
+			if cut.has_area():
+				draw_line(Vector2(rect.position.x, y), Vector2(cut.position.x, y), Color("968168"), 7)
+				draw_line(Vector2(cut.end.x, y), Vector2(rect.end.x, y), Color("968168"), 7)
+			else:
+				draw_line(Vector2(rect.position.x, y), Vector2(rect.end.x, y), Color("968168"), 7)
 	for x: float in [rect.position.x, rect.end.x]:
 		var opening := Rect2()
 		for area: Rect2 in Neighbourhood.openings(world):
