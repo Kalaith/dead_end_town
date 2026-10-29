@@ -26,7 +26,7 @@ static func nearby(world: RefCounted) -> Dictionary:
 
 
 static func clear(world: RefCounted, a: Dictionary) -> bool:
-	return not Combat.danger(world, a.pos, 170) and not Combat.danger(world, world.player.pos, 170)
+	return not Combat.danger(world, a.pos, 60) and not Combat.danger(world, world.player.pos, 60)
 
 
 static func press(world: RefCounted) -> bool:
@@ -109,6 +109,8 @@ static func context(world: RefCounted) -> String:
 	var a: Dictionary = nearby(world)
 	if a.is_empty():
 		return ""
+	if not clear(world, a):
+		return "Zombie too close to lift " + str(a.name)
 	if float(world.carry.progress) > 0:
 		return "Carry %s · %d%%" % [a.name, int(100 * float(world.carry.progress) / float(world.balance.carry_seconds))]
 	return "Hold E Carry " + str(a.name)

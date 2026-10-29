@@ -1,5 +1,6 @@
 extends RefCounted
 const Screecher = preload("res://scripts/sim/screecher.gd")
+const Spitter = preload("res://scripts/sim/spitter.gd")
 const Facility = preload("res://scripts/sim/facility.gd")
 const Acoustics = preload("res://scripts/sim/noise.gd")
 const Runner = preload("res://scripts/sim/runner.gd")
@@ -47,6 +48,7 @@ static func strike(world: RefCounted, attacker: Dictionary, direction: Vector2) 
 		target.flash = 0.18
 		Runner.interrupt(world, target)
 		Screecher.interrupt(world, target)
+		Spitter.interrupt(world, target)
 		target.cooldown = maxf(float(target.cooldown), 0.45)
 		target.pos = world.routes.move(target.pos, target.pos + direction * float(weapon.knockback), float(weapon.knockback))
 	if not candidates.is_empty():
@@ -68,6 +70,7 @@ static func step(world: RefCounted, dt: float) -> void:
 			_zombie(world, z, dt)
 			if float(world.player.hp) <= 0:
 				return
+	Spitter.advance(world, dt)
 	Raiding.sweep(world)
 
 
@@ -89,6 +92,12 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 			target = z
 			best = distance
 	if not target.is_empty():
+		# A badly hurt fighter gives ground instead of trading blows to the knockout.
+		if float(a.hp) < float(world.balance.survivor_health) * 0.4 and best < 90:
+			a.activity = "Falling back"
+			var retreat: Vector2 = a.pos + target.pos.direction_to(a.pos) * 120.0
+			_walk(world, a, retreat if world.routes.walkable(retreat) else Routes.point(world.balance.home_respawn), dt, _survivor_speed(world, a))
+			return
 		a.activity = "Defending"
 		if best < float(Equipment.stats(world, a).reach):
 			strike(world, a, a.pos.direction_to(target.pos))
@@ -105,6 +114,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				z.flash = 0.18
 				Runner.interrupt(world, z)
 				Screecher.interrupt(world, z)
+				Spitter.interrupt(world, z)
 				Acoustics.emit(world, a.id, "impact", a.pos)
 				a.swing = 0.18
 				a.facing = a.pos.direction_to(z.pos)
@@ -178,7 +188,7 @@ static func _walk(world: RefCounted, a: Dictionary, target: Vector2, dt: float, 
 static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 	# Nearby living people override wandering, even during an unfinished roam heading.
 	var target: Dictionary = {}
-	var best: float = float(world.balance.zombie_notice_range)
+	var best: float = float(ZombieTypes.kind(world.catalog, z).get("notice_range", world.balance.zombie_notice_range))
 	for a: Dictionary in [world.player] + world.survivors:
 		var distance: float = z.pos.distance_to(a.pos)
 		if float(a.hp) > 0 and (distance < best or (not target.is_empty() and distance == best and str(a.id) < str(target.id))):
@@ -191,6 +201,8 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 	if Runner.step(world, z, target, dt):
 		return
 	if Screecher.step(world, z, target, dt):
+		return
+	if Spitter.step(world, z, target, dt):
 		return
 	if not target.is_empty() and best < 29.0 and world.routes.line_clear(z.pos, target.pos) and float(z.cooldown) <= 0:
 		target.hp = maxf(0.0, float(target.hp) - incoming_damage(world, target, z.pos, z))
@@ -212,7 +224,7 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 				Raiding.step(world, z, dt)
 			else:
 				Wandering.step(world, z, dt)
-		else:
+		elif not Spitter.holds(world, z, target):
 			Wandering.advance(world, z, target.pos, dt)
 
 

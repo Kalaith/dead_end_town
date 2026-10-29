@@ -86,6 +86,7 @@ func _draw() -> void:
 	for p: Dictionary in world.catalog.properties:
 		if Routes.rectangle(p.rect).grow(100).intersects(visible_world):
 			_property(p)
+	_spits()
 	var shelter: Vector2 = Routes.point(world.balance.emergency_shelter)
 	draw_rect(Rect2(shelter + Vector2(-24, -54), Vector2(48, 14)), Color("394b4b"))
 	for x: int in [-18, 18]:
@@ -252,6 +253,8 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		_runner_tell(a)
 	if zombie and a.get("kind") == "screecher":
 		_screecher_tell(a)
+	if zombie and a.get("kind") == "spitter":
+		_spitter_tell(a)
 	if zombie and ZombieTypes.kind(world.catalog, a).get("boss", false):
 		_baboon(a)
 		return
@@ -271,6 +274,9 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		if a.screecher.phase == "inhale":
 			draw_line(pos + Vector2(-13, -11), pos + Vector2(-8, -30), CREAM, 4)
 			draw_line(pos + Vector2(13, -11), pos + Vector2(8, -30), CREAM, 4)
+	if zombie and a.get("kind") == "spitter":
+		draw_circle(pos + Vector2(0, -19), 7, Color("b8c95a"))
+		draw_arc(pos + Vector2(0, -19), 7, 0, TAU, 12, INK, 2)
 	if zombie and a.get("kind") == "runner":
 		# Narrow shoulders and a forward diagonal sash identify it without colour.
 		draw_line(pos + Vector2(-6, -22), pos + Vector2(6, -3), CREAM, 3)
@@ -410,6 +416,35 @@ func _screecher_tell(a: Dictionary) -> void:
 			var reach: float = 25 + maxf(0.0, progress - i * 0.15) * radius
 			draw_arc(a.pos, reach, 0, TAU, 64, CREAM, 2)
 		_text(a.pos + Vector2(-21, -57), "CALL", 13, CREAM)
+
+
+func _spitter_tell(a: Dictionary) -> void:
+	var state: Dictionary = a.spitter
+	if state.phase != "aim":
+		return
+	var config: Dictionary = world.catalog.zombies.types.spitter
+	var point := Vector2(float(state.tx), float(state.ty))
+	var progress: float = 1.0 - float(state.left) / float(config.spit_tell)
+	draw_arc(point, float(config.pool_radius), 0, TAU, 32, CREAM, 2)
+	draw_arc(point, float(config.pool_radius) * progress, 0, TAU, 32, CREAM, 3)
+	draw_line(point + Vector2(-8, 0), point + Vector2(8, 0), CREAM, 2)
+	draw_line(point + Vector2(0, -8), point + Vector2(0, 8), CREAM, 2)
+	_text(a.pos + Vector2(-20, -57), "AIM", 13, CREAM)
+
+
+func _spits() -> void:
+	var config: Dictionary = world.catalog.zombies.types.spitter
+	for s: Dictionary in world.spits:
+		var at := Vector2(float(s.x), float(s.y))
+		if s.t == "glob":
+			draw_circle(at, 6, Color("b8c95a"))
+			draw_arc(at, 6, 0, TAU, 12, INK, 2)
+		else:
+			var radius: float = float(config.pool_radius)
+			draw_circle(at, radius, Color(0.55, 0.65, 0.2, 0.35))
+			# Dashed edge keeps the hazard readable without colour.
+			for i: int in range(0, 16, 2):
+				draw_arc(at, radius, i * TAU / 16, (i + 1) * TAU / 16, 4, CREAM, 2)
 
 
 func _head(center: Vector2, direction: Vector2, zombie: bool) -> void:

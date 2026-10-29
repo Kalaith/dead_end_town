@@ -1,5 +1,6 @@
 extends RefCounted
 const ScreecherState = preload("res://scripts/core/screecher_state.gd")
+const SpitterState = preload("res://scripts/core/spitter_state.gd")
 const AttentionState = preload("res://scripts/core/attention_state.gd")
 const RunnerState = preload("res://scripts/core/runner_state.gd")
 const BossState = preload("res://scripts/core/boss_state.gd")
@@ -114,6 +115,7 @@ static func problems(data: Dictionary) -> Array[String]:
 	BossState.content(data, errors)
 	AttentionState.content(data, errors)
 	ScreecherState.content(data, errors)
+	SpitterState.content(data, errors)
 	if not rules.list(data, "properties", false):
 		return errors
 	var ids: Array = rules.unique_ids(data.properties)

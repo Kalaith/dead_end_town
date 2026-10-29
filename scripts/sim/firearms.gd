@@ -1,5 +1,6 @@
 extends RefCounted
 const Screecher = preload("res://scripts/sim/screecher.gd")
+const Spitter = preload("res://scripts/sim/spitter.gd")
 const Facility = preload("res://scripts/sim/facility.gd")
 const Acoustics = preload("res://scripts/sim/noise.gd")
 const Runner = preload("res://scripts/sim/runner.gd")
@@ -62,6 +63,7 @@ static func shoot(world: RefCounted) -> bool:
 		target.flash = 0.18
 		Runner.interrupt(world, target)
 		Screecher.interrupt(world, target)
+		Spitter.interrupt(world, target)
 		target.cooldown = maxf(float(target.cooldown), 0.45)
 		endpoint = origin + direction * nearest
 	world.shot = {"from": origin, "to": endpoint, "left": 0.12}

@@ -1,6 +1,7 @@
 extends RefCounted
 ## Finite warned events admit migrants at real edges with no overflow backlog.
 const Screecher = preload("res://scripts/sim/screecher.gd")
+const Spitter = preload("res://scripts/sim/spitter.gd")
 const Runner = preload("res://scripts/sim/runner.gd")
 const Plan = preload("res://scripts/sim/migration_plan.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
@@ -28,6 +29,8 @@ static func give_kind(catalog: Dictionary, z: Dictionary, kind: String) -> void:
 		z.runner = Runner.initial()
 	elif kind == "screecher":
 		z.screecher = Screecher.initial()
+	elif kind == "spitter":
+		z.spitter = Spitter.initial()
 
 
 static func claimed(world: RefCounted, id: String) -> void:

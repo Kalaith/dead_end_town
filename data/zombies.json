@@ -34,6 +34,26 @@
         "call_pulse": 1,
         "threat_cost": 3
       },
+      "spitter": {
+        "name": "Spitter",
+        "health": 85,
+        "speed": 35,
+        "damage": 6,
+        "cooldown": 1.5,
+        "breach": 0.5,
+        "notice_range": 340,
+        "spit_min": 140,
+        "spit_range": 340,
+        "spit_tell": 0.9,
+        "spit_retry": 3,
+        "spit_cooldown": 6,
+        "spit_speed": 240,
+        "spit_damage": 8,
+        "pool_radius": 42,
+        "pool_seconds": 4,
+        "pool_damage": 4,
+        "threat_cost": 3
+      },
       "runner": {
         "name": "Runner",
         "health": 45,

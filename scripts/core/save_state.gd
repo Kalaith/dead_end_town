@@ -1,5 +1,6 @@
 extends RefCounted
 const ScreecherState = preload("res://scripts/core/screecher_state.gd")
+const SpitterState = preload("res://scripts/core/spitter_state.gd")
 const Facility = preload("res://scripts/sim/facility.gd")
 const AttentionState = preload("res://scripts/core/attention_state.gd")
 const Acoustics = preload("res://scripts/sim/noise.gd")
@@ -186,7 +187,7 @@ func valid(data: Dictionary) -> bool:
 			return false
 		ids.append(a.id)
 	for z: Variant in data.zombies:
-		if not RunnerState.valid(z, catalog) or not ScreecherState.valid(z, catalog):
+		if not RunnerState.valid(z, catalog) or not ScreecherState.valid(z, catalog) or not SpitterState.valid(z, catalog):
 			return false
 		if not z.get("raid") is bool or not z.get("home") is String:
 			return false

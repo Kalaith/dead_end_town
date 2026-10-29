@@ -256,6 +256,14 @@
     {
       "id": "bank",
       "facility": "house",
+      "resident_kinds": [
+        "spitter",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler"
+      ],
       "core": false,
       "available": true,
       "food_cache": 3,

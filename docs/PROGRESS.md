@@ -171,3 +171,10 @@ User feedback: the suburb was still too easy. Every suburb lot now starts with t
 
 - Checked: catalog (all three areas 0 problems), save (new schema 39 case), pressure, boss, travel, ring, passages, rear-build, facilities, office and industrial checks pass. `check_rear_build` now clears the claimed lots' yards first, since the larger yards killed its stationary player.
 - Not checked: how the 248-resident street plays or performs in the running game, and whether the largest yards (garden, garage, library, now 28 to 32 residents) can be cleared at all; pass 9 found 14 already lost to a lone player.
+
+## 30 October 2026: survivor retreat, lifting under threat, and the Spitter
+
+- Survivors below 40% health with a zombie within 90 px now fall back (away from it, else to the home respawn) instead of fighting on. Lifting a downed person now needs no zombie within 60 px (was 170 of either party), and the prompt says "Zombie too close to lift <name>" instead of silently stalling.
+- New zombie kind `spitter` (85 health, notice 340 px): it stands at 140-340 px with a clear shot, aims 0.9 s at a committed point, and lobs a 240 px/s glob (8 damage) that leaves a 42 px pool lasting 4 s (4 damage per second, one shared one-second cooldown per person so pools never stack). Walls stop globs, low barriers do not; a hit during the aim cancels it with a 3 s retry. Drawn with an aim ring, dashed pool edge and a throat sac.
+- Office district: a resident Spitter in the Bank Branch teaches the kind; templates `lobby_spit` and `floor_spit`; special cap 2. New `tools/check_spitter.gd` (11 checks) passes; catalog, save, office, pressure, boss, travel, industrial and passage checks pass.
+- Not done: globs and pools are transient (not saved; a load drops any in flight). Armour fully halves pool damage but a shield does not reduce the direct hit (design says it should for the glob only; the code applies shield to the direct hit, which matches). Survivor guards do not step aside from pools, and workers do not flee marked areas. None of this has been played, and the retreat/lift changes have only been checked by the existing suites, not a dedicated test.

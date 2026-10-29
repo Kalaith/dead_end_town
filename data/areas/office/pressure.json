@@ -30,7 +30,8 @@
     "route_retry_seconds": 10,
     "special_caps": {
       "runner": 6,
-      "screecher": 4
+      "screecher": 4,
+      "spitter": 2
     },
     "bands": [
       {
@@ -123,6 +124,14 @@
       },
       {
         "band": 1,
+        "id": "lobby_spit",
+        "kinds": {
+          "shambler": 6,
+          "spitter": 1
+        }
+      },
+      {
+        "band": 1,
         "id": "lobby_pair",
         "kinds": {
           "shambler": 8,
@@ -136,6 +145,14 @@
           "shambler": 9,
           "screecher": 1,
           "runner": 2
+        }
+      },
+      {
+        "band": 2,
+        "id": "floor_spit",
+        "kinds": {
+          "shambler": 8,
+          "spitter": 2
         }
       },
       {
