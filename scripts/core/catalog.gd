@@ -28,7 +28,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 ## Shared files describe rules, people and equipment that travel between areas.
 const SHARED_FILES: Array[String] = ["street/attention.json", "street/recovery.json", "street/survivors.json", "street/work.json", "street/firearm.json", "street/balance.json", "street/equipment.json", "zombies.json"]
 ## Area files describe one map; each lives under data/areas/<id>/ and area.json supplies its bounds and start points.
-const AREA_FILES: Array[String] = ["area.json", "town.json", "pressure.json", "properties.json", "roads.json", "passages.json"]
+const AREA_FILES: Array[String] = ["area.json", "town.json", "pressure.json", "properties.json", "properties_additional.json", "roads.json", "passages.json"]
 const APPENDED_KEYS: Array[String] = ["properties", "barricades", "crossings", "passages"]
 
 

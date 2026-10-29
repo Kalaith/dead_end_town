@@ -1,0 +1,491 @@
+{
+  "schema_version": 1,
+  "properties": [
+    {
+      "id": "clinic",
+      "resident_kinds": [
+        "screecher",
+        "shambler",
+        "shambler"
+      ],
+      "core": true,
+      "available": true,
+      "food_cache": 4,
+      "name": "Clinic",
+      "rect": [
+        320,
+        1100,
+        560,
+        400
+      ],
+      "building": [
+        420,
+        1170,
+        350,
+        155
+      ],
+      "gate": [
+        600,
+        1500
+      ],
+      "site": [
+        600,
+        1370
+      ],
+      "post": [
+        600,
+        1472
+      ],
+      "neighbors": [
+        "greenhouse",
+        "house_e",
+        "house_a"
+      ],
+      "reward": "Medical supplies and a survivor",
+      "reinforcements": [
+        [
+          450,
+          1375
+        ],
+        [
+          670,
+          1405
+        ],
+        [
+          790,
+          1450
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 12,
+        "medicine": 12,
+        "survivor": "june",
+        "line": "Medical supplies recovered."
+      }
+    },
+    {
+      "id": "greenhouse",
+      "resident_kinds": [
+        "runner",
+        "shambler",
+        "shambler"
+      ],
+      "core": true,
+      "available": true,
+      "food_cache": 8,
+      "name": "Greenhouse",
+      "rect": [
+        1040,
+        1100,
+        560,
+        400
+      ],
+      "building": [
+        1140,
+        1170,
+        350,
+        155
+      ],
+      "gate": [
+        1320,
+        1500
+      ],
+      "site": [
+        1320,
+        1370
+      ],
+      "post": [
+        1320,
+        1472
+      ],
+      "neighbors": [
+        "clinic",
+        "house_c",
+        "house_b",
+        "munitions"
+      ],
+      "reward": "Growing kit and a survivor",
+      "reinforcements": [
+        [
+          1170,
+          1375
+        ],
+        [
+          1390,
+          1405
+        ],
+        [
+          1510,
+          1450
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 16,
+        "medicine": 0,
+        "survivor": "oliver",
+        "line": "Growing kit and food recovered."
+      }
+    },
+    {
+      "id": "house_c",
+      "core": false,
+      "available": true,
+      "food_cache": 3,
+      "name": "Number 12",
+      "rect": [
+        1760,
+        1100,
+        560,
+        400
+      ],
+      "building": [
+        1860,
+        1170,
+        350,
+        155
+      ],
+      "gate": [
+        2040,
+        1500
+      ],
+      "site": [
+        2040,
+        1370
+      ],
+      "post": [
+        2040,
+        1472
+      ],
+      "neighbors": [
+        "greenhouse",
+        "house_d",
+        "house_f",
+        "garage"
+      ],
+      "reward": "Household supplies and spare timber",
+      "reinforcements": [
+        [
+          1890,
+          1375
+        ],
+        [
+          2140,
+          1405
+        ],
+        [
+          2240,
+          1450
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 16,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 12 searched."
+      }
+    },
+    {
+      "id": "house_d",
+      "core": false,
+      "available": true,
+      "food_cache": 3,
+      "name": "Corner house",
+      "rect": [
+        2480,
+        1100,
+        560,
+        400
+      ],
+      "building": [
+        2580,
+        1170,
+        350,
+        155
+      ],
+      "gate": [
+        2760,
+        1500
+      ],
+      "site": [
+        2760,
+        1370
+      ],
+      "post": [
+        2760,
+        1472
+      ],
+      "neighbors": [
+        "house_c",
+        "unfinished",
+        "library"
+      ],
+      "reward": "Household supplies and a clear view east",
+      "reinforcements": [
+        [
+          2610,
+          1375
+        ],
+        [
+          2860,
+          1405
+        ],
+        [
+          2960,
+          1450
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 18,
+        "medicine": 0,
+        "survivor": "",
+        "line": "The corner house searched."
+      }
+    },
+    {
+      "id": "house_e",
+      "name": "Number 14",
+      "reward": "Household supplies",
+      "food_cache": 3,
+      "search": {
+        "materials": 12,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 14 searched."
+      },
+      "rect": [
+        320,
+        1700,
+        560,
+        400
+      ],
+      "building": [
+        420,
+        1890,
+        350,
+        155
+      ],
+      "gate": [
+        600,
+        1700
+      ],
+      "site": [
+        600,
+        1820
+      ],
+      "post": [
+        600,
+        1730
+      ],
+      "reinforcements": [
+        [
+          510,
+          1780
+        ],
+        [
+          680,
+          1780
+        ],
+        [
+          600,
+          1850
+        ]
+      ],
+      "zombies": [],
+      "hidden_zombies": 0,
+      "core": false,
+      "available": true,
+      "neighbors": [
+        "house_b",
+        "clinic"
+      ]
+    },
+    {
+      "id": "house_b",
+      "core": false,
+      "available": true,
+      "food_cache": 3,
+      "name": "Number 10",
+      "rect": [
+        1040,
+        1700,
+        560,
+        400
+      ],
+      "building": [
+        1140,
+        1890,
+        350,
+        155
+      ],
+      "gate": [
+        1320,
+        1700
+      ],
+      "site": [
+        1320,
+        1820
+      ],
+      "post": [
+        1320,
+        1730
+      ],
+      "neighbors": [
+        "house_e",
+        "house_f",
+        "greenhouse"
+      ],
+      "reward": "Household supplies",
+      "reinforcements": [
+        [
+          1230,
+          1780
+        ],
+        [
+          1400,
+          1780
+        ],
+        [
+          1320,
+          1850
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 12,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 10 searched."
+      }
+    },
+    {
+      "id": "house_f",
+      "name": "Number 16",
+      "reward": "Household supplies",
+      "food_cache": 3,
+      "search": {
+        "materials": 14,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 16 searched."
+      },
+      "rect": [
+        1760,
+        1700,
+        560,
+        400
+      ],
+      "building": [
+        1860,
+        1890,
+        350,
+        155
+      ],
+      "gate": [
+        2040,
+        1700
+      ],
+      "site": [
+        2040,
+        1820
+      ],
+      "post": [
+        2040,
+        1730
+      ],
+      "reinforcements": [
+        [
+          1950,
+          1780
+        ],
+        [
+          2120,
+          1780
+        ],
+        [
+          2040,
+          1850
+        ]
+      ],
+      "zombies": [],
+      "hidden_zombies": 0,
+      "core": false,
+      "available": true,
+      "neighbors": [
+        "house_b",
+        "unfinished",
+        "house_c"
+      ]
+    },
+    {
+      "id": "unfinished",
+      "core": false,
+      "available": true,
+      "food_cache": 0,
+      "name": "Half-built house",
+      "rect": [
+        2480,
+        1700,
+        560,
+        400
+      ],
+      "building": [
+        2580,
+        1890,
+        350,
+        155
+      ],
+      "gate": [
+        2760,
+        1700
+      ],
+      "site": [
+        2760,
+        1820
+      ],
+      "post": [
+        2760,
+        1730
+      ],
+      "neighbors": [
+        "house_f",
+        "house_d"
+      ],
+      "reward": "Stacked building materials",
+      "reinforcements": [
+        [
+          2670,
+          1780
+        ],
+        [
+          2840,
+          1780
+        ],
+        [
+          2760,
+          1850
+        ],
+        [
+          2950,
+          1950
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 48,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Building materials recovered from the half-built house."
+      }
+    }
+  ]
+}
