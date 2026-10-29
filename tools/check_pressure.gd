@@ -33,6 +33,10 @@ func _init() -> void:
 		if admitted.size() == 1 and spawn == Vector2.ZERO:
 			spawn = admitted[0].pos
 	_expect("zombies are admitted within ten minutes", admitted.size() >= 3)
+	var finish: float = world.elapsed + 60.0
+	while world.elapsed < finish and world.pressure.last.is_empty():
+		world.step(0.1)
+	_expect("the first event enters whole, not thinned by spawn overlap", not world.pressure.last.is_empty() and int(world.pressure.last.skipped) == 0)
 	if admitted.size() >= 3:
 		_expect("admitted at the bridge entry", spawn.distance_to(entry) < 120.0)
 		var start: float = spawn.distance_to(Routes.point(world.catalog.balance.player_start))

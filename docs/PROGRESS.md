@@ -96,3 +96,10 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 
 - Scratch simulation, 15 minutes after the first claim with the player kept alive at home: four waves entered at the bridge and walked past the baboon's post up the west road (6 of 8 living raiders were beyond it at the end); the baboon never left its post (drift 0) and its health was untouched, so raiders and the boss ignore each other as intended. Not kept as a check, since there is nothing to assert beyond "no drift".
 - Observation: living raider counts (2-8) are well under each band's budget (5-8 at band 0), so something removes or skips raiders before they arrive (spawn overlap skips, Mara fighting, or both). Worth reading `event.skipped` when tuning pressure.
+
+## 29 October 2026: review pass 5 (spawn overlap thinned every wave)
+
+- Cause of the short waves: raiders entering at the bridge walk east along the spur beside lot house_e, straight into the next spawn slot half a second later, and a slot within 22 pixels of a living zombie is skipped. Waves lost 3-5 of their 5-8 raiders (`last.skipped`).
+- Fix: `entry_seconds` 0.5 -> 1.2 in the suburb's `pressure.json`. Over 15 simulated minutes the four waves now admit 5-6 each and skip 0-2 (was 2-3 admitted, 3-5 skipped). `tools/check_pressure.gd` asserts the first event skips nothing.
+- Consequence for tuning: the suburb now receives the full authored budget, so it is harder than it was; with the player idle, 21 raiders were alive after 15 minutes. Band numbers were authored for the old layout and have not been balanced against play.
+- Still open: why raiders at the bridge head east along a dead-end spur before turning back (a path-target question for `raiding.gd`), and everything that needs real play.

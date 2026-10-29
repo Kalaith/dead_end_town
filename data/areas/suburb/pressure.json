@@ -26,7 +26,7 @@
     "first_seconds": 180,
     "first_claim_grace": 60,
     "calm_seconds": 90,
-    "entry_seconds": 0.5,
+    "entry_seconds": 1.2,
     "route_retry_seconds": 10,
     "special_caps": {
       "runner": 4,
