@@ -79,7 +79,7 @@ Claim, occupation and loss; safe connection and production; work orders; economy
 
 ## Open points
 
-- The baboon's tells, attacks, phases and health.
+- The baboon's phases and final balance (first-pass charge, health and leash are in [14](14-zombie-catalogue.md)).
 - Why the player returns to earlier areas, and whether an area changes while they are away.
 - Fate of the 15 shell lots (currently dropped) and the survivors not yet implemented (Theo, Nia, Rowan): assign them to areas 2 and 3.
 - Carry-over cap for stock.

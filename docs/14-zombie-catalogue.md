@@ -85,6 +85,16 @@ After a charge, recover for 2.5 seconds; damage received is ×1.5 during recover
 
 Counters: leave the lane, hit its exposed recovery, focus from two angles, retreat behind a reinforced line with a second line behind it. It may breach one ordinary barricade that was already damaged, but cannot erase an entire corridor in one collision sweep. Defeating one grants no repeatable rare loot; access to the site is the reward.
 
+## Undead baboon: area boss (first pass)
+
+Purpose: the suburb's gate. One authored monster that holds the bridge road and is fought where it stands, not survived as a wave. It never appears in a migration template (threat cost is the budget maximum, 20, only to satisfy validation). Health 700, speed 70, contact damage 26 / 1.5 s, structure multiplier 3.0. Large, hunched, dark-furred, with a long muzzle toward its facing and an always-visible health bar.
+
+It charges like a heavy Runner: within 220 pixels with a clear line it plants for a 1.1-second tell (drawn lane), dashes up to 260 pixels at 420 pixels/second, then recovers for 1.8 seconds with no contact damage, and cannot charge again for 5 seconds. Ordinary hits do not cancel the tell or dash (`uninterruptible`); a collision with a person, zombie or wall still ends it, which is the counter: sidestep the lane, or put a body or the shield in it.
+
+It stays within a 320-pixel leash of its post and walks back when nothing in the leash is noticed. It ignores sounds. Two resident Shambler escorts stand by it. Its death is permanent, opens the exit and is saved (position, health and charge phase).
+
+Not yet tuned against play: the numbers are a first pass, and bare-handed the fight is expected to be lost. Further phases or attacks are open.
+
 ## Behaviour combinations and limits
 
 | Situation | Good composition | Prohibited default |
