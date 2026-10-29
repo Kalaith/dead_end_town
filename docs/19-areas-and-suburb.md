@@ -77,6 +77,18 @@ Claim, occupation and loss; safe connection and production; work orders; economy
 | Slice watch and relief signal | Retired and replaced by the boss. The radio and relief-plan story fragments may become the thread that sends the player to area 2. |
 | Save | New schema wraps existing state as area 1 plus a per-area state registry and the current area id. Older saves migrate to the suburb as far as their data fits; unmapped lots are reported, not silently dropped. |
 
+## Prerequisite for area 2: facility ids
+
+Measured on 29 October 2026: about 300 references to the first area's lot ids (`home`, `garden`, `library`, `garage`, `clinic`, `greenhouse`, `munitions`, `residence`, `hardware`) across about 50 scripts, concentrated in `world.gd`, `tasks.gd`, `save_state.gd` and `jobs.gd`. Facilities (food garden, clinic, greenhouse, workshop, ammunition bench), survivor recruitment sites and equipment unlocks are bound to those lots, and the save validators require them. A second area with different lots cannot load until this is resolved.
+
+Options, not yet chosen:
+
+1. **Same vocabulary.** Every area defines the same facility ids (some may be unavailable or hidden). Cheapest, and areas 2 and 3 stay property-driven, but their maps must be shaped around a garden, clinic and so on.
+2. **Facilities as data.** Each lot declares `facility: garden | clinic | ...` in its JSON and code looks facilities up by kind. The right long-term shape, but a large refactor of the files above and a save migration.
+3. **Carried community only.** Areas 2 and 3 use a reduced model (claim, defend, scavenge) while facilities and unlocks stay with the community through `unlocks`. Least work, but a different game loop per area.
+
+Already done toward this: unlocks (gear, firearm) and the roster no longer depend on the first area's flags once the player has travelled.
+
 ## Open points
 
 - The baboon's phases and final balance (first-pass charge, health and leash are in [14](14-zombie-catalogue.md)).

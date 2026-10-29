@@ -82,3 +82,7 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 - `slice_state` stays in the world and save as an inert record (phase stays "preparing") so schemas and old saves are unchanged; `catalog.slice` data is unused. Removing both is a later clean-up.
 - Checked: scripts load, catalog, save, pressure, boss and travel checks pass; the pause menu renders without the button (`docs/verification/street_start.png`). Not checked: the objective text in each state in play.
 - Remaining review items: second-area generalisation (step 9 prerequisite), pressure tuning, real play of the baboon fight and an unwalked ring.
+
+## 29 October 2026: review pass 2 (area 2 prerequisite)
+
+- Measured the first area's hard-coded lot ids (about 300 references in about 50 scripts) and wrote up three options in `19-areas-and-suburb.md` ("Prerequisite for area 2"). No code changed: the choice shapes areas 2 and 3 and is the user's to make, so step 9 waits on it.
