@@ -227,3 +227,9 @@ Delivery steps 1-10 in `19-areas-and-suburb.md` are all done; only step 11 (play
 - `tools/capture_carry.gd` (run with `Capture.ps1 -Tour`) stages a downed Mara, lifts her with a real E event, walks to the porch and drops her; frames in `docs/verification/carry_*.png`. The prompt, the teal drop-off ring and dashed guide, the DOWN ring and the casualty roll all read correctly.
 - Found by looking: the roll had literal line breaks in its source (a blank line under CASUALTIES); fixed. Also, `Input.action_press` alone never starts a lift because the game reads the press as an event: captures send an `InputEventAction`.
 - Not checked: hurt-but-standing rings, several casualties at once, a rescue carried by another survivor, the map view.
+
+## 30 October 2026: van, Spitter and ending seen in the running game
+
+- `tools/capture_late.gd` stages the office van (parked, boarded and driven), a resident Spitter, and the ending screen in the works; frames `van_*`, `spitter_*`, `ending_screen` in `docs/verification/`. The van is drawn as a small box, boards with E and shows its prompt and hull; the Spitter's glob is drawn; the ending panel shows the closing line and its two buttons.
+- Not seen: the van's handling over distance, a Spitter pool landing on a person, and the ending after a real run (the staged panel reads "0 minutes"). The ending menu reads `exit.line`, which only the works' exit has: it must stay set only by the final gate.
+- Areas' entrances, bosses and home streets were already captured (`office_*`, `works_*`); a full play-through of each area by a person is still outstanding.
