@@ -41,7 +41,6 @@
     }
   },
   "slice": {
-    "hold_seconds": 60,
     "harvest_food": 4,
     "start_range": 85
   }

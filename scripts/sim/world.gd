@@ -96,7 +96,6 @@ var defeat_pending: bool = false
 var campaign_ended: bool = false
 var workshop: Dictionary = Workshop.initial()
 var timber: Dictionary = Salvage.initial()
-var slice_state: Dictionary = SliceObjective.initial()
 var provisions: Dictionary = Provisions.initial()
 var equipment: Dictionary = Equipment.initial()
 var passages: Dictionary

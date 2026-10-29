@@ -19,7 +19,6 @@ const Routes = preload("res://scripts/sim/routes.gd")
 const Production = preload("res://scripts/sim/production.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Salvage = preload("res://scripts/sim/salvage.gd")
-const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
 const Provisions = preload("res://scripts/sim/provisions.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
@@ -48,6 +47,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 42:
+		return _upgrade_retired_slice(upgraded)
 	if version == 41:
 		return _upgrade_fittings(upgraded)
 	if version == 40:
@@ -222,7 +223,6 @@ func _upgrade_provisions(data: Dictionary) -> Dictionary:
 func _upgrade_slice(data: Dictionary) -> Dictionary:
 	data.gate_repair_target = "home"
 	data.timber = Salvage.initial()
-	data.slice_state = SliceObjective.initial()
 	data.schema_version = 11
 	return _upgrade_firearms(data)
 
@@ -544,5 +544,12 @@ func _upgrade_fittings(data: Dictionary) -> Dictionary:
 		data.vehicle.repair_progress = 0.0
 	data.spits = []
 	data.spit_hits = {}
+	data.schema_version = 42
+	return _upgrade_retired_slice(data)
+
+
+## The old neighbourhood-watch objective state no longer exists.
+func _upgrade_retired_slice(data: Dictionary) -> Dictionary:
+	data.erase("slice_state")
 	data.schema_version = save.SCHEMA
 	return data if save.valid(data) else {}

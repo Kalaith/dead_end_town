@@ -33,9 +33,9 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 42
+const SCHEMA: int = 43
 ## Saved world fields that are collections and are copied, not shared.
-const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "unlocks", "vehicle"]
+const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "timber", "firearms", "unlocks", "vehicle"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
 ## Saved world fields that are single values, validated one by one.
 const SCALAR_KEYS: Array[String] = ["defeat_pending", "rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "gate_repair_target"]
@@ -102,7 +102,6 @@ func restore(raw: Dictionary) -> RefCounted:
 			for stock: String in order[bundle]:
 				order[bundle][stock] = int(order[bundle][stock])
 	world.firearms.bullets = int(data.firearms.bullets)
-	world.slice_state.downs = int(data.slice_state.downs)
 	world.provisions.harvested = int(data.provisions.harvested)
 	world.roam_rng.state = int(data.roam_rng_state)
 	world.properties = data.properties.duplicate(true)

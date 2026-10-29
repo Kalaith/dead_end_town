@@ -281,3 +281,9 @@ Still needing development (second look, most important first):
 
 - Four new session-only tips in `tips.gd`/`tips.json`: team orders 1-4 (a fight with a team and no order given yet), the pistol (owned, loaded, in a fight, not yet fired), timber with Q (beside a held yard), and the van (beside it; also names riders, casualties and repair). Orders and pistol rank right after the swing tip so they appear in a fight rather than behind gate and reclaim guidance. `check_tips` covers orders and pistol (0 failures); timber and van are untested.
 - Still without tips: field bag, work board (J), workshop loadouts (F), noise, areas 2-3 specifics. Wording is first-pass and unplayed.
+
+## 30 October 2026: retired the inert slice state (schema 43)
+
+- `slice_state` (phase, held, downs) and `slice.hold_seconds` belonged to the removed neighbourhood-watch ending and did nothing. They are gone from the world, the save and the data; schema 43 drops the key from older saves. `slice.harvest_food` and `start_range` stay (readiness and timber still use them).
+- Parse and the catalog, save, vehicle (including the 40 and 41 upgrade paths), spitter, travel, boss, tips, office and industrial checks pass.
+- Still open debt: raider spur targets in `raiding.gd`, fence-line gate points that stall walkers, `migrate` upgrades that build a World, no save slots.

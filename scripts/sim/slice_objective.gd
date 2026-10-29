@@ -4,10 +4,6 @@ const Boss = preload("res://scripts/sim/boss.gd")
 const Facility = preload("res://scripts/sim/facility.gd")
 
 
-static func initial() -> Dictionary:
-	return {"phase": "preparing", "held": 0.0, "blocked": "", "downs": 0}
-
-
 ## The lots this area asks the player to hold, from the area's own `objective.reclaim` list.
 static func core(world: RefCounted) -> Array[Dictionary]:
 	var found: Array[Dictionary] = []
