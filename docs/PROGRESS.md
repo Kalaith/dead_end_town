@@ -103,3 +103,9 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 - Fix: `entry_seconds` 0.5 -> 1.2 in the suburb's `pressure.json`. Over 15 simulated minutes the four waves now admit 5-6 each and skip 0-2 (was 2-3 admitted, 3-5 skipped). `tools/check_pressure.gd` asserts the first event skips nothing.
 - Consequence for tuning: the suburb now receives the full authored budget, so it is harder than it was; with the player idle, 21 raiders were alive after 15 minutes. Band numbers were authored for the old layout and have not been balanced against play.
 - Still open: why raiders at the bridge head east along a dead-end spur before turning back (a path-target question for `raiding.gd`), and everything that needs real play.
+
+## 29 October 2026: review pass 6 (raiders took the wrong road)
+
+- Cause: `raiding.gd` sends a raider at the nearest lot needing zombies by straight-line distance. From the bridge entry that is the house_e/b/f row directly above the spur, behind a back fence, so raiders walked east along the fence instead of up the west road (which also made the next spawn slot collide, see pass 5).
+- Fix: a raider in the migration `inward` phase first walks to its route's `approach` point, then switches to `seeking` and hunts as before. The save validator accepts `seeking` with no destination. No schema change: `inward` raiders in old saves behave the same way.
+- Checked in simulation: over 15 minutes every raider passes the baboon's post and enters the settlement (19 of 19 at the end, with an idle player); `tools/check_pressure.gd` asserts none is left on the spur. I did not confirm the new assertion fails on the old code. Waves now also accumulate faster when nobody fights them, so pressure is harder than before; still untuned against real play.

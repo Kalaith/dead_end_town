@@ -1,8 +1,10 @@
 extends RefCounted
 ## Raiders hunt buildings that still need zombies, otherwise follow the road out. No saved state.
 const Routes = preload("res://scripts/sim/routes.gd")
+const Plan = preload("res://scripts/sim/migration_plan.gd")
 const Wandering = preload("res://scripts/sim/wandering.gd")
 const EXIT_RANGE: float = 30.0
+const ARRIVE_RADIUS: float = 120.0
 const SETTLE_RADIUS: float = 130.0
 const BACK_INSET: float = 40.0
 const SWAY_ANGLE: float = 0.7
@@ -10,6 +12,8 @@ const SWAY_RATE: float = 0.9
 
 
 static func step(world: RefCounted, z: Dictionary, dt: float) -> void:
+	if _arriving(world, z, dt):
+		return
 	var inside: Dictionary = _property_at(world, z.pos)
 	if not inside.is_empty() and _willing(world, z, inside):
 		_settle(world, z, inside, dt)
@@ -23,6 +27,23 @@ static func step(world: RefCounted, z: Dictionary, dt: float) -> void:
 		z.hp = -1.0
 		return
 	_head_to(world, z, exit, dt)
+
+
+## A new arrival follows its entrance's approach road before it hunts anything. Hunting by straight-line distance
+## would send it at the nearest lot, often across a back fence, instead of along the road that leads to the street.
+static func _arriving(world: RefCounted, z: Dictionary, dt: float) -> bool:
+	var m: Variant = z.get("migration")
+	if not m is Dictionary or m.phase != "inward":
+		return false
+	var route: Dictionary = Plan.route(world.catalog, str(m.origin))
+	if route.is_empty():
+		return false
+	var approach: Vector2 = Routes.point(route.approach)
+	if z.pos.distance_to(approach) > ARRIVE_RADIUS:
+		_head_to(world, z, approach, dt)
+		return true
+	m.phase = "seeking"
+	return false
 
 
 ## Removes raiders that walked off the map. Killed raiders keep their corpses (hp == 0).

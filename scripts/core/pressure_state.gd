@@ -167,7 +167,7 @@ static func _migration(m: Variant, identity: Dictionary, catalog: Dictionary) ->
 		return false
 	if not Rules.finite(m.get("blocked")) or float(m.blocked) < 0 or float(m.blocked) > 10 or not m.get("destination") is String:
 		return false
-	if m.phase == "inward":
+	if m.phase == "inward" or (m.phase == "seeking" and m.destination == ""):
 		return m.destination == ""
 	if m.phase == "exit":
 		return not Plan.route(catalog, m.destination).is_empty()

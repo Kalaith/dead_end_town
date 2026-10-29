@@ -44,6 +44,11 @@ func _init() -> void:
 			world.step(0.1)
 		var after: float = admitted[0].pos.distance_to(Routes.point(world.catalog.balance.player_start))
 		_expect("the horde advances toward the settlement", after < start)
+		var stuck: int = 0
+		for z: Dictionary in world.zombies:
+			if z.raid and float(z.hp) > 0 and z.pos.y > float(world.catalog.balance.home_respawn[1]) + 1500.0:
+				stuck += 1
+		_expect("no raider is left on the entry spur (%d)" % stuck, stuck == 0)
 	quit(failures)
 
 
