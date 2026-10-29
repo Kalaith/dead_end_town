@@ -20,24 +20,32 @@ const TEAL := Color("9dceb3")
 const RUST := Color("d88c63")
 
 
+## Streets are authored rectangles; roads get kerbs and a centre line, alleys stay plain.
+func _street(rect: Rect2, road: bool) -> void:
+	if not rect.intersects(visible_world):
+		return
+	draw_rect(rect, Color("353e3e") if road else Color("45473d"))
+	if not road:
+		return
+	draw_rect(Rect2(rect.position, Vector2(rect.size.x, 7)), Color("7b8174"))
+	draw_rect(Rect2(rect.position + Vector2(0, rect.size.y - 7), Vector2(rect.size.x, 7)), Color("7b8174"))
+	for x: int in range(int(rect.position.x), int(rect.end.x), 100):
+		draw_rect(Rect2(x + 10, rect.get_center().y - 3, 50, 5), Color("ada47b"))
+
+
 func _draw() -> void:
 	if world == null:
 		return
 	visible_world = Rect2(get_canvas_transform().affine_inverse() * Vector2.ZERO, get_viewport_rect().size)
-	draw_rect(Rect2(0, 0, int(world.catalog.bounds[0]), 1160), Color("293a34"))
-	for x: int in range(maxi(0, floori(visible_world.position.x / 32) * 32), mini(int(world.catalog.bounds[0]), ceili(visible_world.end.x / 32) * 32), 32):
-		for y: int in range(maxi(0, floori(visible_world.position.y / 32) * 32), mini(1160, ceili(visible_world.end.y / 32) * 32), 32):
+	var width: int = int(world.catalog.bounds[0])
+	var height: int = int(world.catalog.bounds[1])
+	draw_rect(Rect2(0, 0, width, height), Color("293a34"))
+	for x: int in range(maxi(0, floori(visible_world.position.x / 32) * 32), mini(width, ceili(visible_world.end.x / 32) * 32), 32):
+		for y: int in range(maxi(0, floori(visible_world.position.y / 32) * 32), mini(height, ceili(visible_world.end.y / 32) * 32), 32):
 			var shade: float = float((x * 7 + y * 13) % 23) / 300.0
 			draw_rect(Rect2(x + 2, y + 2, 28, 28), Color(0.16 + shade, 0.22 + shade, 0.18 + shade))
-	draw_rect(Rect2(0, 500, int(world.catalog.bounds[0]), 160), Color("353e3e"))
-	# The two exposed alleys feed the road between the property blocks.
-	for c: int in range(world.catalog.town.columns.size() - 1):
-		draw_rect(Rect2(660 + c * 720, 0, 120, 500), Color("45473d"))
-		draw_rect(Rect2(660 + c * 720, 660, 120, 500), Color("45473d"))
-	draw_rect(Rect2(0, 500, int(world.catalog.bounds[0]), 7), Color("7b8174"))
-	draw_rect(Rect2(0, 653, int(world.catalog.bounds[0]), 7), Color("7b8174"))
-	for x: int in range(0, int(world.catalog.bounds[0]), 100):
-		draw_rect(Rect2(x + 10, 577, 50, 5), Color("ada47b"))
+	for street: Dictionary in world.catalog.town.streets:
+		_street(Routes.rectangle(street.rect), street.kind == "road")
 	for p: Dictionary in world.catalog.properties:
 		if Routes.rectangle(p.rect).grow(100).intersects(visible_world):
 			_property(p)

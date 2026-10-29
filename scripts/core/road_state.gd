@@ -14,12 +14,15 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	if not rules.list(data, "barricades", false):
 		return
 	var expected: Array[String] = []
-	if not data.get("town") is Dictionary:
+	if not data.get("town") is Dictionary or not data.get("crossings") is Array:
 		return
-	for pair: Array in data.town.columns:
-		expected.append(str(pair[0]) + "_west")
-		expected.append(str(pair[0]) + "_east")
-	if rules.unique_ids(data.barricades) != expected:
+	for crossing: Dictionary in data.crossings:
+		expected.append(str(crossing.requires[0]) + "_west")
+		expected.append(str(crossing.requires[0]) + "_east")
+	var actual: Array = rules.unique_ids(data.barricades)
+	expected.sort()
+	actual.sort()
+	if actual != expected:
 		errors.append("Every crossing needs its own west/east barrier pair.")
 	for raw: Variant in data.barricades:
 		if not raw is Dictionary:
@@ -39,7 +42,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 			if errors.is_empty() and (float(rect[2]) <= 0 or float(rect[3]) <= 0):
 				errors.append("Road defence rectangle must have positive dimensions.")
 		if rules.list(d, "requires", false):
-			if d.requires not in data.town.columns:
+			if d.requires not in data.town.links:
 				errors.append("Road defences require both facing properties.")
 
 

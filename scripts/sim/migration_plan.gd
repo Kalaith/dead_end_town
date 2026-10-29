@@ -22,10 +22,9 @@ static func connected(catalog: Dictionary, properties: Dictionary) -> Array[Stri
 static func band(catalog: Dictionary, properties: Dictionary) -> int:
 	var held: Array[String] = connected(catalog, properties)
 	var result: int = 0
-	for column: int in range(catalog.town.columns.size()):
-		for id: String in catalog.town.columns[column]:
-			if id in held and id in catalog.town.core:
-				result = maxi(result, column / 3)
+	for id: String in held:
+		if id in catalog.town.core:
+			result = maxi(result, int(catalog.town.bands[id]))
 	return result
 
 

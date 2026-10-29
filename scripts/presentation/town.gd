@@ -34,6 +34,13 @@ var storage_enabled: bool = true
 var controls := PlayerControls.new()
 
 
+## Keeps the 1280x720 view inside the area, centring any axis the area is smaller than.
+func _camera_target() -> Vector2:
+	var bounds := Vector2(float(world.catalog.bounds[0]), float(world.catalog.bounds[1]))
+	var focus: Vector2 = world.player.pos + Vector2(0, -40)
+	return Vector2(clampf(focus.x, minf(640.0, bounds.x / 2.0), maxf(bounds.x - 640.0, bounds.x / 2.0)), clampf(focus.y, minf(360.0, bounds.y / 2.0), maxf(bounds.y - 360.0, bounds.y / 2.0)))
+
+
 func _ready() -> void:
 	var data: Dictionary = Catalog.read()
 	if data.is_empty():
@@ -104,7 +111,7 @@ func _process(dt: float) -> void:
 				resume_after_rescue = true
 				paused = true
 				break
-	var target := Vector2(clampf(world.player.pos.x, 640, float(world.catalog.bounds[0]) - 640), clampf(world.player.pos.y - 40, 360, 800))
+	var target := _camera_target()
 	camera.position = camera.position.lerp(target, 1.0 - exp(-dt * 8))
 	if not paused:
 		# Use the current camera transform and actor position, including on frames
@@ -175,7 +182,7 @@ func command(value: String) -> void:
 				defeat_shown = false
 				accumulator = 0.0
 				controls = PlayerControls.new()
-				camera.position = Vector2(clampf(world.player.pos.x, 640, float(world.catalog.bounds[0]) - 640), clampf(world.player.pos.y - 40, 360, 800))
+				camera.position = _camera_target()
 				camera.force_update_scroll()
 				hud.menu_status.text = ""
 				paused = false

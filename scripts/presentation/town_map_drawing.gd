@@ -1,16 +1,29 @@
 extends Control
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
+const Routes = preload("res://scripts/sim/routes.gd")
 var world: RefCounted
 var selected: String = "home"
 var work_point: Vector2 = Vector2.INF
 
 
+## The whole area is fitted into this control, so any layout draws at a readable size.
+func fit() -> float:
+	return minf((size.x - 24.0) / float(world.catalog.bounds[0]), (size.y - 24.0) / float(world.catalog.bounds[1]))
+
+
+func to_map(pos: Vector2) -> Vector2:
+	var ratio: float = fit()
+	var used := Vector2(float(world.catalog.bounds[0]), float(world.catalog.bounds[1])) * ratio
+	return (size - used) / 2.0 + pos * ratio
+
+
+func lot(id: String) -> Rect2:
+	var rect: Rect2 = Routes.rectangle(world.definition(id).rect)
+	return Rect2(to_map(rect.position), rect.size * fit())
+
+
 func centre(id: String) -> Vector2:
-	for column: int in range(world.catalog.town.columns.size()):
-		var pair: Array = world.catalog.town.columns[column]
-		if id in pair:
-			return Vector2(38 + column * 64, 48 + pair.find(id) * 112)
-	return Vector2.ZERO
+	return lot(id).get_center()
 
 
 func _draw() -> void:
@@ -27,19 +40,18 @@ func _draw() -> void:
 			draw_dashed_line(start, finish, Color("d1a164"), 2.0, 6.0)
 	for id: String in world.seen:
 		var pos: Vector2 = centre(id)
+		var box: Rect2 = lot(id)
 		var held: bool = world.properties[id].claimed
-		draw_rect(Rect2(pos - Vector2(26, 24), Vector2(52, 48)), Color("3d6955") if held else Color("53534a"))
+		draw_rect(box, Color("3d6955") if held else Color("53534a"))
 		# The inset square marks held ground without relying on colour.
 		if held:
 			draw_rect(Rect2(pos - Vector2(7, 7), Vector2(14, 14)), Color("cbe0c3"), false, 2.0)
 		if id == selected:
-			draw_rect(Rect2(pos - Vector2(29, 27), Vector2(58, 54)), Color("dfb36e"), false, 3.0)
-	var player_column: float = clampf((world.player.pos.x - 80.0) / 720.0, 0.0, 11.8)
-	var player_y: float = clampf(world.player.pos.y / 1160.0, 0.0, 1.0)
-	var player_pos := Vector2(12 + player_column * 64, 20 + player_y * 168)
+			draw_rect(box.grow(3), Color("dfb36e"), false, 3.0)
+	var player_pos: Vector2 = to_map(world.player.pos)
 	draw_circle(player_pos, 5.0, Color("f5e6c2"))
 	draw_arc(player_pos, 8.0, 0.0, TAU, 20, Color("142426"), 2.0)
 	if work_point.is_finite():
-		var work_pos := Vector2(12 + (work_point.x - 80) / 720.0 * 64, 20 + work_point.y / 1160.0 * 168)
+		var work_pos: Vector2 = to_map(work_point)
 		draw_line(work_pos - Vector2(7, 7), work_pos + Vector2(7, 7), Color("dfb36e"), 3.0)
 		draw_line(work_pos - Vector2(7, -7), work_pos + Vector2(7, -7), Color("dfb36e"), 3.0)

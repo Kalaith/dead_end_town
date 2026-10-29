@@ -1,62 +1,6 @@
 {
   "schema_version": 1,
   "town": {
-    "columns": [
-      [
-        "home",
-        "library"
-      ],
-      [
-        "garden",
-        "garage"
-      ],
-      [
-        "residence",
-        "munitions"
-      ],
-      [
-        "hardware",
-        "grocer"
-      ],
-      [
-        "clinic",
-        "allotment"
-      ],
-      [
-        "greenhouse",
-        "diner"
-      ],
-      [
-        "station",
-        "firehall"
-      ],
-      [
-        "radio",
-        "museum"
-      ],
-      [
-        "hall",
-        "school"
-      ],
-      [
-        "depot",
-        "salvage"
-      ],
-      [
-        "pump",
-        "substation"
-      ],
-      [
-        "relay",
-        "assembly"
-      ]
-    ],
-    "districts": [
-      "Hearth Street",
-      "Market Row",
-      "Civic Block",
-      "East Works"
-    ],
     "core": [
       "home",
       "library",
@@ -76,6 +20,379 @@
       "substation",
       "relay",
       "assembly"
+    ],
+    "links": [
+      [
+        "home",
+        "library"
+      ],
+      [
+        "garden",
+        "garage"
+      ],
+      [
+        "home",
+        "garden"
+      ],
+      [
+        "library",
+        "garage"
+      ],
+      [
+        "residence",
+        "munitions"
+      ],
+      [
+        "garden",
+        "residence"
+      ],
+      [
+        "garage",
+        "munitions"
+      ],
+      [
+        "hardware",
+        "grocer"
+      ],
+      [
+        "residence",
+        "hardware"
+      ],
+      [
+        "munitions",
+        "grocer"
+      ],
+      [
+        "clinic",
+        "allotment"
+      ],
+      [
+        "hardware",
+        "clinic"
+      ],
+      [
+        "grocer",
+        "allotment"
+      ],
+      [
+        "greenhouse",
+        "diner"
+      ],
+      [
+        "clinic",
+        "greenhouse"
+      ],
+      [
+        "allotment",
+        "diner"
+      ],
+      [
+        "station",
+        "firehall"
+      ],
+      [
+        "greenhouse",
+        "station"
+      ],
+      [
+        "diner",
+        "firehall"
+      ],
+      [
+        "radio",
+        "museum"
+      ],
+      [
+        "station",
+        "radio"
+      ],
+      [
+        "firehall",
+        "museum"
+      ],
+      [
+        "hall",
+        "school"
+      ],
+      [
+        "radio",
+        "hall"
+      ],
+      [
+        "museum",
+        "school"
+      ],
+      [
+        "depot",
+        "salvage"
+      ],
+      [
+        "hall",
+        "depot"
+      ],
+      [
+        "school",
+        "salvage"
+      ],
+      [
+        "pump",
+        "substation"
+      ],
+      [
+        "depot",
+        "pump"
+      ],
+      [
+        "salvage",
+        "substation"
+      ],
+      [
+        "relay",
+        "assembly"
+      ],
+      [
+        "pump",
+        "relay"
+      ],
+      [
+        "substation",
+        "assembly"
+      ]
+    ],
+    "bands": {
+      "home": 0,
+      "library": 0,
+      "garden": 0,
+      "garage": 0,
+      "residence": 0,
+      "munitions": 0,
+      "hardware": 1,
+      "grocer": 1,
+      "clinic": 1,
+      "allotment": 1,
+      "greenhouse": 1,
+      "diner": 1,
+      "station": 2,
+      "firehall": 2,
+      "radio": 2,
+      "museum": 2,
+      "hall": 2,
+      "school": 2,
+      "depot": 3,
+      "salvage": 3,
+      "pump": 3,
+      "substation": 3,
+      "relay": 3,
+      "assembly": 3
+    },
+    "streets": [
+      {
+        "rect": [
+          0,
+          500,
+          8640,
+          160
+        ],
+        "kind": "road"
+      },
+      {
+        "rect": [
+          660,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          660,
+          660,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          1380,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          1380,
+          660,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          2100,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          2100,
+          660,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          2820,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          2820,
+          660,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          3540,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          3540,
+          660,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          4260,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          4260,
+          660,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          4980,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          4980,
+          660,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          5700,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          5700,
+          660,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          6420,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          6420,
+          660,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          7140,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          7140,
+          660,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          7860,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          7860,
+          660,
+          120,
+          500
+        ],
+        "kind": "alley"
+      }
     ]
   }
 }

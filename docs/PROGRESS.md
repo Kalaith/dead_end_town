@@ -694,3 +694,15 @@ Evidence and boundary:
 - All 83 scripts load and headless editor/import succeeds; whitespace and size limits pass. No automated simulations or scripted staging tours were created or run.
 - Direct computer use was stopped by the user with Escape. No further computer-use input follows that stop. The new Screecher drawings and encounter have not been inspected live, and its interruption/reload behavior has not been exercised through direct play. These remain explicit acceptance work; no visual, human balance or full-G04 completion claim is made.
 - Campaign migration scheduling remains the next G04 implementation slice. G05–G10 remain unfinished. No installation, toolkit edits, exports, push or publication.
+
+## 29 October 2026: area direction and a layout-neutral map model (step 2)
+
+Direction (user): the campaign becomes bounded areas (suburb, office district, industrial area). The suburb boss is an undead baboon guarding its only exit; areas can be revisited, reason to come later. See `19-areas-and-suburb.md` and F28. The unfinished migration scheduler was committed as-is beforehand.
+
+Implementation (no gameplay change intended):
+- `town.json` drops `columns` and `districts`. It now holds `core`, explicit `links`, a pressure `bands` map and `streets` rectangles. Validation no longer requires 12 columns, 18 core sites, 24 lots or the original six; it checks known unique IDs, links against neighbours, one passage/crossing per link, core sites reaching home without optional sites, bands and street shapes.
+- Barricade IDs derive from the crossings; the scheduler's band comes from `bands`; camera, ground and streets use `bounds`, and the paused overview fits each lot's rectangle into its panel.
+
+Evidence and limits:
+- All 85 scripts load; catalog validates with 0 errors; four deliberate corruptions (extra link, missing link, broken core route, missing barricade) are rejected; headless editor import succeeds.
+- Not seen in the running game: street drawing, the camera at the strip ends and the paused overview map need a direct look. Overview lots are now drawn from their rectangles (flatter than before). The local preview still assumes a 580-pixel view. No save schema change yet.

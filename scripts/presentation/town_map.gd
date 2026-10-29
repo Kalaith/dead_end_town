@@ -34,20 +34,21 @@ func refresh(value: RefCounted) -> void:
 	world = value
 	if selected not in world.seen:
 		selected = "home"
-	for column: int in range(world.catalog.town.columns.size()):
-		for side: int in range(2):
-			var id: String = world.catalog.town.columns[column][side]
-			if not sites.has(id):
-				var button := Button.new()
-				button.position = Vector2(12 + column * 64, 24 + side * 112)
-				button.size = Vector2(52, 48)
-				button.flat = true
-				button.pressed.connect(func() -> void: select_site(id))
-				button.focus_entered.connect(func() -> void: select_site(id))
-				drawing.add_child(button)
-				sites[id] = button
-			sites[id].visible = id in world.seen
-			sites[id].tooltip_text = place_name(world.definition(id)) if id in world.seen else ""
+	drawing.world = world
+	for p: Dictionary in world.catalog.properties:
+		var id: String = p.id
+		if not sites.has(id):
+			var button := Button.new()
+			button.flat = true
+			button.pressed.connect(func() -> void: select_site(id))
+			button.focus_entered.connect(func() -> void: select_site(id))
+			drawing.add_child(button)
+			sites[id] = button
+		var box: Rect2 = drawing.lot(id)
+		sites[id].position = box.position
+		sites[id].size = box.size
+		sites[id].visible = id in world.seen
+		sites[id].tooltip_text = place_name(p) if id in world.seen else ""
 	_update_detail()
 
 
