@@ -1,5 +1,6 @@
 extends RefCounted
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 
 
@@ -25,7 +26,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 			errors.append("Weapons support one or two targets.")
 
 
-static func valid(data: Dictionary) -> bool:
+static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 	if not data.get("unlocks") is Array:
 		return false
 	for item: Variant in data.unlocks:
@@ -39,7 +40,7 @@ static func valid(data: Dictionary) -> bool:
 	for id: String in ["crowbar", "sword", "iron", "shield", "spear", "field_bag"]:
 		if not data.equipment.get(id) is String or not wearers.has(data.equipment[id]):
 			return false
-		if not data.equipment[id].is_empty() and id not in data.unlocks and not (data.properties.clinic.looted if id == "field_bag" else data.properties.hardware.looted if id == "spear" else data.properties.garage.looted if id == "crowbar" else data.workshop.armour_done):
+		if not data.equipment[id].is_empty() and id not in data.unlocks and not (Facility.saved(data, catalog, "clinic").looted if id == "field_bag" else Facility.saved(data, catalog, "hardware").looted if id == "spear" else Facility.saved(data, catalog, "garage").looted if id == "crowbar" else data.workshop.armour_done):
 			return false
 	var weapons: Array[String] = []
 	for id: String in ["crowbar", "sword", "spear"]:

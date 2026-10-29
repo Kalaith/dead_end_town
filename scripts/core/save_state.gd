@@ -1,5 +1,6 @@
 extends RefCounted
 const ScreecherState = preload("res://scripts/core/screecher_state.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const AttentionState = preload("res://scripts/core/attention_state.gd")
 const Acoustics = preload("res://scripts/sim/noise.gd")
 const RunnerState = preload("res://scripts/core/runner_state.gd")
@@ -197,11 +198,11 @@ func valid(data: Dictionary) -> bool:
 		return false
 	if float(data.garden_progress) > float(catalog.balance.work_seconds) or (data.garden_done and not data.garden_started):
 		return false
-	if data.garden_started and not data.properties.garden.looted:
+	if data.garden_started and not Facility.saved(data, catalog, "garden").looted:
 		return false
 	if data.garden_done and float(data.garden_progress) < float(catalog.balance.work_seconds):
 		return false
-	if (data.workshop.started and not data.properties.garage.looted) or (data.workshop.equipped and data.unlocks.is_empty() and not data.properties.library.looted):
+	if (data.workshop.started and not Facility.saved(data, catalog, "garage").looted) or (data.workshop.equipped and data.unlocks.is_empty() and not Facility.saved(data, catalog, "library").looted):
 		return false
 	for a: Dictionary in data.survivors:
 		if not _valid_task(a, data):
@@ -210,7 +211,7 @@ func valid(data: Dictionary) -> bool:
 		return false
 	if data.player.id != "you":
 		return false
-	return TownState.valid(data, catalog) and JobState.valid(data, catalog) and WorkOrderState.valid(data, catalog) and FirearmState.valid(data, catalog) and PressureState.valid(data, catalog) and NeighbourhoodState.valid(data, catalog) and EquipmentState.valid(data) and ProvisionsState.valid(data, catalog) and SliceState.valid(data, catalog)
+	return TownState.valid(data, catalog) and JobState.valid(data, catalog) and WorkOrderState.valid(data, catalog) and FirearmState.valid(data, catalog) and PressureState.valid(data, catalog) and NeighbourhoodState.valid(data, catalog) and EquipmentState.valid(data, catalog) and ProvisionsState.valid(data, catalog) and SliceState.valid(data, catalog)
 
 
 ## The saved area must be the loaded one; other areas keep a frozen record of their own state.
@@ -379,11 +380,11 @@ func _valid_task(a: Dictionary, data: Dictionary) -> bool:
 		"Rescue":
 			return data.get("rescue_jobs") is Dictionary and data.rescue_jobs.has(a.id) and data.rescue_jobs[a.id] is Dictionary and a.job == data.rescue_jobs[a.id].get("patient")
 		"Greenhouse":
-			return a.job == "greenhouse" and data.greenhouse.started and data.properties.greenhouse.looted
+			return a.job == "greenhouse" and data.greenhouse.started and Facility.saved(data, catalog, "greenhouse").looted
 		"Clinic":
-			return a.job == "clinic" and data.clinic.started and data.properties.clinic.looted
+			return a.job == "clinic" and data.clinic.started and Facility.saved(data, catalog, "clinic").looted
 		"Ammo":
-			return a.job == "munitions" and data.properties.munitions.looted
+			return a.job == "munitions" and Facility.saved(data, catalog, "munitions").looted
 		"Garden":
 			return a.job == "garden" and data.garden_started
 		"Workshop":

@@ -1,6 +1,7 @@
 extends RefCounted
 ## Scheduling changes composition, routes and intervals, never enemy statistics.
 const Routes = preload("res://scripts/sim/routes.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 
 
 static func connected(catalog: Dictionary, properties: Dictionary) -> Array[String]:
@@ -30,7 +31,7 @@ static func band(catalog: Dictionary, properties: Dictionary) -> int:
 
 static func observe(world: RefCounted) -> void:
 	world.pressure.band = maxi(int(world.pressure.band), band(world.catalog, world.properties))
-	if world.properties.garage.looted and "brute" not in world.pressure.taught:
+	if Facility.state(world, "garage").looted and "brute" not in world.pressure.taught:
 		world.pressure.taught.append("brute")
 	for z: Dictionary in world.zombies:
 		var kind: String = str(z.get("kind", "shambler"))

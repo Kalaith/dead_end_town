@@ -1,5 +1,6 @@
 extends RefCounted
 const Routes = preload("res://scripts/sim/routes.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 
 
 static func initial() -> Dictionary:
@@ -25,10 +26,10 @@ static func unlocked(world: RefCounted, id: String) -> bool:
 	if id == "bat" or id == "none" or id in world.unlocks:
 		return true
 	if id == "field_bag":
-		return world.properties.clinic.looted
+		return Facility.state(world, "clinic").looted
 	if id == "spear":
-		return world.properties.hardware.looted
-	return world.properties.garage.looted if id == "crowbar" else world.workshop.armour_done
+		return Facility.state(world, "hardware").looted
+	return Facility.state(world, "garage").looted if id == "crowbar" else world.workshop.armour_done
 
 
 static func weapon(world: RefCounted, a: Dictionary) -> String:

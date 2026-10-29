@@ -1,6 +1,7 @@
 extends RefCounted
 ## The garage's first equipment chain: committed work and one physical loadout.
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const Restoration = preload("res://scripts/sim/restoration.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
@@ -12,7 +13,7 @@ static func initial() -> Dictionary:
 
 
 static func safe(world: RefCounted) -> bool:
-	return world.properties.garage.claimed and not Combat.danger(world, Routes.point(world.definition("garage").site), 230)
+	return Facility.state(world, "garage").claimed and not Combat.danger(world, Routes.point(world.definition("garage").site), 230)
 
 
 static func context(world: RefCounted) -> String:
@@ -29,7 +30,7 @@ static func context(world: RefCounted) -> String:
 		return "Secure home route"
 	if not state.armour_done:
 		return "R Restore   F Assign"
-	if not state.equipped and world.equipment.iron.is_empty() and world.equipment.shield.is_empty() and world.properties.library.looted:
+	if not state.equipped and world.equipment.iron.is_empty() and world.equipment.shield.is_empty() and Facility.state(world, "library").looted:
 		return "E Equip Paige   F Loadouts"
 	return "F Loadouts"
 
@@ -56,7 +57,7 @@ static func interact(world: RefCounted) -> void:
 				Equipment.equip(world, a.id, "shield", "shield")
 				world.note("Paige: 'Now I can hold the door.' Iron armour and shield equipped.")
 				return
-		world.note("Bring Paige to the workshop to fit the armour." if world.properties.library.claimed else "Armour and shield stored at the bench.")
+		world.note("Bring Paige to the workshop to fit the armour." if Facility.state(world, "library").claimed else "Armour and shield stored at the bench.")
 
 
 static func unfinished(world: RefCounted) -> bool:

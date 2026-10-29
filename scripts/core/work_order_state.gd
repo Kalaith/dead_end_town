@@ -1,5 +1,6 @@
 extends RefCounted
 const RepairState = preload("res://scripts/core/repair_state.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const Repairs = preload("res://scripts/sim/repairs.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
@@ -11,7 +12,7 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 		return false
 	if not Rules.integer_in(policy.get("target"), 0, 999) or not Rules.integer_in(policy.get("material_reserve"), 0, 999) or not policy.get("reason") is String:
 		return false
-	if policy.mode != "stopped" and not data.properties.munitions.looted:
+	if policy.mode != "stopped" and not Facility.saved(data, catalog, "munitions").looted:
 		return false
 	var ledger: Variant = data.get("orders")
 	if not ledger is Dictionary or not Rules.integer_in(ledger.get("sequence"), 0, 1000000000) or not ledger.get("sites") is Dictionary:
@@ -76,7 +77,7 @@ static func _valid_site(o: Dictionary, data: Dictionary, catalog: Dictionary) ->
 	if o.recipe == "medicine":
 		return o.socket == "clinic_medicine" and o.target == "clinic" and data.clinic.done
 	if o.recipe == "bullets":
-		return o.socket == "munitions" and o.target == "munitions" and data.properties.munitions.looted
+		return o.socket == "munitions" and o.target == "munitions" and Facility.saved(data, catalog, "munitions").looted
 	for d: Dictionary in catalog.passages:
 		if o.socket != "passage:" + str(d.id) or o.target != d.id:
 			continue

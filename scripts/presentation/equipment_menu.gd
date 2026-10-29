@@ -1,5 +1,6 @@
 extends VBoxContainer
 const Equipment = preload("res://scripts/sim/equipment.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 signal chosen(actor_id: String, slot: String, item_id: String)
 var rows: Dictionary = {}
 
@@ -25,7 +26,7 @@ func refresh(world: RefCounted) -> void:
 		row.label.tooltip_text = reason
 		for slot: String in ["weapon", "protection", "shield"]:
 			var picker: OptionButton = row[slot]
-			var signature: String = JSON.stringify([world.equipment, world.workshop.armour_done, world.properties.garage.looted, world.properties.hardware.looted, world.properties.clinic.looted, reason])
+			var signature: String = JSON.stringify([world.equipment, world.workshop.armour_done, Facility.state(world, "garage").looted, Facility.state(world, "hardware").looted, Facility.state(world, "clinic").looted, reason])
 			if picker.get_meta("signature", "") == signature:
 				continue
 			picker.set_meta("signature", signature)

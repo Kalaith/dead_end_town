@@ -1,5 +1,6 @@
 extends Node2D
 const Medicine = preload("res://scripts/sim/medicine.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const Defeat = preload("res://scripts/sim/defeat.gd")
 const Greenhouse = preload("res://scripts/sim/greenhouse.gd")
 const Clinic = preload("res://scripts/sim/clinic.gd")
@@ -184,7 +185,7 @@ func command(value: String) -> void:
 				paused = false
 				hud.refresh(world, false)
 		"work":
-			if world.clinic.done or world.properties.munitions.looted or ConstructionMenu.available(world):
+			if world.clinic.done or Facility.state(world, "munitions").looted or ConstructionMenu.available(world):
 				paused = true
 				hud.refresh(world, true)
 				hud.show_menu()

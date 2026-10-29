@@ -1,6 +1,7 @@
 extends RefCounted
 ## Named survivor orders share physical work sites, never a global worker slot.
 const FieldMedicine = preload("res://scripts/sim/field_medicine.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const CompanionRescue = preload("res://scripts/sim/companion_rescue.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
@@ -24,15 +25,15 @@ static func options(world: RefCounted, a: Dictionary = {}) -> Array[Dictionary]:
 		{"id": "builder", "label": "Builder: approved projects"},
 		{"id": "general", "label": "General worker"},
 	]
-	if world.properties.munitions.claimed:
+	if Facility.state(world, "munitions").claimed:
 		result.append({"id": "ammo", "label": "Craft bullets (%d materials / %d bullets)" % [int(world.catalog.firearm.material_cost), int(world.catalog.firearm.batch_bullets)]})
-	if world.properties.greenhouse.claimed:
+	if Facility.state(world, "greenhouse").claimed:
 		result.append({"id": "greenhouse", "label": "Greenhouse: restore and tend"})
-	if world.properties.clinic.claimed:
+	if Facility.state(world, "clinic").claimed:
 		result.append({"id": "clinic", "label": "Clinic"})
-	if world.properties.garden.claimed:
+	if Facility.state(world, "garden").claimed:
 		result.append({"id": "garden", "label": "Garden: build and tend"})
-	if world.properties.garage.claimed:
+	if Facility.state(world, "garage").claimed:
 		result.append({"id": "garage", "label": "Workshop: build and restore"})
 	for p: Dictionary in world.catalog.properties:
 		if world.properties[p.id].looted and float(world.properties[p.id].gate_hp) < float(world.balance.gate_health):
@@ -77,7 +78,7 @@ static func unavailable(world: RefCounted, task: String, a: Dictionary = {}) -> 
 		"clinic":
 			return "Approve clinic restoration first" if not world.clinic.started else ""
 		"ammo":
-			return "Claim the ammunition workshop first" if not world.properties.munitions.claimed else ""
+			return "Claim the ammunition workshop first" if not Facility.state(world, "munitions").claimed else ""
 		"garden":
 			return "Approve garden at its porch first" if not world.garden_started else ""
 		"garage":

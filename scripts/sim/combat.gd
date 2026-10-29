@@ -1,5 +1,6 @@
 extends RefCounted
 const Screecher = preload("res://scripts/sim/screecher.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const Acoustics = preload("res://scripts/sim/noise.gd")
 const Runner = preload("res://scripts/sim/runner.gd")
 const Boss = preload("res://scripts/sim/boss.gd")
@@ -132,7 +133,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.activity = "Crafting bullets" if Firearms.reserved(world) else "Bullet bench"
 				if not world.production.reason.is_empty():
 					a.activity = world.production.reason
-				if not world.properties.munitions.claimed or not world.safe_connected("munitions"):
+				if not Facility.state(world, "munitions").claimed or not world.safe_connected("munitions"):
 					a.activity = "Bullet crafting paused - reclaim the workshop route"
 					anchor = Routes.point(world.balance.home_respawn)
 			"Passage":

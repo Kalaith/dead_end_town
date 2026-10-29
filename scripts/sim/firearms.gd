@@ -1,5 +1,6 @@
 extends RefCounted
 const Screecher = preload("res://scripts/sim/screecher.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const Acoustics = preload("res://scripts/sim/noise.gd")
 const Runner = preload("res://scripts/sim/runner.gd")
 ## Pistol ownership, physical ray shots and one shared ammunition workbench.
@@ -83,7 +84,7 @@ static func reserved(world: RefCounted) -> bool:
 static func step(world: RefCounted, dt: float) -> void:
 	var site: Vector2 = Routes.point(world.definition("munitions").site)
 	var reason: String = ""
-	if not world.properties.munitions.claimed:
+	if not Facility.state(world, "munitions").claimed:
 		reason = "Reclaim site"
 	elif not world.safe_connected("munitions"):
 		reason = "Secure home route"

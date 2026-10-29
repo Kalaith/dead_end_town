@@ -1,5 +1,6 @@
 extends Control
 const DefeatMenu = preload("res://scripts/presentation/defeat_menu.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const RescueMenu = preload("res://scripts/presentation/rescue_menu.gd")
 const ConstructionMenu = preload("res://scripts/presentation/construction_menu.gd")
 const ProductionMenu = preload("res://scripts/presentation/production_menu.gd")
@@ -199,7 +200,7 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	live_status.visible = not paused
 	objective.text = "NEXT / " + SliceObjective.next(world)
 	supplies.text = "STOCKPILE / %d materials     %d food\n%s" % [world.materials, world.food, Provisions.summary(world)]
-	if world.properties.clinic.looted:
+	if Facility.state(world, "clinic").looted:
 		supplies.text += "\n%d medicine" % world.medicine
 	supplies.text += "\n" + FoodGrowing.summary(world)
 	readiness.text = "READINESS / advisory\n" + Readiness.summary(world)
@@ -208,9 +209,9 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	if paused:
 		if section == "Town":
 			town_map.refresh(world)
-		section_buttons.Work.visible = world.clinic.done or world.properties.munitions.looted or ConstructionMenu.available(world)
+		section_buttons.Work.visible = world.clinic.done or Facility.state(world, "munitions").looted or ConstructionMenu.available(world)
 		construction_menu.refresh(world)
-		work_menu.visible = world.properties.munitions.looted
+		work_menu.visible = Facility.state(world, "munitions").looted
 		if section == "Work" and not section_buttons.Work.visible:
 			show_section("Street")
 		work_menu.refresh(world)

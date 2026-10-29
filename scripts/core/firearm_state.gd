@@ -1,5 +1,6 @@
 extends RefCounted
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
 
 
@@ -22,7 +23,7 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 	var s: Dictionary = data.firearms
 	if not s.get("owned") is bool or not Rules.integer_in(s.get("bullets"), 0, 1000000000):
 		return false
-	if s.owned != (data.properties.residence.looted or "firearm" in data.unlocks) or (not s.owned and int(s.bullets) > 0 and not data.properties.munitions.looted):
+	if s.owned != (Facility.saved(data, catalog, "residence").looted or "firearm" in data.unlocks) or (not s.owned and int(s.bullets) > 0 and not Facility.saved(data, catalog, "munitions").looted):
 		return false
 	for a: Dictionary in data.survivors:
 		if Firearms.civilian(a) and a.order in ["Guard", "Home", "Engage", "Roadguard"]:

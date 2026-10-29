@@ -1,5 +1,6 @@
 extends RefCounted
 const Routes = preload("res://scripts/sim/routes.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
@@ -14,7 +15,7 @@ static func site(world: RefCounted) -> Vector2:
 
 
 static func reason(world: RefCounted, productive: bool = true) -> String:
-	if not world.properties.greenhouse.claimed:
+	if not Facility.state(world, "greenhouse").claimed:
 		return "Reclaim greenhouse"
 	if world.remaining("greenhouse") > 0 or Combat.danger(world, site(world), 230):
 		return "Clear nearby threats"
@@ -24,7 +25,7 @@ static func reason(world: RefCounted, productive: bool = true) -> String:
 
 
 static func approve(world: RefCounted) -> bool:
-	if world.greenhouse.started or not world.properties.greenhouse.looted or float(world.player.hp) <= 0 or world.player.pos.distance_to(site(world)) >= 85 or not reason(world, false).is_empty():
+	if world.greenhouse.started or not Facility.state(world, "greenhouse").looted or float(world.player.hp) <= 0 or world.player.pos.distance_to(site(world)) >= 85 or not reason(world, false).is_empty():
 		return false
 	if not WorkOrders.approve(world, "restore:greenhouse", "greenhouse", WorkRecipes.recipe(world.catalog, "greenhouse"), site(world)):
 		world.note("Need materials or space on the work board.")

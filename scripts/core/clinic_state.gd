@@ -1,5 +1,6 @@
 extends RefCounted
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 
 
 static func content(data: Dictionary, errors: Array[String]) -> void:
@@ -19,7 +20,7 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 		return false
 	if not Rules.finite(s.get("progress")) or float(s.progress) < 0 or float(s.progress) > float(catalog.balance.clinic_seconds):
 		return false
-	if s.started and not data.properties.clinic.looted:
+	if s.started and not Facility.saved(data, catalog, "clinic").looted:
 		return false
 	if s.done and (not s.started or float(s.progress) != float(catalog.balance.clinic_seconds)):
 		return false

@@ -1,6 +1,7 @@
 extends RefCounted
 ## Persistent duties and temporary work. Guard/follower orders never join this queue.
 const FoodGrowing = preload("res://scripts/sim/food_growing.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const Medicine = preload("res://scripts/sim/medicine.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
@@ -222,7 +223,7 @@ static func _choose(world: RefCounted, a: Dictionary) -> String:
 			var occupied: bool = world.survivors.any(func(other: Dictionary) -> bool: return other.id != a.id and float(other.hp) > 0 and other.job == id and other.order in ["Garden", "Greenhouse"])
 			if not occupied and FoodGrowing.needed(world, id) and world.safe_connected(id):
 				return id
-		if (world.production.mode == "once" or (world.production.mode == "repeat" and int(world.firearms.bullets) < int(world.production.target))) and world.properties.munitions.looted and world.safe_connected("munitions"):
+		if (world.production.mode == "once" or (world.production.mode == "repeat" and int(world.firearms.bullets) < int(world.production.target))) and Facility.state(world, "munitions").looted and world.safe_connected("munitions"):
 			return "ammo"
 		if world.clinic.done and world.safe_connected("clinic") and Medicine.needed(world):
 			return "clinic"

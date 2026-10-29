@@ -1,5 +1,6 @@
 extends RefCounted
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 
 
 static func initial(catalog: Dictionary) -> Dictionary:
@@ -7,7 +8,7 @@ static func initial(catalog: Dictionary) -> Dictionary:
 
 
 static func configure(world: RefCounted, mode: String, target: int, reserve: int) -> bool:
-	if not world.properties.munitions.looted or mode not in ["stopped", "once", "repeat"] or target < 0 or target > 999 or reserve < 0 or reserve > 999:
+	if not Facility.state(world, "munitions").looted or mode not in ["stopped", "once", "repeat"] or target < 0 or target > 999 or reserve < 0 or reserve > 999:
 		return false
 	world.production.mode = mode
 	world.production.target = target

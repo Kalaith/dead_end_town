@@ -1,6 +1,7 @@
 extends Node2D
 ## Original procedural greybox art. No imported game assets.
 const GreenhouseView = preload("res://scripts/presentation/greenhouse_view.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const FieldMedicine = preload("res://scripts/sim/field_medicine.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
@@ -434,7 +435,7 @@ func _workshop(site: Vector2) -> void:
 	if state.done:
 		draw_line(bench + Vector2(10, 6), bench + Vector2(28, 6), CREAM, 4)
 		draw_circle(bench + Vector2(31, 6), 5, Color("a9b7b5"))
-	if world.properties.garage.claimed and world.equipment.iron.is_empty():
+	if Facility.state(world, "garage").claimed and world.equipment.iron.is_empty():
 		# The unique recovered set remains physically visible until fitted.
 		draw_rect(Rect2(bench + Vector2(39, -3), Vector2(18, 23)), Color("c1d1d0") if state.armour_done else Color("837f71"))
 		draw_arc(bench + Vector2(48, -6), 7, PI, TAU, 12, CREAM, 3)

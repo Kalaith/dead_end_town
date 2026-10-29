@@ -1,5 +1,6 @@
 extends RefCounted
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const Content = preload("res://scripts/core/pressure_content.gd")
 const Pressure = preload("res://scripts/sim/pressure.gd")
 const Plan = preload("res://scripts/sim/migration_plan.gd")
@@ -191,7 +192,7 @@ static func migrate(data: Dictionary, catalog: Dictionary) -> bool:
 	for id: String in data.properties:
 		claims += 1 if data.properties[id].claimed else 0
 		discovered = discovered or (id != "home" and data.properties[id].looted)
-	if data.properties.garage.looted:
+	if Facility.saved(data, catalog, "garage").looted:
 		s.taught.append("brute")
 	for z: Dictionary in data.zombies:
 		if z.raid:
