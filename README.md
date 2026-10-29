@@ -73,7 +73,7 @@ Godot **4.7.2**, Compatibility renderer, desktop keyboard and mouse, 1280x720. N
 ./Run.ps1
 ```
 
-You can also open `project.godot` in the editor. Script-loading/editor checks and direct gameplay inspection are described in [AGENTS.md](AGENTS.md). Automated simulation scenarios and scripted staging tours have been removed at the user's request and must not be recreated; launching the game and capturing it with `tools/capture_window.ps1` is the way to check visible changes. Rules live in `scripts/sim/`, presentation in `scripts/presentation/`, content validation and saves in `scripts/core/`, and all balance and map data in `data/street/*.json` (zombie kinds in `data/zombies.json`). Project layout came from The Last Hearth, and shared tooling from `../godot_toolkit`; no gameplay was borrowed.
+You can also open `project.godot` in the editor. Script-loading/editor checks and direct gameplay inspection are described in [AGENTS.md](AGENTS.md). Launch the game and capture it with `tools/capture_window.ps1` to check visible changes; keep checks proportionate to the change. Rules live in `scripts/sim/`, presentation in `scripts/presentation/`, content validation and saves in `scripts/core/`, and all balance and map data in `data/street/*.json` (zombie kinds in `data/zombies.json`). Project layout came from The Last Hearth, and shared tooling from `../godot_toolkit`; no gameplay was borrowed.
 
 ## Production copy
 

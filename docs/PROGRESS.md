@@ -706,3 +706,4 @@ Implementation (no gameplay change intended):
 Evidence and limits:
 - All 85 scripts load; catalog validates with 0 errors; four deliberate corruptions (extra link, missing link, broken core route, missing barricade) are rejected; headless editor import succeeds.
 - Not seen in the running game: street drawing, the camera at the strip ends and the paused overview map need a direct look. Overview lots are now drawn from their rectangles (flatter than before). The local preview still assumes a 580-pixel view. No save schema change yet.
+- 29 October 2026: the 28 October restriction on automated simulations and scripted staging is lifted at the user's direction. `AGENTS.md`, the README, the roadmap and TODO no longer forbid them; checks stay proportionate to the change.

@@ -83,4 +83,4 @@ Claim, occupation and loss; safe connection and production; work orders; economy
 8. Area transition.
 9. Office district, then industrial area, each with its own boss or gate.
 10. Retire the old slice and watch.
-11. Direct-play verification (no automated simulations, per `AGENTS.md`).
+11. Verification by playing the real game, proportionate to each change (see `AGENTS.md`).
