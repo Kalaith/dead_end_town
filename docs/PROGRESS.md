@@ -287,3 +287,9 @@ Still needing development (second look, most important first):
 - `slice_state` (phase, held, downs) and `slice.hold_seconds` belonged to the removed neighbourhood-watch ending and did nothing. They are gone from the world, the save and the data; schema 43 drops the key from older saves. `slice.harvest_food` and `start_range` stay (readiness and timber still use them).
 - Parse and the catalog, save, vehicle (including the 40 and 41 upgrade paths), spitter, travel, boss, tips, office and industrial checks pass.
 - Still open debt: raider spur targets in `raiding.gd`, fence-line gate points that stall walkers, `migrate` upgrades that build a World, no save slots.
+
+## 30 October 2026: office and works exits get their own arena
+
+- The empty pocket north of the west-road corner (x 40-310, y 0-500) is now a road room holding the Warden's and Foreman's posts and the wide roadblock/exit at its top (posts 175,300 / 175,260; leashes 290 / 380; escorts either side). Players reach it from the top street, so the boss still guards the only way out, but the fight has a room rather than a strip of road. It is smaller than the suburb's bridge: the pocket is bounded by the lot fences, so a bigger arena would need moved lots or a larger map.
+- `sim_boss`: the dodging bot still wins in all three areas (office 49 s at full health, works 81 s with 60 left); the non-dodging bot still loses. A first, tighter works layout made the dodging bot lose, hence the longer works leash. Parse, catalog, boss, office, industrial, travel, save and pressure checks pass; `office_warden` and `works_foreman` were looked at (the tour camera clips the roadblock at the top edge).
+- Not played. Feel on both is unknown.

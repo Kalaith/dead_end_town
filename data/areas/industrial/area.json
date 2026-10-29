@@ -46,28 +46,28 @@
     "id": "boss_foreman",
     "kind": "foreman",
     "post": [
-      140,
-      880
+      175,
+      260
     ],
-    "leash": 320,
+    "leash": 380,
     "escorts": [
       [
-        90,
-        820
+        100,
+        200
       ],
       [
-        190,
-        820
+        250,
+        200
       ]
     ]
   },
   "exit": {
     "name": "Main gate",
     "rect": [
-      40,
-      500,
-      100,
-      80
+      50,
+      24,
+      250,
+      90
     ],
     "final": true,
     "line": "The main gate stands open. Beyond it the road runs on out of town. You and the people you gathered have broken out of Dead End Town."

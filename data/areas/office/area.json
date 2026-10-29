@@ -53,28 +53,28 @@
     "id": "boss_warden",
     "kind": "warden",
     "post": [
-      140,
-      760
+      175,
+      300
     ],
-    "leash": 300,
+    "leash": 290,
     "escorts": [
       [
-        90,
-        700
+        100,
+        220
       ],
       [
-        190,
-        700
+        250,
+        220
       ]
     ]
   },
   "exit": {
     "name": "Service stair",
     "rect": [
-      40,
-      500,
-      100,
-      80
+      50,
+      24,
+      250,
+      90
     ]
   },
   "entrance": {
