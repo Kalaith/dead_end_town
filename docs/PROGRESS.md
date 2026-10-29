@@ -86,3 +86,8 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 ## 29 October 2026: review pass 2 (area 2 prerequisite)
 
 - Measured the first area's hard-coded lot ids (about 300 references in about 50 scripts) and wrote up three options in `19-areas-and-suburb.md` ("Prerequisite for area 2"). No code changed: the choice shapes areas 2 and 3 and is the user's to make, so step 9 waits on it.
+
+## 29 October 2026: review pass 3 (ring reachability)
+
+- Added `tools/check_ring.gd`: with the home gate opened, the same waypoint walking the game uses reaches the bridge approach, the exit, the boss post and every lot's site from the start, and the horde's bridge entry reaches its approach point. All pass, which covers the west road and the south of the ring that nobody had walked. Still not walked by a person: the plaza, the rear gates in use, and a real fight at the post.
+- Found: walking to a gate point exactly on a lot's front fence line (for example `house_a` at 600,680) from the street stalls, because the waypoint step returns the walker's own position beside the fence. Sites inside lots, which tasks actually use, are fine. Left alone; if survivors report "Route blocked" at those gates, aim their approach at a point just off the fence.
