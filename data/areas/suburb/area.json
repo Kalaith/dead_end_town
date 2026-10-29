@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "area": {
+    "id": "suburb",
+    "name": "The Suburb",
+    "note": "Interim: the original street strip, until the suburb grid is authored."
+  },
+  "bounds": [
+    8640,
+    1160
+  ],
+  "balance": {
+    "player_start": [
+      360,
+      365
+    ],
+    "mara_start": [
+      360,
+      445
+    ],
+    "home_respawn": [
+      360,
+      350
+    ],
+    "home_alert_center": [
+      360,
+      480
+    ],
+    "emergency_shelter": [
+      30,
+      580
+    ]
+  },
+  "recovery_salvage": {
+    "sites": {
+      "home": [
+        180,
+        350
+      ],
+      "west": [
+        30,
+        610
+      ]
+    }
+  }
+}

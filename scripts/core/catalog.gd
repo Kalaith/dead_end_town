@@ -24,24 +24,36 @@ const JsonIO = preload("res://addons/hatchery/core/json_io.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 
 ## Authored content is split by topic so no one file outgrows review. Add a file here when adding a topic.
-const FILES: Array[String] = ["street/attention.json", "street/recovery.json", "street/survivors.json", "street/town.json", "street/work.json", "street/firearm.json", "street/balance.json", "street/pressure.json", "street/roads.json", "street/equipment.json", "street/properties.json", "zombies.json", "street/properties_market.json", "street/properties_civic.json", "street/properties_works.json", "street/roads_hearth_east.json", "street/roads_market.json", "street/roads_civic.json", "street/roads_works.json", "street/passages_market.json", "street/passages_civic.json", "street/passages_works.json"]
+## Shared files describe rules, people and equipment that travel between areas.
+const SHARED_FILES: Array[String] = ["street/attention.json", "street/recovery.json", "street/survivors.json", "street/work.json", "street/firearm.json", "street/balance.json", "street/equipment.json", "zombies.json"]
+## Area files describe one map; each lives under data/areas/<id>/ and area.json supplies its bounds and start points.
+const AREA_FILES: Array[String] = ["area.json", "town.json", "pressure.json", "properties.json", "properties_market.json", "properties_civic.json", "properties_works.json", "roads.json", "roads_hearth_east.json", "roads_market.json", "roads_civic.json", "roads_works.json", "passages_market.json", "passages_civic.json", "passages_works.json"]
+const APPENDED_KEYS: Array[String] = ["properties", "barricades", "crossings", "passages"]
 
 
-static func read() -> Dictionary:
+## The registry of every area in campaign order; the first entry starts a new game.
+static func registry(errors: Array[String] = []) -> Dictionary:
+	return JsonIO.read_object("res://data/areas.json", errors, 1)
+
+
+static func read(area_id: String = "") -> Dictionary:
 	var errors: Array[String] = []
+	var list: Dictionary = registry(errors)
 	var data: Dictionary = {}
-	for file: String in FILES:
-		var part: Dictionary = JsonIO.read_object("res://data/" + file, errors, 1)
-		for key: String in part:
-			if key == "schema_version":
-				continue
-			if data.has(key):
-				if key in ["properties", "barricades", "crossings", "passages"] and data[key] is Array and part[key] is Array:
-					data[key].append_array(part[key])
-				else:
-					errors.append("%s repeats %s." % [file, key])
-			else:
-				data[key] = part[key]
+	if not errors.is_empty() or not list.get("areas") is Array or not list.get("first") is String:
+		errors.append("Area registry needs a first area and a list of areas.")
+	else:
+		if area_id.is_empty():
+			area_id = list.first
+		var ids: Array = list.areas.map(func(entry: Dictionary) -> String: return str(entry.get("id")))
+		if area_id not in ids:
+			errors.append("Unknown area: " + area_id)
+		else:
+			for file: String in SHARED_FILES:
+				_merge(data, JsonIO.read_object("res://data/" + file, errors, 1), file, errors)
+			for file: String in AREA_FILES:
+				_merge(data, JsonIO.read_object("res://data/areas/%s/%s" % [area_id, file], errors, 1), file, errors)
+			data.areas = list.areas
 	data.schema_version = 1
 	errors.append_array(problems(data))
 	for error: String in errors:
@@ -49,11 +61,27 @@ static func read() -> Dictionary:
 	return data if errors.is_empty() else {}
 
 
+## Merges one file into the catalog. Lists of sites are appended; any other repeated value is an error.
+static func _merge(data: Dictionary, part: Dictionary, file: String, errors: Array[String]) -> void:
+	for key: String in part:
+		if key == "schema_version":
+			continue
+		if not data.has(key):
+			data[key] = part[key]
+		elif data[key] is Array and part[key] is Array and key in APPENDED_KEYS:
+			data[key].append_array(part[key])
+		elif data[key] is Dictionary and part[key] is Dictionary:
+			_merge(data[key], part[key], file, errors)
+		else:
+			errors.append("%s repeats %s." % [file, key])
+
+
 static func problems(data: Dictionary) -> Array[String]:
 	var errors: Array[String] = []
 	var rules := Rules.new(errors, "street")
 	rules.schema_version(data, 1)
 	rules.vec2(data, "bounds")
+	_area(data, rules, errors)
 	if rules.object(data, "balance"):
 		rules.number_between(data.balance, "attack_cone_dot", -1.0, 0.99)
 		rules.number_between(data.balance, "home_gate_start_factor", 0.01, 1.0)
@@ -134,6 +162,16 @@ static func problems(data: Dictionary) -> Array[String]:
 	SliceState.content(data, errors)
 	WorkRecipes.content(data, errors)
 	return errors
+
+
+static func _area(data: Dictionary, rules: RefCounted, errors: Array[String]) -> void:
+	if not rules.object(data, "area") or not data.get("areas") is Array:
+		return
+	rules.text(data.area, "id")
+	rules.text(data.area, "name")
+	var ids: Array = rules.unique_ids(data.areas)
+	if data.area.get("id") not in ids:
+		errors.append("Area is not in the registry.")
 
 
 static func _zombie_types(data: Dictionary, errors: Array[String]) -> void:

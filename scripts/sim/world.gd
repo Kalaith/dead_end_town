@@ -42,6 +42,9 @@ var shot: Dictionary = {"from": Vector2.ZERO, "to": Vector2.ZERO, "left": 0.0}
 var roam_rng := RandomNumberGenerator.new()
 var seen: Array = ["home"]
 var catalog: Dictionary
+## Id of the area being played; frozen holds the saved state of areas the player has left.
+var area: String
+var frozen: Dictionary = {}
 var balance: Dictionary
 var properties: Dictionary = {}
 var player: Dictionary
@@ -89,6 +92,7 @@ var roadworks: Dictionary
 
 func _init(data: Dictionary) -> void:
 	catalog = data
+	area = str(data.area.id)
 	balance = data.balance
 	production = Production.initial(data)
 	medicine_production = Medicine.initial(data)

@@ -1,28 +1,8 @@
 {
   "schema_version": 1,
-  "bounds": [
-    8640,
-    1160
-  ],
   "balance": {
     "garage_bonus_materials": 12,
     "home_gate_start_factor": 0.65,
-    "player_start": [
-      360,
-      365
-    ],
-    "mara_start": [
-      360,
-      445
-    ],
-    "home_respawn": [
-      360,
-      350
-    ],
-    "home_alert_center": [
-      360,
-      480
-    ],
     "home_alert_radius": 180,
     "scout_range": 640,
     "timber_materials": 10,
@@ -95,10 +75,6 @@
     "carry_speed_factor": 0.7,
     "home_rest_seconds": 15,
     "home_recover_health": 50,
-    "emergency_shelter": [
-      30,
-      580
-    ],
     "defeat_player_health": 50,
     "defeat_survivor_health": 25,
     "recovery_clear_radius": 120,

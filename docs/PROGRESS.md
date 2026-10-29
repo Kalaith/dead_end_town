@@ -707,3 +707,11 @@ Evidence and limits:
 - All 85 scripts load; catalog validates with 0 errors; four deliberate corruptions (extra link, missing link, broken core route, missing barricade) are rejected; headless editor import succeeds.
 - Not seen in the running game: street drawing, the camera at the strip ends and the paused overview map need a direct look. Overview lots are now drawn from their rectangles (flatter than before). The local preview still assumes a 580-pixel view. No save schema change yet.
 - 29 October 2026: the 28 October restriction on automated simulations and scripted staging is lifted at the user's direction. `AGENTS.md`, the README, the roadmap and TODO no longer forbid them; checks stay proportionate to the change.
+
+## 29 October 2026: area layer (step 3)
+
+- Content is split into shared rules (`data/street/`, `data/zombies.json`) and per-area maps (`data/areas/<id>/`). `data/areas.json` lists areas in campaign order. Each area's `area.json` supplies its id, bounds, start and shelter points and recovery-salvage sites, merged into the catalog. `Catalog.read(area_id)` loads one area; no argument starts the first. The original strip is now the interim `suburb` area, unchanged in content.
+- Save schema 36 adds the current `area` and a `frozen` registry for areas the player has left (empty for now). Older saves upgrade to the first area. Loading rejects an area other than the loaded one, an unknown area, or a frozen copy of the current one.
+- Added `tools/check_save.gd` (round trip, schema-35 upgrade, bad area records) alongside `check_catalog.gd`. All pass; 87 scripts load; editor import is clean.
+- Played the real game: it starts from the moved data, Save writes schema 36 with area `suburb`, and Load reports "Street restored" (`docs/verification/area_layer_save_load.png`).
+- Not done: switching areas, carrying people and stock between them, and loading a save for a non-first area (step 8). The suburb grid itself is step 4.

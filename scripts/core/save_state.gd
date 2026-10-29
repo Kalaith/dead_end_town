@@ -46,7 +46,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 35
+const SCHEMA: int = 36
 ## Saved world fields that are collections and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -64,7 +64,7 @@ func _init(data: Dictionary, path: String = "user://street.json") -> void:
 
 
 func snapshot(world: RefCounted) -> Dictionary:
-	var result: Dictionary = {"schema_version": SCHEMA, "roam_rng_state": str(world.roam_rng.state), "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": []}
+	var result: Dictionary = {"schema_version": SCHEMA, "roam_rng_state": str(world.roam_rng.state), "properties": world.properties.duplicate(true), "player": _encode_actor(world.player), "survivors": [], "zombies": [], "area": world.area, "frozen": world.frozen.duplicate(true)}
 	for key: String in STATE_KEYS:
 		result[key] = world.get(key).duplicate(true) if key in COPIED_KEYS else world.get(key)
 	for a: Dictionary in world.survivors:
@@ -115,6 +115,7 @@ func restore(raw: Dictionary) -> RefCounted:
 	world.provisions.harvested = int(data.provisions.harvested)
 	world.roam_rng.state = int(data.roam_rng_state)
 	world.properties = data.properties.duplicate(true)
+	world.frozen = data.frozen.duplicate(true)
 	world.player = _decode_actor(data.player)
 	world.aim = world.player.facing
 	world.survivors.clear()
@@ -132,6 +133,8 @@ func valid(data: Dictionary) -> bool:
 	if not Rules.integer_in(data.get("schema_version"), SCHEMA, SCHEMA):
 		return false
 	if not data.get("roam_rng_state") is String or str(int(data.roam_rng_state)) != data.roam_rng_state:
+		return false
+	if not _valid_areas(data):
 		return false
 	for key: String in STATE_KEYS:
 		if key in ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "rescue_intro", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
@@ -207,6 +210,17 @@ func valid(data: Dictionary) -> bool:
 	return TownState.valid(data, catalog) and JobState.valid(data, catalog) and WorkOrderState.valid(data, catalog) and FirearmState.valid(data, catalog) and PressureState.valid(data, catalog) and NeighbourhoodState.valid(data, catalog) and EquipmentState.valid(data) and ProvisionsState.valid(data, catalog) and SliceState.valid(data, catalog)
 
 
+## The saved area must be the loaded one; other areas keep a frozen record of their own state.
+func _valid_areas(data: Dictionary) -> bool:
+	if data.get("area") != catalog.area.id or not data.get("frozen") is Dictionary:
+		return false
+	var ids: Array = catalog.areas.map(func(entry: Dictionary) -> String: return str(entry.id))
+	for id: Variant in data.frozen:
+		if id not in ids or id == data.area or not data.frozen[id] is Dictionary:
+			return false
+	return true
+
+
 func _valid_actor(a: Variant, max_health: float) -> bool:
 	if not a is Dictionary:
 		return false
@@ -239,6 +253,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 35:
+		return _upgrade_areas(upgraded)
 	if version == 34:
 		return _upgrade_campaign_pressure(upgraded)
 	if version == 33:
@@ -722,5 +738,13 @@ func _upgrade_screechers(data: Dictionary) -> Dictionary:
 func _upgrade_campaign_pressure(data: Dictionary) -> Dictionary:
 	if not PressureState.migrate(data, catalog):
 		return {}
+	data.schema_version = 35
+	return _upgrade_areas(data)
+
+
+## Saves before areas were one street; it becomes the first area with nothing frozen.
+func _upgrade_areas(data: Dictionary) -> Dictionary:
+	data.area = catalog.area.id
+	data.frozen = {}
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}
