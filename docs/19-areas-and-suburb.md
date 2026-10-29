@@ -87,6 +87,8 @@ Options, not yet chosen:
 2. **Facilities as data.** Each lot declares `facility: garden | clinic | ...` in its JSON and code looks facilities up by kind. The right long-term shape, but a large refactor of the files above and a save migration.
 3. **Carried community only.** Areas 2 and 3 use a reduced model (claim, defend, scavenge) while facilities and unlocks stay with the community through `unlocks`. Least work, but a different game loop per area.
 
+**Decided (29 October 2026): option 2, facilities as data.** Each lot declares `facility` (`home`, `garden`, `library`, `garage`, `clinic`, `greenhouse`, `munitions`, `residence`, `hardware`, or `house`); code uses `Facility` (`scripts/sim/facility.gd`) to look a kind up, and an area without a kind reads as never claimed or looted. The home lot keeps the id `home`. Done in slices, each committed with the checks: A) the field, the helper and validation; B) direct `properties.<facility>` reads; C) string-literal ids in comparisons; D) save validators and the roster/equipment/firearm couplings; E) presentation.
+
 Already done toward this: unlocks (gear, firearm) and the roster no longer depend on the first area's flags once the player has travelled.
 
 ## Open points

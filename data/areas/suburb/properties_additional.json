@@ -3,6 +3,7 @@
   "properties": [
     {
       "id": "clinic",
+      "facility": "clinic",
       "resident_kinds": [
         "screecher",
         "shambler",
@@ -82,6 +83,7 @@
     },
     {
       "id": "greenhouse",
+      "facility": "greenhouse",
       "resident_kinds": [
         "runner",
         "shambler",
@@ -162,6 +164,7 @@
     },
     {
       "id": "house_c",
+      "facility": "house",
       "core": false,
       "available": true,
       "food_cache": 3,
@@ -234,6 +237,7 @@
     },
     {
       "id": "house_d",
+      "facility": "house",
       "core": false,
       "available": true,
       "food_cache": 3,
@@ -305,6 +309,7 @@
     },
     {
       "id": "house_e",
+      "facility": "house",
       "name": "Number 14",
       "reward": "Household supplies",
       "food_cache": 3,
@@ -375,6 +380,7 @@
     },
     {
       "id": "house_b",
+      "facility": "house",
       "core": false,
       "available": true,
       "food_cache": 3,
@@ -446,6 +452,7 @@
     },
     {
       "id": "house_f",
+      "facility": "house",
       "name": "Number 16",
       "reward": "Household supplies",
       "food_cache": 3,
@@ -517,6 +524,7 @@
     },
     {
       "id": "unfinished",
+      "facility": "house",
       "core": false,
       "available": true,
       "food_cache": 0,

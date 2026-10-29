@@ -3,6 +3,7 @@
   "properties": [
     {
       "id": "hardware",
+      "facility": "hardware",
       "resident_kinds": [
         "runner",
         "shambler",
@@ -81,6 +82,7 @@
     },
     {
       "id": "residence",
+      "facility": "residence",
       "food_cache": 4,
       "name": "05 / EAST HOUSE",
       "rect": [
@@ -146,6 +148,7 @@
     },
     {
       "id": "garden",
+      "facility": "garden",
       "food_cache": 4,
       "name": "02 / GARDEN HOUSE",
       "rect": [
@@ -244,6 +247,7 @@
     },
     {
       "id": "home",
+      "facility": "home",
       "food_cache": 0,
       "name": "01 / HOME",
       "rect": [
@@ -283,6 +287,7 @@
     },
     {
       "id": "house_a",
+      "facility": "house",
       "core": true,
       "available": true,
       "food_cache": 3,
@@ -354,6 +359,7 @@
     },
     {
       "id": "munitions",
+      "facility": "munitions",
       "food_cache": 4,
       "name": "06 / AMMUNITION WORKSHOP",
       "rect": [
@@ -428,6 +434,7 @@
     },
     {
       "id": "garage",
+      "facility": "garage",
       "food_cache": 2,
       "name": "04 / GARAGE",
       "rect": [
@@ -551,6 +558,7 @@
     },
     {
       "id": "library",
+      "facility": "library",
       "food_cache": 3,
       "name": "03 / LIBRARY",
       "rect": [

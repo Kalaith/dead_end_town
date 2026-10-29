@@ -1,6 +1,7 @@
 extends RefCounted
 ## Validates the lot graph of one area. Layout comes from authored links and rectangles, never from a fixed grid.
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 
 
 static func content(data: Dictionary, errors: Array[String]) -> void:
@@ -15,6 +16,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	var ids: Array = rules.unique_ids(data.properties)
 	if "home" not in ids:
 		errors.append("Every area needs a home property.")
+	_facilities(data, errors)
 	var core_ids: Array[String] = []
 	for id: Variant in data.town.core:
 		if not id is String or id not in ids or id in core_ids:
@@ -51,6 +53,23 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 		real_edges.append(d.requires)
 	if real_edges.size() != links.size():
 		errors.append("Every authored link needs exactly one passage or crossing.")
+
+
+## Each lot declares one facility kind. A kind may appear in at most one lot, and `home` must be the lot with id home.
+static func _facilities(data: Dictionary, errors: Array[String]) -> void:
+	var seen: Array[String] = []
+	for p: Dictionary in data.properties:
+		var kind: Variant = p.get("facility")
+		if not kind is String or (kind != Facility.HOUSE and kind not in Facility.KINDS):
+			errors.append("Property %s needs a known facility kind." % p.get("id"))
+		elif kind != Facility.HOUSE and kind in seen:
+			errors.append("Facility %s appears in more than one lot." % kind)
+		elif kind != Facility.HOUSE:
+			seen.append(kind)
+		if (kind == "home") != (p.get("id") == "home"):
+			errors.append("The home facility belongs to the lot with id home.")
+	if "home" not in seen:
+		errors.append("Every area needs a home facility.")
 
 
 static func _links(data: Dictionary, ids: Array, errors: Array[String]) -> Array:

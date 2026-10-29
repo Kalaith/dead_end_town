@@ -138,3 +138,7 @@ User feedback: the zombies were not a real danger; taking space should feel like
 - Fix: schema 39. `resident_state.gd` renumbers each lot's old starting zombies into the first slots of its new numbering (`z%d` ids shifted when each lot doubled), short-term memories are cleared since they are keyed by id, and every missing resident (the new zombies, reinforcements, the boss and escorts) is added from a fresh world at its authored position. Older saves pass through the same step. Old saves now load with the doubled, refilled yards.
 - Checked: `tools/check_save.gd` builds a save shaped like the old one (half the residents, old numbering, schema 38) and restores it to the full 124 plus boss; catalog, pressure, boss and travel checks pass. Not tried with a real old save file on disk.
 - Follow-up: there is no save file on this machine (`user://` holds no `suburb.json`), so the schema 39 upgrade could only be exercised by the constructed old-style save in `check_save.gd`, not a real one.
+
+## 29 October 2026: facilities as data, slice A
+
+- Decision (user): option 2 for the area-2 prerequisite. Slice A: every lot in `properties*.json` has a `facility` kind; `scripts/sim/facility.gd` looks facilities up by kind (`id`, `has`, `kind_of`, `definition`, `state`, `saved`, an inert record for a missing facility); `town_content.gd` validates that each kind is known and unique and that `home` is the lot with id home. Behaviour is unchanged: nothing reads the field yet. Catalog 0 problems.
