@@ -2,13 +2,14 @@ extends RefCounted
 const Carrying = preload("res://scripts/sim/carrying.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
 const HomeRest = preload("res://scripts/sim/home_rest.gd")
+const Equipment = preload("res://scripts/sim/equipment.gd")
 const Salvage = preload("res://scripts/sim/salvage.gd")
 const Vehicle = preload("res://scripts/sim/vehicle.gd")
 
 ## Guidance follows what the world looks like, never a fixed script: the first tip whose moment has come and whose
 ## lesson has not been learned is shown. Nothing here changes the game, spends anything or is saved; what cannot be read
 ## from saved state (walked, swung, lifted) is remembered for the session only, and a save past a minute counts as taught.
-const ORDER: Array[String] = ["move", "swing", "orders", "pistol", "carry", "carry_drop", "rest", "gate_repair", "gate_open", "reclaim", "timber", "van", "arrivals"]
+const ORDER: Array[String] = ["move", "swing", "orders", "pistol", "carry", "carry_drop", "rest", "gate_repair", "gate_open", "reclaim", "timber", "loadout", "field_bag", "van", "arrivals"]
 const WALK_DISTANCE: float = 150.0
 const ZOMBIE_NEAR: float = 220.0
 const INFO_SECONDS: float = 12.0
@@ -92,6 +93,10 @@ static func _due(world: RefCounted, id: String) -> bool:
 			return not Salvage.nearby(world).is_empty()
 		"pistol":
 			return world.firearms.owned and int(world.firearms.bullets) > 0 and Combat.danger(world, world.player.pos, ZOMBIE_NEAR)
+		"loadout":
+			return world.workshop.armour_done and world.equipment.iron.is_empty() and world.equipment.shield.is_empty()
+		"field_bag":
+			return Equipment.unlocked(world, "field_bag") and world.equipment.field_bag.is_empty() and Carrying.casualties(world).size() > 0
 		"van":
 			return Vehicle.near(world)
 		"arrivals":
@@ -124,6 +129,10 @@ static func _learned(world: RefCounted, id: String) -> bool:
 			return t.salvaged
 		"pistol":
 			return t.shot
+		"loadout":
+			return not world.equipment.iron.is_empty() or not world.equipment.shield.is_empty()
+		"field_bag":
+			return not world.equipment.field_bag.is_empty()
 		"van":
 			return t.drove
 		"arrivals":

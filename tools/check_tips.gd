@@ -81,6 +81,25 @@ func _init() -> void:
 	fight.shoot()
 	fight.step(0.05)
 	_expect("firing ends it", Tips.current(fight) != "pistol")
+	var kit := World.new(data)
+	kit.elapsed = 120.0
+	for z3: Dictionary in kit.zombies:
+		z3.hp = 0.0
+	kit.properties.home.gate_hp = float(kit.balance.gate_health)
+	kit.properties.home.open = true
+	kit.properties.hardware.claimed_once = true
+	kit.workshop.armour_done = true
+	kit.step(0.05)
+	_expect("a finished armour cache teaches the loadout", Tips.current(kit) == "loadout")
+	kit.equipment.iron = "mara"
+	kit.properties.clinic.looted = true
+	kit.survivors[0].hp = 40.0
+	kit.player.pos += Vector2(0, 400)
+	kit.step(0.05)
+	_expect("a hurt survivor with no field bag teaches assigning it (" + Tips.current(kit) + ")", Tips.current(kit) == "field_bag")
+	kit.equipment.field_bag = "mara"
+	kit.step(0.05)
+	_expect("assigning it ends the tip", Tips.current(kit) != "field_bag")
 	_expect("tips never touched the stock", int(world.food) == int(data.balance.starting_food) and int(world.materials) == int(data.balance.starting_materials))
 	print("%d failures" % failures)
 	quit(1 if failures > 0 else 0)

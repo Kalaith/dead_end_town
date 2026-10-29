@@ -316,3 +316,8 @@ Still needing development (second look, most important first):
 
 - Time played in other areas counts as time away (`AreaTravel._played`: this area's clock plus every frozen area's). A frozen record remembers `left_total`; on return a finished garden yields one food per `away_food_seconds` (90, `balance.json`) of absence, never pushing food above the carry cap (40), and the arrival note says how much. Records from older saves lack `left_total` and grow nothing. No schema change.
 - `check_travel` covers it (900 s away gives 10 food). Not done: production by clinic, workshop or ammunition bench while away, and pressure on an area left behind; both stay frozen. Rates are unplayed guesses.
+
+## 30 October 2026: tips for loadouts and the field bag
+
+- Two more session-only tips: `loadout` (the workshop's armour cache is done and nobody wears iron or a shield: F, Loadouts) and `field_bag` (the bag is unlocked, unassigned, and someone is hurt). Both go away once the thing is done. `check_tips` covers them (0 failures); the rest tip correctly outranks the field-bag tip at the home porch.
+- Still without tips: the work board (J), noise, areas 2-3 specifics. First-pass wording, unplayed.
