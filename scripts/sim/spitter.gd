@@ -56,6 +56,41 @@ static func step(world: RefCounted, z: Dictionary, target: Dictionary, dt: float
 	return false
 
 
+## Where hazards are or are about to be: pools, globs in flight and the points spitters are aiming at.
+static func threats(world: RefCounted) -> Array[Vector2]:
+	var found: Array[Vector2] = []
+	for s: Dictionary in world.spits:
+		found.append(Vector2(float(s.tx), float(s.ty)) if s.t == "glob" else Vector2(float(s.x), float(s.y)))
+	for z: Dictionary in world.zombies:
+		if float(z.hp) > 0 and is_spitter(z) and z.spitter.phase == "aim":
+			found.append(Vector2(float(z.spitter.tx), float(z.spitter.ty)))
+	return found
+
+
+## A nearby clear point for someone standing inside a hazard, or Vector2.INF when they are safe.
+static func escape(world: RefCounted, from: Vector2) -> Vector2:
+	var found: Array[Vector2] = threats(world)
+	if found.is_empty():
+		return Vector2.INF
+	var config: Dictionary = world.catalog.zombies.types.spitter
+	var radius: float = float(config.pool_radius) + 14.0
+	var nearest: Vector2 = Vector2.INF
+	for centre: Vector2 in found:
+		if from.distance_to(centre) < radius and (not nearest.is_finite() or from.distance_to(centre) < from.distance_to(nearest)):
+			nearest = centre
+	if not nearest.is_finite():
+		return Vector2.INF
+	var away: Vector2 = nearest.direction_to(from)
+	if away.is_zero_approx():
+		away = Vector2.RIGHT
+	# Try straight out first, then fan round until a walkable, hazard-free point is found.
+	for turn: float in [0.0, 0.6, -0.6, 1.2, -1.2, 1.9, -1.9, PI]:
+		var point: Vector2 = nearest + away.rotated(turn) * (radius + 10.0)
+		if world.routes.walkable(point) and world.routes.travel_clear(from, point) and found.all(func(centre: Vector2) -> bool: return centre.distance_to(point) >= radius):
+			return point
+	return Vector2.INF
+
+
 ## Moves every glob and ages every pool for one fixed step.
 static func advance(world: RefCounted, dt: float) -> void:
 	if world.spits.is_empty():
@@ -122,7 +157,7 @@ static func _splash(world: RefCounted, at: Vector2, config: Dictionary, victim: 
 static func _pool_tick(world: RefCounted, s: Dictionary, config: Dictionary) -> void:
 	var centre := Vector2(float(s.x), float(s.y))
 	for person: Dictionary in [world.player] + world.survivors:
-		if float(person.hp) <= 0 or (person.id == "you" and Vehicle.driving(world)) or person.pos.distance_to(centre) > float(config.pool_radius):
+		if float(person.hp) <= 0 or Vehicle.occupant(world, person) or person.pos.distance_to(centre) > float(config.pool_radius):
 			continue
 		if world.elapsed - float(world.spit_hits.get(person.id, -10.0)) < 0.99:
 			continue

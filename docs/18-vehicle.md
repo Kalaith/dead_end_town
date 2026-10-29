@@ -6,7 +6,9 @@ The design below was written for the old strip (depot service bay, Nia, Rowan, 1
 
 Implemented (schema 41): boarding with E when stopped and near; W/S throttle and reverse, A/D steer; the specified speeds, acceleration, braking and turn rate; a swept 54 x 28 footprint blocked by walls, gates, barricades, people and zombies; an `engine` noise (radius 450, 2 s); zombies and Spitter globs damaging the 300-point hull instead of the driver; ejection when it is wrecked.
 
-Not implemented: discovery and restoration, passengers, hull repair, recovery to a depot, downed occupants (a wrecked van just ejects an unharmed driver). The sections below remain the intent, to be re-fitted to areas. The van does not cross areas.
+Added (schema 42): up to two nearby followers ride (`seats`, `board_range`) at the van's centre, take no direct hits and step out beside it; hold R beside a stopped van to repair it (4 materials prepaid once, 10 s, +200 hull, partial work kept); a casualty you are carrying can be taken aboard away from a shelter (the van is the faster way to a clinic or home, but at a shelter E still puts them down).
+
+Not implemented: discovery and restoration, survivors repairing it, recovery to a depot, downed occupants (a wrecked van just ejects an unharmed driver and passengers). The sections below remain the intent, to be re-fitted to areas. The van does not cross areas.
 
 Original text follows.
 

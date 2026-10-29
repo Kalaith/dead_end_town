@@ -203,6 +203,7 @@ func step(dt: float) -> void:
 		working = false
 	Neighbourhood.step(self, work_dt)
 	_work(work_dt)
+	Vehicle.repair(self, work_dt)
 	Workshop.step(self, work_dt)
 	Clinic.step(self, work_dt)
 	FoodGrowing.step(self, work_dt)
@@ -269,6 +270,10 @@ func safe_connected(id: String) -> bool:
 
 
 func context() -> String:
+	if _van_first():
+		var drive_text: String = Vehicle.context(self)
+		if not drive_text.is_empty():
+			return drive_text
 	var carry_text: String = Carrying.context(self)
 	if not carry_text.is_empty():
 		if not Carrying.occupied(self) and float(carry.progress) == 0:
@@ -290,6 +295,15 @@ func context() -> String:
 	if not Salvage.nearby(self).is_empty():
 		text += "   Q Timber (+%d materials)" % int(balance.timber_materials)
 	return text
+
+
+## The van takes the E press when driving, or when beside it with nothing nearer to lift or put down.
+func _van_first() -> bool:
+	if Vehicle.driving(self):
+		return true
+	if not Vehicle.near(self):
+		return false
+	return Carrying.shelter(self).is_empty() if Carrying.occupied(self) else Carrying.nearby(self).is_empty()
 
 
 func salvage() -> bool:
@@ -332,9 +346,9 @@ func _context() -> String:
 func interact() -> void:
 	if float(player.hp) <= 0:
 		return
-	if Carrying.press(self):
+	if _van_first() and Vehicle.press(self):
 		return
-	if Vehicle.press(self):
+	if Carrying.press(self):
 		return
 	if Boss.at_exit(self):
 		Boss.interact(self)

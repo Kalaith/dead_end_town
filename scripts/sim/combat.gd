@@ -67,7 +67,7 @@ static func step(world: RefCounted, dt: float) -> void:
 				world.note(a.name + " is down. Carry them to a clear shelter.")
 			a.activity = "Down - carry to shelter"
 			continue
-		if a.order not in ["Rescue", "Field"]:
+		if a.order not in ["Rescue", "Field"] and not Vehicle.occupant(world, a):
 			_survivor(world, a, dt)
 	for z: Dictionary in world.zombies:
 		if float(z.hp) > 0:
@@ -80,6 +80,12 @@ static func step(world: RefCounted, dt: float) -> void:
 
 static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 	var previous: String = a.activity
+	# Anyone standing in spit, or where a glob is about to land, steps clear before doing anything else.
+	var clear_spot: Vector2 = Spitter.escape(world, a.pos)
+	if clear_spot.is_finite():
+		a.activity = "Dodging spit"
+		_walk(world, a, clear_spot, dt, _survivor_speed(world, a))
+		return
 	var anchor: Vector2 = a.anchor
 	match a.order:
 		"Guard", "Home":
@@ -208,7 +214,7 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 		return
 	if Spitter.step(world, z, target, dt):
 		return
-	if not target.is_empty() and best < 29.0 and world.routes.line_clear(z.pos, target.pos) and float(z.cooldown) <= 0 and not (target.id == "you" and Vehicle.driving(world)):
+	if not target.is_empty() and best < 29.0 and world.routes.line_clear(z.pos, target.pos) and float(z.cooldown) <= 0 and not Vehicle.occupant(world, target):
 		target.hp = maxf(0.0, float(target.hp) - incoming_damage(world, target, z.pos, z))
 		target.flash = 0.18
 		z.cooldown = ZombieTypes.stat(world.catalog, z, "cooldown")

@@ -67,11 +67,95 @@ func _init() -> void:
 	old.schema_version = 40
 	var upgraded: RefCounted = saves.restore(old)
 	_expect("a schema 40 save gains an undriven van", upgraded != null and not Vehicle.driving(upgraded) and float(upgraded.vehicle.hull) == 300.0)
+	_fittings(data, saves)
 	z.hp = 0.0
 	Vehicle.hit(world, 1000.0)
 	_expect("a wrecked van ejects the driver and stays wrecked", not Vehicle.driving(world) and float(world.vehicle.hull) == 0.0 and world.context() != "E Drive the van")
 	print("%d failures" % failures)
 	quit(1 if failures > 0 else 0)
+
+
+## Riders, the ambulance run and repair.
+func _fittings(data: Dictionary, saves: RefCounted) -> void:
+	var world := World.new(data)
+	_clear(world)
+	world.player.hp = 100.0
+	var mara: Dictionary = world.survivors[0]
+	mara.hp = 80.0
+	mara.order = "Follow"
+	world.player.pos = Vehicle.pos(world) + Vector2(0, 40)
+	mara.pos = world.player.pos + Vector2(20, 0)
+	world.interact()
+	_expect("a close follower boards with the driver", Vehicle.driving(world) and world.vehicle.riders == [mara.id] and mara.pos.distance_to(Vehicle.pos(world)) < 0.01)
+	var restored: RefCounted = saves.restore(JSON.parse_string(JSON.stringify(saves.snapshot(world))))
+	_expect("riders save and load", restored != null and restored.vehicle.riders == [mara.id])
+	world.move_input = Vector2(0, -1)
+	for i: int in range(20):
+		world.step(0.05)
+	_expect("the rider moves with the van", mara.pos.distance_to(Vehicle.pos(world)) < 0.01)
+	var z: Dictionary = world.zombies[0]
+	z.hp = 60.0
+	z.pos = Vehicle.pos(world) + Vector2(20, 0)
+	z.cooldown = 0.0
+	for i: int in range(30):
+		world.step(0.05)
+	_expect("a zombie at the hull cannot hurt the rider", float(mara.hp) == 80.0)
+	z.hp = 0.0
+	world.move_input = Vector2.ZERO
+	world.vehicle.speed = 0.0
+	world.interact()
+	_expect("getting out sets the rider down on foot and clear", not Vehicle.driving(world) and world.vehicle.riders.is_empty() and mara.pos.distance_to(world.player.pos) > 5.0 and world.routes.walkable(mara.pos))
+	# Ambulance: boarding with a casualty in arms.
+	var w2 := World.new(data)
+	_clear(w2)
+	w2.player.hp = 100.0
+	var patient: Dictionary = w2.survivors[0]
+	patient.hp = 0.0
+	w2.carry.patient = patient.id
+	# Away from any shelter, where E would otherwise put the casualty down.
+	w2.vehicle.x = 1500.0
+	w2.vehicle.y = 900.0
+	w2.player.pos = Vehicle.pos(w2) + Vector2(0, 40)
+	w2.interact()
+	w2.step(0.05)
+	_expect("a carried casualty rides along", Vehicle.driving(w2) and patient.pos.distance_to(w2.player.pos) < 0.01 and w2.carry.patient == patient.id)
+	w2.interact()
+	_expect("getting out keeps the casualty in arms", not Vehicle.driving(w2) and w2.carry.patient == patient.id)
+	# Repair: paid once, partial work kept, mobility returns.
+	var w3 := World.new(data)
+	_clear(w3)
+	Vehicle.hit(w3, 1000.0)
+	w3.player.pos = Vehicle.pos(w3) + Vector2(0, 40)
+	w3.materials = 10
+	_expect("the wrecked van offers repair", w3.context().contains("Repair"))
+	w3.working = true
+	w3.step(1.0)
+	_expect("repair prepays 4 materials once", w3.materials == 6 and bool(w3.vehicle.repair_paid))
+	w3.working = false
+	w3.step(1.0)
+	w3.working = true
+	for i: int in range(36):
+		w3.step(0.25)
+	_expect("repair finishes with 200 hull and no second charge", float(w3.vehicle.hull) == 200.0 and w3.materials == 6 and not bool(w3.vehicle.repair_paid))
+	w3.working = false
+	_expect("a repaired van can be driven again", w3.context().begins_with("E Drive the van"))
+	var short := World.new(data)
+	_clear(short)
+	Vehicle.hit(short, 50.0)
+	short.materials = 1
+	short.player.pos = Vehicle.pos(short) + Vector2(0, 40)
+	short.working = true
+	short.step(1.0)
+	_expect("without materials nothing is spent or repaired", short.materials == 1 and float(short.vehicle.hull) == 250.0)
+	# Saves from before the fittings.
+	var raw41: Dictionary = JSON.parse_string(JSON.stringify(saves.snapshot(w3)))
+	raw41.schema_version = 41
+	raw41.erase("spits")
+	raw41.erase("spit_hits")
+	for key: String in ["riders", "repair_paid", "repair_progress"]:
+		raw41.vehicle.erase(key)
+	var up: RefCounted = saves.restore(raw41)
+	_expect("a schema 41 save gains empty riders and hazards", up != null and up.vehicle.riders.is_empty() and up.spits.is_empty())
 
 
 func _clear(world: RefCounted) -> void:

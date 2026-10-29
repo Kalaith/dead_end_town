@@ -48,6 +48,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 41:
+		return _upgrade_fittings(upgraded)
 	if version == 40:
 		return _upgrade_vehicle(upgraded)
 	if version == 38 or version == 39:
@@ -531,5 +533,16 @@ func _upgrade_residents(data: Dictionary) -> Dictionary:
 ## Saves before the van: it starts where the area places it, undriven.
 func _upgrade_vehicle(data: Dictionary) -> Dictionary:
 	data.vehicle = Vehicle.initial(catalog)
+	return _upgrade_fittings(data)
+
+
+## Saves before riders, van repair and saved spit hazards have none of them.
+func _upgrade_fittings(data: Dictionary) -> Dictionary:
+	if data.get("vehicle") is Dictionary:
+		data.vehicle.riders = []
+		data.vehicle.repair_paid = false
+		data.vehicle.repair_progress = 0.0
+	data.spits = []
+	data.spit_hits = {}
 	data.schema_version = save.SCHEMA
 	return data if save.valid(data) else {}

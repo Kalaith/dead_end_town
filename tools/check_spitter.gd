@@ -76,6 +76,7 @@ func _init() -> void:
 		if float(h.x) > wall.end.x:
 			behind = true
 	_expect("a wall stops a glob", not behind)
+	_hazards(data)
 	var bad := World.new(data)
 	var z2: Dictionary = bad.zombies[0]
 	Pressure.give_kind(data, z2, "spitter")
@@ -85,6 +86,33 @@ func _init() -> void:
 	_expect("an aim with no time left is invalid", SaveState.new(data, "user://check_spitter.json").restore(JSON.parse_string(JSON.stringify(SaveState.new(data, "user://check_spitter.json").snapshot(bad)))) == null)
 	print("%d failures" % failures)
 	quit(1 if failures > 0 else 0)
+
+
+## Survivors step out of pools and aim points, and hazards survive a save.
+func _hazards(data: Dictionary) -> void:
+	var world := World.new(data)
+	for z: Dictionary in world.zombies:
+		z.hp = 0.0
+	var spot: Vector2 = _open_pair(world, 220.0)
+	var mara: Dictionary = world.survivors[0]
+	mara.order = "Hold"
+	mara.anchor = spot
+	mara.pos = spot
+	mara.hp = 100.0
+	world.player.pos = spot + Vector2(0, 400)
+	world.spits = [{"t": "pool", "x": spot.x, "y": spot.y, "age": 0.0, "tick": 1.0}]
+	var radius: float = float(data.zombies.types.spitter.pool_radius)
+	_expect("someone in a pool has somewhere to go", Spitter.escape(world, spot).is_finite())
+	_expect("someone clear of it is left alone", not Spitter.escape(world, spot + Vector2(300, 0)).is_finite())
+	for i: int in range(40):
+		world.step(0.05)
+	_expect("a survivor walks out of the pool", mara.pos.distance_to(spot) > radius)
+	world.spits = [{"t": "glob", "x": spot.x - 80.0, "y": spot.y, "tx": mara.pos.x, "ty": mara.pos.y}, {"t": "pool", "x": spot.x, "y": spot.y, "age": 1.5, "tick": 2.0}]
+	var saves := SaveState.new(data, "user://check_spitter.json")
+	var loaded: RefCounted = saves.restore(JSON.parse_string(JSON.stringify(saves.snapshot(world))))
+	_expect("globs and pools survive a save", loaded != null and loaded.spits.size() == 2 and loaded.spits[0].t == "glob" and is_equal_approx(float(loaded.spits[1].age), 1.5))
+	world.spits = [{"t": "pool", "x": 10.0, "y": 10.0, "age": 99.0, "tick": 1.0}]
+	_expect("an over-age pool is rejected", saves.restore(JSON.parse_string(JSON.stringify(saves.snapshot(world)))) == null)
 
 
 func _open_pair(world: RefCounted, gap: float) -> Vector2:

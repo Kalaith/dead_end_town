@@ -33,7 +33,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 41
+const SCHEMA: int = 42
 ## Saved world fields that are collections and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "unlocks", "vehicle"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -55,7 +55,7 @@ func _init(data: Dictionary, path: String = "user://suburb.json") -> void:
 
 
 func snapshot(world: RefCounted) -> Dictionary:
-	var result: Dictionary = {"schema_version": SCHEMA, "roam_rng_state": str(world.roam_rng.state), "properties": world.properties.duplicate(true), "player": encode_actor(world.player), "survivors": [], "zombies": [], "area": world.area, "frozen": world.frozen.duplicate(true)}
+	var result: Dictionary = {"schema_version": SCHEMA, "roam_rng_state": str(world.roam_rng.state), "properties": world.properties.duplicate(true), "player": encode_actor(world.player), "survivors": [], "zombies": [], "area": world.area, "frozen": world.frozen.duplicate(true), "spits": world.spits.duplicate(true), "spit_hits": world.spit_hits.duplicate()}
 	for key: String in STATE_KEYS:
 		result[key] = world.get(key).duplicate(true) if key in COPIED_KEYS else world.get(key)
 	for a: Dictionary in world.survivors:
@@ -107,6 +107,8 @@ func restore(raw: Dictionary) -> RefCounted:
 	world.roam_rng.state = int(data.roam_rng_state)
 	world.properties = data.properties.duplicate(true)
 	world.frozen = data.frozen.duplicate(true)
+	world.spits.assign(data.spits)
+	world.spit_hits = data.spit_hits.duplicate()
 	world.player = _decode_actor(data.player)
 	world.aim = world.player.facing
 	world.survivors.clear()
@@ -183,7 +185,7 @@ func valid(data: Dictionary) -> bool:
 			return false
 		if z.has("kind") and (not z.kind is String or not catalog.zombies.types.has(z.kind) or float(z.hp) > ZombieTypes.health(catalog, z.kind)):
 			return false
-	if not VehicleState.valid(data, catalog):
+	if not VehicleState.valid(data, catalog) or not SpitterState.hazards_valid(data, catalog):
 		return false
 	if not BossState.valid(data, catalog) or not AttentionState.valid(data, catalog):
 		return false

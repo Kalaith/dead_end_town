@@ -258,3 +258,10 @@ Still needing development (second look, most important first):
 6. **Areas lack identity**: area-specific survivors, plaza/car parks, a reason to go back.
 7. **Tips** cover the suburb basics only (no timber, field bag, orders 1-4, work board, workshop, firearms, noise, areas 2-3).
 8. **Debt**: inert `slice_state`/`catalog.slice` timing fields, raider spur targets, fence-line gate stalls, `migrate` upgrades still call `World.new(catalog)` (content-dependent), no save slots.
+
+## 30 October 2026: survivors dodge spit, hazards saved, van riders/repair/ambulance (schema 42)
+
+- Survivors (`Combat._survivor`) step out of Spitter pools, landing globs and spitters' committed aim points before doing anything else (`Spitter.escape`, activity "Dodging spit"). Globs, pools and the shared pool cooldowns are now saved (`spits`, `spit_hits`) and validated.
+- Van: up to two nearby Follow-order survivors ride with the driver (immune to hits, do not block the van, set down beside it on exit or wreck); hold R beside the van to repair it (4 materials prepaid once, 10 s, +200 hull, progress kept); a carried casualty can board the van away from any shelter, so it doubles as an ambulance. Saves from schema 41 gain empty riders, repair state and hazards.
+- `check_vehicle` (riders, rider immunity, exit placement, ambulance, repair, 41 migration) and `check_spitter` (dodging, hazard save/reject) extended and passing, as do parse (122 scripts), catalog, save, travel, boss, pressure, tips, rescue-feel, facilities, passages, ring, rear-build, office and industrial checks.
+- Not seen in a window: the dodge, riders drawn in the van, the repair prompt. Not done: survivors repairing the van, van between areas, riders ordering. Survivors do not avoid zombies' other hazards (none exist).
