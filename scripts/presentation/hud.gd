@@ -208,8 +208,7 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	if world.properties.clinic.looted:
 		supplies.text += "\n%d medicine" % world.medicine
 	supplies.text += "\n" + FoodGrowing.summary(world)
-	readiness.text = "READINESS / advisory
-" + Readiness.summary(world)
+	readiness.text = "READINESS / advisory\n" + Readiness.summary(world)
 	context_label.text = world.context()
 	context_label.visible = not paused and not context_label.text.is_empty()
 	if paused:
