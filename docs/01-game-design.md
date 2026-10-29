@@ -1,5 +1,7 @@
 # Dead End Town: full game design
 
+> **Superseded in part, 29 October 2026:** the campaign is now a sequence of bounded areas (suburb, office district, industrial area) with a story boss, not a single strip with a relief-signal watch. See [19](19-areas-and-suburb.md).
+
 Design baseline: 28 October 2026. This package specifies the game to build after the working street slice. **It is design, not an implementation or verification claim.** The user authorised making the remaining design decisions. Numerical values are implementation starting values with explicit playtest gates, rather than measured balance.
 
 ## The promise

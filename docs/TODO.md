@@ -11,3 +11,5 @@ The full game is specified in [01](01-game-design.md) with system owners and cat
 Carry forward engineering follow-ups: grow save migrations in small modules; use toolkit bindings/settings/text helpers when those features arrive. No toolkit side effects, installations or publication. Publishing wrappers still lack a destination; configure exports only when requested for the intended release.
 
 User verification override (28 October 2026): automated simulation scenarios and scripted staging tours are deleted and must not be recreated. Use script loading/editor checks and direct game inspection/input for G04–G10.
+
+Direction change (29 October 2026): the strip and relief watch are being replaced by bounded areas with a suburb boss; see [19](19-areas-and-suburb.md). Items 3–4 above are superseded where they assume the 12-column strip or the relief ending. Next: generalise the map model to per-area lot graphs, then the area layer and schema migration.

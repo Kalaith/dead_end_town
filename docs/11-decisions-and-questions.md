@@ -57,6 +57,7 @@ Baseline: 28 October 2026. The user reports that the slice is working well and a
 | F25 | Desktop keyboard/mouse with remapping/accessibility | Finish a defined input/platform target | 08, 09 |
 | F26 | No installs, toolkit edits, deployment or publication in design work | Project boundary | 09, 10 |
 | F27 | One optional utility van at depot; restore for 12 Materials/30 work seconds; player drives, two passengers | Useful travel without fleets, fuel stock, hauling or mandatory vehicle gates | 18 |
+| F28 | Campaign is a sequence of bounded areas (suburb, office, industrial) with a story boss and an exit gate; supersedes F01, F02, F20 and F21's strip and relief watch; the suburb boss is an undead baboon guarding the only exit, with no readiness gate; areas can be revisited (reason to come) | User direction 29 October 2026: finish a place, then move on | 19 |
 
 Numbers are chosen starting values and may change through recorded tuning without reopening the creative foundations. An unmade asset or unperformed export test is implementation work, not an unresolved design decision.
 

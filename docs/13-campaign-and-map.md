@@ -1,5 +1,7 @@
 # Campaign, topology and ending
 
+> **Superseded in part, 29 October 2026:** the campaign is now a sequence of bounded areas (suburb, office district, industrial area) with a story boss, not a single strip with a relief-signal watch. See [19](19-areas-and-suburb.md).
+
 Full game target; not current runtime. Owns adjacency, core completion, act transitions and the relief-watch state machine. [15](15-property-catalogue.md) owns site rewards; [17](17-acceptance-and-balance.md) owns acceptance scenarios.
 
 ## Town shape

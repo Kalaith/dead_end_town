@@ -1,5 +1,7 @@
 # From working slice to full game
 
+> **Superseded in part, 29 October 2026:** the campaign is now a sequence of bounded areas (suburb, office district, industrial area) with a story boss, not a single strip with a relief-signal watch. See [19](19-areas-and-suburb.md).
+
 The original M0–M8 framework is historical. A playable six-site slice now exists; the user reports it works well. The full campaign is designed here, not implemented by this pass. Each G milestone below is a future buildable slice with its own checks, visual inspection and immediate commit under AGENTS.md. Do not batch the whole campaign into one implementation change.
 
 ## Baseline to preserve

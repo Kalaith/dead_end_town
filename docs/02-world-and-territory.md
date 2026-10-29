@@ -1,5 +1,7 @@
 # Continuous world and territory
 
+> **Superseded in part, 29 October 2026:** the campaign is now a sequence of bounded areas (suburb, office district, industrial area) with a story boss, not a single strip with a relief-signal watch. See [19](19-areas-and-suburb.md).
+
 Full game contract. [13](13-campaign-and-map.md) owns the 24-site topology; [15](15-property-catalogue.md) owns contents. The six-site runtime already separates ownership from protected connectivity, but does not yet implement the whole map or interiors.
 
 ## Property record and independent states
