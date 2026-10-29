@@ -118,3 +118,11 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 ## 29 October 2026: review pass 8 (building a rear gate)
 
 - Added `tools/check_rear_build.gd`: with both lots claimed and materials in hand, standing at the library/corner-house rear gate offers the passage, E approves it, holding work finishes the build, and E then opens it. All pass. Not seen in play: the drawn rear gate and its link text.
+
+## 29 October 2026: double the resident zombies
+
+User feedback: the zombies were not a real danger; taking space should feel like a struggle.
+
+- Every lot's starting zombies and reinforcements are doubled (62 -> 124 residents): each new one is a plain Shambler placed in open yard away from buildings, the gate and its neighbours (seeded, so the layout is stable). Runners and Screechers were not doubled, so no extra call or lunge pressure. `hidden_zombies` (the population raiders refill a lot to) is doubled too, so retaken lots stay twice as full.
+- `living_cap` 96 -> 200, and the validator's upper bound 100 -> 400, to hold the larger population plus migrants.
+- Checked: catalog 0 problems and the save, pressure, boss, travel, ring and passage checks pass; the street is visibly crowded (`docs/verification/street_walk.png`). Not tested: how a real player fares against the doubled yards. Existing saves keep their old residents, since residents are saved; start a new street to see the change.

@@ -12,7 +12,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	for key: String in ["warning_seconds", "first_seconds", "first_claim_grace", "calm_seconds", "entry_seconds", "route_retry_seconds", "spawn_spacing"]:
 		rules.number_between(config, key, 0.1, 1000)
 	for key: String in ["maximum_size", "living_cap"]:
-		if not Rules.integer_in(config.get(key), 1, 100):
+		if not Rules.integer_in(config.get(key), 1, 400):
 			errors.append("Pressure needs a bounded whole " + key)
 	if rules.object(config, "special_caps"):
 		for kind: String in config.special_caps:
