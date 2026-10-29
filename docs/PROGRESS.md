@@ -91,3 +91,8 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 
 - Added `tools/check_ring.gd`: with the home gate opened, the same waypoint walking the game uses reaches the bridge approach, the exit, the boss post and every lot's site from the start, and the horde's bridge entry reaches its approach point. All pass, which covers the west road and the south of the ring that nobody had walked. Still not walked by a person: the plaza, the rear gates in use, and a real fight at the post.
 - Found: walking to a gate point exactly on a lot's front fence line (for example `house_a` at 600,680) from the street stalls, because the waypoint step returns the walker's own position beside the fence. Sites inside lots, which tasks actually use, are fine. Left alone; if survivors report "Route blocked" at those gates, aim their approach at a point just off the fence.
+
+## 29 October 2026: review pass 4 (horde past the baboon)
+
+- Scratch simulation, 15 minutes after the first claim with the player kept alive at home: four waves entered at the bridge and walked past the baboon's post up the west road (6 of 8 living raiders were beyond it at the end); the baboon never left its post (drift 0) and its health was untouched, so raiders and the boss ignore each other as intended. Not kept as a check, since there is nothing to assert beyond "no drift".
+- Observation: living raider counts (2-8) are well under each band's budget (5-8 at band 0), so something removes or skips raiders before they arrive (spawn overlap skips, Mara fighting, or both). Worth reading `event.skipped` when tuning pressure.
