@@ -239,3 +239,22 @@ Delivery steps 1-10 in `19-areas-and-suburb.md` are all done; only step 11 (play
 - New `scripts/sim/tips.gd`, `scripts/core/tips_content.gd` and `data/street/tips.json`: nine state-driven tips (move, swing near a zombie, lift, drop-off, rest, repair gate, open gate, reclaim a yard, arrivals), one at a time, in a HUD box and under Help with a Tips on/off button. No schema change: nothing is saved, session-only memory covers walking, swinging and lifting, and a world past 60 s counts the basics as taught. `world.tips` is stepped at the end of each fixed step.
 - `tools/check_tips.gd` (13 checks) passes, as do parse (120 scripts), catalog, save, pressure, boss, travel, rescue-feel, vehicle, spitter, office, industrial, passages, ring, rear-build and facilities checks. `tools/capture_tips.gd` frames `tip_move`, `tip_gate_repair` and `tip_help_tab` were looked at: the box reads cleanly and does not cover the context prompt.
 - Not done: the tips have not been played through by a person. The Tips on/off choice resets each session; no tips yet for timber, the field bag, team orders (1-4), the work board, the workshop, firearms and noise, or the second and third areas. The wording is first-pass.
+
+## 30 October 2026: code-review fixes and a second development review
+
+- Guard combat no longer uses suburb-only coordinates: the barricade strike and the guard's chase line are measured from each area's `mara_start` and `home_alert_center` (the old numbers matched neither the suburb nor the other areas, so the strike never fired).
+- `load` handles a save that cannot be restored and refreshes the HUD; dropping a casualty always succeeds inside a valid shelter; a downed survivor in a gateway says so.
+- Save code: migrations moved to `save_migrations.gd` (save_state.gd 797 -> ~290 lines); `STATE_KEYS` is built from `COPIED_KEYS` + `SCALAR_KEYS` and `rescue_intro` is now validated. The Tips on/off choice is stored in `user://settings.json` (toolkit `SettingsStore`), apart from the street.
+- `world.gd` facility prompts and interactions use `facility_context` / `facility_interact` tables instead of if-chains.
+- Boss and objective messages use the area's boss name instead of "baboon".
+- Parse (122 scripts), `--headless --editor --quit`, a headless boot and the catalog, save, travel, boss, pressure, vehicle, spitter, tips, rescue-feel, facilities, passages, office, industrial and ring checks pass. Nothing here was seen in a running window.
+
+Still needing development (second look, most important first):
+1. **Objective and readiness are suburb-only.** `slice_objective.readiness` hard-codes home/garden/library/garage and harvest goals, so in the office and works the HUD goal and READINESS panel describe the suburb. Each area needs its own objective list in data.
+2. **Nothing played end to end** (unchanged): areas 2-3, ending after a real run, van handling, Spitter pools on people.
+3. **Pressure untuned** in all three areas; boss feel provisional.
+4. **Survivors ignore hazards** (Spitter pools); globs unsaved.
+5. **Van** first slice only (no riders, repair, reason to drive).
+6. **Areas lack identity**: area-specific survivors, plaza/car parks, a reason to go back.
+7. **Tips** cover the suburb basics only (no timber, field bag, orders 1-4, work board, workshop, firearms, noise, areas 2-3).
+8. **Debt**: inert `slice_state`/`catalog.slice` timing fields, raider spur targets, fence-line gate stalls, `migrate` upgrades still call `World.new(catalog)` (content-dependent), no save slots.

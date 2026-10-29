@@ -132,7 +132,10 @@ static func drop(world: RefCounted) -> bool:
 			Equipment.person(world, world.carry.patient).pos = point
 			world.carry = initial()
 			return true
-	return false
+	# No free spot beside the site: put them down where the player stands, which is inside the shelter.
+	Equipment.person(world, world.carry.patient).pos = world.player.pos
+	world.carry = initial()
+	return true
 
 
 static func abandon(world: RefCounted) -> void:

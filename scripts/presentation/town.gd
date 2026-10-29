@@ -60,6 +60,7 @@ func _ready() -> void:
 	add_child(canvas)
 	hud = Hud.new()
 	canvas.add_child(hud)
+	hud.load_preferences(storage_enabled)
 	hud.requested.connect(command)
 	hud.rescue_requested.connect(dismiss_rescue)
 	hud.production_requested.connect(configure_production)
@@ -228,12 +229,18 @@ func command(value: String) -> void:
 			if data.is_empty():
 				hud.menu_status.text = "No saved street yet." if save_state.store.last_error.is_empty() else save_state.store.last_error
 			else:
-				world = save_state.restore(data)
+				var restored: RefCounted = save_state.restore(data)
+				if restored == null:
+					hud.menu_status.text = "That save could not be restored. Your current street is unchanged."
+					return
+				world = restored
 				defeat_shown = false
+				resume_after_rescue = false
 				controls = PlayerControls.new()
 				view.world = world
 				accumulator = 0
 				hud.menu_status.text = "Street restored. Resume when ready."
+				hud.refresh(world, paused)
 		"new":
 			if not save_state.store.keep_previous():
 				hud.menu_status.text = save_state.store.last_error

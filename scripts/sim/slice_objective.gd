@@ -1,4 +1,5 @@
 extends RefCounted
+const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const Boss = preload("res://scripts/sim/boss.gd")
 const Facility = preload("res://scripts/sim/facility.gd")
 
@@ -40,11 +41,15 @@ static func readiness(world: RefCounted) -> String:
 
 static func next(world: RefCounted) -> String:
 	if Boss.configured(world.catalog) and Boss.defeated(world):
-		return "The baboon is down. Take the %s exit at the south-west corner when ready." % str(world.catalog.exit.name).to_lower()
+		return "The %s is down. Take the %s when ready." % [ZombieTypes.type_name(world.catalog, str(world.catalog.boss.kind)).to_lower(), str(world.catalog.exit.name).to_lower()]
 	for p: Dictionary in world.catalog.properties:
 		if world.properties[p.id].looted and not world.properties[p.id].claimed:
 			return "Clear and reclaim " + p.name + " at its porch with E."
 	if not Facility.state(world, "garden").looted or not Facility.state(world, "library").looted or not Facility.state(world, "garage").looted:
 		return "Search nearby cleared properties. Build useful facilities and join the yards as you discover them."
 	var reason: String = readiness(world)
-	return reason if not reason.is_empty() else "Prepared. When you choose, face the baboon at the bridge, the south-west corner. See READINESS in pause."
+	if not reason.is_empty():
+		return reason
+	if not Boss.configured(world.catalog):
+		return "Prepared. See READINESS in pause."
+	return "Prepared. When you choose, face the %s. See READINESS in pause." % ZombieTypes.type_name(world.catalog, str(world.catalog.boss.kind)).to_lower()

@@ -101,6 +101,9 @@ var provisions: Dictionary = Provisions.initial()
 var equipment: Dictionary = Equipment.initial()
 var passages: Dictionary
 var roadworks: Dictionary
+## What a held facility shows and does at its site, by facility id; each takes the world.
+var facility_context: Dictionary = {"greenhouse": Greenhouse.context, "clinic": Clinic.context, "garage": Workshop.context, "munitions": func(_world: RefCounted) -> String: return "F Bullets", "garden": _garden_context}
+var facility_interact: Dictionary = {"greenhouse": Greenhouse.approve, "clinic": _clinic_interact, "garage": Workshop.interact, "garden": _garden_interact}
 
 
 func _init(data: Dictionary) -> void:
@@ -322,19 +325,7 @@ func _context() -> String:
 				return "E Search"
 			if not properties[p.id].claimed:
 				return "E Secure"
-			if p.facility == "greenhouse":
-				return Greenhouse.context(self)
-			if p.facility == "clinic":
-				return Clinic.context(self)
-			if p.facility == "munitions":
-				return "F Bullets"
-			if p.facility == "garage":
-				return Workshop.context(self)
-			if p.facility == "garden" and not garden_done:
-				return "R Build   F Assign" if garden_started else WorkOrders.cost_prompt(self, "Garden", ["garden"], int(balance.garden_cost))
-			if p.facility == "garden":
-				return "R Tend · %d%%   F Assign" % int(100 * harvest / float(balance.food_seconds))
-			return ""
+			return str(facility_context[p.facility].call(self)) if facility_context.has(p.facility) else ""
 	return ""
 
 
@@ -368,7 +359,8 @@ func interact() -> void:
 			if state.open:
 				for a: Dictionary in [player] + survivors + zombies:
 					if (not a.has("raid") or float(a.hp) > 0) and absf(a.pos.x - float(p.gate[0])) < 60 and absf(a.pos.y - float(p.gate[1])) < 28:
-						note("Gate is occupied. Step clear before closing it.")
+						# A downed survivor still blocks the gate: they must be carried clear, not shut in or out.
+						note("%s is down in the gateway. Carry them clear before closing it." % a.name if float(a.hp) <= 0 else "Gate is occupied. Step clear before closing it.")
 						return
 			state.open = not state.open
 			rebuild_routes()
@@ -381,19 +373,27 @@ func interact() -> void:
 				Discoveries.search(self, p.id)
 			elif not state.claimed:
 				claim(p.id)
-			elif p.facility == "greenhouse":
-				Greenhouse.approve(self)
-			elif p.facility == "clinic":
-				if clinic.done:
-					Clinic.treat(self)
-				else:
-					Clinic.approve(self)
-			elif p.facility == "garage":
-				Workshop.interact(self)
-			elif p.facility == "garden" and not garden_started:
-				if Restoration.approve(self, "garden"):
-					note("Garden approved. Hold R or assign a worker.")
+			elif facility_interact.has(p.facility):
+				facility_interact[p.facility].call(self)
 			return
+
+
+func _garden_context(_world: RefCounted) -> String:
+	if garden_done:
+		return "R Tend · %d%%   F Assign" % int(100 * harvest / float(balance.food_seconds))
+	return "R Build   F Assign" if garden_started else WorkOrders.cost_prompt(self, "Garden", ["garden"], int(balance.garden_cost))
+
+
+func _clinic_interact(_world: RefCounted) -> void:
+	if clinic.done:
+		Clinic.treat(self)
+	else:
+		Clinic.approve(self)
+
+
+func _garden_interact(_world: RefCounted) -> void:
+	if not garden_started and Restoration.approve(self, "garden"):
+		note("Garden approved. Hold R or assign a worker.")
 
 
 func claim(id: String) -> bool:

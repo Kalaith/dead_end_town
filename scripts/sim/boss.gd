@@ -132,7 +132,7 @@ static func context(world: RefCounted) -> String:
 	if not at_exit(world):
 		return ""
 	if not defeated(world):
-		return "Blocked / the baboon holds the road"
+		return "Blocked / the %s holds the road" % _name(world.catalog)
 	if destination(world.catalog).is_empty():
 		return "E Leave town" if _final(world.catalog) else "Exit / nothing lies beyond yet"
 	return "E to confirm leaving" if float(world.exit_pending) > 0 else "E Leave the area"
@@ -141,7 +141,7 @@ static func context(world: RefCounted) -> String:
 ## Leaving needs a second press so it is never an accident; a rule-bound shortage of stock is stated up front.
 static func interact(world: RefCounted) -> void:
 	if not defeated(world):
-		world.note("The baboon still holds the bridge road.")
+		world.note("The %s still holds the way out." % _name(world.catalog))
 	elif destination(world.catalog).is_empty():
 		if _final(world.catalog):
 			world.campaign_ended = true
@@ -167,4 +167,9 @@ static func step(world: RefCounted, dt: float) -> void:
 		world.boss_seen_alive = true
 	elif world.boss_seen_alive:
 		world.boss_seen_alive = false
-		world.note("The baboon is down. The way out (%s) is open." % str(world.catalog.exit.name).to_lower())
+		world.note("The %s is down. The way out (%s) is open." % [_name(world.catalog), str(world.catalog.exit.name).to_lower()])
+
+
+## The boss's own name for messages, lower-cased: each area has a different one.
+static func _name(catalog: Dictionary) -> String:
+	return ZombieTypes.type_name(catalog, str(catalog.boss.kind)).to_lower()

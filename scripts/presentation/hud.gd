@@ -1,4 +1,5 @@
 extends Control
+const SettingsStore = preload("res://addons/hatchery/settings/settings_store.gd")
 const DefeatMenu = preload("res://scripts/presentation/defeat_menu.gd")
 const EndingMenu = preload("res://scripts/presentation/ending_menu.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
@@ -46,6 +47,9 @@ var tip_panel: PanelContainer
 var tip_label: Label
 var tip_log: Label
 var tips_on: bool = true
+var tip_switch: Button
+## Preferences live apart from the saved street, so starting a new street keeps them.
+var settings := SettingsStore.new({"tips": true})
 var radio: Label
 var team_orders: VBoxContainer
 var supplies: Label
@@ -180,8 +184,8 @@ func _build_menu() -> void:
 	medicine_menu.configured.connect(func(mode: String, target: int, reserve: int) -> void: medicine_requested.emit(mode, target, reserve))
 	medicine_menu.cancelled.connect(func() -> void: medicine_cancelled.emit())
 	sections.Help.add_child(kit.label("WASD / arrows  Move     Mouse  Aim\nRight click  Shoot     Left click / Space  Swing (hold to repeat)\nE  Interact / drop     Hold E  Carry casualty\nHold R  Work     Q  Timber\nF  Team     J  Work     M  Town     G  Post guard\n1–4  Follow / Hold / Engage / Home     Esc / Tab  Pause", 18))
-	var tip_switch: Button = kit.button("Tips: on")
-	tip_switch.pressed.connect(func() -> void: _toggle_tips(tip_switch))
+	tip_switch = kit.button("Tips: on")
+	tip_switch.pressed.connect(_toggle_tips)
 	sections.Help.add_child(tip_switch)
 	tip_log = kit.label("", 17)
 	tip_log.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -267,9 +271,23 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	menu.visible = paused and world.rescue_intro.is_empty() and not world.defeat_pending and not world.campaign_ended
 
 
-func _toggle_tips(button: Button) -> void:
-	tips_on = not tips_on
-	button.text = "Tips: on" if tips_on else "Tips: off"
+func _toggle_tips() -> void:
+	_set_tips(not tips_on)
+	settings.set_value("tips", tips_on)
+	settings.save_settings()
+
+
+func _set_tips(on: bool) -> void:
+	tips_on = on
+	tip_switch.text = "Tips: on" if tips_on else "Tips: off"
+
+
+## Reads the saved preferences; `enabled` is false for runs that must not touch disk.
+func load_preferences(enabled: bool) -> void:
+	settings.save_enabled = enabled
+	if enabled:
+		settings.load_settings()
+	_set_tips(bool(settings.values.tips))
 
 
 func _goal(world: RefCounted) -> String:

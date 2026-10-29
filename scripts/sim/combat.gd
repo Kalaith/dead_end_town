@@ -14,6 +14,9 @@ const Equipment = preload("res://scripts/sim/equipment.gd")
 const Wandering = preload("res://scripts/sim/wandering.gd")
 const Raiding = preload("res://scripts/sim/raiding.gd")
 ## Spatial combat and bounded AI. Every actor stays active off camera.
+## Both are measured from the area's own home markers, so every area's gate guard works the same way.
+const GUARD_LINE_INSET: float = 15.0
+const BARRICADE_OFFSET := Vector2(0, 45)
 
 static func danger(world: RefCounted, pos: Vector2, radius: float) -> bool:
 	for z: Dictionary in world.zombies:
@@ -102,7 +105,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 		a.activity = "Defending"
 		if best < float(Equipment.stats(world, a).reach):
 			strike(world, a, a.pos.direction_to(target.pos))
-		elif a.order not in ["Guard", "Roadguard"] or (a.order == "Guard" and target.pos.y < 465):
+		elif a.order not in ["Guard", "Roadguard"] or (a.order == "Guard" and target.pos.y < Routes.point(world.balance.home_alert_center).y - GUARD_LINE_INSET):
 			_walk(world, a, target.pos, dt, _survivor_speed(world, a))
 		elif a.order == "Roadguard" and a.pos.distance_to(anchor) > 4:
 			_walk(world, a, anchor, dt, _survivor_speed(world, a))
@@ -110,7 +113,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 	# A low barricade allows a gate guard to hit the attacker leaning over it.
 	if not Firearms.civilian(a) and a.order == "Guard" and not world.properties.home.open:
 		for z: Dictionary in world.zombies:
-			if float(z.hp) > 0 and z.pos.distance_to(Vector2(360, 490)) < 50 and a.pos.distance_to(Routes.point(world.balance.mara_start)) < 32 and float(a.cooldown) <= 0:
+			if float(z.hp) > 0 and z.pos.distance_to(Routes.point(world.balance.mara_start) + BARRICADE_OFFSET) < 50 and a.pos.distance_to(Routes.point(world.balance.mara_start)) < 32 and float(a.cooldown) <= 0:
 				z.hp = maxf(0, float(z.hp) - float(Equipment.stats(world, a).damage))
 				z.flash = 0.18
 				Runner.interrupt(world, z)
