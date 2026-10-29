@@ -113,4 +113,8 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 ## 29 October 2026: review pass 7 (passages and rear gates)
 
 - Added `tools/check_passages.gd`: for each of the 16 authored passages, with its state set to built, the walk between its two sites is about straight when the gate is open (29 steps for 30 straight; 11 for 12 on the rear gates) and much longer or impossible when shut (150 steps, or stalled). All pass, so the four rear gates between the island rows (house_a/clinic, munitions/greenhouse, garage/No. 12, library/corner house) connect their back-to-back lots.
-- This covers geometry only. Approving and building a rear passage through the work orders, and the "reason" text for those links, were not exercised in play.
+- This covers geometry only; `tools/check_rear_build.gd` (pass 8) covers the build flow.
+
+## 29 October 2026: review pass 8 (building a rear gate)
+
+- Added `tools/check_rear_build.gd`: with both lots claimed and materials in hand, standing at the library/corner-house rear gate offers the passage, E approves it, holding work finishes the build, and E then opens it. All pass. Not seen in play: the drawn rear gate and its link text.
