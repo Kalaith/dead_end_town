@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "town": {
+    "core": [
+      "parts_store",
+      "gatehouse",
+      "yard_office",
+      "home",
+      "tool_crib",
+      "armoury",
+      "depot",
+      "infirmary"
+    ],
+    "links": [
+      [
+        "parts_store",
+        "gatehouse"
+      ],
+      [
+        "gatehouse",
+        "yard_office"
+      ],
+      [
+        "yard_office",
+        "home"
+      ],
+      [
+        "tool_crib",
+        "armoury"
+      ],
+      [
+        "armoury",
+        "depot"
+      ],
+      [
+        "depot",
+        "infirmary"
+      ],
+      [
+        "parts_store",
+        "tool_crib"
+      ],
+      [
+        "gatehouse",
+        "armoury"
+      ],
+      [
+        "yard_office",
+        "depot"
+      ],
+      [
+        "home",
+        "infirmary"
+      ]
+    ],
+    "bands": {
+      "parts_store": 3,
+      "gatehouse": 2,
+      "yard_office": 1,
+      "home": 0,
+      "tool_crib": 3,
+      "armoury": 2,
+      "depot": 1,
+      "infirmary": 0
+    },
+    "streets": [
+      {
+        "rect": [
+          900,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          900,
+          660,
+          120,
+          420
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          1620,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          1620,
+          660,
+          120,
+          420
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          2340,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          2340,
+          660,
+          120,
+          420
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          40,
+          500,
+          3240,
+          160
+        ],
+        "kind": "road"
+      },
+      {
+        "rect": [
+          40,
+          500,
+          200,
+          900
+        ],
+        "kind": "road"
+      },
+      {
+        "rect": [
+          3080,
+          500,
+          200,
+          900
+        ],
+        "kind": "road"
+      },
+      {
+        "rect": [
+          40,
+          1240,
+          3240,
+          160
+        ],
+        "kind": "road"
+      }
+    ]
+  }
+}

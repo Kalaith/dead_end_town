@@ -1,0 +1,366 @@
+{
+  "schema_version": 1,
+  "properties": [
+    {
+      "id": "tool_crib",
+      "facility": "house",
+      "name": "Tool Crib",
+      "reward": "Household supplies",
+      "food_cache": 3,
+      "search": {
+        "materials": 12,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 14 searched."
+      },
+      "rect": [
+        320,
+        680,
+        560,
+        400
+      ],
+      "building": [
+        420,
+        870,
+        350,
+        155
+      ],
+      "gate": [
+        600,
+        680
+      ],
+      "site": [
+        600,
+        800
+      ],
+      "post": [
+        600,
+        710
+      ],
+      "reinforcements": [
+        [
+          818,
+          729
+        ],
+        [
+          758,
+          810
+        ],
+        [
+          823,
+          825
+        ],
+        [
+          699,
+          775
+        ],
+        [
+          540,
+          770
+        ],
+        [
+          831,
+          923
+        ]
+      ],
+      "zombies": [],
+      "hidden_zombies": 0,
+      "core": true,
+      "available": true,
+      "neighbors": [
+        "armoury",
+        "parts_store"
+      ]
+    },
+    {
+      "id": "armoury",
+      "facility": "munitions",
+      "food_cache": 4,
+      "name": "Armoury",
+      "rect": [
+        1040,
+        680,
+        560,
+        400
+      ],
+      "building": [
+        1140,
+        870,
+        350,
+        155
+      ],
+      "gate": [
+        1320,
+        680
+      ],
+      "site": [
+        1320,
+        800
+      ],
+      "post": [
+        1320,
+        710
+      ],
+      "neighbors": [
+        "tool_crib",
+        "depot",
+        "gatehouse"
+      ],
+      "reward": "Bullet crafting",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": [
+        [
+          1098,
+          798
+        ],
+        [
+          1560,
+          777
+        ],
+        [
+          1497,
+          817
+        ],
+        [
+          1557,
+          975
+        ],
+        [
+          1386,
+          797
+        ],
+        [
+          1258,
+          814
+        ],
+        [
+          1092,
+          1033
+        ],
+        [
+          1089,
+          985
+        ]
+      ],
+      "core": true,
+      "available": true
+    },
+    {
+      "id": "depot",
+      "facility": "garage",
+      "food_cache": 2,
+      "name": "Vehicle Depot",
+      "rect": [
+        1760,
+        680,
+        560,
+        400
+      ],
+      "building": [
+        1860,
+        870,
+        350,
+        155
+      ],
+      "gate": [
+        2040,
+        680
+      ],
+      "site": [
+        2040,
+        800
+      ],
+      "post": [
+        2040,
+        710
+      ],
+      "neighbors": [
+        "armoury",
+        "infirmary",
+        "yard_office"
+      ],
+      "reward": "Tools and armour cache",
+      "reinforcements": [
+        [
+          2261,
+          773
+        ],
+        [
+          2196,
+          812
+        ],
+        [
+          2258,
+          911
+        ],
+        [
+          1938,
+          825
+        ],
+        [
+          2129,
+          721
+        ],
+        [
+          1894,
+          796
+        ],
+        [
+          1990,
+          763
+        ],
+        [
+          2183,
+          762
+        ],
+        [
+          1806,
+          809
+        ],
+        [
+          1813,
+          1024
+        ],
+        [
+          1924,
+          723
+        ],
+        [
+          2216,
+          727
+        ]
+      ],
+      "hidden_zombies": 20,
+      "zombies": [
+        [
+          1819,
+          864
+        ],
+        [
+          2137,
+          775
+        ],
+        [
+          1811,
+          966
+        ],
+        [
+          2100,
+          825
+        ],
+        [
+          2271,
+          850
+        ],
+        [
+          2277,
+          1014
+        ],
+        [
+          1839,
+          754
+        ],
+        [
+          2275,
+          968
+        ]
+      ],
+      "core": true,
+      "available": true,
+      "resident_kinds": [
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler",
+        "breaker"
+      ]
+    },
+    {
+      "id": "infirmary",
+      "facility": "clinic",
+      "resident_kinds": [
+        "screecher",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler"
+      ],
+      "core": true,
+      "available": true,
+      "food_cache": 4,
+      "name": "Works Infirmary",
+      "rect": [
+        2480,
+        680,
+        560,
+        400
+      ],
+      "building": [
+        2580,
+        870,
+        350,
+        155
+      ],
+      "gate": [
+        2760,
+        680
+      ],
+      "site": [
+        2760,
+        800
+      ],
+      "post": [
+        2760,
+        710
+      ],
+      "neighbors": [
+        "depot",
+        "home"
+      ],
+      "reward": "Medical supplies and a survivor",
+      "reinforcements": [
+        [
+          2651,
+          800
+        ],
+        [
+          2989,
+          809
+        ],
+        [
+          2530,
+          929
+        ],
+        [
+          2873,
+          821
+        ],
+        [
+          2992,
+          1038
+        ],
+        [
+          2941,
+          817
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 12,
+        "medicine": 12,
+        "survivor": "june",
+        "line": "Medical supplies recovered."
+      }
+    }
+  ]
+}

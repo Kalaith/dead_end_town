@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "area": {
+    "id": "industrial",
+    "name": "The Industrial Works"
+  },
+  "bounds": [
+    3360,
+    1420
+  ],
+  "balance": {
+    "player_start": [
+      2760,
+      365
+    ],
+    "mara_start": [
+      2760,
+      445
+    ],
+    "home_respawn": [
+      2760,
+      350
+    ],
+    "home_alert_center": [
+      2760,
+      480
+    ],
+    "emergency_shelter": [
+      2430,
+      580
+    ]
+  },
+  "recovery_salvage": {
+    "sites": {
+      "home": [
+        2580,
+        350
+      ],
+      "west": [
+        2430,
+        610
+      ]
+    }
+  },
+  "boss": {
+    "id": "boss_foreman",
+    "kind": "foreman",
+    "post": [
+      140,
+      880
+    ],
+    "leash": 320,
+    "escorts": [
+      [
+        90,
+        820
+      ],
+      [
+        190,
+        820
+      ]
+    ]
+  },
+  "exit": {
+    "name": "Main gate",
+    "rect": [
+      40,
+      500,
+      100,
+      80
+    ],
+    "final": true,
+    "line": "The main gate stands open. Beyond it the road runs on out of town. You and the people you gathered have broken out of Dead End Town."
+  },
+  "entrance": {
+    "name": "Service road",
+    "rect": [
+      40,
+      1320,
+      100,
+      80
+    ]
+  }
+}

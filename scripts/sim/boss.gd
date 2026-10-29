@@ -123,13 +123,18 @@ static func entrance_context(world: RefCounted) -> String:
 	return "E to confirm going back" if float(world.exit_pending) > 0 else "E Go back"
 
 
+## The last area's exit ends the campaign with its own closing line.
+static func _final(catalog: Dictionary) -> bool:
+	return bool(catalog.exit.get("final", false))
+
+
 static func context(world: RefCounted) -> String:
 	if not at_exit(world):
 		return ""
 	if not defeated(world):
 		return "Blocked / the baboon holds the road"
 	if destination(world.catalog).is_empty():
-		return "Exit / nothing lies beyond yet"
+		return "E Leave town" if _final(world.catalog) else "Exit / nothing lies beyond yet"
 	return "E to confirm leaving" if float(world.exit_pending) > 0 else "E Leave the area"
 
 
@@ -138,7 +143,7 @@ static func interact(world: RefCounted) -> void:
 	if not defeated(world):
 		world.note("The baboon still holds the bridge road.")
 	elif destination(world.catalog).is_empty():
-		world.note("Nothing lies beyond the bridge yet.")
+		world.note(str(world.catalog.exit.line) if _final(world.catalog) else "Nothing lies beyond the bridge yet.")
 	elif float(world.exit_pending) > 0:
 		world.exit_pending = 0.0
 		world.travel_requested = destination(world.catalog)

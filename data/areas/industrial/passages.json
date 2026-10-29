@@ -1,0 +1,269 @@
+{
+  "schema_version": 1,
+  "passages": [
+    {
+      "id": "parts_store_gatehouse",
+      "name": "Parts Store / Gatehouse",
+      "requires": [
+        "parts_store",
+        "gatehouse"
+      ],
+      "area": [
+        868,
+        352,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          840,
+          400
+        ],
+        [
+          1080,
+          400
+        ]
+      ],
+      "rails": [
+        [
+          872,
+          352,
+          176,
+          8
+        ],
+        [
+          872,
+          440,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        952,
+        360,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "gatehouse_yard_office",
+      "name": "Gatehouse / Yard Office",
+      "requires": [
+        "gatehouse",
+        "yard_office"
+      ],
+      "area": [
+        1588,
+        352,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          1560,
+          400
+        ],
+        [
+          1800,
+          400
+        ]
+      ],
+      "rails": [
+        [
+          1592,
+          352,
+          176,
+          8
+        ],
+        [
+          1592,
+          440,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        1672,
+        360,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "yard_office_home",
+      "name": "Yard Office / 01 / CONTROL ROOM",
+      "requires": [
+        "yard_office",
+        "home"
+      ],
+      "area": [
+        2308,
+        352,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          2280,
+          400
+        ],
+        [
+          2520,
+          400
+        ]
+      ],
+      "rails": [
+        [
+          2312,
+          352,
+          176,
+          8
+        ],
+        [
+          2312,
+          440,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        2392,
+        360,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "tool_crib_armoury",
+      "name": "Tool Crib / Armoury",
+      "requires": [
+        "tool_crib",
+        "armoury"
+      ],
+      "area": [
+        868,
+        712,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          840,
+          760
+        ],
+        [
+          1080,
+          760
+        ]
+      ],
+      "rails": [
+        [
+          872,
+          712,
+          176,
+          8
+        ],
+        [
+          872,
+          800,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        952,
+        720,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "armoury_depot",
+      "name": "Armoury / Vehicle Depot",
+      "requires": [
+        "armoury",
+        "depot"
+      ],
+      "area": [
+        1588,
+        712,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          1560,
+          760
+        ],
+        [
+          1800,
+          760
+        ]
+      ],
+      "rails": [
+        [
+          1592,
+          712,
+          176,
+          8
+        ],
+        [
+          1592,
+          800,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        1672,
+        720,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "depot_infirmary",
+      "name": "Vehicle Depot / Works Infirmary",
+      "requires": [
+        "depot",
+        "infirmary"
+      ],
+      "area": [
+        2308,
+        712,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          2280,
+          760
+        ],
+        [
+          2520,
+          760
+        ]
+      ],
+      "rails": [
+        [
+          2312,
+          712,
+          176,
+          8
+        ],
+        [
+          2312,
+          800,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        2392,
+        720,
+        16,
+        80
+      ]
+    }
+  ]
+}

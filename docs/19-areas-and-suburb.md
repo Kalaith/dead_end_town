@@ -50,6 +50,15 @@ Modelled on [Sanctuary Hills](reference/sanctuary_hills_map.webp): a **ring road
 - **Gate:** the Warden (2,200 health, slower and heavier than the baboon, longer tell, `boss` in its data) holds the west road below the service stair at the north-west corner, which is the exit to area 3. With no area 3 yet the exit says nothing lies beyond.
 - Not designed yet: ranged and call pressure (Screecher, Spitter), the plaza and car parks, area-specific survivors, and any reason for a later return.
 
+## Area 3: the industrial works (first pass)
+
+`data/areas/industrial/`, the last area. 3,360 x 1,420: two rows of big yards (eight lots, all core) facing one central street, with a ring road around them. Facilities: home (`home`, the control room, north-east), hardware (`parts_store`), munitions (`armoury`), garage (`depot`), clinic (`infirmary`). Four crossings, six passages.
+
+- **Pressure** enters from the south-east freight road and is built around Brutes and a single Breaker (420 health, slow, structure multiplier 4, cap one living). One Breaker lives in the depot so it can be seen and learned; the Breaker wave stays ineligible until then.
+- **Gate:** the Foreman (3,200 health, the heaviest boss) holds the west road below the main gate at the north-west corner. The main gate is the campaign's end: with the Foreman dead, E shows the closing line and travels nowhere (`exit.final`).
+- **Entrance** at the south-west corner ("Service road"): E twice goes back to the office district.
+- Not designed yet: power and vehicles as mechanics (the area only names them), a real finale beyond the closing line, and why the player would come back.
+
 ### Preparing for the boss
 
 There is no readiness gate and no scripted arrival. The boss is a monster that **guards the only way out** of the suburb and waits there. The player decides when to go. The pause menu may show an advisory summary (food, medicine, ammunition, perimeter health, defenders) so the choice is informed, but nothing blocks the attempt.

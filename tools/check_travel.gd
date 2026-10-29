@@ -16,7 +16,7 @@ func _init() -> void:
 	var annex: Dictionary = Catalog.read("office")
 	var saves := SaveState.new(data, "user://check_travel.json")
 	var world := World.new(data)
-	_expect("the destination is the next area in order", Boss.destination(data) == "office" and Boss.destination(annex) == "")
+	_expect("the destination is the next area in order", Boss.destination(data) == "office" and Boss.destination(annex) == "industrial")
 	world.player.pos = Boss.exit_rect(data).get_center()
 	world.interact()
 	_expect("the baboon blocks the exit while it lives", world.travel_requested == "" and world.exit_pending == 0.0)

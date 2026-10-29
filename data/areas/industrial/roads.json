@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "crossings": [
+    {
+      "id": "parts_store_crossing",
+      "name": "Parts Store crossing",
+      "requires": [
+        "parts_store",
+        "tool_crib"
+      ],
+      "barriers": [
+        "parts_store_west",
+        "parts_store_east"
+      ],
+      "area": [
+        328,
+        472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "gatehouse_crossing",
+      "name": "Gatehouse crossing",
+      "requires": [
+        "gatehouse",
+        "armoury"
+      ],
+      "barriers": [
+        "gatehouse_west",
+        "gatehouse_east"
+      ],
+      "area": [
+        1048,
+        472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "yard_office_crossing",
+      "name": "Yard Office crossing",
+      "requires": [
+        "yard_office",
+        "depot"
+      ],
+      "barriers": [
+        "yard_office_west",
+        "yard_office_east"
+      ],
+      "area": [
+        1768,
+        472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "home_crossing",
+      "name": "01 / CONTROL ROOM crossing",
+      "requires": [
+        "home",
+        "infirmary"
+      ],
+      "barriers": [
+        "home_west",
+        "home_east"
+      ],
+      "area": [
+        2488,
+        472,
+        544,
+        216
+      ]
+    }
+  ],
+  "barricades": [
+    {
+      "id": "parts_store_west",
+      "name": "Parts Store west barricade",
+      "rect": [
+        312,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        320,
+        580
+      ],
+      "site": [
+        368,
+        580
+      ],
+      "requires": [
+        "parts_store",
+        "tool_crib"
+      ]
+    },
+    {
+      "id": "parts_store_east",
+      "name": "Parts Store east barricade",
+      "rect": [
+        872,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        880,
+        580
+      ],
+      "site": [
+        832,
+        580
+      ],
+      "requires": [
+        "parts_store",
+        "tool_crib"
+      ]
+    },
+    {
+      "id": "gatehouse_west",
+      "name": "Gatehouse west barricade",
+      "rect": [
+        1032,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        1040,
+        580
+      ],
+      "site": [
+        1088,
+        580
+      ],
+      "requires": [
+        "gatehouse",
+        "armoury"
+      ]
+    },
+    {
+      "id": "gatehouse_east",
+      "name": "Gatehouse east barricade",
+      "rect": [
+        1592,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        1600,
+        580
+      ],
+      "site": [
+        1552,
+        580
+      ],
+      "requires": [
+        "gatehouse",
+        "armoury"
+      ]
+    },
+    {
+      "id": "yard_office_west",
+      "name": "Yard Office west barricade",
+      "rect": [
+        1752,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        1760,
+        580
+      ],
+      "site": [
+        1808,
+        580
+      ],
+      "requires": [
+        "yard_office",
+        "depot"
+      ]
+    },
+    {
+      "id": "yard_office_east",
+      "name": "Yard Office east barricade",
+      "rect": [
+        2312,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        2320,
+        580
+      ],
+      "site": [
+        2272,
+        580
+      ],
+      "requires": [
+        "yard_office",
+        "depot"
+      ]
+    },
+    {
+      "id": "home_west",
+      "name": "01 / CONTROL ROOM west barricade",
+      "rect": [
+        2472,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        2480,
+        580
+      ],
+      "site": [
+        2528,
+        580
+      ],
+      "requires": [
+        "home",
+        "infirmary"
+      ]
+    },
+    {
+      "id": "home_east",
+      "name": "01 / CONTROL ROOM east barricade",
+      "rect": [
+        3032,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        3040,
+        580
+      ],
+      "site": [
+        2992,
+        580
+      ],
+      "requires": [
+        "home",
+        "infirmary"
+      ]
+    }
+  ]
+}

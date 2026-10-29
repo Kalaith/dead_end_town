@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "properties": [
+    {
+      "id": "parts_store",
+      "facility": "hardware",
+      "resident_kinds": [
+        "runner",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler"
+      ],
+      "core": true,
+      "available": true,
+      "food_cache": 2,
+      "name": "Parts Store",
+      "rect": [
+        320,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        420,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        600,
+        480
+      ],
+      "site": [
+        600,
+        350
+      ],
+      "post": [
+        600,
+        452
+      ],
+      "neighbors": [
+        "gatehouse",
+        "tool_crib"
+      ],
+      "reward": "Construction tools and a long spear",
+      "reinforcements": [
+        [
+          397,
+          382
+        ],
+        [
+          486,
+          363
+        ],
+        [
+          806,
+          420
+        ],
+        [
+          376,
+          258
+        ],
+        [
+          477,
+          408
+        ],
+        [
+          827,
+          219
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 32,
+        "line": "Hardware tools and a long spear recovered.",
+        "medicine": 0,
+        "survivor": ""
+      }
+    },
+    {
+      "id": "gatehouse",
+      "facility": "house",
+      "core": true,
+      "available": true,
+      "food_cache": 3,
+      "name": "Gatehouse",
+      "rect": [
+        1040,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        1140,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        1320,
+        480
+      ],
+      "site": [
+        1320,
+        350
+      ],
+      "post": [
+        1320,
+        452
+      ],
+      "neighbors": [
+        "parts_store",
+        "yard_office",
+        "armoury"
+      ],
+      "reward": "Household supplies",
+      "reinforcements": [
+        [
+          1081,
+          239
+        ],
+        [
+          1527,
+          361
+        ],
+        [
+          1232,
+          418
+        ],
+        [
+          1151,
+          423
+        ],
+        [
+          1463,
+          409
+        ],
+        [
+          1401,
+          390
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 12,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 8 searched."
+      }
+    },
+    {
+      "id": "yard_office",
+      "facility": "house",
+      "core": true,
+      "available": true,
+      "food_cache": 3,
+      "name": "Yard Office",
+      "rect": [
+        1760,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        1860,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        2040,
+        480
+      ],
+      "site": [
+        2040,
+        350
+      ],
+      "post": [
+        2040,
+        452
+      ],
+      "neighbors": [
+        "gatehouse",
+        "home",
+        "depot"
+      ],
+      "reward": "Household supplies and spare timber",
+      "reinforcements": [
+        [
+          2176,
+          408
+        ],
+        [
+          2096,
+          393
+        ],
+        [
+          1855,
+          380
+        ],
+        [
+          2262,
+          299
+        ],
+        [
+          2260,
+          150
+        ],
+        [
+          2262,
+          403
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 16,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 12 searched."
+      }
+    },
+    {
+      "id": "home",
+      "facility": "home",
+      "food_cache": 0,
+      "name": "01 / CONTROL ROOM",
+      "rect": [
+        2480,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        2580,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        2760,
+        480
+      ],
+      "site": [
+        2760,
+        350
+      ],
+      "post": [
+        2760,
+        452
+      ],
+      "neighbors": [
+        "yard_office",
+        "infirmary"
+      ],
+      "reward": "Home stockpile",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "core": true,
+      "available": true
+    }
+  ]
+}

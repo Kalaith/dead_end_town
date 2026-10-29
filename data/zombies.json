@@ -82,6 +82,32 @@
         "uninterruptible": true,
         "boss": true,
         "threat_cost": 20
+      },
+      "breaker": {
+        "name": "Breaker",
+        "health": 420,
+        "speed": 30,
+        "damage": 24,
+        "cooldown": 2.0,
+        "breach": 4.0,
+        "threat_cost": 8
+      },
+      "foreman": {
+        "name": "Foreman",
+        "health": 3200,
+        "speed": 48,
+        "damage": 40,
+        "cooldown": 2.0,
+        "breach": 4.0,
+        "lunge_range": 210,
+        "lunge_tell": 1.4,
+        "lunge_distance": 240,
+        "lunge_speed": 340,
+        "lunge_recovery": 2.4,
+        "lunge_cooldown": 6,
+        "uninterruptible": true,
+        "boss": true,
+        "threat_cost": 20
       }
     }
   }

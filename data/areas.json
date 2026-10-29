@@ -9,6 +9,10 @@
     {
       "id": "office",
       "name": "The Office District"
+    },
+    {
+      "id": "industrial",
+      "name": "The Industrial Works"
     }
   ]
 }
