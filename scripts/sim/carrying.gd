@@ -82,6 +82,46 @@ static func shelter(world: RefCounted) -> Dictionary:
 	return {}
 
 
+## Every held property a casualty could be put down at right now, nearest to the player first.
+static func havens(world: RefCounted) -> Array:
+	var found: Array = []
+	for p: Dictionary in world.catalog.properties:
+		if world.properties[p.id].claimed and world.remaining(p.id) == 0 and not Combat.danger(world, Routes.point(p.site), 170):
+			found.append(p)
+	found.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return world.player.pos.distance_to(Routes.point(a.site)) < world.player.pos.distance_to(Routes.point(b.site)))
+	return found
+
+
+static func compass(from: Vector2, to: Vector2) -> String:
+	var d: Vector2 = to - from
+	return ("N" if d.y < 0 else "S") if absf(d.y) > absf(d.x) * 2.0 else ("W" if d.x < 0 else "E") if absf(d.x) > absf(d.y) * 2.0 else ("N" if d.y < 0 else "S") + ("W" if d.x < 0 else "E")
+
+
+## Hurt and downed survivors, downed first and then nearest, for the HUD roll.
+static func casualties(world: RefCounted) -> Array:
+	var found: Array = []
+	for a: Dictionary in world.survivors:
+		if float(a.hp) < float(world.balance.survivor_health):
+			found.append(a)
+	found.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		if (float(a.hp) <= 0) != (float(b.hp) <= 0):
+			return float(a.hp) <= 0
+		return world.player.pos.distance_to(a.pos) < world.player.pos.distance_to(b.pos))
+	return found
+
+
+static func roll(world: RefCounted) -> String:
+	var lines: Array[String] = []
+	for a: Dictionary in casualties(world):
+		var where: String = "carried by " + carrier(world, a.id) if carried(world, a.id) else "%dm %s" % [int(world.player.pos.distance_to(a.pos) / 10.0), compass(world.player.pos, a.pos)]
+		lines.append("%s · %s · %s" % [a.name, "DOWN" if float(a.hp) <= 0 else "hurt %d" % int(a.hp), where])
+		if lines.size() == 4:
+			break
+	return "" if lines.is_empty() else "CASUALTIES
+" + "
+".join(lines)
+
+
 static func drop(world: RefCounted) -> bool:
 	if not occupied(world):
 		return false
@@ -105,7 +145,14 @@ static func abandon(world: RefCounted) -> void:
 
 static func context(world: RefCounted) -> String:
 	if occupied(world):
-		return ("E Drop " if not shelter(world).is_empty() else "Carrying ") + str(Equipment.person(world, world.carry.patient).name)
+		var name: String = str(Equipment.person(world, world.carry.patient).name)
+		if not shelter(world).is_empty():
+			return "E Drop " + name
+		var safe: Array = havens(world)
+		if safe.is_empty():
+			return "Carrying %s · no clear shelter, clear a held property" % name
+		var site: Vector2 = Routes.point(safe[0].site)
+		return "Carrying %s · take them to %s (%dm %s)" % [name, safe[0].name, int(world.player.pos.distance_to(site) / 10.0), compass(world.player.pos, site)]
 	var a: Dictionary = nearby(world)
 	if a.is_empty():
 		return ""

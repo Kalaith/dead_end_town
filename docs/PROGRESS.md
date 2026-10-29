@@ -202,3 +202,9 @@ A kiting bot with the starting bat, alone, against each boss with its escorts re
 
 - All three are beatable with the bat alone if the lunge is read, and punishing if it is not, which is the intended shape. The baboon costs a perfect dodger nothing, so it may be easy for a skilled player; the Warden is the harshest on the bat. Real feel is still a human question.
 - Found while writing it: at the baboon's post the straight line from the east side is blocked by a wall, so a player approaching from there cannot hit it and it cannot hit them (the bot picks an open side). Whether the post is meant to be that shielded is not decided.
+
+## 30 October 2026: carry guidance and a casualty roll
+
+- While carrying, the prompt names the nearest clear held property with distance and compass direction (`Carrying Mara · take them to Home (24m NE)`); every valid drop-off is ringed and labelled in the world and the nearest has a dashed guide line. Dropping now says where the person is and how to recover them (home porch E, or the clinic).
+- A HUD roll lists up to four hurt or downed survivors, downed first then nearest, with distance and direction (or who is carrying them). Downed and hurt survivors get a pulsing ring labelled DOWN or hurt.
+- Parse (115 scripts), `--headless --editor --quit` and `check_rescue_feel` pass. The new prompt, rings, guide line and roll have not been seen in a capture or played.

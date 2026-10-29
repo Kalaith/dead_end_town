@@ -1,6 +1,7 @@
 extends Control
 const DefeatMenu = preload("res://scripts/presentation/defeat_menu.gd")
 const EndingMenu = preload("res://scripts/presentation/ending_menu.gd")
+const Carrying = preload("res://scripts/sim/carrying.gd")
 const Facility = preload("res://scripts/sim/facility.gd")
 const RescueMenu = preload("res://scripts/presentation/rescue_menu.gd")
 const ConstructionMenu = preload("res://scripts/presentation/construction_menu.gd")
@@ -39,6 +40,7 @@ var live_status: Control
 var stats: Label
 var objective: Label
 var context_label: Label
+var casualty_label: Label
 var radio: Label
 var team_orders: VBoxContainer
 var supplies: Label
@@ -82,6 +84,9 @@ func _ready() -> void:
 	context_label = kit.label("", 17, Color("dfb36e"))
 	context_label.position = Vector2(20, 100)
 	add_child(context_label)
+	casualty_label = kit.label("", 15, Color("ffac82"))
+	casualty_label.position = Vector2(20, 130)
+	add_child(casualty_label)
 	radio = kit.label("", 16, Color("c6e5cd"))
 	radio.position = Vector2(20, 640)
 	radio.size = Vector2(740, 64)
@@ -211,6 +216,8 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	readiness.text = "READINESS / advisory\n" + Readiness.summary(world)
 	context_label.text = world.context()
 	context_label.visible = not paused and not context_label.text.is_empty()
+	casualty_label.text = Carrying.roll(world)
+	casualty_label.visible = not paused and not casualty_label.text.is_empty()
 	if paused:
 		if section == "Town":
 			town_map.refresh(world)

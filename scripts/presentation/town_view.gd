@@ -108,6 +108,7 @@ func _draw() -> void:
 	for a: Dictionary in actors:
 		if visible_world.grow(100).has_point(a.pos):
 			_actor(a, a.has("raid"))
+	_casualty_marks()
 	var patient: Dictionary = FieldMedicine.player_target(world)
 	if not patient.is_empty():
 		draw_arc(patient.pos, 25, 0, TAU, 32, Color("9dc1ce"), 2)
@@ -241,6 +242,29 @@ func _garden(rect: Rect2, site: Vector2) -> void:
 		if not world.garden_done:
 			_meter(site + Vector2(-60, 36), 120, float(world.garden_progress) / float(world.balance.work_seconds), TEAL)
 
+
+
+## Downed and hurt survivors get a pulsing ring; while carrying, every valid drop-off is ringed and the nearest has a guide line.
+func _casualty_marks() -> void:
+	var pulse: float = 0.5 + 0.5 * sin(Time.get_ticks_msec() / 250.0)
+	for a: Dictionary in Carrying.casualties(world):
+		if Carrying.carried(world, a.id) or not visible_world.grow(100).has_point(a.pos):
+			continue
+		var down: bool = float(a.hp) <= 0
+		draw_arc(a.pos, 20 + 4 * pulse, 0, TAU, 28, RUST if down else CREAM, 2)
+		_text(a.pos + Vector2(-24, -26), "DOWN" if down else "hurt", 13, RUST if down else CREAM)
+	if not Carrying.occupied(world):
+		return
+	var havens: Array = Carrying.havens(world)
+	for i: int in range(havens.size()):
+		var site: Vector2 = Routes.point(havens[i].site)
+		draw_arc(site, 46 + 5 * pulse, 0, TAU, 36, TEAL, 3)
+		_text(site + Vector2(-40, -60), "Drop here · " + str(havens[i].name), 15, TEAL)
+		if i == 0:
+			var way: Vector2 = (site - world.player.pos)
+			if way.length() > 80:
+				var start: Vector2 = world.player.pos + way.normalized() * 40
+				draw_dashed_line(start, start + way.normalized() * minf(way.length() - 80, 160), TEAL, 3, 10)
 
 
 func _actor(a: Dictionary, zombie: bool) -> void:
