@@ -3,8 +3,24 @@
   "zombies": {
     "default": "shambler",
     "types": {
-      "shambler": {"name": "Shambler", "health": 60, "speed": 47, "damage": 9, "cooldown": 1.2, "breach": 1.0},
-      "brute": {"name": "Brute", "health": 180, "speed": 38, "damage": 18, "cooldown": 1.6, "breach": 2.5},
+      "shambler": {
+        "name": "Shambler",
+        "health": 60,
+        "speed": 47,
+        "damage": 9,
+        "cooldown": 1.2,
+        "breach": 1.0,
+        "threat_cost": 1
+      },
+      "brute": {
+        "name": "Brute",
+        "health": 180,
+        "speed": 38,
+        "damage": 18,
+        "cooldown": 1.6,
+        "breach": 2.5,
+        "threat_cost": 3
+      },
       "screecher": {
         "name": "Screecher",
         "health": 75,
@@ -15,7 +31,8 @@
         "call_tell": 1.5,
         "call_retry": 4,
         "call_cooldown": 18,
-        "call_pulse": 1
+        "call_pulse": 1,
+        "threat_cost": 3
       },
       "runner": {
         "name": "Runner",
@@ -29,7 +46,8 @@
         "lunge_distance": 85,
         "lunge_speed": 260,
         "lunge_recovery": 0.8,
-        "lunge_cooldown": 4
+        "lunge_cooldown": 4,
+        "threat_cost": 2
       }
     }
   }

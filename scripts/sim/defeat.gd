@@ -1,4 +1,5 @@
 extends RefCounted
+const Pressure = preload("res://scripts/sim/pressure.gd")
 const CompanionRescue = preload("res://scripts/sim/companion_rescue.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
@@ -106,8 +107,7 @@ static func recover(world: RefCounted) -> bool:
 			a.hp = float(world.balance.defeat_survivor_health)
 			index += 1
 	world.carry = Carrying.initial()
-	world.pressure.next = maxf(float(world.pressure.next), world.elapsed + float(world.balance.recovery_migration_seconds))
-	world.pressure.warned = false
+	Pressure.postpone(world, world.elapsed + float(world.balance.recovery_migration_seconds))
 	world.defeat_pending = false
 	world.move_input = Vector2.ZERO
 	world.working = false

@@ -379,6 +379,7 @@ func claim(id: String) -> bool:
 	properties[id].claimed = true
 	properties[id].claimed_once = true
 	properties[id].occupation = 0.0
+	Pressure.claimed(self, id)
 	if p.has("search"):
 		if first:
 			materials += int(balance.claim_materials)

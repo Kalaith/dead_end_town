@@ -191,7 +191,7 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 		if Roadworks.active(world.roadworks[d.id]) and Roadworks.danger(world, d):
 			stats.text = d.name + " under attack"
 	if world.pressure.warned and stats.text.is_empty():
-		stats.text = "Raid · %ds" % ceili(float(world.pressure.next) - world.elapsed)
+		stats.text = "Arrivals · %s" % ("entering" if world.pressure.phase == "entering" else "%ds" % maxi(0, ceili(float(world.pressure.next) - world.elapsed)))
 	if not world.properties.home.claimed:
 		stats.text = "Home lost"
 	stats.visible = not paused and not stats.text.is_empty()

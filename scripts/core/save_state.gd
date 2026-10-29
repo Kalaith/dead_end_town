@@ -46,7 +46,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 34
+const SCHEMA: int = 35
 ## Saved world fields that are collections and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -96,6 +96,9 @@ func restore(raw: Dictionary) -> RefCounted:
 	for key: String in STATE_KEYS:
 		world.set(key, int(data[key]) if key in ["materials", "food", "medicine", "downs"] else (data[key].duplicate(true) if key in COPIED_KEYS else data[key]))
 	world.production.target = int(data.production.target)
+	world.pressure.wave = int(data.pressure.wave)
+	world.pressure.band = int(data.pressure.band)
+	world.pressure.origin_repeats = int(data.pressure.origin_repeats)
 	world.noise.sequence = int(data.noise.sequence)
 	for event: Dictionary in world.noise.events:
 		event.id = int(event.id)
@@ -236,6 +239,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 34:
+		return _upgrade_campaign_pressure(upgraded)
 	if version == 33:
 		return _upgrade_screechers(upgraded)
 	if version == 32:
@@ -384,10 +389,10 @@ func _upgrade_pressure(data: Dictionary) -> Dictionary:
 			if data.properties[z.home].claimed:
 				z.hp = 0.0
 			data.zombies.append(_encode_actor(z))
-	data.pressure = Pressure.initial(catalog)
+	data.pressure = {"wave": 0, "next": 0.0, "warned": false}
 	data.pressure.wave = 1 if data.approach else 0
 	# Loading old progress gives a preparation interval, never an immediate overdue wave.
-	data.pressure.next = float(data.elapsed) + float(catalog.pressure.interval_seconds)
+	data.pressure.next = float(data.elapsed) + 65.0
 	data.schema_version = 5
 	return _upgrade_territory(data)
 
@@ -710,6 +715,12 @@ func _upgrade_attention(data: Dictionary) -> Dictionary:
 
 func _upgrade_screechers(data: Dictionary) -> Dictionary:
 	if not ScreecherState.migrate(data, catalog):
+		return {}
+	return _upgrade_campaign_pressure(data)
+
+
+func _upgrade_campaign_pressure(data: Dictionary) -> Dictionary:
+	if not PressureState.migrate(data, catalog):
 		return {}
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}
