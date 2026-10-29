@@ -59,6 +59,28 @@ func _init() -> void:
 	late.elapsed = 120.0
 	late.step(0.05)
 	_expect("a game past a minute counts the basics as taught", Tips.current(late) != "move")
+	var fight := World.new(data)
+	fight.elapsed = 120.0
+	for z2: Dictionary in fight.zombies:
+		z2.hp = 0.0
+	var foe: Dictionary = World.actor("tip_foe", "Shambler", fight.player.pos + Vector2(100, 0), 60.0)
+	foe.home = "home"
+	foe.raid = false
+	foe.cooldown = 100.0
+	fight.zombies.append(foe)
+	fight.player.swing = 0.1
+	fight.step(0.05)
+	_expect("a fight with a team teaches the orders (" + Tips.current(fight) + ")", Tips.current(fight) == "orders")
+	fight.order("Hold")
+	fight.step(0.05)
+	_expect("giving an order ends it", Tips.current(fight) != "orders")
+	fight.firearms.owned = true
+	fight.firearms.bullets = 5
+	fight.step(0.05)
+	_expect("a pistol with bullets in a fight teaches shooting", Tips.current(fight) == "pistol")
+	fight.shoot()
+	fight.step(0.05)
+	_expect("firing ends it", Tips.current(fight) != "pistol")
 	_expect("tips never touched the stock", int(world.food) == int(data.balance.starting_food) and int(world.materials) == int(data.balance.starting_materials))
 	print("%d failures" % failures)
 	quit(1 if failures > 0 else 0)

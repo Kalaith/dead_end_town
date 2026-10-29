@@ -465,6 +465,7 @@ func claim(id: String) -> bool:
 
 
 func order(value: String) -> void:
+	tips.ordered = true
 	for a: Dictionary in survivors:
 		if a.order == "Rescue":
 			continue
