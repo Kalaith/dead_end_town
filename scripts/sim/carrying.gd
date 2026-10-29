@@ -117,9 +117,7 @@ static func roll(world: RefCounted) -> String:
 		lines.append("%s · %s · %s" % [a.name, "DOWN" if float(a.hp) <= 0 else "hurt %d" % int(a.hp), where])
 		if lines.size() == 4:
 			break
-	return "" if lines.is_empty() else "CASUALTIES
-" + "
-".join(lines)
+	return "" if lines.is_empty() else "CASUALTIES\n" + "\n".join(lines)
 
 
 static func drop(world: RefCounted) -> bool:

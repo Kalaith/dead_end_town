@@ -221,3 +221,9 @@ Delivery steps 1-10 in `19-areas-and-suburb.md` are all done; only step 11 (play
 6. **Areas share one layout vocabulary.** Plaza, car parks and area-specific survivors (Theo, Nia, Rowan) are unbuilt; 15 shell lots were dropped; there is no reason to return to an earlier area.
 7. **Clean-up debt.** Inert `slice_state` and `catalog.slice` remain; `save_state.gd` is at 771 lines (limit 800); raider spur path-target question in `raiding.gd`; fence-line gate points stall walkers.
 8. **Rescue/casualty loop** has no dedicated test beyond `check_rescue_feel`, and the new drop-off guidance is unseen.
+
+## 30 October 2026: carry guidance seen in the running game
+
+- `tools/capture_carry.gd` (run with `Capture.ps1 -Tour`) stages a downed Mara, lifts her with a real E event, walks to the porch and drops her; frames in `docs/verification/carry_*.png`. The prompt, the teal drop-off ring and dashed guide, the DOWN ring and the casualty roll all read correctly.
+- Found by looking: the roll had literal line breaks in its source (a blank line under CASUALTIES); fixed. Also, `Input.action_press` alone never starts a lift because the game reads the press as an event: captures send an `InputEventAction`.
+- Not checked: hurt-but-standing rings, several casualties at once, a rescue carried by another survivor, the map view.
