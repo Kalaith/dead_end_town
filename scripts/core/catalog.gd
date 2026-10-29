@@ -123,6 +123,12 @@ static func problems(data: Dictionary) -> Array[String]:
 	if not rules.list(data, "properties", false):
 		return errors
 	var ids: Array = rules.unique_ids(data.properties)
+	if rules.object(data, "objective") and rules.list(data.objective, "reclaim"):
+		for id: Variant in data.objective.reclaim:
+			if not ids.has(id):
+				errors.append("Objective names an unknown property.")
+		if not data.objective.reclaim.has("home"):
+			errors.append("Objective must include home.")
 
 	for raw: Variant in data.properties:
 		if not raw is Dictionary:

@@ -80,5 +80,13 @@
       100,
       80
     ]
+  },
+  "objective": {
+    "reclaim": [
+      "home",
+      "parts_store",
+      "gatehouse",
+      "yard_office"
+    ]
   }
 }

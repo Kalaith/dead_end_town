@@ -70,5 +70,13 @@
       100,
       80
     ]
+  },
+  "objective": {
+    "reclaim": [
+      "home",
+      "garden",
+      "library",
+      "garage"
+    ]
   }
 }

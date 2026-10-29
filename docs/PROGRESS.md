@@ -265,3 +265,8 @@ Still needing development (second look, most important first):
 - Van: up to two nearby Follow-order survivors ride with the driver (immune to hits, do not block the van, set down beside it on exit or wreck); hold R beside the van to repair it (4 materials prepaid once, 10 s, +200 hull, progress kept); a carried casualty can board the van away from any shelter, so it doubles as an ambulance. Saves from schema 41 gain empty riders, repair state and hazards.
 - `check_vehicle` (riders, rider immunity, exit placement, ambulance, repair, 41 migration) and `check_spitter` (dodging, hazard save/reject) extended and passing, as do parse (122 scripts), catalog, save, travel, boss, pressure, tips, rescue-feel, facilities, passages, ring, rear-build, office and industrial checks.
 - Not seen in a window: the dodge, riders drawn in the van, the repair prompt. Not done: survivors repairing the van, van between areas, riders ordering. Survivors do not avoid zombies' other hazards (none exist).
+
+## 30 October 2026: objective and readiness per area
+
+- `objective.reclaim` in each `area.json` lists the lots that area asks the player to hold (suburb: home, garden, library, garage; office: home, maintenance, atrium, car park; works: home, parts store, gatehouse, yard office), validated by the catalog. `slice_objective.gd` derives the HUD goal and READINESS from it: garden, harvest and workshop/equipment steps apply only where a lot of that kind is listed, so the office and works no longer ask for a garden.
+- Parse, catalog, save, tips, boss, travel, office and industrial checks pass. Not seen in the HUD of the other areas.
