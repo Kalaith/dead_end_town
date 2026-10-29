@@ -93,7 +93,7 @@ Claim, occupation and loss; safe connection and production; work orders; economy
 3. Area layer, per-area bounds and the schema migration.
 4. Author the suburb.
 5. Rework pressure onto entrances; finish and commit the scheduler. (done, see PROGRESS)
-6. Optional advisory summary in the pause menu.
+6. Optional advisory summary in the pause menu. (done, see PROGRESS)
 7. Baboon boss at the exit.
 8. Area transition.
 9. Office district, then industrial area, each with its own boss or gate.

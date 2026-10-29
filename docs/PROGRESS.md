@@ -738,3 +738,8 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 - The scheduler needed no engine change: bands already follow held core lots (`town.json` `bands`), routes are the area's authored entrances, and enemy statistics are untouched. The single south-west bridge route is validated for a physical path into the road.
 - Added `tools/check_pressure.gd` (headless): home alone is band 0; the first claim schedules an event from the bridge route only; zombies are admitted within ten minutes at the bridge entry and a minute later have moved most of the way up the west road toward the settlement. All pass.
 - Not tuned: band budgets and intervals have not been balanced against play on this layout, and only the first event was run. The baboon (step 7) will sit on the road the horde uses.
+
+## 29 October 2026: advisory readiness summary (step 6)
+
+- `scripts/sim/readiness.gd` summarises food (and meal cost), medicine, bullets, barricades standing/damaged and able defenders. The pause menu's Street tab shows it under the stockpile as "READINESS / advisory". Nothing is gated on it.
+- Checked: all scripts load, and `tools/check_pressure.gd` asserts the summary content. Not seen: the label's layout in the real pause menu (no capture taken).

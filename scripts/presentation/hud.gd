@@ -7,6 +7,7 @@ const LiveStatus = preload("res://scripts/presentation/live_status.gd")
 const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
 const FoodGrowing = preload("res://scripts/sim/food_growing.gd")
 const Provisions = preload("res://scripts/sim/provisions.gd")
+const Readiness = preload("res://scripts/sim/readiness.gd")
 const EquipmentMenu = preload("res://scripts/presentation/equipment_menu.gd")
 const TownMap = preload("res://scripts/presentation/town_map.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
@@ -47,6 +48,7 @@ var equipment_menu: VBoxContainer
 var town_map: VBoxContainer
 var menu_status: Label
 var pause_title: Label
+var readiness: Label
 var first_button: Button
 var last_message: String = ""
 var message_seconds: float = 0.0
@@ -134,6 +136,8 @@ func _build_menu() -> void:
 	sections.Street.add_child(watch_button)
 	supplies = kit.label("", 18)
 	sections.Street.add_child(supplies)
+	readiness = kit.label("", 18)
+	sections.Street.add_child(readiness)
 	town_map = TownMap.new()
 	sections.Town.add_child(town_map)
 	team_orders = TeamOrders.new()
@@ -204,6 +208,8 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	if world.properties.clinic.looted:
 		supplies.text += "\n%d medicine" % world.medicine
 	supplies.text += "\n" + FoodGrowing.summary(world)
+	readiness.text = "READINESS / advisory
+" + Readiness.summary(world)
 	context_label.text = world.context()
 	context_label.visible = not paused and not context_label.text.is_empty()
 	if paused:

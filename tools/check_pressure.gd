@@ -6,6 +6,7 @@ const World = preload("res://scripts/sim/world.gd")
 const Pressure = preload("res://scripts/sim/pressure.gd")
 const Plan = preload("res://scripts/sim/migration_plan.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
+const Readiness = preload("res://scripts/sim/readiness.gd")
 var failures: int = 0
 
 
@@ -14,6 +15,7 @@ func _init() -> void:
 	var world := World.new(data)
 	var route: Dictionary = data.pressure.routes[0]
 	var entry: Vector2 = Routes.point(route.entry)
+	_expect("readiness summary describes stock, perimeter and defenders", Readiness.summary(world).contains("Food") and Readiness.summary(world).contains("Barricades") and Readiness.summary(world).contains("Defenders"))
 	_expect("band starts at 0 with nothing claimed beyond home", Plan.band(data, world.properties) == 0)
 	_claim_neighbour(world)
 	_expect("first claim schedules an event", world.pressure.phase == "waiting" and not world.pressure.event.is_empty())
