@@ -4,6 +4,7 @@ const AttentionState = preload("res://scripts/core/attention_state.gd")
 const Acoustics = preload("res://scripts/sim/noise.gd")
 const RunnerState = preload("res://scripts/core/runner_state.gd")
 const BossState = preload("res://scripts/core/boss_state.gd")
+const ResidentState = preload("res://scripts/core/resident_state.gd")
 const Boss = preload("res://scripts/sim/boss.gd")
 const FieldMedicineState = preload("res://scripts/core/field_medicine_state.gd")
 const CompanionRescueState = preload("res://scripts/core/companion_rescue_state.gd")
@@ -48,7 +49,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 38
+const SCHEMA: int = 39
 ## Saved world fields that are collections and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "unlocks"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -255,6 +256,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 38:
+		return _upgrade_residents(upgraded)
 	if version == 37:
 		return _upgrade_unlocks(upgraded)
 	if version == 36:
@@ -757,15 +760,24 @@ func _upgrade_areas(data: Dictionary) -> Dictionary:
 
 ## Saves before the boss gain it and its escorts at their posts.
 func _upgrade_boss(data: Dictionary) -> Dictionary:
-	var ids: Array = data.zombies.map(func(z: Dictionary) -> String: return str(z.id))
-	for z: Dictionary in World.new(catalog).zombies:
-		if z.home == Boss.HOME and z.id not in ids:
-			data.zombies.append(_encode_actor(z))
 	return _upgrade_unlocks(data)
 
 
 ## Saves before travel have nothing unlocked elsewhere.
 func _upgrade_unlocks(data: Dictionary) -> Dictionary:
 	data.unlocks = []
+	return _upgrade_residents(data)
+
+
+## Saves before the doubled yards and the boss gain every resident they lack, at its authored post.
+func _upgrade_residents(data: Dictionary) -> Dictionary:
+	if not ResidentState.renumber(data, catalog):
+		return {}
+	# Short-term memories are keyed by zombie id, and ids may have just changed.
+	data.memories = {}
+	var ids: Array = data.zombies.map(func(z: Dictionary) -> String: return str(z.id))
+	for z: Dictionary in World.new(catalog).zombies:
+		if not z.raid and z.id not in ids:
+			data.zombies.append(_encode_actor(z))
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

@@ -125,9 +125,15 @@ User feedback: the zombies were not a real danger; taking space should feel like
 
 - Every lot's starting zombies and reinforcements are doubled (62 -> 124 residents): each new one is a plain Shambler placed in open yard away from buildings, the gate and its neighbours (seeded, so the layout is stable). Runners and Screechers were not doubled, so no extra call or lunge pressure. `hidden_zombies` (the population raiders refill a lot to) is doubled too, so retaken lots stay twice as full.
 - `living_cap` 96 -> 200, and the validator's upper bound 100 -> 400, to hold the larger population plus migrants.
-- Checked: catalog 0 problems and the save, pressure, boss, travel, ring and passage checks pass; the street is visibly crowded (`docs/verification/street_walk.png`). Not tested: how a real player fares against the doubled yards. Existing saves keep their old residents, since residents are saved; start a new street to see the change.
+- Checked: catalog 0 problems and the save, pressure, boss, travel, ring and passage checks pass; the street is visibly crowded (`docs/verification/street_walk.png`). Not tested: how a real player fares against the doubled yards. (Correction, pass 10: this was wrong, existing saves were rejected as damaged; see below.)
 
 ## 29 October 2026: review pass 9 (can the doubled yards be cleared?)
 
 - Scratch simulation (not kept): the player walks at the nearest zombie in the yard and swings, no retreat or gate use, no armour, bat only. Garden (14 zombies): alone the player falls in 3 s with 12 left; with Mara on Engage the yard is cleared in 8 s with the player at 28 health. Library (14): alone dead in 4 s; with Mara dead with 5 left. Residence (6): cleared alone (73 health) and with Mara (100).
 - Reading: charging into a 14-zombie yard is lost, while a smaller yard or a team win comfortably. That matches the intent of a struggle, with pulling zombies to the gate, sword/armour and Mara as the real tools. Not checked: a gate-fighting player, a team with armour, or whether the first lots are fun. If the first lots feel hopeless, trim the largest yards (garden, library, garage) before touching the numbers elsewhere.
+
+## 29 October 2026: review pass 10 (saves from before the doubled yards), schema 39
+
+- Mistake found: I had said existing saves would keep their old residents. They would not: the resident list is validated against the catalog, so a schema 38 save from before the doubling failed to load as damaged and blocked saving.
+- Fix: schema 39. `resident_state.gd` renumbers each lot's old starting zombies into the first slots of its new numbering (`z%d` ids shifted when each lot doubled), short-term memories are cleared since they are keyed by id, and every missing resident (the new zombies, reinforcements, the boss and escorts) is added from a fresh world at its authored position. Older saves pass through the same step. Old saves now load with the doubled, refilled yards.
+- Checked: `tools/check_save.gd` builds a save shaped like the old one (half the residents, old numbering, schema 38) and restores it to the full 124 plus boss; catalog, pressure, boss and travel checks pass. Not tried with a real old save file on disk.

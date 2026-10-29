@@ -28,6 +28,10 @@ func _init() -> void:
 	var self_frozen: Dictionary = raw.duplicate(true)
 	self_frozen.frozen = {data.area.id: {}}
 	_expect("frozen copy of the current area is rejected", saves.restore(self_frozen) == null)
+	var thin: Dictionary = _halved(raw, data)
+	thin.schema_version = 38
+	var grown: RefCounted = saves.restore(thin)
+	_expect("a schema 38 save with half the residents is renumbered and refilled", grown != null and grown.zombies.size() == world.zombies.size())
 	quit(failures)
 
 
@@ -35,3 +39,31 @@ func _expect(label: String, ok: bool) -> void:
 	print(("pass  " if ok else "FAIL  ") + label)
 	if not ok:
 		failures += 1
+
+
+## What a save from before the doubled yards looked like: the first half of each lot's starting zombies renumbered in
+## order, and no extra reinforcements.
+func _halved(raw: Dictionary, data: Dictionary) -> Dictionary:
+	var result: Dictionary = raw.duplicate(true)
+	var kept: Array = []
+	var index: int = 0
+	for p: Dictionary in data.properties:
+		var old_count: int = p.zombies.size() / 2
+		var seen: int = 0
+		for z: Dictionary in result.zombies:
+			if z.home == p.id and str(z.id).begins_with("z") and not z.raid:
+				if seen < old_count:
+					z.id = "z%d" % index
+					index += 1
+					kept.append(z)
+				seen += 1
+		var old_reinforcements: int = p.reinforcements.size() / 2
+		for i: int in range(p.reinforcements.size()):
+			for z: Dictionary in result.zombies:
+				if z.id == "resident_%s_%d" % [p.id, i] and i < old_reinforcements:
+					kept.append(z)
+	for z: Dictionary in result.zombies:
+		if z.home == "boss" or z.raid:
+			kept.append(z)
+	result.zombies = kept
+	return result
