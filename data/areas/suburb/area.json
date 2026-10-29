@@ -7,7 +7,7 @@
   },
   "bounds": [
     3360,
-    2180
+    3300
   ],
   "balance": {
     "player_start": [
@@ -47,28 +47,28 @@
     "id": "boss_baboon",
     "kind": "baboon",
     "post": [
-      140,
-      1960
+      360,
+      2760
     ],
-    "leash": 320,
+    "leash": 420,
     "escorts": [
       [
-        80,
-        1900
+        250,
+        2690
       ],
       [
-        200,
-        1900
+        470,
+        2690
       ]
     ]
   },
   "exit": {
     "name": "Bridge",
     "rect": [
-      40,
-      2100,
-      100,
-      80
+      60,
+      3170,
+      580,
+      90
     ]
   },
   "objective": {
@@ -77,6 +77,16 @@
       "garden",
       "library",
       "garage"
+    ]
+  },
+  "terrain": {
+    "water": [
+      [
+        680,
+        2180,
+        2680,
+        1120
+      ]
     ]
   }
 }

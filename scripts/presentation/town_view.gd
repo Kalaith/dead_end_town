@@ -27,6 +27,7 @@ const RUST := Color("d88c63")
 ## junction with a planted island. Kerbs go down first so where roads meet they join without a wall line.
 func _streets() -> void:
 	var roads: Array[Rect2] = []
+	var bridges: Array[Rect2] = []
 	var plazas: Array[Rect2] = []
 	for street: Dictionary in world.catalog.town.streets:
 		var rect: Rect2 = Routes.rectangle(street.rect)
@@ -36,6 +37,8 @@ func _streets() -> void:
 			draw_rect(rect, Color("45473d"))
 		elif street.kind == "road":
 			roads.append(rect)
+		elif street.kind == "bridge":
+			bridges.append(rect)
 		else:
 			plazas.append(rect)
 	for rect: Rect2 in roads:
@@ -44,6 +47,8 @@ func _streets() -> void:
 		draw_rect(rect.grow(-7), Color("353e3e"))
 	for rect: Rect2 in plazas:
 		_plaza(rect)
+	for rect: Rect2 in bridges:
+		_bridge(rect)
 	for rect: Rect2 in roads:
 		if rect.size.x >= rect.size.y:
 			for x: int in range(int(rect.position.x), int(rect.end.x) - 70, 100):
@@ -51,6 +56,32 @@ func _streets() -> void:
 		else:
 			for y: int in range(int(rect.position.y), int(rect.end.y) - 70, 100):
 				_dash(Rect2(rect.get_center().x - 3, y + 10, 5, 50), plazas)
+
+
+## A wide deck over the water: stone parapets down both sides, lane paint, and expansion joints across it.
+func _bridge(rect: Rect2) -> void:
+	draw_rect(rect, Color("7b8174"))
+	draw_rect(Rect2(rect.position + Vector2(14, 0), rect.size - Vector2(28, 0)), Color("353e3e"))
+	for y: int in range(int(rect.position.y) + 60, int(rect.end.y), 120):
+		draw_rect(Rect2(rect.position.x + 14, y, rect.size.x - 28, 4), Color("2b3333"))
+	for lane: float in [0.33, 0.67]:
+		for y: int in range(int(rect.position.y), int(rect.end.y) - 70, 100):
+			draw_rect(Rect2(rect.position.x + rect.size.x * lane - 3, y + 10, 5, 50), Color("ada47b"))
+	for y: int in range(int(rect.position.y) + 20, int(rect.end.y), 90):
+		for x: float in [rect.position.x + 3, rect.end.x - 11]:
+			draw_rect(Rect2(x, y, 8, 40), Color("9aa092"))
+
+
+func _water() -> void:
+	for raw: Array in world.catalog.get("terrain", {}).get("water", []):
+		var rect: Rect2 = Routes.rectangle(raw)
+		if not rect.intersects(visible_world):
+			continue
+		draw_rect(rect, Color("1f3a4a"))
+		for x: int in range(maxi(int(rect.position.x), floori(visible_world.position.x / 90) * 90), mini(int(rect.end.x), ceili(visible_world.end.x / 90) * 90), 90):
+			for y: int in range(maxi(int(rect.position.y), floori(visible_world.position.y / 60) * 60), mini(int(rect.end.y), ceili(visible_world.end.y / 60) * 60), 60):
+				var shift: int = (x * 7 + y * 3) % 40
+				draw_line(Vector2(x + shift, y + 20), Vector2(x + shift + 26, y + 20), Color("2d5568"), 3)
 
 
 ## Centre-line paint stops at a plaza instead of crossing its planted island.
@@ -81,6 +112,7 @@ func _draw() -> void:
 		for y: int in range(maxi(0, floori(visible_world.position.y / 32) * 32), mini(height, ceili(visible_world.end.y / 32) * 32), 32):
 			var shade: float = float((x * 7 + y * 13) % 23) / 300.0
 			draw_rect(Rect2(x + 2, y + 2, 28, 28), Color(0.16 + shade, 0.22 + shade, 0.18 + shade))
+	_water()
 	_streets()
 	_exit()
 	_entrance()
@@ -366,7 +398,7 @@ func _exit() -> void:
 		_text(rect.position + Vector2(8, -8), str(world.catalog.exit.name).to_upper() + " / EXIT", 15, TEAL)
 		return
 	draw_rect(rect, Color("3b2f2a"))
-	for i: int in range(4):
+	for i: int in range(maxi(4, int(rect.size.x / 22.0) - 1)):
 		var car := Rect2(rect.position + Vector2(6 + i * 22, 10 + (i % 2) * 22), Vector2(20, 34))
 		draw_rect(car, Color("6d5a4d") if i % 2 == 0 else Color("55606a"))
 		draw_rect(car.grow(-5), INK)

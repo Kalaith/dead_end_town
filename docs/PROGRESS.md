@@ -270,3 +270,9 @@ Still needing development (second look, most important first):
 
 - `objective.reclaim` in each `area.json` lists the lots that area asks the player to hold (suburb: home, garden, library, garage; office: home, maintenance, atrium, car park; works: home, parts store, gatehouse, yard office), validated by the catalog. `slice_objective.gd` derives the HUD goal and READINESS from it: garden, harvest and workshop/equipment steps apply only where a lot of that kind is listed, so the office and works no longer ask for a garden.
 - Parse, catalog, save, tips, boss, travel, office and industrial checks pass. Not seen in the HUD of the other areas.
+
+## 30 October 2026: the bridge is a real arena
+
+- The suburb's map grew from 2180 to 3300 tall: a 640 x 1080 bridge deck (new street kind `bridge`, parapets, lanes, expansion joints) runs south from the estate's south-west corner over open water (`terrain.water` in `area.json`: impassable on foot and for the van, but not for globs or sight). The baboon holds the middle of the deck (post 360,2760, leash 420, escorts either side), the blocked exit is a full-width roadblock at the far end, and migrations now enter at the far end of the bridge and walk the length of the deck past the baboon.
+- Existing saves still load (positions all fall inside the old bounds; the boss walks back to its new post). `check_pressure` now asserts no raider strays east of x=700 instead of using the old spur height. Parse, catalog, boss, pressure, save, travel, ring, spitter and sim_boss run; frames `boss_bridge_approach` and `boss_baboon_post` were looked at.
+- Not done: the office and works exits are still short roads; the fight on the wider deck has not been played, and the baboon may now be easy to circle (its lunge was tuned for a narrow post).

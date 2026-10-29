@@ -145,6 +145,9 @@ func rebuild_routes() -> void:
 	for d: Dictionary in catalog.barricades:
 		if Roadworks.active(roadworks[d.id]):
 			defences.append(Routes.rectangle(d.rect))
+	# Water is impassable on foot and for the van, but not for globs or sight.
+	for rect: Array in catalog.get("terrain", {}).get("water", []):
+		defences.append(Routes.rectangle(rect))
 	routes.rebuild(catalog.properties, properties, Routes.point(catalog.bounds), defences, Neighbourhood.openings(self), Neighbourhood.obstacles(self))
 
 
