@@ -15,3 +15,8 @@ func tour() -> void:
 			z.hp = 0.0
 	await seconds(0.6)
 	await shot("boss_exit_open")
+	var exit_rect: Rect2 = Rect2(float(town.world.catalog.exit.rect[0]), float(town.world.catalog.exit.rect[1]), float(town.world.catalog.exit.rect[2]), float(town.world.catalog.exit.rect[3]))
+	town.world.player.pos = exit_rect.get_center()
+	town.world.interact()
+	await seconds(0.6)
+	await shot("boss_exit_prompt")

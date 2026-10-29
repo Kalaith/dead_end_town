@@ -15,8 +15,14 @@ static func person(world: RefCounted, id: String) -> Dictionary:
 	return {}
 
 
+const GATED: Array[String] = ["field_bag", "spear", "crowbar", "sword", "iron", "shield"]
+## Everything `world.unlocks` may hold: gated gear plus the firearm.
+const UNLOCKABLE: Array[String] = ["field_bag", "spear", "crowbar", "sword", "iron", "shield", "firearm"]
+
+
+## Items unlocked in an area stay unlocked after leaving it, through `world.unlocks`.
 static func unlocked(world: RefCounted, id: String) -> bool:
-	if id == "bat" or id == "none":
+	if id == "bat" or id == "none" or id in world.unlocks:
 		return true
 	if id == "field_bag":
 		return world.properties.clinic.looted

@@ -18,6 +18,8 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	rules.vec2(data.boss, "post")
 	rules.number_between(data.boss, "leash", 30.0, 2000.0)
 	rules.text(data.exit, "name")
+	if data.get("balance") is Dictionary:
+		rules.number_between(data.balance, "area_carry_cap", 1, 10000)
 	if not data.exit.get("rect") is Array or data.exit.rect.size() != 4:
 		errors.append("Exit needs a four-number rectangle.")
 	if not data.boss.get("escorts") is Array:

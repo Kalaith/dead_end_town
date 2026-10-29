@@ -95,7 +95,7 @@ Claim, occupation and loss; safe connection and production; work orders; economy
 5. Rework pressure onto entrances; finish and commit the scheduler. (done, see PROGRESS)
 6. Optional advisory summary in the pause menu. (done, see PROGRESS)
 7. Baboon boss at the exit. (done, see PROGRESS)
-8. Area transition.
+8. Area transition. (done, see PROGRESS)
 9. Office district, then industrial area, each with its own boss or gate.
 10. Retire the old slice and watch.
 11. Verification by playing the real game, proportionate to each change (see `AGENTS.md`).

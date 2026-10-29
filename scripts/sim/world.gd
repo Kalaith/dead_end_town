@@ -65,6 +65,9 @@ var field_care: Dictionary = {}
 var elapsed: float = 0.0
 var approach: bool = false
 var boss_seen_alive: bool = false
+var exit_pending: float = 0.0
+var unlocks: Array = []
+var travel_requested: String = ""
 var pressure: Dictionary
 var garden_progress: float = 0.0
 var garden_started: bool = false
@@ -192,7 +195,7 @@ func step(dt: float) -> void:
 	working = player_work
 	FieldMedicine.step(self, work_dt)
 	Pressure.step(self)
-	Boss.step(self)
+	Boss.step(self, dt)
 	Carrying.sync(self)
 	CompanionRescue.sync(self)
 	SliceObjective.step(self, dt)
@@ -274,6 +277,8 @@ func salvage() -> bool:
 func _context() -> String:
 	if not properties.home.claimed and player.pos.distance_to(Routes.point(balance.emergency_shelter)) < 50:
 		return ""
+	if Boss.at_exit(self):
+		return Boss.context(self)
 	var passage: Dictionary = Neighbourhood.nearby(self)
 	if not passage.is_empty():
 		return Neighbourhood.context(self, passage)
@@ -316,6 +321,9 @@ func interact() -> void:
 	if float(player.hp) <= 0:
 		return
 	if Carrying.press(self):
+		return
+	if Boss.at_exit(self):
+		Boss.interact(self)
 		return
 	var passage: Dictionary = Neighbourhood.nearby(self)
 	if not passage.is_empty():

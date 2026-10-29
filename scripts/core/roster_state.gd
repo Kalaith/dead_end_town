@@ -36,6 +36,22 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 		errors.append("Preserve the authored home, library, east-house and clinic rescues.")
 
 
+## People recruited in an earlier area travel with the player, so after travel the team may exceed this area's rescues.
+static func _people(data: Dictionary, catalog: Dictionary, expected: Array[String], actual: Array[String]) -> bool:
+	if data.get("frozen", {}).is_empty():
+		return actual == expected
+	var known: Array[String] = []
+	for d: Dictionary in catalog.survivors:
+		known.append(str(d.id))
+	for id: String in expected:
+		if id not in actual:
+			return false
+	for id: String in actual:
+		if id not in known:
+			return false
+	return true
+
+
 static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 	var expected: Array[String] = []
 	for d: Dictionary in catalog.survivors:
@@ -46,6 +62,6 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 		actual.append(a.id)
 	expected.sort()
 	actual.sort()
-	if actual != expected or not data.get("rescue_intro") is String:
+	if not data.get("rescue_intro") is String or not _people(data, catalog, expected, actual):
 		return false
 	return data.rescue_intro == "" or (data.rescue_intro in ["june", "oliver"] and data.rescue_intro in actual)

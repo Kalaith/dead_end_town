@@ -17,6 +17,7 @@ const Equipment = preload("res://scripts/sim/equipment.gd")
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
+const AreaTravel = preload("res://scripts/core/area_travel.gd")
 const View = preload("res://scripts/presentation/town_view.gd")
 const Hud = preload("res://scripts/presentation/hud.gd")
 const PlayerControls = preload("res://scripts/presentation/player_controls.gd")
@@ -76,6 +77,7 @@ func _ready() -> void:
 	hud.refresh(world, paused)
 	# Loading is explicit, so opening the prototype cannot overwrite a run.
 	if storage_enabled:
+		_open_saved_area()
 		save_state.store.load_data()
 		if not save_state.store.last_error.is_empty():
 			hud.menu_status.text = save_state.store.last_error
@@ -84,6 +86,8 @@ func _ready() -> void:
 func _process(dt: float) -> void:
 	if world == null:
 		return
+	if world.travel_requested != "":
+		_travel(world.travel_requested)
 	if world.defeat_pending:
 		paused = true
 		if not defeat_shown:
@@ -218,6 +222,7 @@ func command(value: String) -> void:
 			var okay: bool = save_state.store.save_data(save_state.snapshot(world))
 			hud.menu_status.text = "Street saved. Previous good save retained as backup." if okay else save_state.store.last_error
 		"load":
+			_open_saved_area()
 			var data: Dictionary = save_state.store.load_data()
 			if data.is_empty():
 				hud.menu_status.text = "No saved street yet." if save_state.store.last_error.is_empty() else save_state.store.last_error
@@ -233,12 +238,50 @@ func command(value: String) -> void:
 			if not save_state.store.keep_previous():
 				hud.menu_status.text = save_state.store.last_error
 				return
-			completion_shown = false
-			world = World.new(world.catalog)
-			controls = PlayerControls.new()
-			view.world = world
-			accumulator = 0
+			var first: Dictionary = Catalog.read()
+			_enter(World.new(first), first)
 			hud.menu_status.text = "New street ready. Your saved street is preserved until you save."
+
+
+## Moves the community through the exit. The area left behind is frozen in the save, so it can be returned to.
+func _travel(area_id: String) -> void:
+	world.travel_requested = ""
+	var data: Dictionary = Catalog.read(area_id)
+	var arrived: RefCounted = AreaTravel.travel(world, save_state, data) if not data.is_empty() else null
+	if arrived == null:
+		world.note("The way to %s is not ready." % area_id)
+		return
+	_enter(arrived, data)
+	paused = true
+	hud.show_menu(true)
+	hud.pause_title.text = str(data.area.name).to_upper()
+	hud.first_button.text = "Step out"
+	hud.menu_status.text = "Arrived. Save to keep this place; resume when ready."
+
+
+func _enter(next: RefCounted, data: Dictionary) -> void:
+	save_state = SaveState.new(data)
+	save_state.store.enabled = storage_enabled
+	world = next
+	view.world = world
+	completion_shown = false
+	defeat_shown = false
+	controls = PlayerControls.new()
+	accumulator = 0.0
+	camera.position = _camera_target()
+	camera.force_update_scroll()
+
+
+## A save belongs to one area; load that area's content before reading it.
+func _open_saved_area() -> void:
+	if not FileAccess.file_exists(save_state.store.path):
+		return
+	var raw: Variant = JSON.parse_string(FileAccess.get_file_as_string(save_state.store.path))
+	if not raw is Dictionary or not raw.get("area") is String or raw.area == world.catalog.area.id:
+		return
+	var data: Dictionary = Catalog.read(raw.area)
+	if not data.is_empty():
+		_enter(World.new(data), data)
 
 
 func assign_survivor(id: String, task: String) -> void:

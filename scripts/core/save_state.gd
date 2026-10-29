@@ -48,11 +48,11 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 37
+const SCHEMA: int = 38
 ## Saved world fields that are collections and are copied, not shared.
-const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
+const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "unlocks"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
-const STATE_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "defeat_pending", "carry", "home_rest", "clinic", "rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "gate_repair_target"]
+const STATE_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "defeat_pending", "carry", "home_rest", "clinic", "rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "unlocks", "gate_repair_target"]
 var catalog: Dictionary
 var store: RefCounted
 
@@ -139,7 +139,7 @@ func valid(data: Dictionary) -> bool:
 	if not _valid_areas(data):
 		return false
 	for key: String in STATE_KEYS:
-		if key in ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "rescue_intro", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]:
+		if key in ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "rescue_intro", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "unlocks"]:
 			continue
 		if key == "gate_repair_target":
 			if not data.get("properties") is Dictionary or not data.properties.has(data.get(key)):
@@ -200,7 +200,7 @@ func valid(data: Dictionary) -> bool:
 		return false
 	if data.garden_done and float(data.garden_progress) < float(catalog.balance.work_seconds):
 		return false
-	if (data.workshop.started and not data.properties.garage.looted) or (data.workshop.equipped and not data.properties.library.looted):
+	if (data.workshop.started and not data.properties.garage.looted) or (data.workshop.equipped and data.unlocks.is_empty() and not data.properties.library.looted):
 		return false
 	for a: Dictionary in data.survivors:
 		if not _valid_task(a, data):
@@ -255,6 +255,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 37:
+		return _upgrade_unlocks(upgraded)
 	if version == 36:
 		return _upgrade_boss(upgraded)
 	if version == 35:
@@ -759,5 +761,11 @@ func _upgrade_boss(data: Dictionary) -> Dictionary:
 	for z: Dictionary in World.new(catalog).zombies:
 		if z.home == Boss.HOME and z.id not in ids:
 			data.zombies.append(_encode_actor(z))
+	return _upgrade_unlocks(data)
+
+
+## Saves before travel have nothing unlocked elsewhere.
+func _upgrade_unlocks(data: Dictionary) -> Dictionary:
+	data.unlocks = []
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

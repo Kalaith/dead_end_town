@@ -7,6 +7,7 @@ const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const HOME: String = "boss"
 const POST_TOLERANCE: float = 12.0
 const EXIT_REACH: float = 60.0
+const CONFIRM_SECONDS: float = 6.0
 
 
 static func configured(catalog: Dictionary) -> bool:
@@ -86,8 +87,42 @@ static func return_to_post(world: RefCounted, z: Dictionary, dt: float) -> void:
 	Wandering.advance(world, z, post if next.is_equal_approx(z.pos) else next, dt)
 
 
+## The area after this one in campaign order, or "" at the end of the campaign.
+static func destination(catalog: Dictionary) -> String:
+	var ids: Array = catalog.areas.map(func(entry: Dictionary) -> String: return str(entry.id))
+	var next: int = ids.find(catalog.area.id) + 1
+	return str(ids[next]) if next < ids.size() else ""
+
+
+static func context(world: RefCounted) -> String:
+	if not at_exit(world):
+		return ""
+	if not defeated(world):
+		return "Blocked / the baboon holds the road"
+	if destination(world.catalog).is_empty():
+		return "Exit / nothing lies beyond yet"
+	return "E to confirm leaving" if float(world.exit_pending) > 0 else "E Leave the area"
+
+
+## Leaving needs a second press so it is never an accident; a rule-bound shortage of stock is stated up front.
+static func interact(world: RefCounted) -> void:
+	if not defeated(world):
+		world.note("The baboon still holds the bridge road.")
+	elif destination(world.catalog).is_empty():
+		world.note("Nothing lies beyond the bridge yet.")
+	elif float(world.exit_pending) > 0:
+		world.exit_pending = 0.0
+		world.travel_requested = destination(world.catalog)
+	else:
+		world.exit_pending = CONFIRM_SECONDS
+		world.note("Leave %s? Your team and gear come too, and up to %d of each stock. Press E again to confirm." % [str(world.catalog.area.name), int(world.balance.area_carry_cap)])
+
+
 ## Announce the fall once, when it was seen alive in this session.
-static func step(world: RefCounted) -> void:
+static func step(world: RefCounted, dt: float) -> void:
+	world.exit_pending = maxf(0.0, float(world.exit_pending) - dt)
+	if not at_exit(world):
+		world.exit_pending = 0.0
 	var boss: Dictionary = find(world)
 	if boss.is_empty():
 		return
