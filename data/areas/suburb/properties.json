@@ -30,8 +30,8 @@
         452
       ],
       "neighbors": [
-        "garden",
-        "library"
+        "library",
+        "garden"
       ],
       "reward": "Home stockpile",
       "reinforcements": [],
@@ -69,8 +69,8 @@
         452
       ],
       "neighbors": [
-        "home",
         "garage",
+        "home",
         "residence"
       ],
       "reward": "Food garden",
@@ -290,8 +290,8 @@
         452
       ],
       "neighbors": [
-        "garden",
         "munitions",
+        "garden",
         "hardware"
       ],
       "reward": "A survivor and a pistol",
@@ -343,9 +343,9 @@
         710
       ],
       "neighbors": [
-        "garage",
         "residence",
-        "grocer"
+        "garage",
+        "house_a"
       ],
       "reward": "Bullet crafting",
       "reinforcements": [],

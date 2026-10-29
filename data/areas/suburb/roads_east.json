@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "barricades": [
+    {
+      "id": "house_d_west",
+      "name": "Corner house west barricade",
+      "rect": [
+        4392,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        4400,
+        580
+      ],
+      "site": [
+        4448,
+        580
+      ],
+      "requires": [
+        "house_d",
+        "unfinished"
+      ]
+    },
+    {
+      "id": "house_d_east",
+      "name": "Corner house east barricade",
+      "rect": [
+        4952,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        4960,
+        580
+      ],
+      "site": [
+        4912,
+        580
+      ],
+      "requires": [
+        "house_d",
+        "unfinished"
+      ]
+    }
+  ],
+  "crossings": [
+    {
+      "id": "house_d_crossing",
+      "name": "Corner house crossing",
+      "requires": [
+        "house_d",
+        "unfinished"
+      ],
+      "barriers": [
+        "house_d_west",
+        "house_d_east"
+      ],
+      "area": [
+        4408,
+        472,
+        544,
+        216
+      ]
+    }
+  ]
+}

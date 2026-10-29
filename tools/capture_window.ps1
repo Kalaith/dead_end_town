@@ -25,6 +25,7 @@ public class GameWindow {
   [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr h, IntPtr after, int x, int y, int w, int ht, uint flags);
   [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr h, out Rect r);
   [DllImport("user32.dll")] public static extern void keybd_event(byte key, byte scan, uint flags, UIntPtr extra);
+  [DllImport("user32.dll")] public static extern uint MapVirtualKey(uint code, uint type);
   [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
   [DllImport("user32.dll")] public static extern void mouse_event(uint flags, uint x, uint y, uint data, UIntPtr extra);
 }
@@ -49,9 +50,11 @@ foreach ($point in ($Click -split ';' | Where-Object { $_ })) {
 foreach ($spec in ($Keys -split ',' | Where-Object { $_ })) {
     $name, $hold = $spec -split ':'
     $code = [byte][int][System.Windows.Forms.Keys]::$name
-    [GameWindow]::keybd_event($code, 0, 0, [UIntPtr]::Zero)
+    # Godot reads physical keys, so send the hardware scan code as well as the virtual key.
+    $scan = [byte][GameWindow]::MapVirtualKey($code, 0)
+    [GameWindow]::keybd_event($code, $scan, 0, [UIntPtr]::Zero)
     Start-Sleep -Milliseconds ([int]$hold)
-    [GameWindow]::keybd_event($code, 0, 2, [UIntPtr]::Zero)
+    [GameWindow]::keybd_event($code, $scan, 2, [UIntPtr]::Zero)
     Start-Sleep -Milliseconds 150
 }
 Start-Sleep -Milliseconds $Wait

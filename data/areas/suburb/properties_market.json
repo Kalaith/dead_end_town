@@ -3,7 +3,11 @@
   "properties": [
     {
       "id": "hardware",
-      "resident_kinds": ["runner", "shambler", "shambler"],
+      "resident_kinds": [
+        "runner",
+        "shambler",
+        "shambler"
+      ],
       "core": true,
       "available": true,
       "food_cache": 2,
@@ -33,7 +37,7 @@
         452
       ],
       "neighbors": [
-        "grocer",
+        "house_a",
         "residence",
         "clinic"
       ],
@@ -62,11 +66,11 @@
       }
     },
     {
-      "id": "grocer",
+      "id": "house_a",
       "core": false,
-      "available": false,
-      "food_cache": 0,
-      "name": "Corner grocer",
+      "available": true,
+      "food_cache": 3,
+      "name": "Number 8",
       "rect": [
         2240,
         680,
@@ -94,16 +98,39 @@
       "neighbors": [
         "hardware",
         "munitions",
-        "allotment"
+        "house_b"
       ],
-      "reward": "Unfinished development content",
-      "reinforcements": [],
+      "reward": "Household supplies",
+      "reinforcements": [
+        [
+          2430,
+          760
+        ],
+        [
+          2600,
+          760
+        ],
+        [
+          2520,
+          830
+        ]
+      ],
       "hidden_zombies": 0,
-      "zombies": []
+      "zombies": [],
+      "search": {
+        "materials": 12,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 8 searched."
+      }
     },
     {
       "id": "clinic",
-      "resident_kinds": ["screecher", "shambler", "shambler"],
+      "resident_kinds": [
+        "screecher",
+        "shambler",
+        "shambler"
+      ],
       "core": true,
       "available": true,
       "food_cache": 4,
@@ -133,7 +160,7 @@
         452
       ],
       "neighbors": [
-        "allotment",
+        "house_b",
         "hardware",
         "greenhouse"
       ],
@@ -162,11 +189,11 @@
       }
     },
     {
-      "id": "allotment",
+      "id": "house_b",
       "core": false,
-      "available": false,
-      "food_cache": 0,
-      "name": "Allotment",
+      "available": true,
+      "food_cache": 3,
+      "name": "Number 10",
       "rect": [
         2960,
         680,
@@ -193,17 +220,40 @@
       ],
       "neighbors": [
         "clinic",
-        "grocer",
-        "diner"
+        "house_a",
+        "house_c"
       ],
-      "reward": "Unfinished development content",
-      "reinforcements": [],
+      "reward": "Household supplies",
+      "reinforcements": [
+        [
+          3150,
+          760
+        ],
+        [
+          3320,
+          760
+        ],
+        [
+          3240,
+          830
+        ]
+      ],
       "hidden_zombies": 0,
-      "zombies": []
+      "zombies": [],
+      "search": {
+        "materials": 12,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 10 searched."
+      }
     },
     {
       "id": "greenhouse",
-      "resident_kinds": ["runner", "shambler", "shambler"],
+      "resident_kinds": [
+        "runner",
+        "shambler",
+        "shambler"
+      ],
       "core": true,
       "available": true,
       "food_cache": 8,
@@ -233,9 +283,9 @@
         452
       ],
       "neighbors": [
-        "diner",
+        "house_c",
         "clinic",
-        "station"
+        "house_d"
       ],
       "reward": "Growing kit and a survivor",
       "reinforcements": [
@@ -262,11 +312,11 @@
       }
     },
     {
-      "id": "diner",
+      "id": "house_c",
       "core": false,
-      "available": false,
-      "food_cache": 0,
-      "name": "Diner",
+      "available": true,
+      "food_cache": 3,
+      "name": "Number 12",
       "rect": [
         3680,
         680,
@@ -293,13 +343,32 @@
       ],
       "neighbors": [
         "greenhouse",
-        "allotment",
-        "firehall"
+        "house_b",
+        "unfinished"
       ],
-      "reward": "Unfinished development content",
-      "reinforcements": [],
+      "reward": "Household supplies and spare timber",
+      "reinforcements": [
+        [
+          3870,
+          760
+        ],
+        [
+          4040,
+          760
+        ],
+        [
+          3960,
+          830
+        ]
+      ],
       "hidden_zombies": 0,
-      "zombies": []
+      "zombies": [],
+      "search": {
+        "materials": 16,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 12 searched."
+      }
     }
   ]
 }

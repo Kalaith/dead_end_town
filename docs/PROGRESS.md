@@ -715,3 +715,11 @@ Evidence and limits:
 - Added `tools/check_save.gd` (round trip, schema-35 upgrade, bad area records) alongside `check_catalog.gd`. All pass; 87 scripts load; editor import is clean.
 - Played the real game: it starts from the moved data, Save writes schema 36 with area `suburb`, and Load reports "Street restored" (`docs/verification/area_layer_save_load.png`).
 - Not done: switching areas, carrying people and stock between them, and loading a save for a non-first area (step 8). The suburb grid itself is step 4.
+
+## 29 October 2026: the cul-de-sac suburb (step 4)
+
+- The interim strip is replaced by a 14-lot cul-de-sac in `data/areas/suburb/` (see `19-areas-and-suburb.md`): home at the west dead end, nine original lots with unchanged IDs and positions, four new loot houses and a half-built house with 48 Materials. Columns 7–11 (Civic/Works lots, their passages, crossings and barriers) are removed. Bounds are 5,840 × 1,160; 19 links.
+- Pressure has two authored routes, the north-east and south-east alleys at the east end. Route validation is generic (any unique ids, spread follows the nearest map edge). Search rewards are allowed on any available site; passage/crossing counts come from the town links.
+- Saves now use `user://suburb.json`. The old `street.json` is never read or touched, so there is no damaged-save error and saving stays on. The schema stays 36.
+- Checks: catalog 0 problems (including each route's physical approach to the road), 87 scripts load, `tools/check_save.gd` 6/6, editor import clean. The real game launches and the home end renders as before.
+- Not seen: the east end, new houses, half-built house and alley mouths in the running game. A manual walk was impractical (closed gate, residents on every lot). The migration scheduler's route and band logic is untouched beyond validation; its rework onto this layout (step 5) and the baboon and exit (steps 7-8) remain.

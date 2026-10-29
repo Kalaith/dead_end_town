@@ -30,8 +30,8 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	if not rules.list(config, "routes", false):
 		return
 	var ids: Array = rules.unique_ids(config.routes)
-	if ids != ["east", "west", "north", "south", "north_civic", "south_civic", "north_works", "south_works"]:
-		errors.append("Pressure needs the eight authored edge routes.")
+	if ids.is_empty():
+		errors.append("Pressure needs at least one authored edge route.")
 	for raw: Variant in config.routes:
 		if not raw is Dictionary:
 			continue
@@ -42,7 +42,8 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 			var bounds: Vector2 = Routes.point(data.bounds)
 			if pos.x < 12 or pos.y < 12 or pos.x > bounds.x - 12 or pos.y > bounds.y - 12 or minf(minf(pos.x, pos.y), minf(bounds.x - pos.x, bounds.y - pos.y)) > 40:
 				errors.append("Migration origin must be on a walkable map edge.")
-			if Routes.point(d.spread) != (Vector2.DOWN if d.id in ["east", "west"] else Vector2.RIGHT):
+			var on_side: bool = minf(pos.x, bounds.x - pos.x) < minf(pos.y, bounds.y - pos.y)
+			if Routes.point(d.spread) != (Vector2.DOWN if on_side else Vector2.RIGHT):
 				errors.append("Migration spread must follow its map edge.")
 	if errors.is_empty():
 		_geometry(data, errors)

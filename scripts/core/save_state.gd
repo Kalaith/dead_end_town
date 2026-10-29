@@ -55,7 +55,7 @@ var catalog: Dictionary
 var store: RefCounted
 
 
-func _init(data: Dictionary, path: String = "user://street.json") -> void:
+func _init(data: Dictionary, path: String = "user://suburb.json") -> void:
 	catalog = data
 	store = JsonSave.new(path, SCHEMA, valid)
 	store.migrate = migrate

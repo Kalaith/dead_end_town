@@ -3,7 +3,7 @@
   "passages": [
     {
       "id": "residence_hardware",
-      "name": "Residence \u2014 Hardware store",
+      "name": "05 / EAST HOUSE — Hardware store",
       "requires": [
         "residence",
         "hardware"
@@ -46,11 +46,11 @@
       ]
     },
     {
-      "id": "munitions_grocer",
-      "name": "Munitions \u2014 Corner grocer",
+      "id": "munitions_house_a",
+      "name": "06 / AMMUNITION WORKSHOP — Number 8",
       "requires": [
         "munitions",
-        "grocer"
+        "house_a"
       ],
       "area": [
         2068,
@@ -91,7 +91,7 @@
     },
     {
       "id": "hardware_clinic",
-      "name": "Hardware store \u2014 Clinic",
+      "name": "Hardware store — Clinic",
       "requires": [
         "hardware",
         "clinic"
@@ -134,11 +134,11 @@
       ]
     },
     {
-      "id": "grocer_allotment",
-      "name": "Corner grocer \u2014 Allotment",
+      "id": "house_a_house_b",
+      "name": "Number 8 — Number 10",
       "requires": [
-        "grocer",
-        "allotment"
+        "house_a",
+        "house_b"
       ],
       "area": [
         2788,
@@ -179,7 +179,7 @@
     },
     {
       "id": "clinic_greenhouse",
-      "name": "Clinic \u2014 Greenhouse",
+      "name": "Clinic — Greenhouse",
       "requires": [
         "clinic",
         "greenhouse"
@@ -222,11 +222,11 @@
       ]
     },
     {
-      "id": "allotment_diner",
-      "name": "Allotment \u2014 Diner",
+      "id": "house_b_house_c",
+      "name": "Number 10 — Number 12",
       "requires": [
-        "allotment",
-        "diner"
+        "house_b",
+        "house_c"
       ],
       "area": [
         3508,

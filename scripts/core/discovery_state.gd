@@ -7,7 +7,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	for p: Dictionary in data.properties:
 		if not p.has("search"):
 			continue
-		if p.id not in ["hardware", "clinic", "greenhouse"] or not p.available or not p.search is Dictionary:
+		if not p.available or not p.search is Dictionary:
 			errors.append("Search rewards need an implemented site.")
 			continue
 		if not Rules.integer_in(p.search.get("materials"), 0, 1000):

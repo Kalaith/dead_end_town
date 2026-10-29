@@ -20,11 +20,20 @@ Areas 2 and 3 are outlined only. Area 1 is designed here in enough detail to bui
 
 ## Area 1: the suburb
 
-- Roughly 3 streets by 2–3 blocks, about 12–16 lots. Starting home is near one end; the exit road is at the other.
-- A bounded perimeter of a few **entrances** (chokepoints) that the player fortifies. Pressure arrives only through them. This replaces the eight edge routes and the east-west-only barricades.
-- Lots keep the existing site kinds where they fit: the original six Hearth lots become houses, hardware store, clinic and greenhouse keep their roles, library and garage keep their searches. Survivors Mara, Paige, Ellis, June and Oliver stay in the suburb.
-- Adjacency is an explicit neighbour graph per lot (the data already has `neighbors`). It is no longer derived from "same row, next column" or "facing across the road".
-- Empty development shells are not carried over. A lot exists only if it has content.
+A **cul-de-sac**: one straight street, west to east, about 5,840 × 1,160 pixels (roughly 30 seconds end to end). Home is at the back (west end); the baboon holds the east mouth.
+
+```text
+col:      0        1        2         3         4         5          6
+N:     [home]  [garden][residence][hardware][clinic][greenhouse][corner house]  ← NE alley
+       ============= ONE STREET (dead end at the west) =============  [roadblock + baboon] → exit
+S:    [library][garage][munitions][No. 8]  [No. 10]  [No. 12]   [half-built]    ← SE alley
+```
+
+- 14 lots. The original nine keep their identities and positions: home, library, garden, garage, residence, munitions, hardware, clinic, greenhouse. Five are houses with loot: No. 8, No. 10, No. 12, the corner house, and the **half-built house**, which holds a large cache of building materials (48).
+- Ten lots are core (all nine originals plus the corner house); No. 8, No. 10, No. 12 and the half-built house are optional.
+- 19 links (a street ladder): 7 crossings and 12 fenced passages, each with its own passage or road barriers. Adjacency is the explicit `links` graph.
+- **Pressure comes from one end only.** Two alley mouths at the east end, either side of the roadblock, are the entrances. Everything else is quiet, so home at the back stays the fallback and the push is eastward toward the boss. The roadblock itself spawns nothing.
+- The roadblock, baboon and exit gate are not built yet (see Delivery order).
 
 ### Preparing for the boss
 

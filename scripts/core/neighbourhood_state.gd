@@ -12,9 +12,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 	for key: String in ["passages", "crossings"]:
 		if not rules.list(data, key, false):
 			continue
-		var ids: Array = rules.unique_ids(data[key])
-		if ids.size() != (22 if key == "passages" else 12):
-			errors.append("Missing authored neighbourhood links.")
+		rules.unique_ids(data[key])
 		for raw: Variant in data[key]:
 			if not raw is Dictionary:
 				errors.append("Neighbourhood link must be an object.")

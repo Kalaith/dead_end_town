@@ -7,42 +7,10 @@
     "spawn_spacing": 28,
     "routes": [
       {
-        "id": "east",
-        "name": "east road",
+        "id": "north_east",
+        "name": "north-east alley",
         "entry": [
-          8610,
-          580
-        ],
-        "spread": [
-          0,
-          1
-        ],
-        "approach": [
-          8590,
-          580
-        ]
-      },
-      {
-        "id": "west",
-        "name": "west road",
-        "entry": [
-          30,
-          580
-        ],
-        "spread": [
-          0,
-          1
-        ],
-        "approach": [
-          60,
-          580
-        ]
-      },
-      {
-        "id": "north",
-        "name": "north alley",
-        "entry": [
-          2160,
+          5040,
           30
         ],
         "spread": [
@@ -50,15 +18,15 @@
           0
         ],
         "approach": [
-          2160,
+          5040,
           580
         ]
       },
       {
-        "id": "south",
-        "name": "south alley",
+        "id": "south_east",
+        "name": "south-east alley",
         "entry": [
-          2160,
+          5040,
           1130
         ],
         "spread": [
@@ -66,71 +34,7 @@
           0
         ],
         "approach": [
-          2160,
-          580
-        ]
-      },
-      {
-        "id": "north_civic",
-        "name": "north civic alley",
-        "entry": [
-          4320,
-          30
-        ],
-        "spread": [
-          1,
-          0
-        ],
-        "approach": [
-          4320,
-          580
-        ]
-      },
-      {
-        "id": "south_civic",
-        "name": "south civic alley",
-        "entry": [
-          4320,
-          1130
-        ],
-        "spread": [
-          1,
-          0
-        ],
-        "approach": [
-          4320,
-          580
-        ]
-      },
-      {
-        "id": "north_works",
-        "name": "north works alley",
-        "entry": [
-          6480,
-          30
-        ],
-        "spread": [
-          1,
-          0
-        ],
-        "approach": [
-          6480,
-          580
-        ]
-      },
-      {
-        "id": "south_works",
-        "name": "south works alley",
-        "entry": [
-          6480,
-          1130
-        ],
-        "spread": [
-          1,
-          0
-        ],
-        "approach": [
-          6480,
+          5040,
           580
         ]
       }

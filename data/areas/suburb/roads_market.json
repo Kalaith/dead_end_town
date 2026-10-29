@@ -20,7 +20,7 @@
       ],
       "requires": [
         "hardware",
-        "grocer"
+        "house_a"
       ]
     },
     {
@@ -42,7 +42,7 @@
       ],
       "requires": [
         "hardware",
-        "grocer"
+        "house_a"
       ]
     },
     {
@@ -64,7 +64,7 @@
       ],
       "requires": [
         "clinic",
-        "allotment"
+        "house_b"
       ]
     },
     {
@@ -86,7 +86,7 @@
       ],
       "requires": [
         "clinic",
-        "allotment"
+        "house_b"
       ]
     },
     {
@@ -108,7 +108,7 @@
       ],
       "requires": [
         "greenhouse",
-        "diner"
+        "house_c"
       ]
     },
     {
@@ -130,7 +130,7 @@
       ],
       "requires": [
         "greenhouse",
-        "diner"
+        "house_c"
       ]
     }
   ],
@@ -140,7 +140,7 @@
       "name": "Hardware store crossing",
       "requires": [
         "hardware",
-        "grocer"
+        "house_a"
       ],
       "barriers": [
         "hardware_west",
@@ -158,7 +158,7 @@
       "name": "Clinic crossing",
       "requires": [
         "clinic",
-        "allotment"
+        "house_b"
       ],
       "barriers": [
         "clinic_west",
@@ -176,7 +176,7 @@
       "name": "Greenhouse crossing",
       "requires": [
         "greenhouse",
-        "diner"
+        "house_c"
       ],
       "barriers": [
         "greenhouse_west",
