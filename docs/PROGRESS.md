@@ -306,3 +306,8 @@ Still needing development (second look, most important first):
 - Saves: no schema change. Search-found survivors are optional in a save, so an office or works save whose lot was already searched stays valid but will not gain them retroactively.
 - `tools/check_recruits.gd` (search, intro, save per person; none in the suburb) passes with parse (124 scripts), catalog, save, travel, boss, office, industrial, vehicle, tips, rescue-feel and facilities.
 - Not done: their introduction text is first-pass and unseen; no Theo-specific escort role, Nia power mechanic or Rowan reserve role beyond ordinary orders; not seen in a capture.
+
+## 30 October 2026: stores left behind give a reason to go back
+
+- Stock above the 40-per-kind carry cap already stayed in the area you left. It is now visible: arrival says "Left behind in <area>: ...", and at an area's entrance the prompt reads "E Go back · stores waiting: 60 materials, ..." (`Boss.stored` / `Boss.waiting`). No schema change; nothing is added to the stock, so this is a reminder, not a reward.
+- `check_travel` asserts both texts. Not done: anything that accrues while away (a garden that keeps growing, pressure on the area you left), and the prompt only names the previous area's stores, not the next one's. Whether a stockpile alone is a real reason to return is a design question for play.

@@ -101,6 +101,21 @@ static func origin(catalog: Dictionary) -> String:
 	return str(ids[previous]) if previous >= 0 else ""
 
 
+## What an area keeps while you are away, as text ("25 materials, 12 food"); the stock above the carry cap stays put.
+static func stored(record: Dictionary) -> String:
+	var parts: Array[String] = []
+	for entry: Array in [["materials", record.get("materials", 0)], ["food", record.get("food", 0)], ["medicine", record.get("medicine", 0)], ["bullets", record.get("firearms", {}).get("bullets", 0)]]:
+		if int(entry[1]) > 0:
+			parts.append("%d %s" % [int(entry[1]), entry[0]])
+	return ", ".join(parts)
+
+
+## The previous area's stock waiting for you, or "" when it has none or was never visited.
+static func waiting(world: RefCounted) -> String:
+	var record: Variant = world.frozen.get(origin(world.catalog))
+	return stored(record) if record is Dictionary else ""
+
+
 static func at_entrance(world: RefCounted) -> bool:
 	return world.catalog.has("entrance") and Routes.rectangle(world.catalog.entrance.rect).grow(EXIT_REACH).has_point(world.player.pos)
 
@@ -120,7 +135,8 @@ static func enter_interact(world: RefCounted) -> void:
 static func entrance_context(world: RefCounted) -> String:
 	if origin(world.catalog).is_empty():
 		return "Entrance / nothing behind it yet"
-	return "E to confirm going back" if float(world.exit_pending) > 0 else "E Go back"
+	var stock: String = waiting(world)
+	return "E to confirm going back" if float(world.exit_pending) > 0 else "E Go back" + ((" · stores waiting: " + stock) if not stock.is_empty() else "")
 
 
 ## The last area's exit ends the campaign with its own closing line.

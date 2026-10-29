@@ -52,6 +52,9 @@ static func travel(world: RefCounted, saves: RefCounted, to_data: Dictionary) ->
 	destination.player.hp = world.player.hp
 	_arrive(world, destination)
 	destination.note("%s / Arrived. Your team came with you." % str(to_data.area.name))
+	var left: String = Boss.stored(record)
+	if not left.is_empty():
+		destination.note("Left behind in %s: %s. Go back for it when you need it." % [str(world.catalog.area.name), left])
 	return destination
 
 

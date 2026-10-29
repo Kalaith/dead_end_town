@@ -46,6 +46,8 @@ func _init() -> void:
 	_expect("the team and gear come along", arrived.survivors.size() == team and arrived.equipment.crowbar == "you" and "crowbar" in arrived.unlocks and arrived.firearms.owned)
 	_expect("stock is capped by the carry limit", arrived.materials == int(data.balance.area_carry_cap) + int(data.balance.starting_materials) and arrived.food == 5 + int(data.balance.starting_food))
 	_expect("the area left is frozen with the surplus", arrived.frozen.has("suburb") and arrived.frozen.suburb.materials == 60)
+	_expect("the way back names the stores waiting", Boss.waiting(arrived).contains("60 materials"))
+	_expect("arrival says what was left behind", arrived.messages.any(func(m: String) -> bool: return m.begins_with("Left behind in")))
 	var annex_saves := SaveState.new(annex, "user://check_travel.json")
 	_expect("the new area saves and loads", annex_saves.restore(JSON.parse_string(JSON.stringify(annex_saves.snapshot(arrived)))) != null)
 	_round_trip(data, annex)
