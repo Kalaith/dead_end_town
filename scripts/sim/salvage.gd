@@ -1,5 +1,6 @@
 extends RefCounted
 const Routes = preload("res://scripts/sim/routes.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 
 
 static func initial() -> Dictionary:
@@ -8,7 +9,7 @@ static func initial() -> Dictionary:
 
 static func nearby(world: RefCounted) -> String:
 	for id: String in world.timber:
-		if world.properties[id].claimed and not world.timber[id] and world.player.pos.distance_to(Routes.point(world.definition(id).site)) < float(world.catalog.slice.start_range):
+		if Facility.state(world, id).claimed and not world.timber[id] and not world.definition(id).is_empty() and world.player.pos.distance_to(Routes.point(world.definition(id).site)) < float(world.catalog.slice.start_range):
 			return id
 	return ""
 

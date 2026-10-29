@@ -82,6 +82,7 @@ func _draw() -> void:
 			draw_rect(Rect2(x + 2, y + 2, 28, 28), Color(0.16 + shade, 0.22 + shade, 0.18 + shade))
 	_streets()
 	_exit()
+	_entrance()
 	for p: Dictionary in world.catalog.properties:
 		if Routes.rectangle(p.rect).grow(100).intersects(visible_world):
 			_property(p)
@@ -127,7 +128,7 @@ func _property(p: Dictionary) -> void:
 	for i: int in range(7):
 		var pos: Vector2 = site.lerp(gate, float(i) / 6.0)
 		draw_line(pos + Vector2(-16, 0), pos + Vector2(16, 0), Color("79745d"), 2)
-	if p.id == "greenhouse":
+	if p.facility == "greenhouse":
 		GreenhouseView.building(self, building)
 	else:
 		# Drop shadow, timber siding, roof planes and boarded windows.
@@ -158,16 +159,16 @@ func _property(p: Dictionary) -> void:
 			draw_line(site + Vector2(-92, 16 + i * 7), site + Vector2(-48, 16 + i * 7), Color("ab8860"), 5)
 	if p.id == "home":
 		_meter(gate + Vector2(-44, 20), 88, float(state.gate_hp) / float(world.balance.gate_health), accent)
-	if p.id == "greenhouse":
+	if p.facility == "greenhouse":
 		GreenhouseView.beds(self, world, site)
-	if p.id == "garden":
+	if p.facility == "garden":
 		_garden(rect, site)
-	if p.id == "munitions" and state.claimed:
+	if p.facility == "munitions" and state.claimed:
 		draw_rect(Rect2(site + Vector2(65, 0), Vector2(80, 25)), Color("ab8860"))
 		for i: int in range(6):
 			draw_line(site + Vector2(75 + i * 10, 3), site + Vector2(75 + i * 10, 18), Color("dfb36e"), 4)
 		_meter(site + Vector2(65, 33), 80, Firearms.progress(world) / float(world.catalog.firearm.craft_seconds), TEAL)
-	if p.id == "clinic" and state.looted:
+	if p.facility == "clinic" and state.looted:
 		var bed := Rect2(site + Vector2(80, -16), Vector2(56, 32))
 		draw_rect(bed.grow(3), INK)
 		draw_rect(bed, Color("9dc1ce") if world.clinic.done else Color("626052"))
@@ -179,7 +180,7 @@ func _property(p: Dictionary) -> void:
 			for x: int in range(3):
 				draw_rect(Rect2(site + Vector2(82 + x * 18, -29), Vector2(8, 12)), Color("9dc1ce"))
 			_meter(site + Vector2(76, 28), 64, float(batch.work_done) / float(batch.work_required), TEAL)
-	if p.id == "garage":
+	if p.facility == "garage":
 		_workshop(site)
 	if float(state.occupation) > 0:
 		_meter(site + Vector2(-44, 48), 88, 1.0 - float(state.occupation) / float(world.balance.territory_fall_seconds), RUST)
@@ -251,7 +252,7 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		_runner_tell(a)
 	if zombie and a.get("kind") == "screecher":
 		_screecher_tell(a)
-	if zombie and a.get("kind") == "baboon":
+	if zombie and ZombieTypes.kind(world.catalog, a).get("boss", false):
 		_baboon(a)
 		return
 	_ellipse(pos + Vector2(1, 4), Vector2(21, 9) if a.get("kind") == "brute" else Vector2(15, 7), Color(0, 0, 0, 0.3))
@@ -338,6 +339,18 @@ func _exit() -> void:
 	_text(rect.position + Vector2(8, -8), str(world.catalog.exit.name).to_upper() + " / BLOCKED", 15, RUST)
 
 
+## Where the player came in. It is always open, so it is drawn as a plain outlined gap.
+func _entrance() -> void:
+	if not world.catalog.has("entrance"):
+		return
+	var rect: Rect2 = Routes.rectangle(world.catalog.entrance.rect)
+	if not rect.grow(40).intersects(visible_world):
+		return
+	draw_rect(rect, Color(0.84, 0.75, 0.56, 0.14))
+	draw_rect(rect, CREAM, false, 3)
+	_text(rect.position + Vector2(8, -8), str(world.catalog.entrance.name).to_upper() + " / ENTRANCE", 15, CREAM)
+
+
 ## Large, hunched and dark-furred, with a long muzzle toward its facing. Its health bar is always shown.
 func _baboon(a: Dictionary) -> void:
 	var pos: Vector2 = a.pos
@@ -355,7 +368,7 @@ func _baboon(a: Dictionary) -> void:
 	draw_line(head, head + direction * 20, Color("a07a62"), 10)
 	draw_circle(head + direction.orthogonal() * 6 + direction * 6, 2.5, CREAM)
 	draw_circle(head - direction.orthogonal() * 6 + direction * 6, 2.5, CREAM)
-	_text(pos + Vector2(-26, -74), "BABOON", 14, CREAM)
+	_text(pos + Vector2(-26, -74), str(ZombieTypes.kind(world.catalog, a).name).to_upper(), 14, CREAM)
 	_meter(pos + Vector2(-32, 14), 64, float(a.hp) / ZombieTypes.full_health(world.catalog, a), RUST)
 
 

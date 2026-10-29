@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "town": {
+    "core": [
+      "maintenance",
+      "atrium",
+      "home",
+      "print_shop",
+      "security",
+      "car_park",
+      "first_aid",
+      "records",
+      "roof_garden"
+    ],
+    "links": [
+      [
+        "maintenance",
+        "atrium"
+      ],
+      [
+        "atrium",
+        "home"
+      ],
+      [
+        "print_shop",
+        "security"
+      ],
+      [
+        "security",
+        "car_park"
+      ],
+      [
+        "first_aid",
+        "records"
+      ],
+      [
+        "records",
+        "roof_garden"
+      ],
+      [
+        "bank",
+        "cafe"
+      ],
+      [
+        "cafe",
+        "tower_lobby"
+      ],
+      [
+        "maintenance",
+        "print_shop"
+      ],
+      [
+        "first_aid",
+        "bank"
+      ],
+      [
+        "print_shop",
+        "first_aid"
+      ],
+      [
+        "atrium",
+        "security"
+      ],
+      [
+        "records",
+        "cafe"
+      ],
+      [
+        "security",
+        "records"
+      ],
+      [
+        "home",
+        "car_park"
+      ],
+      [
+        "roof_garden",
+        "tower_lobby"
+      ],
+      [
+        "car_park",
+        "roof_garden"
+      ]
+    ],
+    "bands": {
+      "maintenance": 1,
+      "atrium": 0,
+      "home": 0,
+      "print_shop": 2,
+      "security": 1,
+      "car_park": 1,
+      "first_aid": 3,
+      "records": 2,
+      "roof_garden": 1,
+      "bank": 2,
+      "cafe": 2,
+      "tower_lobby": 2
+    },
+    "streets": [
+      {
+        "rect": [
+          900,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          900,
+          660,
+          120,
+          860
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          900,
+          1680,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          1620,
+          0,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          1620,
+          660,
+          120,
+          860
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          1620,
+          1680,
+          120,
+          500
+        ],
+        "kind": "alley"
+      },
+      {
+        "rect": [
+          40,
+          500,
+          2360,
+          160
+        ],
+        "kind": "road"
+      },
+      {
+        "rect": [
+          40,
+          1520,
+          2360,
+          160
+        ],
+        "kind": "road"
+      },
+      {
+        "rect": [
+          40,
+          500,
+          200,
+          1680
+        ],
+        "kind": "road"
+      },
+      {
+        "rect": [
+          40,
+          2100,
+          620,
+          80
+        ],
+        "kind": "road"
+      },
+      {
+        "rect": [
+          2180,
+          1680,
+          200,
+          500
+        ],
+        "kind": "road"
+      },
+      {
+        "rect": [
+          1780,
+          2100,
+          620,
+          80
+        ],
+        "kind": "road"
+      }
+    ]
+  }
+}

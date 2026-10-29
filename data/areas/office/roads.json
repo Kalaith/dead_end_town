@@ -1,0 +1,379 @@
+{
+  "schema_version": 1,
+  "crossings": [
+    {
+      "id": "maintenance_crossing",
+      "name": "Maintenance Store crossing",
+      "requires": [
+        "maintenance",
+        "print_shop"
+      ],
+      "barriers": [
+        "maintenance_west",
+        "maintenance_east"
+      ],
+      "area": [
+        328,
+        472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "first_aid_crossing",
+      "name": "First Aid Post crossing",
+      "requires": [
+        "first_aid",
+        "bank"
+      ],
+      "barriers": [
+        "first_aid_west",
+        "first_aid_east"
+      ],
+      "area": [
+        328,
+        1492,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "atrium_crossing",
+      "name": "Atrium Lobby crossing",
+      "requires": [
+        "atrium",
+        "security"
+      ],
+      "barriers": [
+        "atrium_west",
+        "atrium_east"
+      ],
+      "area": [
+        1048,
+        472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "records_crossing",
+      "name": "Records Office crossing",
+      "requires": [
+        "records",
+        "cafe"
+      ],
+      "barriers": [
+        "records_west",
+        "records_east"
+      ],
+      "area": [
+        1048,
+        1492,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "home_crossing",
+      "name": "01 / OFFICE HQ crossing",
+      "requires": [
+        "home",
+        "car_park"
+      ],
+      "barriers": [
+        "home_west",
+        "home_east"
+      ],
+      "area": [
+        1768,
+        472,
+        544,
+        216
+      ]
+    },
+    {
+      "id": "roof_garden_crossing",
+      "name": "Roof Garden crossing",
+      "requires": [
+        "roof_garden",
+        "tower_lobby"
+      ],
+      "barriers": [
+        "roof_garden_west",
+        "roof_garden_east"
+      ],
+      "area": [
+        1768,
+        1492,
+        544,
+        216
+      ]
+    }
+  ],
+  "barricades": [
+    {
+      "id": "maintenance_west",
+      "name": "Maintenance Store west barricade",
+      "rect": [
+        312,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        320,
+        580
+      ],
+      "site": [
+        368,
+        580
+      ],
+      "requires": [
+        "maintenance",
+        "print_shop"
+      ]
+    },
+    {
+      "id": "maintenance_east",
+      "name": "Maintenance Store east barricade",
+      "rect": [
+        872,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        880,
+        580
+      ],
+      "site": [
+        832,
+        580
+      ],
+      "requires": [
+        "maintenance",
+        "print_shop"
+      ]
+    },
+    {
+      "id": "first_aid_west",
+      "name": "First Aid Post west barricade",
+      "rect": [
+        312,
+        1500,
+        16,
+        200
+      ],
+      "center": [
+        320,
+        1600
+      ],
+      "site": [
+        368,
+        1600
+      ],
+      "requires": [
+        "first_aid",
+        "bank"
+      ]
+    },
+    {
+      "id": "first_aid_east",
+      "name": "First Aid Post east barricade",
+      "rect": [
+        872,
+        1500,
+        16,
+        200
+      ],
+      "center": [
+        880,
+        1600
+      ],
+      "site": [
+        832,
+        1600
+      ],
+      "requires": [
+        "first_aid",
+        "bank"
+      ]
+    },
+    {
+      "id": "atrium_west",
+      "name": "Atrium Lobby west barricade",
+      "rect": [
+        1032,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        1040,
+        580
+      ],
+      "site": [
+        1088,
+        580
+      ],
+      "requires": [
+        "atrium",
+        "security"
+      ]
+    },
+    {
+      "id": "atrium_east",
+      "name": "Atrium Lobby east barricade",
+      "rect": [
+        1592,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        1600,
+        580
+      ],
+      "site": [
+        1552,
+        580
+      ],
+      "requires": [
+        "atrium",
+        "security"
+      ]
+    },
+    {
+      "id": "records_west",
+      "name": "Records Office west barricade",
+      "rect": [
+        1032,
+        1500,
+        16,
+        200
+      ],
+      "center": [
+        1040,
+        1600
+      ],
+      "site": [
+        1088,
+        1600
+      ],
+      "requires": [
+        "records",
+        "cafe"
+      ]
+    },
+    {
+      "id": "records_east",
+      "name": "Records Office east barricade",
+      "rect": [
+        1592,
+        1500,
+        16,
+        200
+      ],
+      "center": [
+        1600,
+        1600
+      ],
+      "site": [
+        1552,
+        1600
+      ],
+      "requires": [
+        "records",
+        "cafe"
+      ]
+    },
+    {
+      "id": "home_west",
+      "name": "01 / OFFICE HQ west barricade",
+      "rect": [
+        1752,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        1760,
+        580
+      ],
+      "site": [
+        1808,
+        580
+      ],
+      "requires": [
+        "home",
+        "car_park"
+      ]
+    },
+    {
+      "id": "home_east",
+      "name": "01 / OFFICE HQ east barricade",
+      "rect": [
+        2312,
+        480,
+        16,
+        200
+      ],
+      "center": [
+        2320,
+        580
+      ],
+      "site": [
+        2272,
+        580
+      ],
+      "requires": [
+        "home",
+        "car_park"
+      ]
+    },
+    {
+      "id": "roof_garden_west",
+      "name": "Roof Garden west barricade",
+      "rect": [
+        1752,
+        1500,
+        16,
+        200
+      ],
+      "center": [
+        1760,
+        1600
+      ],
+      "site": [
+        1808,
+        1600
+      ],
+      "requires": [
+        "roof_garden",
+        "tower_lobby"
+      ]
+    },
+    {
+      "id": "roof_garden_east",
+      "name": "Roof Garden east barricade",
+      "rect": [
+        2312,
+        1500,
+        16,
+        200
+      ],
+      "center": [
+        2320,
+        1600
+      ],
+      "site": [
+        2272,
+        1600
+      ],
+      "requires": [
+        "roof_garden",
+        "tower_lobby"
+      ]
+    }
+  ]
+}

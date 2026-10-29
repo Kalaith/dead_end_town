@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "area": {
+    "id": "office",
+    "name": "The Office District"
+  },
+  "bounds": [
+    2440,
+    2180
+  ],
+  "balance": {
+    "player_start": [
+      2040,
+      365
+    ],
+    "mara_start": [
+      2040,
+      445
+    ],
+    "home_respawn": [
+      2040,
+      350
+    ],
+    "home_alert_center": [
+      2040,
+      480
+    ],
+    "emergency_shelter": [
+      2300,
+      580
+    ]
+  },
+  "recovery_salvage": {
+    "sites": {
+      "home": [
+        1860,
+        350
+      ],
+      "west": [
+        1700,
+        610
+      ]
+    }
+  },
+  "boss": {
+    "id": "boss_warden",
+    "kind": "warden",
+    "post": [
+      140,
+      760
+    ],
+    "leash": 300,
+    "escorts": [
+      [
+        90,
+        700
+      ],
+      [
+        190,
+        700
+      ]
+    ]
+  },
+  "exit": {
+    "name": "Service stair",
+    "rect": [
+      40,
+      500,
+      100,
+      80
+    ]
+  },
+  "entrance": {
+    "name": "Bridge",
+    "rect": [
+      40,
+      2100,
+      100,
+      80
+    ]
+  }
+}

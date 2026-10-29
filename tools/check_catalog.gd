@@ -5,8 +5,12 @@ extends SceneTree
 
 func _init() -> void:
 	var catalog = load("res://scripts/core/catalog.gd")
-	var errors: Array = catalog.problems(catalog.read())
-	print("catalog problems: ", errors.size())
-	for message: Variant in errors.slice(0, 20):
-		print(" - ", message)
-	quit(1 if not errors.is_empty() else 0)
+	var total: int = 0
+	for entry: Dictionary in catalog.registry().areas:
+		var data: Dictionary = catalog.read(str(entry.id))
+		var errors: Array = catalog.problems(data) if not data.is_empty() else ["could not load"]
+		print("%s: catalog problems: %d" % [entry.id, errors.size()])
+		for message: Variant in errors.slice(0, 20):
+			print(" - ", message)
+		total += errors.size()
+	quit(1 if total > 0 else 0)

@@ -184,7 +184,7 @@ static func _safe(world: RefCounted, order: Dictionary, a: Dictionary) -> bool:
 		required = [order.target]
 	var local: bool = a.pos.distance_to(Routes.point(order.stand)) < 80
 	for id: String in required:
-		if not world.properties[id].claimed or world.remaining(id) > 0:
+		if not Facility.state(world, id).claimed or world.remaining(id) > 0:
 			return false
 		# A nearby worker can finish a prepaid field project. Remote assignment needs a safe route.
 		if not local and not world.safe_connected(id):

@@ -1,6 +1,7 @@
 extends RefCounted
 ## Both food sites use one physical work rate and keep partial harvests while blocked.
 const Greenhouse = preload("res://scripts/sim/greenhouse.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const Restoration = preload("res://scripts/sim/restoration.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
@@ -25,7 +26,7 @@ static func worker(world: RefCounted, id: String) -> String:
 static func reason(world: RefCounted, id: String) -> String:
 	if not done(world, id):
 		return "Restore beds first"
-	if not world.properties[id].claimed:
+	if not Facility.state(world, id).claimed:
 		return "Reclaim site"
 	if world.remaining(id) > 0 or Combat.danger(world, Routes.point(world.definition(id).site), 230):
 		return "Clear nearby threats"
@@ -69,7 +70,7 @@ static func step(world: RefCounted, dt: float) -> void:
 static func summary(world: RefCounted) -> String:
 	var text: String = "Food target: %d (two meals + recovery); resume below %d" % [target(world), target(world) - (world.survivors.size() + 1)]
 	for id: String in ["garden", "greenhouse"]:
-		if not world.properties[id].looted:
+		if not Facility.state(world, id).looted:
 			continue
 		var blocked: String = reason(world, id)
 		var seconds: float = float(world.balance.food_seconds if id == "garden" else world.balance.greenhouse_food_seconds)

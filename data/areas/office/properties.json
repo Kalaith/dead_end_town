@@ -1,0 +1,466 @@
+{
+  "schema_version": 1,
+  "properties": [
+    {
+      "id": "maintenance",
+      "facility": "hardware",
+      "resident_kinds": [
+        "runner",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler"
+      ],
+      "core": true,
+      "available": true,
+      "food_cache": 2,
+      "name": "Maintenance Store",
+      "rect": [
+        320,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        420,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        600,
+        480
+      ],
+      "site": [
+        600,
+        350
+      ],
+      "post": [
+        600,
+        452
+      ],
+      "neighbors": [
+        "atrium",
+        "print_shop"
+      ],
+      "reward": "Construction tools and a long spear",
+      "reinforcements": [
+        [
+          379,
+          384
+        ],
+        [
+          372,
+          265
+        ],
+        [
+          831,
+          345
+        ],
+        [
+          833,
+          285
+        ],
+        [
+          454,
+          434
+        ],
+        [
+          828,
+          157
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 32,
+        "line": "Hardware tools and a long spear recovered.",
+        "medicine": 0,
+        "survivor": ""
+      }
+    },
+    {
+      "id": "atrium",
+      "facility": "house",
+      "core": true,
+      "available": true,
+      "food_cache": 3,
+      "name": "Atrium Lobby",
+      "rect": [
+        1040,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        1140,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        1320,
+        480
+      ],
+      "site": [
+        1320,
+        350
+      ],
+      "post": [
+        1320,
+        452
+      ],
+      "neighbors": [
+        "maintenance",
+        "home",
+        "security"
+      ],
+      "reward": "Household supplies",
+      "reinforcements": [
+        [
+          1117,
+          382
+        ],
+        [
+          1206,
+          363
+        ],
+        [
+          1526,
+          420
+        ],
+        [
+          1096,
+          258
+        ],
+        [
+          1197,
+          408
+        ],
+        [
+          1547,
+          219
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 12,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 8 searched."
+      }
+    },
+    {
+      "id": "home",
+      "facility": "home",
+      "food_cache": 0,
+      "name": "01 / OFFICE HQ",
+      "rect": [
+        1760,
+        80,
+        560,
+        400
+      ],
+      "building": [
+        1860,
+        150,
+        350,
+        155
+      ],
+      "gate": [
+        2040,
+        480
+      ],
+      "site": [
+        2040,
+        350
+      ],
+      "post": [
+        2040,
+        452
+      ],
+      "neighbors": [
+        "atrium",
+        "car_park"
+      ],
+      "reward": "Home stockpile",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "core": true,
+      "available": true
+    },
+    {
+      "id": "print_shop",
+      "facility": "house",
+      "name": "Print Shop",
+      "reward": "Household supplies",
+      "food_cache": 3,
+      "search": {
+        "materials": 12,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 14 searched."
+      },
+      "rect": [
+        320,
+        680,
+        560,
+        400
+      ],
+      "building": [
+        420,
+        870,
+        350,
+        155
+      ],
+      "gate": [
+        600,
+        680
+      ],
+      "site": [
+        600,
+        800
+      ],
+      "post": [
+        600,
+        710
+      ],
+      "reinforcements": [
+        [
+          807,
+          798
+        ],
+        [
+          664,
+          761
+        ],
+        [
+          484,
+          734
+        ],
+        [
+          713,
+          823
+        ],
+        [
+          822,
+          899
+        ],
+        [
+          522,
+          822
+        ]
+      ],
+      "zombies": [],
+      "hidden_zombies": 0,
+      "core": true,
+      "available": true,
+      "neighbors": [
+        "security",
+        "maintenance",
+        "first_aid"
+      ]
+    },
+    {
+      "id": "security",
+      "facility": "munitions",
+      "food_cache": 4,
+      "name": "Security Office",
+      "rect": [
+        1040,
+        680,
+        560,
+        400
+      ],
+      "building": [
+        1140,
+        870,
+        350,
+        155
+      ],
+      "gate": [
+        1320,
+        680
+      ],
+      "site": [
+        1320,
+        800
+      ],
+      "post": [
+        1320,
+        710
+      ],
+      "neighbors": [
+        "print_shop",
+        "car_park",
+        "atrium",
+        "records"
+      ],
+      "reward": "Bullet crafting",
+      "reinforcements": [],
+      "hidden_zombies": 0,
+      "zombies": [
+        [
+          1536,
+          835
+        ],
+        [
+          1544,
+          906
+        ],
+        [
+          1161,
+          745
+        ],
+        [
+          1175,
+          825
+        ],
+        [
+          1395,
+          826
+        ],
+        [
+          1212,
+          739
+        ],
+        [
+          1096,
+          926
+        ],
+        [
+          1420,
+          736
+        ]
+      ],
+      "core": true,
+      "available": true
+    },
+    {
+      "id": "car_park",
+      "facility": "garage",
+      "food_cache": 2,
+      "name": "Car Park Workshop",
+      "rect": [
+        1760,
+        680,
+        560,
+        400
+      ],
+      "building": [
+        1860,
+        870,
+        350,
+        155
+      ],
+      "gate": [
+        2040,
+        680
+      ],
+      "site": [
+        2040,
+        800
+      ],
+      "post": [
+        2040,
+        710
+      ],
+      "neighbors": [
+        "security",
+        "home",
+        "roof_garden"
+      ],
+      "reward": "Tools and armour cache",
+      "reinforcements": [
+        [
+          2152,
+          720
+        ],
+        [
+          2204,
+          753
+        ],
+        [
+          1804,
+          888
+        ],
+        [
+          1860,
+          740
+        ],
+        [
+          2256,
+          999
+        ],
+        [
+          1814,
+          994
+        ],
+        [
+          2147,
+          827
+        ],
+        [
+          1930,
+          829
+        ],
+        [
+          1811,
+          936
+        ],
+        [
+          2102,
+          827
+        ],
+        [
+          1917,
+          784
+        ],
+        [
+          2267,
+          871
+        ]
+      ],
+      "hidden_zombies": 20,
+      "zombies": [
+        [
+          2258,
+          729
+        ],
+        [
+          2198,
+          810
+        ],
+        [
+          2263,
+          825
+        ],
+        [
+          2139,
+          775
+        ],
+        [
+          1980,
+          770
+        ],
+        [
+          2271,
+          923
+        ],
+        [
+          1943,
+          742
+        ],
+        [
+          1852,
+          797
+        ]
+      ],
+      "core": true,
+      "available": true
+    }
+  ]
+}

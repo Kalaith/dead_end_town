@@ -23,11 +23,12 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 			errors.append("Rescues need a discovery line.")
 		if d.get("order") not in ["Guard", "Follow", "Hold"] or d.get("duty") not in ["home", "hold"]:
 			errors.append("Invalid starting survivor assignment.")
-		var site: Dictionary = {}
+		# A rescue site is a facility kind, shared by every area; an area that has the facility must have it available.
+		var lot: Dictionary = {}
 		for p: Dictionary in data.properties:
-			if p.id == d.get("site"):
-				site = p
-		if site.is_empty() or not site.get("available", false) or str(d.get("site")) in sites:
+			if p.id == Facility.resolve(data, str(d.get("site"))):
+				lot = p
+		if str(d.get("site")) not in Facility.KINDS or (not lot.is_empty() and not lot.get("available", false)) or str(d.get("site")) in sites:
 			errors.append("Each survivor needs a unique implemented rescue site.")
 		else:
 			sites.append(d.site)

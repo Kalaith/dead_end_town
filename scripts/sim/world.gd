@@ -283,6 +283,8 @@ func _context() -> String:
 		return ""
 	if Boss.at_exit(self):
 		return Boss.context(self)
+	if Boss.at_entrance(self):
+		return Boss.entrance_context(self)
 	var passage: Dictionary = Neighbourhood.nearby(self)
 	if not passage.is_empty():
 		return Neighbourhood.context(self, passage)
@@ -305,17 +307,17 @@ func _context() -> String:
 				return "E Search"
 			if not properties[p.id].claimed:
 				return "E Secure"
-			if p.id == "greenhouse":
+			if p.facility == "greenhouse":
 				return Greenhouse.context(self)
-			if p.id == "clinic":
+			if p.facility == "clinic":
 				return Clinic.context(self)
-			if p.id == "munitions":
+			if p.facility == "munitions":
 				return "F Bullets"
-			if p.id == "garage":
+			if p.facility == "garage":
 				return Workshop.context(self)
-			if p.id == "garden" and not garden_done:
+			if p.facility == "garden" and not garden_done:
 				return "R Build   F Assign" if garden_started else WorkOrders.cost_prompt(self, "Garden", ["garden"], int(balance.garden_cost))
-			if p.id == "garden":
+			if p.facility == "garden":
 				return "R Tend · %d%%   F Assign" % int(100 * harvest / float(balance.food_seconds))
 			return ""
 	return ""
@@ -328,6 +330,9 @@ func interact() -> void:
 		return
 	if Boss.at_exit(self):
 		Boss.interact(self)
+		return
+	if Boss.at_entrance(self):
+		Boss.enter_interact(self)
 		return
 	var passage: Dictionary = Neighbourhood.nearby(self)
 	if not passage.is_empty():
@@ -359,16 +364,16 @@ func interact() -> void:
 				Discoveries.search(self, p.id)
 			elif not state.claimed:
 				claim(p.id)
-			elif p.id == "greenhouse":
+			elif p.facility == "greenhouse":
 				Greenhouse.approve(self)
-			elif p.id == "clinic":
+			elif p.facility == "clinic":
 				if clinic.done:
 					Clinic.treat(self)
 				else:
 					Clinic.approve(self)
-			elif p.id == "garage":
+			elif p.facility == "garage":
 				Workshop.interact(self)
-			elif p.id == "garden" and not garden_started:
+			elif p.facility == "garden" and not garden_started:
 				if Restoration.approve(self, "garden"):
 					note("Garden approved. Hold R or assign a worker.")
 			return
@@ -411,14 +416,14 @@ func claim(id: String) -> bool:
 	properties[id].looted = true
 	food += int(definition(id).food_cache)
 	materials += int(balance.claim_materials)
-	if id == "garage":
+	if Facility.kind_of(catalog, id) == "garage":
 		materials += int(balance.garage_bonus_materials)
 		note("Garage recovered: tools, cached armour and %d extra materials. Restore the workshop here with E." % int(balance.garage_bonus_materials))
-	elif id == "residence":
+	elif Facility.kind_of(catalog, id) == "residence":
 		Firearms.rescue(self)
-	elif id == "munitions":
+	elif Facility.kind_of(catalog, id) == "munitions":
 		note("Ammunition workshop unlocked. F assigns a worker: %d materials makes %d bullets in %ds." % [int(catalog.firearm.material_cost), int(catalog.firearm.batch_bullets), int(catalog.firearm.craft_seconds)])
-	elif id == "library":
+	elif Facility.kind_of(catalog, id) == "library":
 		Roster.recruit(self, "paige")
 	else:
 		note("Garden house secured. Start the food garden at its porch with E.")
@@ -519,7 +524,7 @@ func release_interact() -> void:
 func _care_context() -> String:
 	if HomeRest.at_porch(self) and properties.home.claimed:
 		return HomeRest.context(self)
-	if clinic.done and properties.clinic.claimed and player.pos.distance_to(Routes.point(definition("clinic").site)) < 85:
+	if clinic.done and Facility.state(self, "clinic").claimed and player.pos.distance_to(Routes.point(definition("clinic").site)) < 85:
 		return Clinic.context(self)
 	return ""
 

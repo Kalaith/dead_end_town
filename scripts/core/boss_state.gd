@@ -22,6 +22,12 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 		rules.number_between(data.balance, "area_carry_cap", 1, 10000)
 	if not data.exit.get("rect") is Array or data.exit.rect.size() != 4:
 		errors.append("Exit needs a four-number rectangle.")
+	if data.has("entrance"):
+		if not rules.object(data, "entrance"):
+			return
+		rules.text(data.entrance, "name")
+		if not data.entrance.get("rect") is Array or data.entrance.rect.size() != 4:
+			errors.append("Entrance needs a four-number rectangle.")
 	if not data.boss.get("escorts") is Array:
 		errors.append("Boss needs an escort list.")
 	else:

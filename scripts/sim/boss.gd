@@ -94,6 +94,35 @@ static func destination(catalog: Dictionary) -> String:
 	return str(ids[next]) if next < ids.size() else ""
 
 
+## The area before this one in campaign order, or "" in the first area.
+static func origin(catalog: Dictionary) -> String:
+	var ids: Array = catalog.areas.map(func(entry: Dictionary) -> String: return str(entry.id))
+	var previous: int = ids.find(catalog.area.id) - 1
+	return str(ids[previous]) if previous >= 0 else ""
+
+
+static func at_entrance(world: RefCounted) -> bool:
+	return world.catalog.has("entrance") and Routes.rectangle(world.catalog.entrance.rect).grow(EXIT_REACH).has_point(world.player.pos)
+
+
+## The way back is never blocked by a boss, but it asks like the exit does.
+static func enter_interact(world: RefCounted) -> void:
+	if origin(world.catalog).is_empty():
+		world.note("This is the way you came in. There is nowhere behind it yet.")
+	elif float(world.exit_pending) > 0:
+		world.exit_pending = 0.0
+		world.travel_requested = origin(world.catalog)
+	else:
+		world.exit_pending = CONFIRM_SECONDS
+		world.note("Go back through the %s to the previous area? Your team and gear come too, and up to %d of each stock. Press E again to confirm." % [str(world.catalog.entrance.name).to_lower(), int(world.balance.area_carry_cap)])
+
+
+static func entrance_context(world: RefCounted) -> String:
+	if origin(world.catalog).is_empty():
+		return "Entrance / nothing behind it yet"
+	return "E to confirm going back" if float(world.exit_pending) > 0 else "E Go back"
+
+
 static func context(world: RefCounted) -> String:
 	if not at_exit(world):
 		return ""
@@ -121,7 +150,7 @@ static func interact(world: RefCounted) -> void:
 ## Announce the fall once, when it was seen alive in this session.
 static func step(world: RefCounted, dt: float) -> void:
 	world.exit_pending = maxf(0.0, float(world.exit_pending) - dt)
-	if not at_exit(world):
+	if not at_exit(world) and not at_entrance(world):
 		world.exit_pending = 0.0
 	var boss: Dictionary = find(world)
 	if boss.is_empty():

@@ -14,7 +14,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 			errors.append("Search materials must be a bounded whole amount.")
 		if not Rules.integer_in(p.search.get("medicine"), 0, 1000):
 			errors.append("Search medicine must be a bounded whole amount.")
-		if p.search.get("survivor") != ("june" if p.id == "clinic" else "oliver" if p.id == "greenhouse" else ""):
+		if p.search.get("survivor") != ("june" if p.facility == "clinic" else "oliver" if p.facility == "greenhouse" else ""):
 			errors.append("Search needs its implemented rescue identity.")
 		rules.text(p.search, "line")
 

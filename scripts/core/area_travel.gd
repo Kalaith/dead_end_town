@@ -46,13 +46,24 @@ static func travel(world: RefCounted, saves: RefCounted, to_data: Dictionary) ->
 		if Equipment.unlocked(world, item) and item not in destination.unlocks:
 			destination.unlocks.append(item)
 	destination.player.hp = world.player.hp
-	_arrive(world, destination, returning)
+	_arrive(world, destination)
 	destination.note("%s / Arrived. Your team came with you." % str(to_data.area.name))
 	return destination
 
 
-static func _arrive(world: RefCounted, destination: RefCounted, returning: bool) -> void:
-	var door: Vector2 = Boss.exit_rect(destination.catalog).get_center() if returning and Boss.configured(destination.catalog) else Routes.point(destination.balance.player_start)
+## Going forward arrives at the destination's entrance; going back arrives at the exit that was used.
+static func _door(world: RefCounted, destination: RefCounted) -> Vector2:
+	var ids: Array = world.catalog.areas.map(func(entry: Dictionary) -> String: return str(entry.id))
+	var forward: bool = ids.find(destination.area) > ids.find(world.area)
+	if forward and destination.catalog.has("entrance"):
+		return Routes.rectangle(destination.catalog.entrance.rect).get_center()
+	if not forward and Boss.configured(destination.catalog):
+		return Boss.exit_rect(destination.catalog).get_center()
+	return Routes.point(destination.balance.player_start)
+
+
+static func _arrive(world: RefCounted, destination: RefCounted) -> void:
+	var door: Vector2 = _door(world, destination)
 	destination.player.pos = door
 	destination.player.anchor = door
 	destination.survivors.clear()

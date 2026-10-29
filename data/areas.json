@@ -5,6 +5,10 @@
     {
       "id": "suburb",
       "name": "The Suburb"
+    },
+    {
+      "id": "office",
+      "name": "The Office District"
     }
   ]
 }

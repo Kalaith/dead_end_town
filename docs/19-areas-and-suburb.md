@@ -41,6 +41,15 @@ Modelled on [Sanctuary Hills](reference/sanctuary_hills_map.webp): a **ring road
 - **Pressure comes from one end only**: the bridge, at the south-west corner. A wide approach strip runs along the bottom edge so a formation fits. The baboon holds the bridge road, so the horde passes it on the way in. Pressure timing and band numbers are not yet tuned for this size (step 5).
 - The baboon, its roadblock and the exit marker are built (step 7). Using the exit is step 8.
 
+## Area 2: the office district (first pass)
+
+`data/areas/office/`, generated from the suburb's proven street, passage and crossing grammar and then reauthored. 2,440 x 2,180, three columns by four rows (12 lots, nine core). Lots have their own ids and carry facilities by kind: home (`home`, the HQ in the north-east), garden (`roof_garden`), garage (`car_park`), clinic (`first_aid`), munitions (`security`), hardware (`maintenance`); there is no greenhouse, library or residence, and Paige, Ellis, June and Oliver arrive with the player. Four lots are plain offices, three of them optional. 17 links (11 passages including three rear gates, six street crossings).
+
+- **Entrance** at the south-west corner (`entrance` in `area.json`, "Bridge"): where the player arrives from the suburb, and where E (twice) goes back. Going forward arrives at the destination's entrance; going back arrives at the exit that was used.
+- **Pressure** enters from the south-east service road (one route, a strip along the bottom edge as in the suburb).
+- **Gate:** the Warden (2,200 health, slower and heavier than the baboon, longer tell, `boss` in its data) holds the west road below the service stair at the north-west corner, which is the exit to area 3. With no area 3 yet the exit says nothing lies beyond.
+- Not designed yet: ranged and call pressure (Screecher, Spitter), the plaza and car parks, area-specific survivors, and any reason for a later return.
+
 ### Preparing for the boss
 
 There is no readiness gate and no scripted arrival. The boss is a monster that **guards the only way out** of the suburb and waits there. The player decides when to go. The pause menu may show an advisory summary (food, medicine, ammunition, perimeter health, defenders) so the choice is informed, but nothing blocks the attempt.

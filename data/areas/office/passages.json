@@ -1,0 +1,489 @@
+{
+  "schema_version": 1,
+  "passages": [
+    {
+      "id": "maintenance_atrium",
+      "name": "Maintenance Store / Atrium Lobby",
+      "requires": [
+        "maintenance",
+        "atrium"
+      ],
+      "area": [
+        868,
+        352,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          840,
+          400
+        ],
+        [
+          1080,
+          400
+        ]
+      ],
+      "rails": [
+        [
+          872,
+          352,
+          176,
+          8
+        ],
+        [
+          872,
+          440,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        952,
+        360,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "atrium_home",
+      "name": "Atrium Lobby / 01 / OFFICE HQ",
+      "requires": [
+        "atrium",
+        "home"
+      ],
+      "area": [
+        1588,
+        352,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          1560,
+          400
+        ],
+        [
+          1800,
+          400
+        ]
+      ],
+      "rails": [
+        [
+          1592,
+          352,
+          176,
+          8
+        ],
+        [
+          1592,
+          440,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        1672,
+        360,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "print_shop_security",
+      "name": "Print Shop / Security Office",
+      "requires": [
+        "print_shop",
+        "security"
+      ],
+      "area": [
+        868,
+        712,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          840,
+          760
+        ],
+        [
+          1080,
+          760
+        ]
+      ],
+      "rails": [
+        [
+          872,
+          712,
+          176,
+          8
+        ],
+        [
+          872,
+          800,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        952,
+        720,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "security_car_park",
+      "name": "Security Office / Car Park Workshop",
+      "requires": [
+        "security",
+        "car_park"
+      ],
+      "area": [
+        1588,
+        712,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          1560,
+          760
+        ],
+        [
+          1800,
+          760
+        ]
+      ],
+      "rails": [
+        [
+          1592,
+          712,
+          176,
+          8
+        ],
+        [
+          1592,
+          800,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        1672,
+        720,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "first_aid_records",
+      "name": "First Aid Post / Records Office",
+      "requires": [
+        "first_aid",
+        "records"
+      ],
+      "area": [
+        868,
+        1372,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          840,
+          1420
+        ],
+        [
+          1080,
+          1420
+        ]
+      ],
+      "rails": [
+        [
+          872,
+          1372,
+          176,
+          8
+        ],
+        [
+          872,
+          1460,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        952,
+        1380,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "records_roof_garden",
+      "name": "Records Office / Roof Garden",
+      "requires": [
+        "records",
+        "roof_garden"
+      ],
+      "area": [
+        1588,
+        1372,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          1560,
+          1420
+        ],
+        [
+          1800,
+          1420
+        ]
+      ],
+      "rails": [
+        [
+          1592,
+          1372,
+          176,
+          8
+        ],
+        [
+          1592,
+          1460,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        1672,
+        1380,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "bank_cafe",
+      "name": "Bank Branch / Corner Cafe",
+      "requires": [
+        "bank",
+        "cafe"
+      ],
+      "area": [
+        868,
+        1732,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          840,
+          1780
+        ],
+        [
+          1080,
+          1780
+        ]
+      ],
+      "rails": [
+        [
+          872,
+          1732,
+          176,
+          8
+        ],
+        [
+          872,
+          1820,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        952,
+        1740,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "cafe_tower_lobby",
+      "name": "Corner Cafe / Tower Lobby",
+      "requires": [
+        "cafe",
+        "tower_lobby"
+      ],
+      "area": [
+        1588,
+        1732,
+        184,
+        96
+      ],
+      "sites": [
+        [
+          1560,
+          1780
+        ],
+        [
+          1800,
+          1780
+        ]
+      ],
+      "rails": [
+        [
+          1592,
+          1732,
+          176,
+          8
+        ],
+        [
+          1592,
+          1820,
+          176,
+          8
+        ]
+      ],
+      "gate": [
+        1672,
+        1740,
+        16,
+        80
+      ]
+    },
+    {
+      "id": "print_shop_first_aid",
+      "name": "Print Shop / First Aid Post",
+      "requires": [
+        "print_shop",
+        "first_aid"
+      ],
+      "area": [
+        552,
+        1060,
+        96,
+        60
+      ],
+      "sites": [
+        [
+          600,
+          1040
+        ],
+        [
+          600,
+          1140
+        ]
+      ],
+      "rails": [
+        [
+          552,
+          1060,
+          8,
+          60
+        ],
+        [
+          640,
+          1060,
+          8,
+          60
+        ]
+      ],
+      "gate": [
+        560,
+        1086,
+        80,
+        8
+      ]
+    },
+    {
+      "id": "security_records",
+      "name": "Security Office / Records Office",
+      "requires": [
+        "security",
+        "records"
+      ],
+      "area": [
+        1272,
+        1060,
+        96,
+        60
+      ],
+      "sites": [
+        [
+          1320,
+          1040
+        ],
+        [
+          1320,
+          1140
+        ]
+      ],
+      "rails": [
+        [
+          1272,
+          1060,
+          8,
+          60
+        ],
+        [
+          1360,
+          1060,
+          8,
+          60
+        ]
+      ],
+      "gate": [
+        1280,
+        1086,
+        80,
+        8
+      ]
+    },
+    {
+      "id": "car_park_roof_garden",
+      "name": "Car Park Workshop / Roof Garden",
+      "requires": [
+        "car_park",
+        "roof_garden"
+      ],
+      "area": [
+        1992,
+        1060,
+        96,
+        60
+      ],
+      "sites": [
+        [
+          2040,
+          1040
+        ],
+        [
+          2040,
+          1140
+        ]
+      ],
+      "rails": [
+        [
+          1992,
+          1060,
+          8,
+          60
+        ],
+        [
+          2080,
+          1060,
+          8,
+          60
+        ]
+      ],
+      "gate": [
+        2000,
+        1086,
+        80,
+        8
+      ]
+    }
+  ]
+}

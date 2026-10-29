@@ -13,7 +13,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 
 
 static func valid(data: Dictionary, catalog: Dictionary) -> bool:
-	if not data.get("properties") is Dictionary or not data.properties.get("greenhouse") is Dictionary:
+	if not data.get("properties") is Dictionary:
 		return false
 	var s: Variant = data.get("greenhouse")
 	if not s is Dictionary or not s.get("started") is bool or not s.get("done") is bool:

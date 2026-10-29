@@ -11,7 +11,13 @@ var failures: int = 0
 
 
 func _init() -> void:
-	var data: Dictionary = Catalog.read()
+	for entry: Dictionary in Catalog.registry().areas:
+		_area(Catalog.read(str(entry.id)))
+	quit(failures)
+
+
+func _area(data: Dictionary) -> void:
+	print("-- ", data.area.name)
 	for d: Dictionary in data.passages:
 		var from: Vector2 = Routes.point(d.sites[0])
 		var to: Vector2 = Routes.point(d.sites[1])
@@ -19,7 +25,6 @@ func _init() -> void:
 		var open: int = _walk(_world(data, d, true), from, to)
 		var straight: int = int(from.distance_to(to) / STEP)
 		_expect("%s is a short cut only when open (%d open, %d closed, %d straight)" % [d.id, open, closed, straight], open >= 0 and open <= straight * 13 / 10 + 3 and (closed < 0 or closed > open + 10))
-	quit(failures)
 
 
 func _world(data: Dictionary, d: Dictionary, open: bool) -> RefCounted:

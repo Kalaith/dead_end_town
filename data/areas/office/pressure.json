@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "pressure": {
+    "warning_seconds": 35,
+    "maximum_size": 20,
+    "living_cap": 200,
+    "spawn_spacing": 28,
+    "routes": [
+      {
+        "id": "south_east",
+        "name": "south-east service road",
+        "entry": [
+          2100,
+          2140
+        ],
+        "spread": [
+          1,
+          0
+        ],
+        "approach": [
+          2280,
+          1600
+        ]
+      }
+    ],
+    "first_seconds": 180,
+    "first_claim_grace": 60,
+    "calm_seconds": 90,
+    "entry_seconds": 1.2,
+    "route_retry_seconds": 10,
+    "special_caps": {
+      "runner": 4,
+      "screecher": 2
+    },
+    "bands": [
+      {
+        "budget_max": 8,
+        "budget_min": 5,
+        "id": "hearth",
+        "interval_max": 240,
+        "interval_min": 180,
+        "origins": 1
+      },
+      {
+        "budget_max": 12,
+        "budget_min": 9,
+        "id": "market",
+        "interval_max": 240,
+        "interval_min": 180,
+        "origins": 1
+      },
+      {
+        "budget_max": 16,
+        "budget_min": 12,
+        "id": "civic",
+        "interval_max": 270,
+        "interval_min": 210,
+        "origins": 2
+      },
+      {
+        "budget_max": 20,
+        "budget_min": 16,
+        "id": "works",
+        "interval_max": 300,
+        "interval_min": 210,
+        "origins": 2
+      }
+    ],
+    "templates": [
+      {
+        "band": 0,
+        "id": "hearth_drift",
+        "kinds": {
+          "shambler": 5
+        }
+      },
+      {
+        "band": 0,
+        "id": "hearth_group",
+        "kinds": {
+          "shambler": 6
+        }
+      },
+      {
+        "band": 0,
+        "id": "hearth_heavy",
+        "kinds": {
+          "shambler": 4,
+          "brute": 1
+        }
+      },
+      {
+        "band": 0,
+        "id": "hearth_crowd",
+        "kinds": {
+          "shambler": 8
+        }
+      },
+      {
+        "band": 1,
+        "id": "market_rush",
+        "kinds": {
+          "shambler": 7,
+          "runner": 1
+        }
+      },
+      {
+        "band": 1,
+        "id": "market_call",
+        "kinds": {
+          "shambler": 6,
+          "screecher": 1
+        }
+      },
+      {
+        "band": 1,
+        "id": "market_walk",
+        "kinds": {
+          "shambler": 10
+        }
+      },
+      {
+        "band": 1,
+        "id": "market_pair",
+        "kinds": {
+          "shambler": 8,
+          "runner": 2
+        }
+      },
+      {
+        "band": 2,
+        "id": "civic_call",
+        "kinds": {
+          "shambler": 9,
+          "screecher": 1
+        }
+      },
+      {
+        "band": 2,
+        "id": "civic_fast",
+        "kinds": {
+          "shambler": 8,
+          "screecher": 1,
+          "runner": 2
+        }
+      },
+      {
+        "band": 3,
+        "id": "works_rush",
+        "kinds": {
+          "shambler": 12,
+          "runner": 4
+        }
+      }
+    ]
+  }
+}

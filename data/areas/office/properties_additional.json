@@ -1,0 +1,471 @@
+{
+  "schema_version": 1,
+  "properties": [
+    {
+      "id": "first_aid",
+      "facility": "clinic",
+      "resident_kinds": [
+        "screecher",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler",
+        "shambler"
+      ],
+      "core": true,
+      "available": true,
+      "food_cache": 4,
+      "name": "First Aid Post",
+      "rect": [
+        320,
+        1100,
+        560,
+        400
+      ],
+      "building": [
+        420,
+        1170,
+        350,
+        155
+      ],
+      "gate": [
+        600,
+        1500
+      ],
+      "site": [
+        600,
+        1370
+      ],
+      "post": [
+        600,
+        1472
+      ],
+      "neighbors": [
+        "records",
+        "bank",
+        "print_shop"
+      ],
+      "reward": "Medical supplies and a survivor",
+      "reinforcements": [
+        [
+          461,
+          1460
+        ],
+        [
+          378,
+          1218
+        ],
+        [
+          840,
+          1197
+        ],
+        [
+          694,
+          1390
+        ],
+        [
+          837,
+          1395
+        ],
+        [
+          388,
+          1436
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 12,
+        "medicine": 12,
+        "survivor": "june",
+        "line": "Medical supplies recovered."
+      }
+    },
+    {
+      "id": "records",
+      "facility": "house",
+      "core": true,
+      "available": true,
+      "food_cache": 3,
+      "name": "Records Office",
+      "rect": [
+        1040,
+        1100,
+        560,
+        400
+      ],
+      "building": [
+        1140,
+        1170,
+        350,
+        155
+      ],
+      "gate": [
+        1320,
+        1500
+      ],
+      "site": [
+        1320,
+        1370
+      ],
+      "post": [
+        1320,
+        1472
+      ],
+      "neighbors": [
+        "first_aid",
+        "roof_garden",
+        "cafe",
+        "security"
+      ],
+      "reward": "Household supplies",
+      "reinforcements": [
+        [
+          1115,
+          1387
+        ],
+        [
+          1099,
+          1284
+        ],
+        [
+          1161,
+          1409
+        ],
+        [
+          1505,
+          1423
+        ],
+        [
+          1412,
+          1417
+        ],
+        [
+          1245,
+          1442
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 12,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 10 searched."
+      }
+    },
+    {
+      "id": "roof_garden",
+      "facility": "garden",
+      "food_cache": 4,
+      "name": "Roof Garden",
+      "rect": [
+        1760,
+        1100,
+        560,
+        400
+      ],
+      "building": [
+        1860,
+        1170,
+        350,
+        155
+      ],
+      "gate": [
+        2040,
+        1500
+      ],
+      "site": [
+        2040,
+        1370
+      ],
+      "post": [
+        2040,
+        1472
+      ],
+      "neighbors": [
+        "records",
+        "tower_lobby",
+        "car_park"
+      ],
+      "reward": "Food garden",
+      "reinforcements": [
+        [
+          1949,
+          1367
+        ],
+        [
+          1803,
+          1269
+        ],
+        [
+          2237,
+          1366
+        ],
+        [
+          2258,
+          1178
+        ],
+        [
+          1863,
+          1439
+        ],
+        [
+          1958,
+          1445
+        ],
+        [
+          2144,
+          1415
+        ],
+        [
+          2181,
+          1382
+        ]
+      ],
+      "hidden_zombies": 16,
+      "zombies": [
+        [
+          2269,
+          1229
+        ],
+        [
+          1810,
+          1349
+        ],
+        [
+          1846,
+          1390
+        ],
+        [
+          1900,
+          1404
+        ],
+        [
+          2201,
+          1442
+        ],
+        [
+          2272,
+          1458
+        ]
+      ],
+      "core": true,
+      "available": true
+    },
+    {
+      "id": "bank",
+      "facility": "house",
+      "core": false,
+      "available": true,
+      "food_cache": 3,
+      "name": "Bank Branch",
+      "rect": [
+        320,
+        1700,
+        560,
+        400
+      ],
+      "building": [
+        420,
+        1890,
+        350,
+        155
+      ],
+      "gate": [
+        600,
+        1700
+      ],
+      "site": [
+        600,
+        1820
+      ],
+      "post": [
+        600,
+        1730
+      ],
+      "neighbors": [
+        "cafe",
+        "first_aid"
+      ],
+      "reward": "Household supplies and spare timber",
+      "reinforcements": [
+        [
+          664,
+          1825
+        ],
+        [
+          820,
+          2024
+        ],
+        [
+          498,
+          1752
+        ],
+        [
+          454,
+          1795
+        ],
+        [
+          819,
+          1962
+        ],
+        [
+          525,
+          1822
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 16,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 12 searched."
+      }
+    },
+    {
+      "id": "cafe",
+      "facility": "house",
+      "core": false,
+      "available": true,
+      "food_cache": 3,
+      "name": "Corner Cafe",
+      "rect": [
+        1040,
+        1700,
+        560,
+        400
+      ],
+      "building": [
+        1140,
+        1890,
+        350,
+        155
+      ],
+      "gate": [
+        1320,
+        1700
+      ],
+      "site": [
+        1320,
+        1820
+      ],
+      "post": [
+        1320,
+        1730
+      ],
+      "neighbors": [
+        "bank",
+        "tower_lobby",
+        "records"
+      ],
+      "reward": "Household supplies and a clear view east",
+      "reinforcements": [
+        [
+          1414,
+          1747
+        ],
+        [
+          1143,
+          1794
+        ],
+        [
+          1560,
+          1868
+        ],
+        [
+          1539,
+          1930
+        ],
+        [
+          1372,
+          1787
+        ],
+        [
+          1540,
+          1820
+        ]
+      ],
+      "hidden_zombies": 0,
+      "zombies": [],
+      "search": {
+        "materials": 18,
+        "medicine": 0,
+        "survivor": "",
+        "line": "The corner house searched."
+      }
+    },
+    {
+      "id": "tower_lobby",
+      "facility": "house",
+      "name": "Tower Lobby",
+      "reward": "Household supplies",
+      "food_cache": 3,
+      "search": {
+        "materials": 14,
+        "medicine": 0,
+        "survivor": "",
+        "line": "Number 16 searched."
+      },
+      "rect": [
+        1760,
+        1700,
+        560,
+        400
+      ],
+      "building": [
+        1860,
+        1890,
+        350,
+        155
+      ],
+      "gate": [
+        2040,
+        1700
+      ],
+      "site": [
+        2040,
+        1820
+      ],
+      "post": [
+        2040,
+        1730
+      ],
+      "reinforcements": [
+        [
+          1871,
+          1830
+        ],
+        [
+          1814,
+          1943
+        ],
+        [
+          1929,
+          1783
+        ],
+        [
+          2277,
+          1842
+        ],
+        [
+          1805,
+          2040
+        ],
+        [
+          1817,
+          1783
+        ]
+      ],
+      "zombies": [],
+      "hidden_zombies": 0,
+      "core": false,
+      "available": true,
+      "neighbors": [
+        "cafe",
+        "roof_garden"
+      ]
+    }
+  ]
+}

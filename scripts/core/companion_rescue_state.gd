@@ -1,5 +1,6 @@
 extends RefCounted
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 
 
 static func valid(data: Dictionary, catalog: Dictionary) -> bool:
@@ -19,7 +20,7 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 		var patient: Dictionary = actors[job.patient]
 		if a.order != "Rescue" or a.job != job.patient or float(a.hp) <= 0 or float(patient.hp) > 0 or not a.get("duty") is Dictionary or a.duty.get("temporary") != true:
 			return false
-		if job.get("shelter") not in ["home", "clinic"] or not data.properties[job.shelter].looted or job.get("phase") not in ["approach", "lift", "carry"]:
+		if job.get("shelter") not in ["home", "clinic"] or not Facility.saved(data, catalog, str(job.shelter)).looted or job.get("phase") not in ["approach", "lift", "carry"]:
 			return false
 		if not Rules.finite(job.get("progress")) or float(job.progress) < 0 or float(job.progress) >= float(catalog.balance.carry_seconds):
 			return false

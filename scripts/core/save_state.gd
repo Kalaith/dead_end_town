@@ -512,7 +512,7 @@ func _upgrade_orders(data: Dictionary) -> Dictionary:
 		var recipe: Dictionary = {"id": "bullets", "kind": "production", "inputs": {"materials": int(catalog.firearm.material_cost)}, "outputs": {"bullets": int(catalog.firearm.batch_bullets)}, "seconds": float(catalog.firearm.craft_seconds)}
 		var site: Array = []
 		for p: Dictionary in catalog.properties:
-			if p.id == "munitions":
+			if p.facility == "munitions":
 				site = p.site
 		data.orders.sequence = 1
 		data.orders.sites.munitions = WorkOrders.record(1, "munitions", "munitions", recipe, Vector2(float(site[0]), float(site[1])))

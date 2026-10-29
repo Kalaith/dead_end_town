@@ -1,6 +1,7 @@
 extends RefCounted
 ## Shared garden/bench construction, with legacy state fields as validated projections.
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
@@ -17,7 +18,7 @@ static func approve(world: RefCounted, id: String) -> bool:
 		return false
 	var site_id: String = target(id)
 	var site: Vector2 = Routes.point(world.definition(site_id).site)
-	if float(world.player.hp) <= 0 or world.player.pos.distance_to(site) >= 85 or not world.properties[site_id].claimed or world.remaining(site_id) > 0 or Combat.danger(world, site, 170):
+	if float(world.player.hp) <= 0 or world.player.pos.distance_to(site) >= 85 or not Facility.state(world, site_id).claimed or world.remaining(site_id) > 0 or Combat.danger(world, site, 170):
 		world.note("Clear the site first.")
 		return false
 	if not WorkOrders.approve(world, "restore:" + id, site_id, WorkRecipes.recipe(world.catalog, id), site):
@@ -49,7 +50,7 @@ static func step(world: RefCounted, id: String, dt: float) -> bool:
 		return false
 	var site_id: String = target(id)
 	var reason: String = ""
-	if not world.properties[site_id].claimed:
+	if not Facility.state(world, site_id).claimed:
 		reason = "Reclaim site"
 	elif world.remaining(site_id) > 0 or Combat.danger(world, Routes.point(world.definition(site_id).site), 230 if site_id == "garage" else 170):
 		reason = "Clear nearby threats"
