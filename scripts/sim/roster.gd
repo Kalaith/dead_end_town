@@ -1,6 +1,7 @@
 extends RefCounted
 ## One authoritative actor per authored rescue; no hidden waiting actor or rescue timer.
 const Routes = preload("res://scripts/sim/routes.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
 
 
@@ -35,7 +36,7 @@ static func start(world: RefCounted) -> void:
 
 static func recruit(world: RefCounted, id: String) -> bool:
 	var d: Dictionary = definition(world.catalog, id)
-	if d.is_empty() or d.site == "home" or not world.properties[d.site].looted or not person(world, id).is_empty():
+	if d.is_empty() or d.site == "home" or not Facility.state(world, d.site).looted or not person(world, id).is_empty():
 		return false
 	_create(world, d, Routes.point(world.definition(d.site).site) + Routes.point(d.offset))
 	if not str(d.intro).is_empty():

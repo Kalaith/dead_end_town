@@ -1,5 +1,6 @@
 extends RefCounted
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 
 
 static func content(data: Dictionary, errors: Array[String]) -> void:
@@ -55,7 +56,7 @@ static func _people(data: Dictionary, catalog: Dictionary, expected: Array[Strin
 static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 	var expected: Array[String] = []
 	for d: Dictionary in catalog.survivors:
-		if d.site == "home" or data.properties[d.site].looted:
+		if d.site == "home" or Facility.saved(data, catalog, d.site).looted:
 			expected.append(d.id)
 	var actual: Array[String] = []
 	for a: Dictionary in data.survivors:

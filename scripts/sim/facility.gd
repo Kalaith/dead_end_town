@@ -31,15 +31,26 @@ static func definition(catalog: Dictionary, kind: String) -> Dictionary:
 	return {}
 
 
-## Live state of the facility's lot. For a missing facility this is a fresh inert record; writing to it does nothing.
-static func state(world: RefCounted, kind: String) -> Dictionary:
-	var lot: String = id(world.catalog, kind)
+## A lot id, or the lot holding a facility kind. Facility kinds are reserved: they resolve only through the lot that
+## declares them (validated: a lot named after a kind must hold it), so an area without one resolves to "".
+static func resolve(catalog: Dictionary, name: String) -> String:
+	if name in KINDS:
+		return id(catalog, name)
+	for p: Dictionary in catalog.properties:
+		if p.id == name:
+			return name
+	return ""
+
+
+## Live state of a lot or facility. For a missing one this is a fresh inert record; writing to it does nothing.
+static func state(world: RefCounted, name: String) -> Dictionary:
+	var lot: String = resolve(world.catalog, name)
 	return world.properties[lot] if not lot.is_empty() else inert()
 
 
 ## The same lookup on a saved or decoded record (`data.properties`).
-static func saved(data: Dictionary, catalog: Dictionary, kind: String) -> Dictionary:
-	var lot: String = id(catalog, kind)
+static func saved(data: Dictionary, catalog: Dictionary, name: String) -> Dictionary:
+	var lot: String = resolve(catalog, name)
 	return data.properties[lot] if not lot.is_empty() else inert()
 
 

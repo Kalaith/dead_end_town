@@ -1,5 +1,6 @@
 extends RefCounted
 const Jobs = preload("res://scripts/sim/jobs.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 
@@ -35,7 +36,7 @@ static func _task(value: Variant, a: Dictionary, data: Dictionary, catalog: Dict
 	if returning and value in ["follow", "engage"]:
 		return value != "engage" or a.id != "ellis"
 	if value in ["garden", "garage", "ammo", "clinic", "greenhouse"]:
-		return data.properties["munitions" if value == "ammo" else value].looted
+		return Facility.saved(data, catalog, "munitions" if value == "ammo" else value).looted
 	if value.begins_with("guard:") and a.id != "ellis":
 		for d: Dictionary in catalog.barricades:
 			if value == "guard:" + str(d.id):

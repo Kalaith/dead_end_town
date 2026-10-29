@@ -1,5 +1,6 @@
 extends RefCounted
 const Acoustics = preload("res://scripts/sim/noise.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 ## Authoritative fixed-step state. Presentation sends commands only.
 const FieldMedicine = preload("res://scripts/sim/field_medicine.gd")
 const CompanionRescue = preload("res://scripts/sim/companion_rescue.gd")
@@ -135,9 +136,11 @@ func rebuild_routes() -> void:
 	routes.rebuild(catalog.properties, properties, Routes.point(catalog.bounds), defences, Neighbourhood.openings(self), Neighbourhood.obstacles(self))
 
 
+## A lot by id or by the facility it holds; {} when this area has none.
 func definition(id: String) -> Dictionary:
+	var lot: String = Facility.resolve(catalog, id)
 	for p: Dictionary in catalog.properties:
-		if p.id == id:
+		if p.id == lot:
 			return p
 	return {}
 
@@ -224,6 +227,8 @@ func face_aim() -> void:
 
 func remaining(id: String) -> int:
 	var count: int = 0
+	if definition(id).is_empty():
+		return 0
 	var rect: Rect2 = Routes.rectangle(definition(id).rect)
 	for z: Dictionary in zombies:
 		if float(z.hp) > 0 and rect.has_point(z.pos):
@@ -241,7 +246,7 @@ func connected(id: String) -> bool:
 			if properties[next].claimed and not reached.has(next):
 				reached.append(next)
 		index += 1
-	return reached.has(id)
+	return reached.has(Facility.resolve(catalog, id))
 
 
 func safe_connected(id: String) -> bool:
@@ -475,6 +480,8 @@ func post_road_guard() -> void:
 
 
 func garden_tended() -> bool:
+	if definition("garden").is_empty():
+		return false
 	var site: Vector2 = Routes.point(definition("garden").site)
 	if player_at_worksite("garden"):
 		return true
@@ -485,7 +492,7 @@ func garden_tended() -> bool:
 
 
 func player_at_worksite(id: String) -> bool:
-	if Carrying.occupied(self) or float(player.hp) <= 0 or not working or player.pos.distance_to(Routes.point(definition(id).site)) >= 85:
+	if definition(id).is_empty() or Carrying.occupied(self) or float(player.hp) <= 0 or not working or player.pos.distance_to(Routes.point(definition(id).site)) >= 85:
 		return false
 	for p: Dictionary in catalog.properties:
 		if player.pos.distance_to(Routes.point(p.gate)) < 76:

@@ -1,6 +1,7 @@
 extends RefCounted
 ## Authored passages and protected street crossings, separate from ownership.
 const Repairs = preload("res://scripts/sim/repairs.gd")
+const Facility = preload("res://scripts/sim/facility.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
@@ -225,7 +226,7 @@ static func safe_connected(world: RefCounted, id: String) -> bool:
 				if world.remaining(next) == 0 and not reached.has(next):
 					reached.append(next)
 		index += 1
-	return reached.has(id)
+	return reached.has(Facility.resolve(world.catalog, id))
 
 
 static func summary(world: RefCounted) -> String:

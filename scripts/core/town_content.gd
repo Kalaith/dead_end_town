@@ -66,6 +66,8 @@ static func _facilities(data: Dictionary, errors: Array[String]) -> void:
 			errors.append("Facility %s appears in more than one lot." % kind)
 		elif kind != Facility.HOUSE:
 			seen.append(kind)
+		if p.get("id") in Facility.KINDS and kind != p.get("id"):
+			errors.append("A lot named after a facility kind must hold that facility.")
 		if (kind == "home") != (p.get("id") == "home"):
 			errors.append("The home facility belongs to the lot with id home.")
 	if "home" not in seen:

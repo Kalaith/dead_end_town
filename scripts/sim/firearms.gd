@@ -82,6 +82,8 @@ static func reserved(world: RefCounted) -> bool:
 
 
 static func step(world: RefCounted, dt: float) -> void:
+	if not Facility.has(world.catalog, "munitions"):
+		return
 	var site: Vector2 = Routes.point(world.definition("munitions").site)
 	var reason: String = ""
 	if not Facility.state(world, "munitions").claimed:
