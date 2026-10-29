@@ -27,6 +27,7 @@ const Equipment = preload("res://scripts/sim/equipment.gd")
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const Territory = preload("res://scripts/sim/territory.gd")
 const Pressure = preload("res://scripts/sim/pressure.gd")
+const Boss = preload("res://scripts/sim/boss.gd")
 const Tasks = preload("res://scripts/sim/tasks.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Combat = preload("res://scripts/sim/combat.gd")
@@ -63,6 +64,7 @@ var rescue_jobs: Dictionary = {}
 var field_care: Dictionary = {}
 var elapsed: float = 0.0
 var approach: bool = false
+var boss_seen_alive: bool = false
 var pressure: Dictionary
 var garden_progress: float = 0.0
 var garden_started: bool = false
@@ -113,6 +115,7 @@ func _init(data: Dictionary) -> void:
 			zombies.append(z)
 	Exploration.update(self)
 	Pressure.add_residents(self)
+	Boss.add(self)
 	rebuild_routes()
 	note("Mara has the gate. Hold R to repair.")
 
@@ -189,6 +192,7 @@ func step(dt: float) -> void:
 	working = player_work
 	FieldMedicine.step(self, work_dt)
 	Pressure.step(self)
+	Boss.step(self)
 	Carrying.sync(self)
 	CompanionRescue.sync(self)
 	SliceObjective.step(self, dt)

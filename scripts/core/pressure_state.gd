@@ -3,6 +3,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const Content = preload("res://scripts/core/pressure_content.gd")
 const Pressure = preload("res://scripts/sim/pressure.gd")
 const Plan = preload("res://scripts/sim/migration_plan.gd")
+const Boss = preload("res://scripts/sim/boss.gd")
 const LEGACY_PATTERNS: Array = [["east"], ["west"], ["north", "east"], ["south", "west"], ["east", "west", "north", "south"], ["north_civic", "south_civic"], ["north_works", "south_works"]]
 
 
@@ -123,6 +124,8 @@ static func _population(data: Dictionary, catalog: Dictionary) -> bool:
 			index += 1
 		for i: int in range(p.reinforcements.size()):
 			residents["resident_%s_%d" % [p.id, i]] = p.id
+	for id: String in Boss.resident_ids(catalog):
+		residents[id] = Boss.HOME
 	var seen: Dictionary = {}
 	var migrants: int = 0
 	var living: int = 0

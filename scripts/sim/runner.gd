@@ -9,7 +9,7 @@ static func initial() -> Dictionary:
 
 
 static func interrupt(world: RefCounted, z: Dictionary) -> void:
-	if z.get("kind") == "runner" and z.runner.phase in ["tell", "dash"]:
+	if ZombieTypes.charges(world.catalog, z) and z.runner.phase in ["tell", "dash"] and not bool(ZombieTypes.kind(world.catalog, z).get("uninterruptible", false)):
 		_recover(world, z)
 
 
@@ -24,7 +24,7 @@ static func _recover(world: RefCounted, z: Dictionary) -> void:
 
 ## True means this fixed step belongs to the special, including its harmless recovery.
 static func step(world: RefCounted, z: Dictionary, target: Dictionary, dt: float) -> bool:
-	if z.get("kind") != "runner":
+	if not ZombieTypes.charges(world.catalog, z):
 		return false
 	var state: Dictionary = z.runner
 	var config: Dictionary = ZombieTypes.kind(world.catalog, z)

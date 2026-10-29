@@ -2,6 +2,7 @@ extends RefCounted
 const Screecher = preload("res://scripts/sim/screecher.gd")
 const Acoustics = preload("res://scripts/sim/noise.gd")
 const Runner = preload("res://scripts/sim/runner.gd")
+const Boss = preload("res://scripts/sim/boss.gd")
 const Firearms = preload("res://scripts/sim/firearms.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
@@ -182,6 +183,9 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 		if float(a.hp) > 0 and (distance < best or (not target.is_empty() and distance == best and str(a.id) < str(target.id))):
 			target = a
 			best = distance
+	var guard: bool = Boss.guards(world, z)
+	if guard:
+		target = Boss.leashed(world, target)
 	Acoustics.observe(world, z, target)
 	if Runner.step(world, z, target, dt):
 		return
@@ -193,7 +197,9 @@ static func _zombie(world: RefCounted, z: Dictionary, dt: float) -> void:
 		z.cooldown = ZombieTypes.stat(world.catalog, z, "cooldown")
 		return
 	if float(z.cooldown) < 0.7:
-		if target.is_empty():
+		if guard and target.is_empty():
+			Boss.return_to_post(world, z, dt)
+		elif target.is_empty():
 			var investigation: Dictionary = Acoustics.destination(world, z)
 			if not investigation.is_empty():
 				var point: Vector2 = investigation.position

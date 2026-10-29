@@ -18,13 +18,13 @@ static func add_residents(world: RefCounted) -> void:
 			var z: Dictionary = world.actor("resident_%s_%d" % [p.id, i], ZombieTypes.type_name(world.catalog, kind), Routes.point(p.reinforcements[i]), ZombieTypes.health(world.catalog, kind))
 			z.home = p.id
 			z.raid = false
-			_kind(z, kind)
+			give_kind(world.catalog, z, kind)
 			world.zombies.append(z)
 
 
-static func _kind(z: Dictionary, kind: String) -> void:
+static func give_kind(catalog: Dictionary, z: Dictionary, kind: String) -> void:
 	z.kind = kind
-	if kind == "runner":
+	if catalog.zombies.types[kind].has("lunge_range"):
 		z.runner = Runner.initial()
 	elif kind == "screecher":
 		z.screecher = Screecher.initial()
@@ -126,7 +126,7 @@ static func _admit(world: RefCounted) -> void:
 		event.skipped = int(event.skipped) + 1
 	else:
 		var z: Dictionary = world.actor("wave%d_%s_%d" % [int(event.wave), id, index], ZombieTypes.type_name(world.catalog, kind), pos, ZombieTypes.health(world.catalog, kind))
-		_kind(z, kind)
+		give_kind(world.catalog, z, kind)
 		z.home = "street"
 		z.raid = true
 		z.migration = {"origin": id, "wave": int(event.wave), "phase": "inward", "destination": "", "blocked": 0.0}

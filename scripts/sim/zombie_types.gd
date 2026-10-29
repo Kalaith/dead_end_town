@@ -7,6 +7,11 @@ static func kind(catalog: Dictionary, z: Dictionary) -> Dictionary:
 	return types[z.get("kind", catalog.zombies.default)]
 
 
+## True for kinds with a telegraphed charge (`lunge_*` in their data): Runner and the boss.
+static func charges(catalog: Dictionary, z: Dictionary) -> bool:
+	return kind(catalog, z).has("lunge_range")
+
+
 static func stat(catalog: Dictionary, z: Dictionary, key: String) -> float:
 	return float(kind(catalog, z)[key])
 

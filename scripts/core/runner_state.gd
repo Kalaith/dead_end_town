@@ -8,8 +8,10 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 		errors.append("Runner kind is required.")
 		return
 	var rules := Rules.new(errors, "Runner")
-	for key: String in ["lunge_range", "lunge_tell", "lunge_distance", "lunge_speed", "lunge_recovery", "lunge_cooldown"]:
-		rules.number_between(data.zombies.types.runner, key, 0.01, 1000.0)
+	for type_id: String in data.zombies.types:
+		if data.zombies.types[type_id] is Dictionary and data.zombies.types[type_id].has("lunge_range"):
+			for key: String in ["lunge_range", "lunge_tell", "lunge_distance", "lunge_speed", "lunge_recovery", "lunge_cooldown"]:
+				rules.number_between(data.zombies.types[type_id], key, 0.01, 1000.0)
 	for property: Dictionary in data.properties:
 		if not property.has("resident_kinds"):
 			continue
@@ -22,12 +24,12 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 
 
 static func valid(z: Dictionary, catalog: Dictionary) -> bool:
-	if z.get("kind") != "runner":
+	var config: Variant = catalog.zombies.types.get(z.get("kind", catalog.zombies.default))
+	if not config is Dictionary or not config.has("lunge_range"):
 		return not z.has("runner")
 	if not z.get("runner") is Dictionary:
 		return false
 	var state: Dictionary = z.runner
-	var config: Dictionary = catalog.zombies.types.runner
 	if state.get("phase") not in ["idle", "tell", "dash", "recover"]:
 		return false
 	for key: String in ["left", "distance", "retry", "dx", "dy"]:

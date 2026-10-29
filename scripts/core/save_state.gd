@@ -3,6 +3,8 @@ const ScreecherState = preload("res://scripts/core/screecher_state.gd")
 const AttentionState = preload("res://scripts/core/attention_state.gd")
 const Acoustics = preload("res://scripts/sim/noise.gd")
 const RunnerState = preload("res://scripts/core/runner_state.gd")
+const BossState = preload("res://scripts/core/boss_state.gd")
+const Boss = preload("res://scripts/sim/boss.gd")
 const FieldMedicineState = preload("res://scripts/core/field_medicine_state.gd")
 const CompanionRescueState = preload("res://scripts/core/companion_rescue_state.gd")
 const MedicineState = preload("res://scripts/core/medicine_state.gd")
@@ -46,7 +48,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 36
+const SCHEMA: int = 37
 ## Saved world fields that are collections and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -188,7 +190,7 @@ func valid(data: Dictionary) -> bool:
 			return false
 		if z.has("kind") and (not z.kind is String or not catalog.zombies.types.has(z.kind) or float(z.hp) > ZombieTypes.health(catalog, z.kind)):
 			return false
-	if not AttentionState.valid(data, catalog):
+	if not BossState.valid(data, catalog) or not AttentionState.valid(data, catalog):
 		return false
 	if not RosterState.valid(data, catalog) or not DiscoveryState.valid(data, catalog) or not ClinicState.valid(data, catalog) or not RecoveryState.valid(data, catalog) or not RecoverySalvageState.valid(data, catalog) or not MedicineState.valid(data) or not CompanionRescueState.valid(data, catalog) or not FieldMedicineState.valid(data, catalog):
 		return false
@@ -253,6 +255,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 36:
+		return _upgrade_boss(upgraded)
 	if version == 35:
 		return _upgrade_areas(upgraded)
 	if version == 34:
@@ -746,5 +750,14 @@ func _upgrade_campaign_pressure(data: Dictionary) -> Dictionary:
 func _upgrade_areas(data: Dictionary) -> Dictionary:
 	data.area = catalog.area.id
 	data.frozen = {}
+	return _upgrade_boss(data)
+
+
+## Saves before the boss gain it and its escorts at their posts.
+func _upgrade_boss(data: Dictionary) -> Dictionary:
+	var ids: Array = data.zombies.map(func(z: Dictionary) -> String: return str(z.id))
+	for z: Dictionary in World.new(catalog).zombies:
+		if z.home == Boss.HOME and z.id not in ids:
+			data.zombies.append(_encode_actor(z))
 	data.schema_version = SCHEMA
 	return data if valid(data) else {}

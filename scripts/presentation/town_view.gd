@@ -10,6 +10,7 @@ const NeighbourhoodView = preload("res://scripts/presentation/neighbourhood_view
 const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
 const RoadView = preload("res://scripts/presentation/road_view.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
+const Boss = preload("res://scripts/sim/boss.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 var visible_world: Rect2
 var world: RefCounted
@@ -79,6 +80,7 @@ func _draw() -> void:
 			var shade: float = float((x * 7 + y * 13) % 23) / 300.0
 			draw_rect(Rect2(x + 2, y + 2, 28, 28), Color(0.16 + shade, 0.22 + shade, 0.18 + shade))
 	_streets()
+	_exit()
 	for p: Dictionary in world.catalog.properties:
 		if Routes.rectangle(p.rect).grow(100).intersects(visible_world):
 			_property(p)
@@ -244,10 +246,13 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 			return
 		draw_line(pos - Vector2(12, 0), pos + Vector2(12, 0), Color("575e4d") if zombie else RUST, 9)
 		return
-	if zombie and a.get("kind") == "runner":
+	if zombie and a.has("runner"):
 		_runner_tell(a)
 	if zombie and a.get("kind") == "screecher":
 		_screecher_tell(a)
+	if zombie and a.get("kind") == "baboon":
+		_baboon(a)
+		return
 	_ellipse(pos + Vector2(1, 4), Vector2(21, 9) if a.get("kind") == "brute" else Vector2(15, 7), Color(0, 0, 0, 0.3))
 	var body: Color = (Color("8a5a4a") if a.get("kind") == "brute" else Color("788357")) if zombie else (Color("dfad62") if a.id == "you" else (Color("7daeb9") if a.id == "mara" else (Color("91b69e") if a.id == "ellis" else Color("9dc1ce") if a.id == "june" else Color("b7a0c8"))))
 	if float(a.flash) > 0:
@@ -308,6 +313,51 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		_meter(pos + Vector2(-15, 10), 30, float(a.hp) / (ZombieTypes.full_health(world.catalog, a) if zombie else 100.0), RUST)
 
 
+## The way out: a wreck-and-barrier roadblock while the boss lives, an open gap with an arrow once it is down.
+func _exit() -> void:
+	if not Boss.configured(world.catalog):
+		return
+	var rect: Rect2 = Boss.exit_rect(world.catalog)
+	if not rect.grow(40).intersects(visible_world):
+		return
+	if Boss.defeated(world):
+		draw_rect(rect, Color(0.62, 0.81, 0.7, 0.18))
+		draw_rect(rect, TEAL, false, 3)
+		draw_line(rect.get_center() + Vector2(-26, 0), rect.get_center() + Vector2(26, 0), TEAL, 5)
+		draw_line(rect.get_center() + Vector2(26, 0), rect.get_center() + Vector2(10, -12), TEAL, 5)
+		draw_line(rect.get_center() + Vector2(26, 0), rect.get_center() + Vector2(10, 12), TEAL, 5)
+		_text(rect.position + Vector2(8, -8), str(world.catalog.exit.name).to_upper() + " / EXIT", 15, TEAL)
+		return
+	draw_rect(rect, Color("3b2f2a"))
+	for i: int in range(4):
+		var car := Rect2(rect.position + Vector2(6 + i * 22, 10 + (i % 2) * 22), Vector2(20, 34))
+		draw_rect(car, Color("6d5a4d") if i % 2 == 0 else Color("55606a"))
+		draw_rect(car.grow(-5), INK)
+	draw_rect(rect, RUST, false, 3)
+	_text(rect.position + Vector2(8, -8), str(world.catalog.exit.name).to_upper() + " / BLOCKED", 15, RUST)
+
+
+## Large, hunched and dark-furred, with a long muzzle toward its facing. Its health bar is always shown.
+func _baboon(a: Dictionary) -> void:
+	var pos: Vector2 = a.pos
+	var direction: Vector2 = a.facing
+	var fur: Color = Color("fff0d5") if float(a.flash) > 0 else Color("5e4a3f")
+	_ellipse(pos + Vector2(2, 6), Vector2(34, 14), Color(0, 0, 0, 0.35))
+	draw_line(pos + Vector2(-18, -4), pos + Vector2(-20, 8), INK, 9)
+	draw_line(pos + Vector2(18, -4), pos + Vector2(20, 8), INK, 9)
+	draw_rect(Rect2(pos + Vector2(-24, -38), Vector2(48, 36)), fur)
+	draw_rect(Rect2(pos + Vector2(-24, -22), Vector2(48, 6)), fur.darkened(0.3))
+	draw_line(pos + Vector2(-24, -34), pos + Vector2(-34, -10), fur, 9)
+	draw_line(pos + Vector2(24, -34), pos + Vector2(34, -10), fur, 9)
+	var head: Vector2 = pos + Vector2(0, -46)
+	draw_circle(head, 14, fur.lightened(0.1))
+	draw_line(head, head + direction * 20, Color("a07a62"), 10)
+	draw_circle(head + direction.orthogonal() * 6 + direction * 6, 2.5, CREAM)
+	draw_circle(head - direction.orthogonal() * 6 + direction * 6, 2.5, CREAM)
+	_text(pos + Vector2(-26, -74), "BABOON", 14, CREAM)
+	_meter(pos + Vector2(-32, 14), 64, float(a.hp) / ZombieTypes.full_health(world.catalog, a), RUST)
+
+
 func _runner_tell(a: Dictionary) -> void:
 	var state: Dictionary = a.runner
 	if state.phase not in ["tell", "dash", "recover"]:
@@ -316,7 +366,8 @@ func _runner_tell(a: Dictionary) -> void:
 		draw_arc(a.pos, 20, 0, TAU, 24, CREAM, 2)
 		return
 	var direction := Vector2(float(state.dx), float(state.dy))
-	var length: float = float(world.catalog.zombies.types.runner.lunge_distance) if state.phase == "tell" else float(state.distance)
+	var config: Dictionary = ZombieTypes.kind(world.catalog, a)
+	var length: float = float(config.lunge_distance) if state.phase == "tell" else float(state.distance)
 	var end: Vector2 = a.pos + direction * length
 	for side: float in [-1.0, 1.0]:
 		var offset: Vector2 = direction.orthogonal() * 15 * side
@@ -325,7 +376,7 @@ func _runner_tell(a: Dictionary) -> void:
 		draw_line(end, end - direction * 13 + offset, CREAM, 3)
 	if state.phase == "tell":
 		_text(a.pos + Vector2(-25, -57), "LUNGE", 13, CREAM)
-		_meter(a.pos + Vector2(-22, -50), 44, 1.0 - float(state.left) / float(world.catalog.zombies.types.runner.lunge_tell), CREAM)
+		_meter(a.pos + Vector2(-22, -50), 44, 1.0 - float(state.left) / float(config.lunge_tell), CREAM)
 
 
 func _screecher_tell(a: Dictionary) -> void:

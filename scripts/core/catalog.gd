@@ -2,6 +2,7 @@ extends RefCounted
 const ScreecherState = preload("res://scripts/core/screecher_state.gd")
 const AttentionState = preload("res://scripts/core/attention_state.gd")
 const RunnerState = preload("res://scripts/core/runner_state.gd")
+const BossState = preload("res://scripts/core/boss_state.gd")
 ## Authored content is validated before the simulation starts.
 const FieldMedicineState = preload("res://scripts/core/field_medicine_state.gd")
 const MedicineState = preload("res://scripts/core/medicine_state.gd")
@@ -110,6 +111,7 @@ static func problems(data: Dictionary) -> Array[String]:
 				errors.append("Legacy repair capacity must preserve a prepaid full repair.")
 	_zombie_types(data, errors)
 	RunnerState.content(data, errors)
+	BossState.content(data, errors)
 	AttentionState.content(data, errors)
 	ScreecherState.content(data, errors)
 	if not rules.list(data, "properties", false):

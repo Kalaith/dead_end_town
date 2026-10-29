@@ -39,7 +39,7 @@ Modelled on [Sanctuary Hills](reference/sanctuary_hills_map.webp): a **ring road
 - 24 links: 12 same-row passages, 8 street crossings (top and bottom street) and 4 **rear gates** between the back-to-back island rows. Ten lots are core (the originals plus No. 8, which bridges to the clinic).
 - Gates only face a horizontal street, so the ring's side roads have no lots. The plaza is drawn but has no function yet.
 - **Pressure comes from one end only**: the bridge, at the south-west corner. A wide approach strip runs along the bottom edge so a formation fits. The baboon holds the bridge road, so the horde passes it on the way in. Pressure timing and band numbers are not yet tuned for this size (step 5).
-- The roadblock, baboon and exit gate are not built yet (see Delivery order).
+- The baboon, its roadblock and the exit marker are built (step 7). Using the exit is step 8.
 
 ### Preparing for the boss
 
@@ -94,7 +94,7 @@ Claim, occupation and loss; safe connection and production; work orders; economy
 4. Author the suburb.
 5. Rework pressure onto entrances; finish and commit the scheduler. (done, see PROGRESS)
 6. Optional advisory summary in the pause menu. (done, see PROGRESS)
-7. Baboon boss at the exit.
+7. Baboon boss at the exit. (done, see PROGRESS)
 8. Area transition.
 9. Office district, then industrial area, each with its own boss or gate.
 10. Retire the old slice and watch.

@@ -743,3 +743,12 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 
 - `scripts/sim/readiness.gd` summarises food (and meal cost), medicine, bullets, barricades standing/damaged and able defenders. The pause menu's Street tab shows it under the stockpile as "READINESS / advisory". Nothing is gated on it.
 - Checked: all scripts load, and `tools/check_pressure.gd` asserts the summary content. Not seen: the label's layout in the real pause menu (no capture taken).
+
+## 29 October 2026: the undead baboon and the bridge exit (step 7)
+
+- New kind `baboon` (700 health, speed 70, damage 26, breach 3) in `data/zombies.json`. It reuses the Runner's telegraphed charge generalised to any kind with `lunge_*` data: 1.1 s tell with a drawn lane, a 260-pixel dash at 420 px/s, 1.8 s recovery, 5 s cooldown. Its charge is `uninterruptible`, so ordinary hits cannot cancel it; a collision still ends it. Tells, phases and health are first-pass values and are not balanced against play.
+- The suburb's `area.json` gains `boss` (post at the bridge road, leash 320, two shambler escorts) and `exit` (the bridge rectangle at the south-west corner). `scripts/sim/boss.gd` places them, leashes the baboon (a target beyond the leash is ignored and it walks back to its post), and tracks the kill. Death is permanent and opens the exit with a radio note. The pressure entry moved east to (380, 2140) so the exit corner is clear of spawns.
+- Save schema 37: the boss and escorts are validated as the area's non-property residents; schema 36 saves are upgraded by adding them at their posts. Position, health and charge phase ride in the existing zombie record.
+- Drawing: a large dark-furred baboon with a health bar, a wreck roadblock labelled BLOCKED while it lives and a green arrow labelled EXIT once it is down (`docs/verification/boss_baboon_post.png`, `boss_exit_open.png`).
+- Checks: `tools/check_boss.gd` (post and escorts, stays put, tell then dash, leash, round trip, schema 36 upgrade, death opens the exit and survives a save), catalog 0 problems, `check_save.gd` and `check_pressure.gd` pass.
+- Not done: the fight itself has not been played, so the baboon's difficulty, whether the leash feels right and whether the horde crossing its post causes odd behaviour are unknown. The roadblock is visual only; nothing is physically blocked. Using the exit is step 8.

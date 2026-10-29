@@ -48,6 +48,22 @@
         "lunge_recovery": 0.8,
         "lunge_cooldown": 4,
         "threat_cost": 2
+      },
+      "baboon": {
+        "name": "Undead baboon",
+        "health": 700,
+        "speed": 70,
+        "damage": 26,
+        "cooldown": 1.5,
+        "breach": 3.0,
+        "lunge_range": 300,
+        "lunge_tell": 1.1,
+        "lunge_distance": 260,
+        "lunge_speed": 420,
+        "lunge_recovery": 1.8,
+        "lunge_cooldown": 5,
+        "uninterruptible": true,
+        "threat_cost": 20
       }
     }
   }
