@@ -208,3 +208,16 @@ A kiting bot with the starting bat, alone, against each boss with its escorts re
 - While carrying, the prompt names the nearest clear held property with distance and compass direction (`Carrying Mara · take them to Home (24m NE)`); every valid drop-off is ringed and labelled in the world and the nearest has a dashed guide line. Dropping now says where the person is and how to recover them (home porch E, or the clinic).
 - A HUD roll lists up to four hurt or downed survivors, downed first then nearest, with distance and direction (or who is carrying them). Downed and hurt survivors get a pulsing ring labelled DOWN or hurt.
 - Parse (115 scripts), `--headless --editor --quit` and `check_rescue_feel` pass. The new prompt, rings, guide line and roll have not been seen in a capture or played.
+
+## 30 October 2026: review after step 8 (what still needs development)
+
+Delivery steps 1-10 in `19-areas-and-suburb.md` are all done; only step 11 (play the real game) is open. Review of the logged "not done" items, most important first:
+
+1. **Nothing has been played end to end.** The area transition, office, works, ending screen, van, Spitter and the carry guidance have only headless checks. Step 11 is the real gap.
+2. **Pressure is untuned in all three areas.** Bands and intervals were authored for the old layout; with an idle player 21 raiders were alive after 15 minutes in the suburb.
+3. **Boss balance is provisional.** `sim_boss` shows all three are beatable with the bat if the lunge is read; real feel, armour, shield and ammunition are untested. The baboon's east approach is wall-shielded.
+4. **Survivors lack awareness of hazards.** They do not step aside from Spitter pools or flee marked areas, and globs are not saved.
+5. **Van is a first slice.** Followers cannot ride or keep up, no passengers, repair or reason to drive; handling and drawing are unseen.
+6. **Areas share one layout vocabulary.** Plaza, car parks and area-specific survivors (Theo, Nia, Rowan) are unbuilt; 15 shell lots were dropped; there is no reason to return to an earlier area.
+7. **Clean-up debt.** Inert `slice_state` and `catalog.slice` remain; `save_state.gd` is at 771 lines (limit 800); raider spur path-target question in `raiding.gd`; fence-line gate points stall walkers.
+8. **Rescue/casualty loop** has no dedicated test beyond `check_rescue_feel`, and the new drop-off guidance is unseen.
