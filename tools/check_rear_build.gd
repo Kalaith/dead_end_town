@@ -18,6 +18,10 @@ func _init() -> void:
 		world.properties[id].claimed = true
 		world.properties[id].claimed_once = true
 		world.properties[id].looted = true
+	# Claiming a lot means its yard has been cleared.
+	for z: Dictionary in world.zombies:
+		if z.get("home", "") in d.requires:
+			z.hp = 0.0
 	world.materials = 100
 	world.player.hp = 100.0
 	world.player.pos = Routes.point(d.sites[0])

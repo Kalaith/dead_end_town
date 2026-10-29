@@ -32,6 +32,10 @@ func _init() -> void:
 	thin.schema_version = 38
 	var grown: RefCounted = saves.restore(thin)
 	_expect("a schema 38 save with half the residents is renumbered and refilled", grown != null and grown.zombies.size() == world.zombies.size())
+	var thin39: Dictionary = _halved(raw, data)
+	thin39.schema_version = 39
+	var grown39: RefCounted = saves.restore(thin39)
+	_expect("a schema 39 save from before the second doubling is renumbered and refilled", grown39 != null and grown39.zombies.size() == world.zombies.size())
 	quit(failures)
 
 

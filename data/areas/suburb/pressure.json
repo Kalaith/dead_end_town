@@ -3,7 +3,7 @@
   "pressure": {
     "warning_seconds": 35,
     "maximum_size": 20,
-    "living_cap": 200,
+    "living_cap": 400,
     "spawn_spacing": 28,
     "routes": [
       {

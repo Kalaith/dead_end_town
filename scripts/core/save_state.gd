@@ -50,7 +50,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 39
+const SCHEMA: int = 40
 ## Saved world fields that are collections and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "slice_state", "timber", "firearms", "unlocks"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -257,7 +257,7 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
-	if version == 38:
+	if version == 38 or version == 39:
 		return _upgrade_residents(upgraded)
 	if version == 37:
 		return _upgrade_unlocks(upgraded)
