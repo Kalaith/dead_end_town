@@ -12,6 +12,16 @@ static func definition(catalog: Dictionary, id: String) -> Dictionary:
 	return {}
 
 
+## The lot that holds a survivor: a facility kind for the first five, or the lot whose search names them.
+static func lot(catalog: Dictionary, d: Dictionary) -> String:
+	if d.site != "search":
+		return str(d.site) if d.site == "home" else Facility.resolve(catalog, str(d.site))
+	for p: Dictionary in catalog.properties:
+		if p.has("search") and p.search.get("survivor") == d.id:
+			return str(p.id)
+	return ""
+
+
 static func person(world: RefCounted, id: String) -> Dictionary:
 	for a: Dictionary in world.survivors:
 		if a.id == id:
@@ -36,9 +46,10 @@ static func start(world: RefCounted) -> void:
 
 static func recruit(world: RefCounted, id: String) -> bool:
 	var d: Dictionary = definition(world.catalog, id)
-	if d.is_empty() or d.site == "home" or not Facility.state(world, d.site).looted or not person(world, id).is_empty():
+	var at: String = lot(world.catalog, d) if not d.is_empty() else ""
+	if d.is_empty() or at.is_empty() or at == "home" or not world.properties[at].looted or not person(world, id).is_empty():
 		return false
-	_create(world, d, Routes.point(world.definition(d.site).site) + Routes.point(d.offset))
+	_create(world, d, Routes.point(world.definition(at).site) + Routes.point(d.offset))
 	if not str(d.intro).is_empty():
 		world.rescue_intro = id
 	world.note(d.line)
@@ -49,7 +60,7 @@ static func dismiss(world: RefCounted, task: String) -> bool:
 	var d: Dictionary = definition(world.catalog, world.rescue_intro)
 	if d.is_empty() or task not in ["hold", "follow", "home"]:
 		return false
-	if task == "home" and not world.safe_connected(d.site):
+	if task == "home" and not world.safe_connected(lot(world.catalog, d)):
 		return false
 	if not world.assign_survivor(d.id, task, false):
 		return false

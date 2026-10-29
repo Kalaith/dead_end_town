@@ -44,7 +44,7 @@ func refresh(world: RefCounted) -> void:
 	var d: Dictionary = Roster.definition(world.catalog, world.rescue_intro)
 	heading.text = d.name
 	dialogue.text = d.intro
-	home_button.disabled = not world.safe_connected(d.site)
+	home_button.disabled = not world.safe_connected(Roster.lot(world.catalog, d))
 	home_button.tooltip_text = "Secure a protected home route first" if home_button.disabled else ""
 	if current != world.rescue_intro:
 		current = world.rescue_intro

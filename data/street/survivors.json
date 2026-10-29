@@ -65,6 +65,45 @@
         0
       ],
       "intro": "The plants made it through. So did I.\nGive me a safe route and we can feed everyone."
+    },
+    {
+      "id": "theo",
+      "name": "Theo",
+      "site": "search",
+      "order": "Hold",
+      "duty": "home",
+      "line": "Theo joins the team: 'I know every road in this district. Point me and I will keep watch.'",
+      "offset": [
+        35,
+        0
+      ],
+      "intro": "Delivery driver. I sheltered here when it started.\nI can hold a post or stay at your shoulder."
+    },
+    {
+      "id": "nia",
+      "name": "Nia",
+      "site": "search",
+      "order": "Hold",
+      "duty": "home",
+      "line": "Nia joins the team: 'Give me a safe route and I will get the power back on.'",
+      "offset": [
+        35,
+        0
+      ],
+      "intro": "Electrical technician. I like to explain a repair once,\nthen do it."
+    },
+    {
+      "id": "rowan",
+      "name": "Rowan",
+      "site": "search",
+      "order": "Hold",
+      "duty": "home",
+      "line": "Rowan joins the team: 'I know where everything useful is kept. Let me help.'",
+      "offset": [
+        35,
+        0
+      ],
+      "intro": "Community-centre caretaker. I have keys to half this place.\nPut me where I am useful."
     }
   ]
 }

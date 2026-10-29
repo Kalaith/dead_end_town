@@ -299,3 +299,10 @@ Still needing development (second look, most important first):
 - New `tools/sim_pressure.gd`: takes the lots beside home, stands still (player cannot die, survivors keep their guard orders) and logs living raiders and waves every two minutes for 20 minutes.
 - Result (raiders/wave): suburb 6/w1 at 4 min, 17/w3 at 10, 26/w5 at 20; office 5/w1, 15/w2, 41/w5; works 8/w1, 13/w2, 32/w5. A wave lands about every four minutes in all three, nobody clears them, and the home gate barely drops (86-93 of 104) so raiders mostly gather rather than break in. The office and works are heavier than the suburb at the same minute, which suits later areas.
 - Nothing was changed: there is no target to tune to without play. Questions this shows for a human run: do idle raiders that never breach feel like pressure, and is a wave every four minutes right once the player is fighting?
+
+## 30 October 2026: Theo, Nia and Rowan join (area survivors)
+
+- `survivors.json` now names all eight. Theo, Nia and Rowan use `site: "search"`: they join when the lot whose `search.survivor` names them is searched, so recruits are authored per area. Theo is in the office tower lobby; Nia in the works' tool crib; Rowan in the works' gatehouse. `Roster.lot` resolves where each lives; the rescue menu, save validation and discovery validation use it. They arrive with the same Hold/Follow/home choice as June and Oliver and have no exclusive role (as in doc 05). Drawn in orange, violet and cobalt.
+- Saves: no schema change. Search-found survivors are optional in a save, so an office or works save whose lot was already searched stays valid but will not gain them retroactively.
+- `tools/check_recruits.gd` (search, intro, save per person; none in the suburb) passes with parse (124 scripts), catalog, save, travel, boss, office, industrial, vehicle, tips, rescue-feel and facilities.
+- Not done: their introduction text is first-pass and unseen; no Theo-specific escort role, Nia power mechanic or Rowan reserve role beyond ordinary orders; not seen in a capture.

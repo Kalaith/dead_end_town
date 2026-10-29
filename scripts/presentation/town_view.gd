@@ -320,7 +320,7 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 		return
 	var heavy: bool = a.get("kind") in ["brute", "breaker"]
 	_ellipse(pos + Vector2(1, 4), Vector2(21, 9) if heavy else Vector2(15, 7), Color(0, 0, 0, 0.3))
-	var body: Color = (Color("8a5a4a") if a.get("kind") == "brute" else Color("6f6a76") if a.get("kind") == "breaker" else Color("788357")) if zombie else (Color("dfad62") if a.id == "you" else (Color("7daeb9") if a.id == "mara" else (Color("91b69e") if a.id == "ellis" else Color("9dc1ce") if a.id == "june" else Color("b7a0c8"))))
+	var body: Color = (Color("8a5a4a") if a.get("kind") == "brute" else Color("6f6a76") if a.get("kind") == "breaker" else Color("788357")) if zombie else (Color("dfad62") if a.id == "you" else (Color("7daeb9") if a.id == "mara" else (Color("91b69e") if a.id == "ellis" else Color("9dc1ce") if a.id == "june" else Color("e0903a") if a.id == "theo" else Color("8f6bc0") if a.id == "nia" else Color("4a6fb5") if a.id == "rowan" else Color("b7a0c8"))))
 	if float(a.flash) > 0:
 		body = Color("fff0d5")
 	draw_line(pos + Vector2(-5, -3), pos + Vector2(-6, 3), INK, 5)
