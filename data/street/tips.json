@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "tips": {
+    "move": "Move with WASD or the arrow keys. Walk to the street in front of home.",
+    "swing": "A zombie is close. Left click or Space swings your bat. Hit and step back; do not stand in reach.",
+    "gate_repair": "The home gate is damaged. Stand at it and hold R to repair it with materials.",
+    "gate_open": "The gate is sound. Press E beside it to open it, and E again to close it behind you.",
+    "reclaim": "Clear the zombies from a neighbouring yard, then press E at its porch to search and reclaim it.",
+    "carry": "Someone is down. Hold E beside them to lift them. They cannot be lifted with a zombie close.",
+    "carry_drop": "Follow the dashed line to a ringed shelter and press E to put them down.",
+    "rest": "Someone is hurt. Stand at the home porch and press E to rest them. It costs food.",
+    "arrivals": "Raiders are coming along the road from the entrance. Keep gates shut and fall back to home."
+  }
+}

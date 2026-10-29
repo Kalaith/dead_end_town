@@ -9,6 +9,7 @@ const RecoverySalvage = preload("res://scripts/sim/recovery_salvage.gd")
 const Defeat = preload("res://scripts/sim/defeat.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
 const Vehicle = preload("res://scripts/sim/vehicle.gd")
+const Tips = preload("res://scripts/sim/tips.gd")
 const HomeRest = preload("res://scripts/sim/home_rest.gd")
 const FoodGrowing = preload("res://scripts/sim/food_growing.gd")
 const Greenhouse = preload("res://scripts/sim/greenhouse.gd")
@@ -84,6 +85,7 @@ var working: bool = false
 var interacting: bool = false
 var carry: Dictionary = Carrying.initial()
 var vehicle: Dictionary
+var tips: Dictionary
 var spits: Array[Dictionary] = []
 var spit_hits: Dictionary = {}
 var home_rest: Dictionary = HomeRest.initial()
@@ -115,6 +117,7 @@ func _init(data: Dictionary) -> void:
 	materials = int(balance.starting_materials)
 	food = int(balance.starting_food)
 	player = actor("you", "You", Routes.point(balance.player_start), float(balance.player_health))
+	tips = Tips.initial(self)
 	Roster.start(self)
 	for p: Dictionary in catalog.properties:
 		properties[p.id] = {"claimed_once": p.id == "home", "claimed": p.id == "home", "looted": p.id == "home", "open": p.id != "home", "occupation": 0.0, "gate_hp": float(balance.gate_health) * (float(balance.home_gate_start_factor) if p.id == "home" else 1.0)}
@@ -207,6 +210,7 @@ func step(dt: float) -> void:
 	FieldMedicine.step(self, work_dt)
 	Pressure.step(self)
 	Boss.step(self, dt)
+	Tips.step(self, dt)
 	Carrying.sync(self)
 	CompanionRescue.sync(self)
 	var next_alert: String = "SAFE"

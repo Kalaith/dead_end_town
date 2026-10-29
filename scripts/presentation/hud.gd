@@ -2,6 +2,7 @@ extends Control
 const DefeatMenu = preload("res://scripts/presentation/defeat_menu.gd")
 const EndingMenu = preload("res://scripts/presentation/ending_menu.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
+const Tips = preload("res://scripts/sim/tips.gd")
 const Facility = preload("res://scripts/sim/facility.gd")
 const RescueMenu = preload("res://scripts/presentation/rescue_menu.gd")
 const ConstructionMenu = preload("res://scripts/presentation/construction_menu.gd")
@@ -41,6 +42,10 @@ var stats: Label
 var objective: Label
 var context_label: Label
 var casualty_label: Label
+var tip_panel: PanelContainer
+var tip_label: Label
+var tip_log: Label
+var tips_on: bool = true
 var radio: Label
 var team_orders: VBoxContainer
 var supplies: Label
@@ -87,6 +92,11 @@ func _ready() -> void:
 	casualty_label = kit.label("", 15, Color("ffac82"))
 	casualty_label.position = Vector2(20, 130)
 	add_child(casualty_label)
+	tip_panel = _panel(Vector2(860, 76), Vector2(400, 64))
+	tip_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tip_label = kit.label("", 16, Color("c6e5cd"))
+	tip_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	tip_panel.add_child(tip_label)
 	radio = kit.label("", 16, Color("c6e5cd"))
 	radio.position = Vector2(20, 640)
 	radio.size = Vector2(740, 64)
@@ -170,6 +180,12 @@ func _build_menu() -> void:
 	medicine_menu.configured.connect(func(mode: String, target: int, reserve: int) -> void: medicine_requested.emit(mode, target, reserve))
 	medicine_menu.cancelled.connect(func() -> void: medicine_cancelled.emit())
 	sections.Help.add_child(kit.label("WASD / arrows  Move     Mouse  Aim\nRight click  Shoot     Left click / Space  Swing (hold to repeat)\nE  Interact / drop     Hold E  Carry casualty\nHold R  Work     Q  Timber\nF  Team     J  Work     M  Town     G  Post guard\n1–4  Follow / Hold / Engage / Home     Esc / Tab  Pause", 18))
+	var tip_switch: Button = kit.button("Tips: on")
+	tip_switch.pressed.connect(func() -> void: _toggle_tips(tip_switch))
+	sections.Help.add_child(tip_switch)
+	tip_log = kit.label("", 17)
+	tip_log.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	sections.Help.add_child(tip_log)
 	var row := HBoxContainer.new()
 	sections.Street.add_child(row)
 	for entry: Array in [["Save", "save"], ["Load", "load"], ["New street", "new"]]:
@@ -216,6 +232,10 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	readiness.text = "READINESS / advisory\n" + Readiness.summary(world)
 	context_label.text = world.context()
 	context_label.visible = not paused and not context_label.text.is_empty()
+	var tip: String = Tips.text(world, Tips.current(world))
+	tip_label.text = "TIP / " + tip
+	tip_panel.visible = tips_on and not paused and not tip.is_empty() and world.rescue_intro.is_empty() and not world.campaign_ended
+	tip_log.text = "Tips follow what is happening, one at a time.\n\n" + ("Now: " + tip if not tip.is_empty() else "Nothing to teach right now.")
 	casualty_label.text = Carrying.roll(world)
 	casualty_label.visible = not paused and not casualty_label.text.is_empty()
 	if paused:
@@ -245,6 +265,11 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 	defeat_menu.refresh(world, menu_status.text)
 	ending_menu.refresh(world)
 	menu.visible = paused and world.rescue_intro.is_empty() and not world.defeat_pending and not world.campaign_ended
+
+
+func _toggle_tips(button: Button) -> void:
+	tips_on = not tips_on
+	button.text = "Tips: on" if tips_on else "Tips: off"
 
 
 func _goal(world: RefCounted) -> String:

@@ -17,6 +17,10 @@ Start paused at a concise title/help panel, then at home with Mara, a damaged ga
 
 The first migration rule in 07 provides a protected learning interval, not invulnerability. If the player chooses a different order, prompts follow state rather than a brittle tutorial stage. A remembered tip can be reopened in pause. No tutorial-only resources, actor teleports or secret enemy damage reduction.
 
+### Implemented: state-driven tips (30 October 2026)
+
+`scripts/sim/tips.gd` shows one tip at a time in a box at the top right (and under Help in pause, with a Tips on/off button). A tip appears when its moment arrives and leaves once the lesson is learned: move, swing (only with a zombie close), lifting a downed survivor, taking them to a shelter, resting at the porch, repairing and opening the home gate, reclaiming the first yard, and an arrivals warning. Text lives in `data/street/tips.json`. Nothing is saved: what cannot be read from the world (walked, swung, lifted) is remembered for the session, and a game past a minute counts the basics as taught. No tutorial-only resources, teleports or damage reduction.
+
 ## Screen and input map
 
 | Input | World action / paused destination |

@@ -1,6 +1,7 @@
 extends RefCounted
 const ScreecherState = preload("res://scripts/core/screecher_state.gd")
 const VehicleState = preload("res://scripts/core/vehicle_state.gd")
+const TipsContent = preload("res://scripts/core/tips_content.gd")
 const SpitterState = preload("res://scripts/core/spitter_state.gd")
 const AttentionState = preload("res://scripts/core/attention_state.gd")
 const RunnerState = preload("res://scripts/core/runner_state.gd")
@@ -28,7 +29,7 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 
 ## Authored content is split by topic so no one file outgrows review. Add a file here when adding a topic.
 ## Shared files describe rules, people and equipment that travel between areas.
-const SHARED_FILES: Array[String] = ["street/attention.json", "street/recovery.json", "street/survivors.json", "street/work.json", "street/firearm.json", "street/balance.json", "street/equipment.json", "street/vehicle.json", "zombies.json"]
+const SHARED_FILES: Array[String] = ["street/attention.json", "street/recovery.json", "street/survivors.json", "street/work.json", "street/firearm.json", "street/balance.json", "street/equipment.json", "street/vehicle.json", "street/tips.json", "zombies.json"]
 ## Area files describe one map; each lives under data/areas/<id>/ and area.json supplies its bounds and start points.
 const AREA_FILES: Array[String] = ["area.json", "town.json", "pressure.json", "properties.json", "properties_additional.json", "roads.json", "passages.json"]
 const APPENDED_KEYS: Array[String] = ["properties", "barricades", "crossings", "passages"]
@@ -117,6 +118,7 @@ static func problems(data: Dictionary) -> Array[String]:
 	AttentionState.content(data, errors)
 	ScreecherState.content(data, errors)
 	VehicleState.content(data, errors)
+	TipsContent.content(data, errors)
 	SpitterState.content(data, errors)
 	if not rules.list(data, "properties", false):
 		return errors
