@@ -39,7 +39,7 @@ Modelled on [Sanctuary Hills](reference/sanctuary_hills_map.webp): a **ring road
 - 24 links: 12 same-row passages, 8 street crossings (top and bottom street) and 4 **rear gates** between the back-to-back island rows. Ten lots are core (the originals plus No. 8, which bridges to the clinic).
 - Gates only face a horizontal street, so the ring's side roads have no lots. The plaza is drawn but has no function yet.
 - **Pressure comes from one end only**: the bridge, at the south-west corner. A wide approach strip runs along the bottom edge so a formation fits. The baboon holds the bridge road, so the horde passes it on the way in. Pressure timing and band numbers are not yet tuned for this size (step 5).
-- The baboon, its roadblock and the exit marker are built (step 7). Using the exit is step 8.
+- The baboon, its roadblock and the exit marker are built (step 7). Using the exit is step 8 (done). The bridge is a real arena: the map is 3,360 x 3,300 and a 640 x 1,080 deck (`bridge` street kind, `terrain.water` beside it) runs south from the south-west corner; the baboon holds its middle, the exit roadblock spans the far end and migrations enter there.
 
 ## Area 2: the office district (first pass)
 
@@ -48,7 +48,8 @@ Modelled on [Sanctuary Hills](reference/sanctuary_hills_map.webp): a **ring road
 - **Entrance** at the south-west corner (`entrance` in `area.json`, "Bridge"): where the player arrives from the suburb, and where E (twice) goes back. Going forward arrives at the destination's entrance; going back arrives at the exit that was used.
 - **Pressure** enters from the south-east service road (one route, a strip along the bottom edge as in the suburb).
 - **Gate:** the Warden (2,200 health, slower and heavier than the baboon, longer tell, `boss` in its data) holds the west road below the service stair at the north-west corner, which is the exit to area 3. With no area 3 yet the exit says nothing lies beyond.
-- Not designed yet: ranged and call pressure (Screecher, Spitter), the plaza and car parks, area-specific survivors, and any reason for a later return.
+- Built since: the Warden's road room north of the west-road corner (`town.json` street, boss post and exit moved into it), Theo (found by searching the tower lobby), a resident Spitter, and the van. Each area's objective comes from its `objective.reclaim` list.
+- Not designed yet: the plaza and car parks as places, and call pressure beyond the Screecher.
 
 ## Area 3: the industrial works (first pass)
 
@@ -57,7 +58,7 @@ Modelled on [Sanctuary Hills](reference/sanctuary_hills_map.webp): a **ring road
 - **Pressure** enters from the south-east freight road and is built around Brutes and a single Breaker (420 health, slow, structure multiplier 4, cap one living). One Breaker lives in the depot so it can be seen and learned; the Breaker wave stays ineligible until then.
 - **Gate:** the Foreman (3,200 health, the heaviest boss) holds the west road below the main gate at the north-west corner. The main gate is the campaign's end: with the Foreman dead, E shows the closing line and travels nowhere (`exit.final`).
 - **Entrance** at the south-west corner ("Service road"): E twice goes back to the office district.
-- Not designed yet: power and vehicles as mechanics (the area only names them), a real finale beyond the closing line, and why the player would come back.
+- Built since: the Foreman's road room at the same corner, Nia (tool crib) and Rowan (gatehouse). Not designed yet: power as a mechanic (the area only names it), a real finale beyond the closing line.
 
 ### Preparing for the boss
 
@@ -112,11 +113,11 @@ Already done toward this: unlocks (gear, firearm) and the roster no longer depen
 ## Open points
 
 - The baboon's phases and final balance (first-pass charge, health and leash are in [14](14-zombie-catalogue.md)).
-- Why the player returns to earlier areas, and whether an area changes while they are away.
-- Fate of the 15 shell lots (currently dropped) and the survivors not yet implemented (Theo, Nia, Rowan): assign them to areas 2 and 3.
+- Why the player returns to earlier areas. Partly answered: stock above the carry cap stays and is named at the entrance, and a finished garden grows food while away (`away_food_seconds`). Other facilities and pressure stay frozen while away; whether that is enough is a play question.
+- Fate of the 15 shell lots (currently dropped). Theo, Nia and Rowan are assigned (office, works, works).
 - Carry-over cap for stock.
 - Whether the relief-signal story survives as the campaign's spine across all three areas.
-- Fate of the optional vehicle ([18](18-vehicle.md)): likely an area 3 feature.
+- The van ([18](18-vehicle.md)) exists in the office with riders, repair and ambulance use; it does not cross areas.
 
 ## Delivery order
 
