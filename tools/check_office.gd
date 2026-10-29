@@ -44,6 +44,7 @@ func _journey(suburb: Dictionary, office: Dictionary) -> void:
 	var saves := SaveState.new(suburb, "user://check_office.json")
 	var world := World.new(suburb)
 	Boss.find(world).hp = 0.0
+	world.pressure.taught = ["runner"]
 	world.player.pos = Boss.exit_rect(suburb).get_center()
 	world.step(0.1)
 	world.interact()
@@ -51,6 +52,7 @@ func _journey(suburb: Dictionary, office: Dictionary) -> void:
 	_expect("the suburb exit asks for the office", world.travel_requested == "office")
 	var arrived: RefCounted = AreaTravel.travel(world, saves, office)
 	_expect("travel brings the team to the office entrance", arrived != null and Boss.at_entrance(arrived))
+	_expect("what the community has learned to expect travels with it", arrived != null and "runner" in arrived.pressure.taught)
 	var office_saves := SaveState.new(office, "user://check_office.json")
 	arrived.interact()
 	_expect("the entrance asks before going back", arrived.travel_requested == "" and arrived.exit_pending > 0.0 and arrived.context().contains("confirm"))

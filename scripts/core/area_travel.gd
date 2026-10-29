@@ -40,6 +40,10 @@ static func travel(world: RefCounted, saves: RefCounted, to_data: Dictionary) ->
 	destination.firearms.bullets += int(carried.bullets)
 	destination.equipment = world.equipment.duplicate(true)
 	destination.workshop.equipped = world.workshop.equipped
+	# What the community has learned to expect travels with it, so later areas can use those kinds.
+	for kind: Variant in world.pressure.taught:
+		if kind not in destination.pressure.taught:
+			destination.pressure.taught.append(kind)
 	if world.firearms.owned and "firearm" not in destination.unlocks:
 		destination.unlocks.append("firearm")
 	for item: String in Equipment.GATED:

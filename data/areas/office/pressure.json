@@ -29,8 +29,8 @@
     "entry_seconds": 1.2,
     "route_retry_seconds": 10,
     "special_caps": {
-      "runner": 4,
-      "screecher": 2
+      "runner": 6,
+      "screecher": 4
     },
     "bands": [
       {
@@ -69,59 +69,61 @@
     "templates": [
       {
         "band": 0,
-        "id": "hearth_drift",
+        "id": "office_drift",
         "kinds": {
           "shambler": 5
         }
       },
       {
         "band": 0,
-        "id": "hearth_group",
-        "kinds": {
-          "shambler": 6
-        }
-      },
-      {
-        "band": 0,
-        "id": "hearth_heavy",
+        "id": "office_call",
         "kinds": {
           "shambler": 4,
-          "brute": 1
+          "screecher": 1
         }
       },
       {
         "band": 0,
-        "id": "hearth_crowd",
+        "id": "office_pair",
+        "kinds": {
+          "shambler": 5,
+          "runner": 1
+        }
+      },
+      {
+        "band": 0,
+        "id": "office_crowd",
         "kinds": {
           "shambler": 8
         }
       },
       {
         "band": 1,
-        "id": "market_rush",
+        "id": "lobby_rush",
         "kinds": {
-          "shambler": 7,
+          "shambler": 6,
+          "screecher": 1,
           "runner": 1
         }
       },
       {
         "band": 1,
-        "id": "market_call",
+        "id": "lobby_chorus",
         "kinds": {
           "shambler": 6,
-          "screecher": 1
+          "screecher": 2
         }
       },
       {
         "band": 1,
-        "id": "market_walk",
+        "id": "lobby_walk",
         "kinds": {
           "shambler": 10
         }
       },
       {
         "band": 1,
-        "id": "market_pair",
+        "id": "lobby_pair",
         "kinds": {
           "shambler": 8,
           "runner": 2
@@ -129,27 +131,38 @@
       },
       {
         "band": 2,
-        "id": "civic_call",
+        "id": "floor_ambush",
         "kinds": {
           "shambler": 9,
-          "screecher": 1
-        }
-      },
-      {
-        "band": 2,
-        "id": "civic_fast",
-        "kinds": {
-          "shambler": 8,
           "screecher": 1,
           "runner": 2
         }
       },
       {
-        "band": 3,
-        "id": "works_rush",
+        "band": 2,
+        "id": "floor_calls",
         "kinds": {
-          "shambler": 12,
-          "runner": 4
+          "shambler": 8,
+          "screecher": 2,
+          "runner": 1
+        }
+      },
+      {
+        "band": 3,
+        "id": "tower_surge",
+        "kinds": {
+          "shambler": 10,
+          "runner": 3,
+          "screecher": 1
+        }
+      },
+      {
+        "band": 3,
+        "id": "tower_heavy",
+        "kinds": {
+          "shambler": 11,
+          "brute": 1,
+          "screecher": 2
         }
       }
     ]
