@@ -60,6 +60,7 @@ var ending_menu: PanelContainer
 var equipment_menu: VBoxContainer
 var town_map: VBoxContainer
 var menu_status: Label
+var slot_button: Button
 var pause_title: Label
 var readiness: Label
 var first_button: Button
@@ -192,6 +193,9 @@ func _build_menu() -> void:
 	sections.Help.add_child(tip_log)
 	var row := HBoxContainer.new()
 	sections.Street.add_child(row)
+	slot_button = kit.button("Slot 1", func() -> void: requested.emit("slot"))
+	slot_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(slot_button)
 	for entry: Array in [["Save", "save"], ["Load", "load"], ["New street", "new"]]:
 		var command: String = entry[1]
 		var button: Button = kit.button(entry[0], func() -> void: requested.emit(command))

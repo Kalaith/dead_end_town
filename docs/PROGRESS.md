@@ -330,3 +330,8 @@ Still needing development (second look, most important first):
 ## 30 October 2026: fence-line gate stalls not reproduced
 
 - A probe walked every lot in all three areas with gates open: each gate point is walkable and has a path to its own site and to home. The earlier "gate points stall walkers" note is therefore not reproducible from the data; if it happens in play, it needs the lot and what was assigned. The probe was thrown away (not committed).
+
+## 30 October 2026: three save slots
+
+- `scripts/core/save_slots.gd`: slot 1 keeps `user://suburb.json` (existing saves are untouched); slots 2 and 3 use `user://street_2.json` and `street_3.json`. The pause menu's Street tab has a slot button that cycles the slot and shows its summary ("Slot 2 · empty", "Slot 1 · suburb 34m", minutes counting every area); Save and Load then use that slot. The slot is per session and starts at 1; "New street" keeps the current slot's save until you save.
+- `tools/check_slots.gd` (paths, summary, isolation) passes with parse (125 scripts), save and travel checks; a headless boot runs; `pause_save_slots` was looked at. Not done: remembering the last slot between sessions, deleting or naming a slot, loading from another slot automatically on start (the game still opens on slot 1's area), and a confirmation before overwriting a slot.

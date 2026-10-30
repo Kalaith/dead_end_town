@@ -18,11 +18,13 @@ const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
 const AreaTravel = preload("res://scripts/core/area_travel.gd")
+const SaveSlots = preload("res://scripts/core/save_slots.gd")
 const View = preload("res://scripts/presentation/town_view.gd")
 const Hud = preload("res://scripts/presentation/hud.gd")
 const PlayerControls = preload("res://scripts/presentation/player_controls.gd")
 var world: RefCounted
 var save_state: RefCounted
+var slot: int = 1
 var view: Node2D
 var camera: Camera2D
 var hud: Control
@@ -47,7 +49,7 @@ func _ready() -> void:
 		get_tree().quit(1)
 		return
 	world = World.new(data)
-	save_state = SaveState.new(data)
+	save_state = SaveState.new(data, SaveSlots.path(slot))
 	storage_enabled = not OS.get_cmdline_user_args().has("--no-save")
 	save_state.store.enabled = storage_enabled
 	view = View.new()
@@ -75,6 +77,7 @@ func _ready() -> void:
 	hud.equipment_requested.connect(equip)
 	hud.show_menu(true)
 	hud.refresh(world, paused)
+	hud.slot_button.text = SaveSlots.summary(slot)
 	# Loading is explicit, so opening the prototype cannot overwrite a run.
 	if storage_enabled:
 		_open_saved_area()
@@ -220,9 +223,16 @@ func command(value: String) -> void:
 				hud.show_menu()
 		"resume":
 			paused = false
+		"slot":
+			slot = SaveSlots.next(slot)
+			save_state = SaveState.new(world.catalog, SaveSlots.path(slot))
+			save_state.store.enabled = storage_enabled
+			hud.slot_button.text = SaveSlots.summary(slot)
+			hud.menu_status.text = "Save and Load now use slot %d." % slot
 		"save":
 			var okay: bool = save_state.store.save_data(save_state.snapshot(world))
-			hud.menu_status.text = "Street saved. Previous good save retained as backup." if okay else save_state.store.last_error
+			hud.menu_status.text = ("Street saved to slot %d. Previous good save retained as backup." % slot) if okay else save_state.store.last_error
+			hud.slot_button.text = SaveSlots.summary(slot)
 		"load":
 			_open_saved_area()
 			var data: Dictionary = save_state.store.load_data()
@@ -267,7 +277,7 @@ func _travel(area_id: String) -> void:
 
 
 func _enter(next: RefCounted, data: Dictionary) -> void:
-	save_state = SaveState.new(data)
+	save_state = SaveState.new(data, SaveSlots.path(slot))
 	save_state.store.enabled = storage_enabled
 	world = next
 	view.world = world
