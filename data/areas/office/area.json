@@ -93,5 +93,19 @@
       "atrium",
       "car_park"
     ]
-  }
+  },
+  "caches": [
+    {
+      "id": "car_deck",
+      "name": "Abandoned cars",
+      "pos": [
+        2280,
+        1900
+      ],
+      "materials": 24,
+      "food": 5,
+      "medicine": 3,
+      "line": "Abandoned cars searched: a toolkit, ration packs and a first-aid box."
+    }
+  ]
 }

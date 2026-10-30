@@ -9,6 +9,7 @@ const RecoverySalvage = preload("res://scripts/sim/recovery_salvage.gd")
 const Defeat = preload("res://scripts/sim/defeat.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
 const Vehicle = preload("res://scripts/sim/vehicle.gd")
+const Caches = preload("res://scripts/sim/caches.gd")
 const Tips = preload("res://scripts/sim/tips.gd")
 const HomeRest = preload("res://scripts/sim/home_rest.gd")
 const FoodGrowing = preload("res://scripts/sim/food_growing.gd")
@@ -96,6 +97,7 @@ var defeat_pending: bool = false
 var campaign_ended: bool = false
 var workshop: Dictionary = Workshop.initial()
 var timber: Dictionary = Salvage.initial()
+var caches_taken: Array = []
 var provisions: Dictionary = Provisions.initial()
 var equipment: Dictionary = Equipment.initial()
 var passages: Dictionary
@@ -319,6 +321,9 @@ func _context() -> String:
 		return Boss.context(self)
 	if Boss.at_entrance(self):
 		return Boss.entrance_context(self)
+	var cache_text: String = Caches.context(self)
+	if not cache_text.is_empty():
+		return cache_text
 	var passage: Dictionary = Neighbourhood.nearby(self)
 	if not passage.is_empty():
 		return Neighbourhood.context(self, passage)
@@ -357,6 +362,8 @@ func interact() -> void:
 		return
 	if Boss.at_entrance(self):
 		Boss.enter_interact(self)
+		return
+	if Caches.press(self):
 		return
 	var passage: Dictionary = Neighbourhood.nearby(self)
 	if not passage.is_empty():

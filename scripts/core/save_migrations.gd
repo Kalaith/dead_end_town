@@ -47,6 +47,8 @@ func migrate(data: Dictionary) -> Dictionary:
 	var version: int = int(upgraded.schema_version)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	if version == 43:
+		return _upgrade_caches(upgraded)
 	if version == 42:
 		return _upgrade_retired_slice(upgraded)
 	if version == 41:
@@ -551,5 +553,12 @@ func _upgrade_fittings(data: Dictionary) -> Dictionary:
 ## The old neighbourhood-watch objective state no longer exists.
 func _upgrade_retired_slice(data: Dictionary) -> Dictionary:
 	data.erase("slice_state")
+	data.schema_version = 43
+	return _upgrade_caches(data)
+
+
+## Saves before the open-air supply caches have taken none.
+func _upgrade_caches(data: Dictionary) -> Dictionary:
+	data.caches_taken = []
 	data.schema_version = save.SCHEMA
 	return data if save.valid(data) else {}

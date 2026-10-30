@@ -23,6 +23,7 @@ const WorkOrderState = preload("res://scripts/core/work_order_state.gd")
 const FirearmState = preload("res://scripts/core/firearm_state.gd")
 const ZombieTypes = preload("res://scripts/sim/zombie_types.gd")
 const SliceState = preload("res://scripts/core/slice_state.gd")
+const CacheState = preload("res://scripts/core/cache_state.gd")
 const ProvisionsState = preload("res://scripts/core/provisions_state.gd")
 const EquipmentState = preload("res://scripts/core/equipment_state.gd")
 const NeighbourhoodState = preload("res://scripts/core/neighbourhood_state.gd")
@@ -33,9 +34,9 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 43
+const SCHEMA: int = 44
 ## Saved world fields that are collections and are copied, not shared.
-const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "timber", "firearms", "unlocks", "vehicle"]
+const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "timber", "firearms", "unlocks", "vehicle", "caches_taken"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
 ## Saved world fields that are single values, validated one by one.
 const SCALAR_KEYS: Array[String] = ["defeat_pending", "rescue_intro", "medicine", "materials", "food", "elapsed", "approach", "garden_progress", "garden_started", "garden_done", "harvest", "repair_reserved", "downs", "gate_repair_target"]
@@ -184,7 +185,7 @@ func valid(data: Dictionary) -> bool:
 			return false
 		if z.has("kind") and (not z.kind is String or not catalog.zombies.types.has(z.kind) or float(z.hp) > ZombieTypes.health(catalog, z.kind)):
 			return false
-	if not VehicleState.valid(data, catalog) or not SpitterState.hazards_valid(data, catalog):
+	if not VehicleState.valid(data, catalog) or not SpitterState.hazards_valid(data, catalog) or not CacheState.valid(data, catalog):
 		return false
 	if not BossState.valid(data, catalog) or not AttentionState.valid(data, catalog):
 		return false

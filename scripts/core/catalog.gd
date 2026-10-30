@@ -19,6 +19,7 @@ const TownContent = preload("res://scripts/core/town_content.gd")
 const WorkRecipes = preload("res://scripts/sim/work_recipes.gd")
 const FirearmState = preload("res://scripts/core/firearm_state.gd")
 const SliceState = preload("res://scripts/core/slice_state.gd")
+const CacheState = preload("res://scripts/core/cache_state.gd")
 const ProvisionsState = preload("res://scripts/core/provisions_state.gd")
 const EquipmentState = preload("res://scripts/core/equipment_state.gd")
 const NeighbourhoodState = preload("res://scripts/core/neighbourhood_state.gd")
@@ -174,6 +175,7 @@ static func problems(data: Dictionary) -> Array[String]:
 	ProvisionsState.content(data, errors)
 	FirearmState.content(data, errors)
 	SliceState.content(data, errors)
+	CacheState.content(data, errors)
 	WorkRecipes.content(data, errors)
 	return errors
 

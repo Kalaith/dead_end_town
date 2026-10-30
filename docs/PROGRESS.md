@@ -348,3 +348,9 @@ Still needing development (second look, most important first):
 ## 30 October 2026: noise tip
 
 - A `noise` tip appears while a gunshot or engine noise is alive and goes after twelve seconds: loud things pull zombies from far off. `check_tips` covers it (0 failures). Tips are still missing for the work board (J) and areas 2-3 specifics; wording unplayed.
+
+## 30 October 2026: supply caches (schema 44)
+
+- Because the plaza and car parks had no purpose and no answer came, I gave them the smallest one: a one-time supply cache in the open of each area, searched with E when no zombie is within 170 px (`scripts/sim/caches.gd`, `caches` in `area.json`, `caches_taken` in the save). Suburb: market stalls on the plaza (20 materials, 4 food, 2 medicine); office: abandoned cars on the east road (24/5/3); works: freight pallets on the east road (28/6/4). Drawn as crates with a ring; they stay as empty crates once searched. Saves from schema 43 have taken none.
+- `tools/check_caches.gd` (reachable, refused near a zombie, pays once, saves, schema 43 upgrade, unknown id rejected) passes with parse (129 scripts), catalog, save, vehicle, spitter, travel, boss, tips, office, industrial and recruits checks. Frames `cache_market` and `cache_market_searched` were looked at.
+- This is a placeholder decision, easy to change or remove (data plus one script). Still not designed: a defensive role for the plaza, and what the car parks should be as lots.

@@ -5,7 +5,7 @@ Updated 30 October 2026. The strip, relief watch and G01-G08 milestone list that
 ## Needs a person
 1. **Play all three areas and the ending** with [the checklist](playtest-checklist.md). Nothing since the area transition has been played: the bridge and road-room boss fights, the van (riders, repair, ambulance), Spitter pools and survivors dodging, Theo/Nia/Rowan, tips, save slots and the ending screen after a real run are headless-checked only.
 2. **Tune from that run:** pressure bands (`data/areas/<area>/pressure.json`, measured by `tools/sim_pressure.gd`), boss health and tells (`tools/sim_boss.gd`), the away-garden rate and van numbers.
-3. **Decide the plaza and car parks.** The suburb plaza is drawn and does nothing; the office car parks are plain lots. Needs a purpose before any layout work.
+3. **Confirm or replace the plaza and car park placeholder.** Each area has a one-time supply cache in the open (market stalls, abandoned cars, freight pallets). A richer purpose (defence set piece, trading) is undecided.
 
 ## Known gaps (buildable)
 - Away production beyond gardens and clinics (workshop, ammunition bench) and pressure on an area left behind: both stay frozen.

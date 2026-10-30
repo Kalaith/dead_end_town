@@ -119,6 +119,7 @@ func _draw() -> void:
 	for p: Dictionary in world.catalog.properties:
 		if Routes.rectangle(p.rect).grow(100).intersects(visible_world):
 			_property(p)
+	_caches()
 	_spits()
 	_vehicle()
 	var shelter: Vector2 = Routes.point(world.balance.emergency_shelter)
@@ -508,6 +509,21 @@ func _vehicle() -> void:
 	if Vehicle.near(world) or Vehicle.driving(world):
 		var hull: float = float(world.vehicle.hull) / float(config.hull)
 		_meter(Vehicle.pos(world) + Vector2(-22, -width - 14), 44, hull, CREAM)
+
+
+## An untouched cache is a small pile of crates with a ring; a searched one is just empty crates.
+func _caches() -> void:
+	for c: Dictionary in world.catalog.get("caches", []):
+		var at: Vector2 = Routes.point(c.pos)
+		if not Rect2(at - Vector2(60, 60), Vector2(120, 120)).intersects(visible_world):
+			continue
+		var taken: bool = world.caches_taken.has(c.id)
+		for offset: Vector2 in [Vector2(-14, 2), Vector2(6, -6), Vector2(10, 10)]:
+			draw_rect(Rect2(at + offset - Vector2(9, 8), Vector2(18, 16)), Color("6b5a47") if taken else Color("a98a5f"))
+			draw_rect(Rect2(at + offset - Vector2(9, 8), Vector2(18, 16)), INK, false, 2.0)
+		if not taken:
+			draw_arc(at, 34, 0, TAU, 24, CREAM, 2.0)
+			_text(at + Vector2(-34, -44), str(c.name).to_upper(), 13, CREAM)
 
 
 func _spits() -> void:

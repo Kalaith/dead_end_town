@@ -88,5 +88,19 @@
         1120
       ]
     ]
-  }
+  },
+  "caches": [
+    {
+      "id": "market",
+      "name": "Market stalls",
+      "pos": [
+        3180,
+        1010
+      ],
+      "materials": 20,
+      "food": 4,
+      "medicine": 2,
+      "line": "Market stalls searched: tools, tins and a little medicine left under the awnings."
+    }
+  ]
 }

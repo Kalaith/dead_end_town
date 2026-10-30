@@ -88,5 +88,19 @@
       "gatehouse",
       "yard_office"
     ]
-  }
+  },
+  "caches": [
+    {
+      "id": "freight_bay",
+      "name": "Freight pallets",
+      "pos": [
+        3180,
+        950
+      ],
+      "materials": 28,
+      "food": 6,
+      "medicine": 4,
+      "line": "Freight pallets searched: spare parts, canned food and a medical crate."
+    }
+  ]
 }
