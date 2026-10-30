@@ -19,9 +19,19 @@ static func summary(slot: int, file: String = "") -> String:
 	var raw: Variant = JSON.parse_string(FileAccess.get_file_as_string(where))
 	if not raw is Dictionary or not raw.get("area") is String:
 		return "Slot %d · unreadable" % slot
-	var seconds: float = float(raw.get("elapsed", 0.0))
+	return "Slot %d · %s %dm" % [slot, raw.area, int(seconds(where) / 60.0)]
+
+
+## Seconds played in the run a file holds across every area; 0 when it is missing or unreadable.
+static func seconds(file: String) -> float:
+	if not FileAccess.file_exists(file):
+		return 0.0
+	var raw: Variant = JSON.parse_string(FileAccess.get_file_as_string(file))
+	if not raw is Dictionary:
+		return 0.0
+	var total: float = float(raw.get("elapsed", 0.0))
 	if raw.get("frozen") is Dictionary:
 		for record: Variant in raw.frozen.values():
 			if record is Dictionary:
-				seconds += float(record.get("elapsed", 0.0))
-	return "Slot %d · %s %dm" % [slot, raw.area, int(seconds / 60.0)]
+				total += float(record.get("elapsed", 0.0))
+	return total

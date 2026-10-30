@@ -49,7 +49,7 @@ var tip_log: Label
 var tips_on: bool = true
 var tip_switch: Button
 ## Preferences live apart from the saved street, so starting a new street keeps them.
-var settings := SettingsStore.new({"tips": true})
+var settings := SettingsStore.new({"tips": true, "slot": 1})
 var radio: Label
 var team_orders: VBoxContainer
 var supplies: Label

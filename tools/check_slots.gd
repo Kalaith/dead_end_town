@@ -20,6 +20,7 @@ func _init() -> void:
 	_expect("saving writes", a.store.save_data(a.snapshot(world)))
 	_expect("the summary names the area and minutes", SaveSlots.summary(1, "user://check_slot_a.json") == "Slot 1 · suburb 10m")
 	_expect("another file is untouched", SaveSlots.summary(3, "user://check_slot_b.json") == "Slot 3 · empty" and b.store.load_data().is_empty())
+	_expect("a file reports the seconds it holds", is_equal_approx(SaveSlots.seconds("user://check_slot_a.json"), 600.0) and SaveSlots.seconds("user://check_slot_missing.json") == 0.0)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://check_slot_a.json"))
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://check_slot_a.json.bak"))
 	print("%d failures" % failures)

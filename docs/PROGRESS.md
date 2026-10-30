@@ -335,3 +335,8 @@ Still needing development (second look, most important first):
 
 - `scripts/core/save_slots.gd`: slot 1 keeps `user://suburb.json` (existing saves are untouched); slots 2 and 3 use `user://street_2.json` and `street_3.json`. The pause menu's Street tab has a slot button that cycles the slot and shows its summary ("Slot 2 · empty", "Slot 1 · suburb 34m", minutes counting every area); Save and Load then use that slot. The slot is per session and starts at 1; "New street" keeps the current slot's save until you save.
 - `tools/check_slots.gd` (paths, summary, isolation) passes with parse (125 scripts), save and travel checks; a headless boot runs; `pause_save_slots` was looked at. Not done: remembering the last slot between sessions, deleting or naming a slot, loading from another slot automatically on start (the game still opens on slot 1's area), and a confirmation before overwriting a slot.
+
+## 30 October 2026: slot memory and overwrite guard
+
+- The chosen slot is kept in `user://settings.json` (`slot`) and used on the next start. Saving into a slot that holds a longer run (more seconds played across every area) than the current one asks first: the first Save press explains, a second Save press overwrites; any other command cancels the ask. Re-saving the same run never asks.
+- `check_slots` covers the seconds read (0 failures); parse and a headless boot pass. The prompt flow itself is unchecked: captures run with saving disabled (`--no-save`), so it needs a real session. Still not done: deleting or naming slots.

@@ -25,6 +25,7 @@ const PlayerControls = preload("res://scripts/presentation/player_controls.gd")
 var world: RefCounted
 var save_state: RefCounted
 var slot: int = 1
+var overwrite_ok: bool = false
 var view: Node2D
 var camera: Camera2D
 var hud: Control
@@ -77,6 +78,9 @@ func _ready() -> void:
 	hud.equipment_requested.connect(equip)
 	hud.show_menu(true)
 	hud.refresh(world, paused)
+	slot = clampi(int(hud.settings.values.slot), 1, SaveSlots.COUNT)
+	save_state = SaveState.new(world.catalog, SaveSlots.path(slot))
+	save_state.store.enabled = storage_enabled
 	hud.slot_button.text = SaveSlots.summary(slot)
 	# Loading is explicit, so opening the prototype cannot overwrite a run.
 	if storage_enabled:
@@ -171,6 +175,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func command(value: String) -> void:
+	if value != "save":
+		overwrite_ok = false
 	if world.campaign_ended:
 		if value == "resume":
 			world.campaign_ended = false
@@ -227,9 +233,16 @@ func command(value: String) -> void:
 			slot = SaveSlots.next(slot)
 			save_state = SaveState.new(world.catalog, SaveSlots.path(slot))
 			save_state.store.enabled = storage_enabled
+			hud.settings.set_value("slot", slot)
+			hud.settings.save_settings()
 			hud.slot_button.text = SaveSlots.summary(slot)
 			hud.menu_status.text = "Save and Load now use slot %d." % slot
 		"save":
+			# A slot holding a longer run than this one is probably someone else's progress: ask first.
+			if not overwrite_ok and SaveSlots.seconds(save_state.store.path) > AreaTravel.played(world) + 1.0:
+				overwrite_ok = true
+				hud.menu_status.text = "%s holds a longer run than this one. Press Save again to overwrite it." % SaveSlots.summary(slot)
+				return
 			var okay: bool = save_state.store.save_data(save_state.snapshot(world))
 			hud.menu_status.text = ("Street saved to slot %d. Previous good save retained as backup." % slot) if okay else save_state.store.last_error
 			hud.slot_button.text = SaveSlots.summary(slot)
