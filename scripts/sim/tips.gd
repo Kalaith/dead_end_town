@@ -9,7 +9,7 @@ const Vehicle = preload("res://scripts/sim/vehicle.gd")
 ## Guidance follows what the world looks like, never a fixed script: the first tip whose moment has come and whose
 ## lesson has not been learned is shown. Nothing here changes the game, spends anything or is saved; what cannot be read
 ## from saved state (walked, swung, lifted) is remembered for the session only, and a save past a minute counts as taught.
-const ORDER: Array[String] = ["move", "swing", "orders", "pistol", "carry", "carry_drop", "rest", "gate_repair", "gate_open", "reclaim", "timber", "loadout", "field_bag", "van", "arrivals"]
+const ORDER: Array[String] = ["move", "swing", "orders", "pistol", "noise", "carry", "carry_drop", "rest", "gate_repair", "gate_open", "reclaim", "timber", "loadout", "field_bag", "van", "arrivals"]
 const WALK_DISTANCE: float = 150.0
 const ZOMBIE_NEAR: float = 220.0
 const INFO_SECONDS: float = 12.0
@@ -93,6 +93,8 @@ static func _due(world: RefCounted, id: String) -> bool:
 			return not Salvage.nearby(world).is_empty()
 		"pistol":
 			return world.firearms.owned and int(world.firearms.bullets) > 0 and Combat.danger(world, world.player.pos, ZOMBIE_NEAR)
+		"noise":
+			return world.noise.events.any(func(e: Dictionary) -> bool: return e.category in ["pistol", "engine"])
 		"loadout":
 			return world.workshop.armour_done and world.equipment.iron.is_empty() and world.equipment.shield.is_empty()
 		"field_bag":
@@ -129,6 +131,8 @@ static func _learned(world: RefCounted, id: String) -> bool:
 			return t.salvaged
 		"pistol":
 			return t.shot
+		"noise":
+			return float(t.shown.get(id, 0.0)) >= INFO_SECONDS
 		"loadout":
 			return not world.equipment.iron.is_empty() or not world.equipment.shield.is_empty()
 		"field_bag":

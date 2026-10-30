@@ -10,7 +10,7 @@ Updated 30 October 2026. The strip, relief watch and G01-G08 milestone list that
 ## Known gaps (buildable)
 - Away production beyond gardens and clinics (workshop, ammunition bench) and pressure on an area left behind: both stay frozen.
 - Survivors cannot repair the van; the van does not cross areas.
-- Tips missing for the work board (J), noise and areas 2-3.
+- Tips missing for the work board (J) and areas 2-3.
 - Save slots cannot be deleted or named; the overwrite prompt is unseen.
 - Debt: `migrate` upgrades build a `World` from current content; raider path targets in `raiding.gd`; a Theo/Nia/Rowan lot searched before they existed never yields them.
 - Pilot art, audio and accessibility (G09) have not started.

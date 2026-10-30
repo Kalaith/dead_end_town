@@ -12,6 +12,7 @@
     "orders": "Your team fights on its own. Press 1 to have them follow you, 2 to hold, 3 to engage threats and 4 to guard home.",
     "timber": "You are beside a yard you hold. Press Q to strip its timber for materials; each yard gives it once.",
     "pistol": "You have a pistol. Right click shoots where you aim. Shots are loud and every bullet is crafted, so save them for what a bat cannot stop.",
+    "noise": "Gunshots and engines are loud and pull zombies from far off, even ones that have not seen you. Keep them away from home and from anyone hurt.",
     "loadout": "The workshop has armour and a shield ready. Press F, open Loadouts, and give them to a survivor who fights.",
     "field_bag": "Someone is hurt and the field bag is unassigned. Press F, open Loadouts and give it to a survivor: they can then treat people in the field.",
     "van": "Press E beside the van to drive it: W/S throttle, A/D steer. Followers close by ride along, a casualty in your arms comes too, and holding R beside it repairs the hull.",

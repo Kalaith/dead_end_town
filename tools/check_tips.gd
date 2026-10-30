@@ -81,6 +81,15 @@ func _init() -> void:
 	fight.shoot()
 	fight.step(0.05)
 	_expect("firing ends it", Tips.current(fight) != "pistol")
+	var loud := World.new(data)
+	loud.elapsed = 120.0
+	for z4: Dictionary in loud.zombies:
+		z4.hp = 0.0
+	loud.properties.home.gate_hp = float(loud.balance.gate_health)
+	loud.properties.hardware.claimed_once = true
+	loud.noise.events.append({"id": 1, "emitter": "you", "category": "pistol", "key": "k", "x": 0.0, "y": 0.0, "radius": 100.0, "updated": 0.0, "expires": 1000.0})
+	loud.step(0.05)
+	_expect("a loud noise teaches what it draws (" + Tips.current(loud) + ")", Tips.current(loud) == "noise")
 	var kit := World.new(data)
 	kit.elapsed = 120.0
 	for z3: Dictionary in kit.zombies:

@@ -344,3 +344,7 @@ Still needing development (second look, most important first):
 ## 30 October 2026: clinics make medicine while you are away
 
 - A restored clinic now yields one medicine per `away_medicine_seconds` (240, `balance.json`) of absence on return, beside the garden's food, capped at the carry cap (40); the arrival note says how much. `check_travel` covers it (960 s gives 4). Workshop output and ammunition crafting still stay frozen (they spend materials, so away output needs a rule for what they consume). Rates are unplayed guesses.
+
+## 30 October 2026: noise tip
+
+- A `noise` tip appears while a gunshot or engine noise is alive and goes after twelve seconds: loud things pull zombies from far off. `check_tips` covers it (0 failures). Tips are still missing for the work board (J) and areas 2-3 specifics; wording unplayed.
