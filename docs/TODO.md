@@ -1,15 +1,19 @@
-# Dead End Town: next implementation work
+# Dead End Town: what is left
 
-The full game is specified in [01](01-game-design.md) with system owners and catalogues 02–18. [09](09-mvp-roadmap.md) sequences the release. The design is complete enough to start implementation; this list does not claim those features exist.
+Updated 30 October 2026. The strip, relief watch and G01-G08 milestone list that used to be here are superseded by the area model ([19](19-areas-and-suburb.md)); delivery steps 1-10 there are done. History is in [PROGRESS](PROGRESS.md).
 
-1. G01 shared-order foundation is implemented (schema 19): prepaid work/repairs, bounded production, regular duties, temporary-role resumption, approved-project scheduling and explicit field commitments. Retain original save/Ellis regression coverage; board location/assignment now uses G02’s known-town overview. Extend routine maintenance and food targets with their economy/facility owners.
-2. Proceed to G03; G02 local preview is implemented. The known-town overview, board location/temporary assignment, 24-site geometry, independent crossing barriers, 34 links, core-only reachability and schema-20 old-save expansion are implemented; 15 sites remain explicit development shells; hardware search/materials/spear and schema-21 first-claim history are implemented. June’s search/rescue/introduction and schema-22 medicine stock are implemented; schema-23 clinic restoration and local paid treatment are implemented. Schema-24 player carrying and timed local home rest replace remote team healing. Schema-25 defeat now pauses for explicit shelter recovery or current-save loading. Schema-26 emergency scrap recovery respects the combined 24-Material cap. Schema-27 medicine production is prepaid, bounded and reserve-aware. Schema-28 companion rescues travel physically and resume previous duties.
-3. Field bag and patient-bound prepaid treatment are implemented (schema 29). Oliver’s once-only greenhouse search/rescue/introduction is implemented (schema 30). Paid greenhouse restoration and physical four-Food harvests are implemented (schema 31), alongside 120-second meals, two-Food/45-second garden cycles and food targets with a meal of hysteresis. Old saves preserve stocks, paid work and the fraction of their food clocks. The automated six-person, 15-minute food ledger passes with 30% interruptions and medical food costs; human food-pressure observations and longer integrated raid/clinic trials remain acceptance work. G04 Runner lunges are implemented (schema 32), with living hardware/greenhouse stand-ins upgraded in place and depleted residents preserved. Noise/person memory (schema 33) and Screecher calls (schema 34) are implemented. Screecher live visuals, interruption and reload acceptance remain unverified after the user stopped computer use. Next implement the bounded campaign migration scheduler, then proceed through G05–G10. Fifteen sites remain shells.
-4. Finish and test the core relief ending at G07 before filling optional content and the utility van at G08. Use the funding ledger/scenarios in [17](17-acceptance-and-balance.md).
-5. Pilot art/audio/accessibility and long-campaign save slots before full human runs. Record real observations separately from staged captures and automated checks.
+## Needs a person
+1. **Play all three areas and the ending** with [the checklist](playtest-checklist.md). Nothing since the area transition has been played: the bridge and road-room boss fights, the van (riders, repair, ambulance), Spitter pools and survivors dodging, Theo/Nia/Rowan, tips, save slots and the ending screen after a real run are headless-checked only.
+2. **Tune from that run:** pressure bands (`data/areas/<area>/pressure.json`, measured by `tools/sim_pressure.gd`), boss health and tells (`tools/sim_boss.gd`), the away-garden rate and van numbers.
+3. **Decide the plaza and car parks.** The suburb plaza is drawn and does nothing; the office car parks are plain lots. Needs a purpose before any layout work.
 
-Carry forward engineering follow-ups: grow save migrations in small modules; use toolkit bindings/settings/text helpers when those features arrive. No toolkit side effects, installations or publication. Publishing wrappers still lack a destination; configure exports only when requested for the intended release.
+## Known gaps (buildable)
+- Away production beyond gardens (clinic, workshop, ammunition bench) and pressure on an area left behind: both stay frozen.
+- Survivors cannot repair the van; the van does not cross areas.
+- Tips missing for the work board (J), noise and areas 2-3.
+- Save slots cannot be deleted or named; the overwrite prompt is unseen.
+- Debt: `migrate` upgrades build a `World` from current content; raider path targets in `raiding.gd`; a Theo/Nia/Rowan lot searched before they existed never yields them.
+- Pilot art, audio and accessibility (G09) have not started.
 
-Verification (updated 29 October 2026): use script loading/editor checks and direct game inspection/input for G04–G10; automated scenarios are allowed but not required.
-
-Direction change (29 October 2026): the strip and relief watch are being replaced by bounded areas with a suburb boss; see [19](19-areas-and-suburb.md). Items 3–4 above are superseded where they assume the 12-column strip or the relief ending. Next: generalise the map model to per-area lot graphs, then the area layer and schema migration.
+## Rules that still hold
+Verification is headless scripts and `Capture.ps1` captures; look at the image before saying a visual change works. Commit each slice. See `AGENTS.md`.
