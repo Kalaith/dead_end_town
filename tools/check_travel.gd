@@ -81,6 +81,7 @@ func _round_trip(data: Dictionary, annex: Dictionary) -> void:
 	var carried_food: int = away.food
 	var home: RefCounted = AreaTravel.travel(away, annex_saves, data)
 	_expect("a garden grows food while you are away (%d)" % (home.food if home != null else -1), home != null and home.food == carried_food + 10)
+	_expect("the ending counts time and falls from every area", AreaTravel.played(home) >= 900.0 and AreaTravel.downs(home) == 0)
 
 
 

@@ -1,4 +1,5 @@
 extends PanelContainer
+const AreaTravel = preload("res://scripts/core/area_travel.gd")
 ## Closing screen when the community leaves the last area.
 signal chosen(command: String)
 var body: Label
@@ -40,8 +41,8 @@ static func summary(world: RefCounted) -> String:
 	for a: Dictionary in world.survivors:
 		if float(a.hp) > 0:
 			alive += 1
-	var minutes: int = int(float(world.elapsed) / 60.0)
-	return "%s\n\nYou and %d other survivor%s made it through, in %d minute%s, going down %d time%s on the way." % [str(world.catalog.exit.line), alive, "" if alive == 1 else "s", minutes, "" if minutes == 1 else "s", int(world.downs), "" if int(world.downs) == 1 else "s"]
+	var minutes: int = int(AreaTravel.played(world) / 60.0)
+	return "%s\n\nYou and %d other survivor%s made it through, in %d minute%s, going down %d time%s on the way." % [str(world.catalog.exit.line), alive, "" if alive == 1 else "s", minutes, "" if minutes == 1 else "s", AreaTravel.downs(world), "" if AreaTravel.downs(world) == 1 else "s"]
 
 
 func refresh(world: RefCounted) -> void:

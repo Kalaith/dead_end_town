@@ -321,3 +321,8 @@ Still needing development (second look, most important first):
 
 - Two more session-only tips: `loadout` (the workshop's armour cache is done and nobody wears iron or a shield: F, Loadouts) and `field_bag` (the bag is unlocked, unassigned, and someone is hurt). Both go away once the thing is done. `check_tips` covers them (0 failures); the rest tip correctly outranks the field-bag tip at the home porch.
 - Still without tips: the work board (J), noise, areas 2-3 specifics. First-pass wording, unplayed.
+
+## 30 October 2026: the ending counts the whole campaign
+
+- The closing screen read only the last area's clock and falls, so a real run ended at "0 minutes". It now uses `AreaTravel.played` and `AreaTravel.downs` (this area plus every frozen one). `check_travel` covers the time (the downs total is asserted only as 0).
+- Still unplayed: the ending after a real run.

@@ -15,7 +15,7 @@ static func travel(world: RefCounted, saves: RefCounted, to_data: Dictionary) ->
 	var cap: int = int(world.balance.area_carry_cap)
 	var carried: Dictionary = {"materials": mini(world.materials, cap), "food": mini(world.food, cap), "medicine": mini(world.medicine, cap), "bullets": mini(int(world.firearms.bullets), cap)}
 	var frozen: Dictionary = world.frozen.duplicate(true)
-	var total: float = _played(world)
+	var total: float = played(world)
 	var destination: RefCounted
 	var returning: bool = frozen.has(to_data.area.id)
 	var away: float = 0.0
@@ -64,10 +64,18 @@ static func travel(world: RefCounted, saves: RefCounted, to_data: Dictionary) ->
 
 
 ## Seconds played across every area, so time spent elsewhere counts as time away from this one.
-static func _played(world: RefCounted) -> float:
+static func played(world: RefCounted) -> float:
 	var total: float = float(world.elapsed)
 	for record: Variant in world.frozen.values():
 		total += float(record.get("elapsed", 0.0))
+	return total
+
+
+## Times the team has gone down across every area, for the closing line.
+static func downs(world: RefCounted) -> int:
+	var total: int = int(world.downs)
+	for record: Variant in world.frozen.values():
+		total += int(record.get("downs", 0))
 	return total
 
 
