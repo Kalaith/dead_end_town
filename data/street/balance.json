@@ -5,6 +5,8 @@
     "area_carry_cap": 40,
     "away_food_seconds": 90,
     "away_medicine_seconds": 240,
+    "away_siege_seconds": 600,
+    "away_siege_factor": 0.6,
     "home_gate_start_factor": 0.65,
     "home_alert_radius": 180,
     "scout_range": 640,

@@ -8,7 +8,7 @@ Updated 30 October 2026. The strip, relief watch and G01-G08 milestone list that
 3. **Confirm or replace the plaza and car park placeholder.** Each area has a one-time supply cache in the open (market stalls, abandoned cars, freight pallets). A richer purpose (defence set piece, trading) is undecided.
 
 ## Known gaps (buildable)
-- Away production beyond gardens and clinics (workshop, ammunition bench) and pressure on an area left behind: both stay frozen.
+- Away production beyond gardens and clinics (workshop, ammunition bench) and live pressure on an area left behind (only a battered gate on return): the rest stays frozen.
 - Survivors cannot repair the van; the van does not cross areas.
 - Tips missing for the work board (J) and areas 2-3.
 - Save slots cannot be deleted or named; the overwrite prompt is unseen.

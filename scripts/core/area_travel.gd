@@ -90,6 +90,13 @@ static func _regrow(destination: RefCounted, away: float) -> void:
 		if grown > 0:
 			destination.food += grown
 			destination.note("While you were away the garden grew %d food." % grown)
+	# Leave a settlement alone long enough and raiders find the gate.
+	if away >= float(destination.balance.away_siege_seconds):
+		var gate: float = float(destination.properties.home.gate_hp)
+		var battered: float = floorf(gate * float(destination.balance.away_siege_factor))
+		if battered < gate:
+			destination.properties.home.gate_hp = battered
+			destination.note("While you were away raiders battered the home gate. Repair it before you rest.")
 	if destination.clinic.done:
 		var made: int = mini(int(away / float(destination.balance.away_medicine_seconds)), maxi(0, cap - destination.medicine))
 		if made > 0:

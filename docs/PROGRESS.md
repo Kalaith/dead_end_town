@@ -354,3 +354,7 @@ Still needing development (second look, most important first):
 - Because the plaza and car parks had no purpose and no answer came, I gave them the smallest one: a one-time supply cache in the open of each area, searched with E when no zombie is within 170 px (`scripts/sim/caches.gd`, `caches` in `area.json`, `caches_taken` in the save). Suburb: market stalls on the plaza (20 materials, 4 food, 2 medicine); office: abandoned cars on the east road (24/5/3); works: freight pallets on the east road (28/6/4). Drawn as crates with a ring; they stay as empty crates once searched. Saves from schema 43 have taken none.
 - `tools/check_caches.gd` (reachable, refused near a zombie, pays once, saves, schema 43 upgrade, unknown id rejected) passes with parse (129 scripts), catalog, save, vehicle, spitter, travel, boss, tips, office, industrial and recruits checks. Frames `cache_market` and `cache_market_searched` were looked at.
 - This is a placeholder decision, easy to change or remove (data plus one script). Still not designed: a defensive role for the plaza, and what the car parks should be as lots.
+
+## 30 October 2026: being away has a cost
+
+- Returning to an area after at least `away_siege_seconds` (600) elsewhere finds the home gate at `away_siege_factor` (0.6) of its health, with a note; shorter absences change nothing. Together with the away garden and clinic, an area left behind now both pays and costs. `check_travel` covers long and short absences. No schema change. Rates are unplayed guesses; raiders in the area itself stay frozen.

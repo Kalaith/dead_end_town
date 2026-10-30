@@ -97,6 +97,18 @@ func _round_trip(data: Dictionary, annex: Dictionary) -> void:
 	var carried_medicine: int = gone.medicine
 	var back3: RefCounted = AreaTravel.travel(gone, annex_saves, data)
 	_expect("a clinic makes medicine while you are away (%d)" % (back3.medicine if back3 != null else -1), back3 != null and back3.medicine == carried_medicine + 4)
+	var w4 := World.new(data)
+	Boss.find(w4).hp = 0.0
+	w4.properties.home.gate_hp = float(data.balance.gate_health)
+	w4.properties.home.open = false
+	var gone4: RefCounted = AreaTravel.travel(w4, saves, annex)
+	gone4.elapsed = 700.0
+	var back4: RefCounted = AreaTravel.travel(gone4, annex_saves, data)
+	_expect("a long absence batters the shut home gate (%d)" % (int(back4.properties.home.gate_hp) if back4 != null else -1), back4 != null and float(back4.properties.home.gate_hp) == floorf(float(data.balance.gate_health) * 0.6))
+	var gone5: RefCounted = AreaTravel.travel(World.new(data), saves, annex)
+	gone5.elapsed = 100.0
+	var back5: RefCounted = AreaTravel.travel(gone5, annex_saves, data)
+	_expect("a short absence leaves the gate alone", back5 != null and float(back5.properties.home.gate_hp) == float(World.new(data).properties.home.gate_hp))
 	_expect("the ending counts time and falls from every area", AreaTravel.played(home) >= 900.0 and AreaTravel.downs(home) == 0)
 
 
