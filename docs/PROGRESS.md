@@ -340,3 +340,7 @@ Still needing development (second look, most important first):
 
 - The chosen slot is kept in `user://settings.json` (`slot`) and used on the next start. Saving into a slot that holds a longer run (more seconds played across every area) than the current one asks first: the first Save press explains, a second Save press overwrites; any other command cancels the ask. Re-saving the same run never asks.
 - `check_slots` covers the seconds read (0 failures); parse and a headless boot pass. The prompt flow itself is unchecked: captures run with saving disabled (`--no-save`), so it needs a real session. Still not done: deleting or naming slots.
+
+## 30 October 2026: clinics make medicine while you are away
+
+- A restored clinic now yields one medicine per `away_medicine_seconds` (240, `balance.json`) of absence on return, beside the garden's food, capped at the carry cap (40); the arrival note says how much. `check_travel` covers it (960 s gives 4). Workshop output and ammunition crafting still stay frozen (they spend materials, so away output needs a rule for what they consume). Rates are unplayed guesses.

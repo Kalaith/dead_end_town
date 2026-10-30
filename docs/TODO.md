@@ -8,7 +8,7 @@ Updated 30 October 2026. The strip, relief watch and G01-G08 milestone list that
 3. **Decide the plaza and car parks.** The suburb plaza is drawn and does nothing; the office car parks are plain lots. Needs a purpose before any layout work.
 
 ## Known gaps (buildable)
-- Away production beyond gardens (clinic, workshop, ammunition bench) and pressure on an area left behind: both stay frozen.
+- Away production beyond gardens and clinics (workshop, ammunition bench) and pressure on an area left behind: both stay frozen.
 - Survivors cannot repair the van; the van does not cross areas.
 - Tips missing for the work board (J), noise and areas 2-3.
 - Save slots cannot be deleted or named; the overwrite prompt is unseen.

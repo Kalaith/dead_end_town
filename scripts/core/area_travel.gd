@@ -79,14 +79,22 @@ static func downs(world: RefCounted) -> int:
 	return total
 
 
-## A finished garden keeps growing while you are away: one food per `away_food_seconds`, never above the carry cap.
+## A finished garden keeps growing food and a restored clinic keeps making medicine while you are away: one unit per
+## `away_food_seconds` / `away_medicine_seconds`, never above the carry cap.
 static func _regrow(destination: RefCounted, away: float) -> void:
-	if away <= 0.0 or not destination.garden_done:
+	if away <= 0.0:
 		return
-	var grown: int = mini(int(away / float(destination.balance.away_food_seconds)), maxi(0, int(destination.balance.area_carry_cap) - destination.food))
-	if grown > 0:
-		destination.food += grown
-		destination.note("While you were away the garden grew %d food." % grown)
+	var cap: int = int(destination.balance.area_carry_cap)
+	if destination.garden_done:
+		var grown: int = mini(int(away / float(destination.balance.away_food_seconds)), maxi(0, cap - destination.food))
+		if grown > 0:
+			destination.food += grown
+			destination.note("While you were away the garden grew %d food." % grown)
+	if destination.clinic.done:
+		var made: int = mini(int(away / float(destination.balance.away_medicine_seconds)), maxi(0, cap - destination.medicine))
+		if made > 0:
+			destination.medicine += made
+			destination.note("While you were away the clinic made %d medicine." % made)
 
 
 ## Going forward arrives at the destination's entrance; going back arrives at the exit that was used.

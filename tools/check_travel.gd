@@ -81,6 +81,22 @@ func _round_trip(data: Dictionary, annex: Dictionary) -> void:
 	var carried_food: int = away.food
 	var home: RefCounted = AreaTravel.travel(away, annex_saves, data)
 	_expect("a garden grows food while you are away (%d)" % (home.food if home != null else -1), home != null and home.food == carried_food + 10)
+	var w3 := World.new(data)
+	Boss.find(w3).hp = 0.0
+	w3.clinic.started = true
+	w3.clinic.done = true
+	w3.clinic.progress = float(data.balance.clinic_seconds)
+	w3.properties.clinic.looted = true
+	w3.properties.clinic.claimed_once = true
+	w3.properties.clinic.claimed = true
+	Roster.recruit(w3, "june")
+	w3.rescue_intro = ""
+	w3.medicine = 0
+	var gone: RefCounted = AreaTravel.travel(w3, saves, annex)
+	gone.elapsed = 960.0
+	var carried_medicine: int = gone.medicine
+	var back3: RefCounted = AreaTravel.travel(gone, annex_saves, data)
+	_expect("a clinic makes medicine while you are away (%d)" % (back3.medicine if back3 != null else -1), back3 != null and back3.medicine == carried_medicine + 4)
 	_expect("the ending counts time and falls from every area", AreaTravel.played(home) >= 900.0 and AreaTravel.downs(home) == 0)
 
 
