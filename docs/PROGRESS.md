@@ -326,3 +326,7 @@ Still needing development (second look, most important first):
 
 - The closing screen read only the last area's clock and falls, so a real run ended at "0 minutes". It now uses `AreaTravel.played` and `AreaTravel.downs` (this area plus every frozen one). `check_travel` covers the time (the downs total is asserted only as 0).
 - Still unplayed: the ending after a real run.
+
+## 30 October 2026: fence-line gate stalls not reproduced
+
+- A probe walked every lot in all three areas with gates open: each gate point is walkable and has a path to its own site and to home. The earlier "gate points stall walkers" note is therefore not reproducible from the data; if it happens in play, it needs the lot and what was assigned. The probe was thrown away (not committed).
