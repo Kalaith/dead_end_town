@@ -22,6 +22,7 @@ const SaveSlots = preload("res://scripts/core/save_slots.gd")
 const View = preload("res://scripts/presentation/town_view.gd")
 const Hud = preload("res://scripts/presentation/hud.gd")
 const PlayerControls = preload("res://scripts/presentation/player_controls.gd")
+const TickPump = preload("res://addons/hatchery/core/tick_pump.gd")
 var world: RefCounted
 var save_state: RefCounted
 var slot: int = 1
@@ -31,7 +32,7 @@ var camera: Camera2D
 var hud: Control
 var paused: bool = true
 var resume_after_rescue: bool = false
-var accumulator: float = 0.0
+var pump := TickPump.new()
 var defeat_shown: bool = false
 var storage_enabled: bool = true
 var controls := PlayerControls.new()
@@ -110,20 +111,8 @@ func _process(dt: float) -> void:
 		world.move_input = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 		world.working = Input.is_action_pressed("work")
 		world.interacting = Input.is_action_pressed("interact")
-		accumulator += minf(dt, 0.2)
-		var step: float = float(world.balance.step)
-		while accumulator >= step:
-			world.step(step)
-			accumulator -= step
-			if world.defeat_pending:
-				paused = true
-				hud.menu_status.text = ""
-				defeat_shown = true
-				break
-			if not world.rescue_intro.is_empty():
-				resume_after_rescue = true
-				paused = true
-				break
+		pump.tick_seconds = float(world.balance.step)
+		pump.run(minf(dt, 0.2), _step_world)
 	var target := _camera_target()
 	camera.position = camera.position.lerp(target, 1.0 - exp(-dt * 8))
 	if not paused:
@@ -138,6 +127,21 @@ func _process(dt: float) -> void:
 			world.attack()
 	view.queue_redraw()
 	hud.refresh(world, paused, dt)
+
+
+## One fixed step of the street. A defeat or a rescue stops this frame's steps.
+func _step_world() -> bool:
+	world.step(pump.tick_seconds)
+	if world.defeat_pending:
+		paused = true
+		hud.menu_status.text = ""
+		defeat_shown = true
+		return false
+	if not world.rescue_intro.is_empty():
+		resume_after_rescue = true
+		paused = true
+		return false
+	return true
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -199,7 +203,7 @@ func command(value: String) -> void:
 		"recover":
 			if Defeat.recover(world):
 				defeat_shown = false
-				accumulator = 0.0
+				pump.reset()
 				controls = PlayerControls.new()
 				camera.position = _camera_target()
 				camera.force_update_scroll()
@@ -261,7 +265,7 @@ func command(value: String) -> void:
 				resume_after_rescue = false
 				controls = PlayerControls.new()
 				view.world = world
-				accumulator = 0
+				pump.reset()
 				hud.menu_status.text = "Street restored. Resume when ready."
 				hud.refresh(world, paused)
 		"new":
@@ -296,7 +300,7 @@ func _enter(next: RefCounted, data: Dictionary) -> void:
 	view.world = world
 	defeat_shown = false
 	controls = PlayerControls.new()
-	accumulator = 0.0
+	pump.reset()
 	camera.position = _camera_target()
 	camera.force_update_scroll()
 
