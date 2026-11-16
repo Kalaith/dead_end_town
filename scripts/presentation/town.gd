@@ -23,6 +23,7 @@ const View = preload("res://scripts/presentation/town_view.gd")
 const Hud = preload("res://scripts/presentation/hud.gd")
 const PlayerControls = preload("res://scripts/presentation/player_controls.gd")
 const TickPump = preload("res://addons/hatchery/core/tick_pump.gd")
+const LaunchArgs = preload("res://addons/hatchery/settings/launch_args.gd")
 var world: RefCounted
 var save_state: RefCounted
 var slot: int = 1
@@ -52,7 +53,7 @@ func _ready() -> void:
 		return
 	world = World.new(data)
 	save_state = SaveState.new(data, SaveSlots.path(slot))
-	storage_enabled = not OS.get_cmdline_user_args().has("--no-save")
+	storage_enabled = not LaunchArgs.has("no-save")
 	save_state.store.enabled = storage_enabled
 	view = View.new()
 	view.world = world
