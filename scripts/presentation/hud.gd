@@ -19,6 +19,7 @@ const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const UiKit = preload("res://addons/hatchery/ui/ui_kit.gd")
 const Palette = preload("res://addons/hatchery/ui/palette.gd")
 const TeamOrders = preload("res://scripts/presentation/team_orders.gd")
+const CreditsPage = preload("res://addons/hatchery/ui/credits_page.gd")
 signal rescue_requested(task: String)
 signal medicine_requested(mode: String, target: int, reserve: int)
 signal medicine_cancelled
@@ -188,6 +189,7 @@ func _build_menu() -> void:
 	tip_switch = kit.button("Tips: on")
 	tip_switch.pressed.connect(_toggle_tips)
 	sections.Help.add_child(tip_switch)
+	sections.Help.add_child(kit.button("Credits", func() -> void: CreditsPage.open(self, kit)))
 	tip_log = kit.label("", 17)
 	tip_log.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	sections.Help.add_child(tip_log)
