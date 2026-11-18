@@ -24,9 +24,9 @@ home gate were built.
 
 ## 3. Missing basics (G09 has not started)
 
-- [ ] **Sound.** No audio code was found. Synthesise with the toolkit:
-  gunshot, melee hit, zombie groan by distance, barricade strike, build
-  and repair, the van, a tip chime, an area bed.
+- [ ] **Listen to the sounds.** Synthesised cues and beds exist
+  (`street_audio.gd`, `street_sounds.gd`) but nobody has heard them: a
+  person should judge levels and character.
 - [ ] **Settings page**: volume, fullscreen, interface size and key
   bindings with the toolkit's `SettingsStore` and `ui/settings_panel.gd`.
 - [ ] **Accessibility**: a colour-safe palette for threat and health,

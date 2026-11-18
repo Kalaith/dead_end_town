@@ -26,6 +26,7 @@ const Hud = preload("res://scripts/presentation/hud.gd")
 const PlayerControls = preload("res://scripts/presentation/player_controls.gd")
 const TickPump = preload("res://addons/hatchery/core/tick_pump.gd")
 const LaunchArgs = preload("res://addons/hatchery/settings/launch_args.gd")
+const StreetAudio = preload("res://scripts/presentation/street_audio.gd")
 const ScreenFit = preload("res://addons/hatchery/settings/screen_fit.gd")
 var world: RefCounted
 var save_state: RefCounted
@@ -40,6 +41,7 @@ var pump := TickPump.new()
 var defeat_shown: bool = false
 var storage_enabled: bool = true
 var controls := PlayerControls.new()
+var audio: Node
 
 
 ## Keeps the visible view inside the area, centring any axis the area is smaller than.
@@ -66,6 +68,8 @@ func _ready() -> void:
 	camera = Camera2D.new()
 	camera.position = get_viewport().get_visible_rect().size / 2.0 + Vector2(0, 5)
 	add_child(camera)
+	audio = StreetAudio.new()
+	add_child(audio)
 	var canvas := CanvasLayer.new()
 	add_child(canvas)
 	hud = Hud.new()
@@ -120,6 +124,7 @@ func _process(dt: float) -> void:
 		world.interacting = Input.is_action_pressed("interact")
 		pump.tick_seconds = float(world.balance.step)
 		pump.run(minf(dt, 0.2), _step_world)
+	audio.listen(world, paused, dt)
 	var target := _camera_target()
 	camera.position = camera.position.lerp(target, 1.0 - exp(-dt * 8))
 	if not paused:
