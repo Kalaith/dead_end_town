@@ -30,10 +30,8 @@ home gate were built.
 - [ ] **Try a real gamepad.** Bindings and menu focus were driven by
   injected events only; a person with a pad should play a few minutes
   (right-stick aim, trigger to shoot, Start/Back, d-pad orders).
-- [ ] **Credits, icon, wording.** Add a credits page with Godot's licence
-  text, set the Windows icon and product details
-  (`application/modify_resources=false` today), and drop "work-in-progress
-  greybox" from `publish.json` once pilot art lands.
+- [ ] **Wording once pilot art lands**: drop "work-in-progress greybox"
+  from `publish.json`.
 - [ ] **Browser pass.** `.\publish.ps1 -BuildOnly`, serve the web build
   locally, and in Chrome start a run, save to a slot, reload and continue.
 
