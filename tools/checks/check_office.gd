@@ -1,6 +1,6 @@
 extends SceneTree
 ## Office district check: the second area boots and simulates on its own ids, saves and loads, has its warden and gates,
-## and the real suburb exit leads in and the office entrance leads back. Run: Godot --headless --path . --script res://tools/check_office.gd
+## and the real suburb exit leads in and the office entrance leads back. Run: Godot --headless --path . --script res://tools/checks/check_office.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
 const AreaTravel = preload("res://scripts/core/area_travel.gd")

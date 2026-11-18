@@ -1,7 +1,7 @@
 extends SceneTree
 ## Facility check: code finds facilities by kind. With any one facility missing from the area the sim, the prompts and a
 ## save round trip still work, and a facility moved to another lot is found there.
-## Run: Godot --headless --path . --script res://tools/check_facilities.gd
+## Run: Godot --headless --path . --script res://tools/checks/check_facilities.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
 const World = preload("res://scripts/sim/world.gd")

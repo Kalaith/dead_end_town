@@ -1,6 +1,6 @@
 extends SceneTree
 ## Build check: a rear gate between the island rows can be approved and built through the normal interaction and work,
-## and then opens. Run: Godot --headless --path . --script res://tools/check_rear_build.gd
+## and then opens. Run: Godot --headless --path . --script res://tools/checks/check_rear_build.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Routes = preload("res://scripts/sim/routes.gd")

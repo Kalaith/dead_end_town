@@ -1,6 +1,6 @@
 extends SceneTree
 ## Save check: snapshot/restore round trip, previous-schema upgrade and rejection of bad area records.
-## Run: Godot --headless --path . --script res://tools/check_save.gd
+## Run: Godot --headless --path . --script res://tools/checks/check_save.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
 const World = preload("res://scripts/sim/world.gd")

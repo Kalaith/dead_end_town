@@ -1,6 +1,6 @@
 extends SceneTree
 ## Search-found survivors: Theo, Nia and Rowan join when their lot is searched, travel and save. Run:
-## Godot --headless --path . --script res://tools/check_recruits.gd
+## Godot --headless --path . --script res://tools/checks/check_recruits.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
 const World = preload("res://scripts/sim/world.gd")

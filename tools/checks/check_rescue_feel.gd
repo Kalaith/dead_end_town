@@ -1,6 +1,6 @@
 extends SceneTree
 ## A hurt survivor gives ground, and a downed one can be lifted with a zombie nearby but not on top of them.
-## Run: Godot --headless --path . --script res://tools/check_rescue_feel.gd
+## Run: Godot --headless --path . --script res://tools/checks/check_rescue_feel.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")

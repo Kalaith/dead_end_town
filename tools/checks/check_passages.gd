@@ -1,7 +1,7 @@
 extends SceneTree
 ## Passage check: each authored passage joins its two lots only once it is built and open. The four rear gates between the
 ## island rows are included, so the back-to-back lots really connect.
-## Run: Godot --headless --path . --script res://tools/check_passages.gd
+## Run: Godot --headless --path . --script res://tools/checks/check_passages.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Routes = preload("res://scripts/sim/routes.gd")

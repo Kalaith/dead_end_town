@@ -1,6 +1,6 @@
 extends SceneTree
 ## Pressure check: the first event enters at the bridge route, in the right band, and the horde moves into the area.
-## Run: Godot --headless --path . --script res://tools/check_pressure.gd
+## Run: Godot --headless --path . --script res://tools/checks/check_pressure.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Pressure = preload("res://scripts/sim/pressure.gd")

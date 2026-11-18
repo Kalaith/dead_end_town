@@ -1,6 +1,6 @@
 extends SceneTree
 ## Spitter check: aims at a committed point, a glob lands and leaves a pool that does not stack, walls stop globs, a hit
-## interrupts the aim, state validates and saves. Run: Godot --headless --path . --script res://tools/check_spitter.gd
+## interrupts the aim, state validates and saves. Run: Godot --headless --path . --script res://tools/checks/check_spitter.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
 const World = preload("res://scripts/sim/world.gd")

@@ -1,5 +1,5 @@
 extends SceneTree
-## Save slots: paths, the one-line summary and independent saves. Run: Godot --headless --path . --script res://tools/check_slots.gd
+## Save slots: paths, the one-line summary and independent saves. Run: Godot --headless --path . --script res://tools/checks/check_slots.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
 const SaveSlots = preload("res://scripts/core/save_slots.gd")

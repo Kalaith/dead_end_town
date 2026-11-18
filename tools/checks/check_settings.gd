@@ -1,7 +1,7 @@
 extends SceneTree
 ## Settings: defaults include every rebindable action, a rebind moves the action's key, volumes reach their buses,
 ## the interface size multiplies the window's scale and the HUD's own preferences share the store. Run:
-## Godot --headless --path . --script res://tools/check_settings.gd
+## Godot --headless --path . --script res://tools/checks/check_settings.gd
 const GameSettings = preload("res://scripts/presentation/game_settings.gd")
 const Access = preload("res://scripts/presentation/access.gd")
 var failures: int = 0

@@ -1,7 +1,7 @@
 extends SceneTree
 ## Ring check: on foot, once the home gate is open, the player can still reach the bridge, the exit and every lot site,
 ## and the way the horde takes from the bridge to home is walkable end to end.
-## Run: Godot --headless --path . --script res://tools/check_ring.gd
+## Run: Godot --headless --path . --script res://tools/checks/check_ring.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Boss = preload("res://scripts/sim/boss.gd")

@@ -1,6 +1,6 @@
 extends SceneTree
 ## Tips follow the world: each lesson appears at its moment, goes away once learned, and never changes the game.
-## Run: Godot --headless --path . --script res://tools/check_tips.gd
+## Run: Godot --headless --path . --script res://tools/checks/check_tips.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Tips = preload("res://scripts/sim/tips.gd")

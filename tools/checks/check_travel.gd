@@ -1,7 +1,7 @@
 extends SceneTree
 ## Travel check: leaving needs the boss dead and a confirmation, people, gear and capped stock travel, the area left is
 ## frozen whole, and the same exit brings the player back. The second area is the real office district.
-## Run: Godot --headless --path . --script res://tools/check_travel.gd
+## Run: Godot --headless --path . --script res://tools/checks/check_travel.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
 const AreaTravel = preload("res://scripts/core/area_travel.gd")

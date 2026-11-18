@@ -1,7 +1,7 @@
 extends SceneTree
 ## Raid check: in every area, the first raid after a claim enters on its authored route and reaches a held gate.
 ## Raider targets all come from area data (route entry and approach, lot site, gate and yard), so each area is run.
-## Run: Godot --headless --path . --script res://tools/check_raids.gd [-- <area id>]
+## Run: Godot --headless --path . --script res://tools/checks/check_raids.gd [-- <area id>]
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Pressure = preload("res://scripts/sim/pressure.gd")

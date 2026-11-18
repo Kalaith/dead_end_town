@@ -19,7 +19,7 @@ Evidence and limits:
 
 - Content is split into shared rules (`data/street/`, `data/zombies.json`) and per-area maps (`data/areas/<id>/`). `data/areas.json` lists areas in campaign order. Each area's `area.json` supplies its id, bounds, start and shelter points and recovery-salvage sites, merged into the catalog. `Catalog.read(area_id)` loads one area; no argument starts the first. The original strip is now the interim `suburb` area, unchanged in content.
 - Save schema 36 adds the current `area` and a `frozen` registry for areas the player has left (empty for now). Older saves upgrade to the first area. Loading rejects an area other than the loaded one, an unknown area, or a frozen copy of the current one.
-- Added `tools/check_save.gd` (round trip, schema-35 upgrade, bad area records) alongside `check_catalog.gd`. All pass; 87 scripts load; editor import is clean.
+- Added `tools/checks/check_save.gd` (round trip, schema-35 upgrade, bad area records) alongside `tools/checks/check_catalog.gd`. All pass; 87 scripts load; editor import is clean.
 - Played the real game: it starts from the moved data, Save writes schema 36 with area `suburb`, and Load reports "Street restored" (`docs/verification/area_layer_save_load.png`).
 - Not done: switching areas, carrying people and stock between them, and loading a save for a non-first area (step 8). The suburb grid itself is step 4.
 
@@ -28,7 +28,7 @@ Evidence and limits:
 - The interim strip is replaced by a 14-lot cul-de-sac in `data/areas/suburb/` (see `19-areas-and-suburb.md`): home at the west dead end, nine original lots with unchanged IDs and positions, four new loot houses and a half-built house with 48 Materials. Columns 7–11 (Civic/Works lots, their passages, crossings and barriers) are removed. Bounds are 5,840 × 1,160; 19 links.
 - Pressure has two authored routes, the north-east and south-east alleys at the east end. Route validation is generic (any unique ids, spread follows the nearest map edge). Search rewards are allowed on any available site; passage/crossing counts come from the town links.
 - Saves now use `user://suburb.json`. The old `street.json` is never read or touched, so there is no damaged-save error and saving stays on. The schema stays 36.
-- Checks: catalog 0 problems (including each route's physical approach to the road), 87 scripts load, `tools/check_save.gd` 6/6, editor import clean. The real game launches and the home end renders as before.
+- Checks: catalog 0 problems (including each route's physical approach to the road), 87 scripts load, `tools/checks/check_save.gd` 6/6, editor import clean. The real game launches and the home end renders as before.
 - Not seen: the east end, new houses, half-built house and alley mouths in the running game. A manual walk was impractical (closed gate, residents on every lot). The migration scheduler's route and band logic is untouched beyond validation; its rework onto this layout (step 5) and the baboon and exit (steps 7-8) remain.
 
 ## 29 October 2026: ring-road suburb (step 4, redone)
@@ -37,19 +37,19 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 
 - `data/areas/suburb/` now holds 16 lots in four rows (outer north, island north, island south, outer south) around a rectangular ring road with a plaza at the east, 3,360 × 2,180. Files are consolidated to `area`, `town`, `pressure`, `properties`, `roads`, `passages`. Existing lot identities and names are kept; home moved to the north-east corner. 24 links, including four rear gates between the island rows. One pressure route enters from the south-west bridge.
 - Engine: fence cutting now handles horizontal (back) fences so passages can join lots back to back; streets draw vertical roads and a plaza; recovery-pile and shelter validators check "open road near home" instead of the old strip's coordinates; search rewards, route ids and link counts are generic.
-- Checks: catalog 0 problems (including the bridge route's physical path), 87 scripts load, `check_save.gd` 6/6. In the running game: home in the north-east corner, the ring road corner and east side road render, the island rows sit back to back with a double fence, and centre-line paint stops at the corner.
+- Checks: catalog 0 problems (including the bridge route's physical path), 87 scripts load, `tools/checks/check_save.gd` 6/6. In the running game: home in the north-east corner, the ring road corner and east side road render, the island rows sit back to back with a double fence, and centre-line paint stops at the corner.
 - Not seen: the plaza's planted centre after a draw-order fix, the bridge end, the west road and the rear gates working (a passage there has never been built in play). Simulated movement into the street was unreliable, so the south and west of the ring were not walked. Rear passage building, link reasons for rear gates and the pressure tuning remain to be checked.
 
 ## 29 October 2026: pressure on the ring road (step 5)
 
 - The scheduler needed no engine change: bands already follow held core lots (`town.json` `bands`), routes are the area's authored entrances, and enemy statistics are untouched. The single south-west bridge route is validated for a physical path into the road.
-- Added `tools/check_pressure.gd` (headless): home alone is band 0; the first claim schedules an event from the bridge route only; zombies are admitted within ten minutes at the bridge entry and a minute later have moved most of the way up the west road toward the settlement. All pass.
+- Added `tools/checks/check_pressure.gd` (headless): home alone is band 0; the first claim schedules an event from the bridge route only; zombies are admitted within ten minutes at the bridge entry and a minute later have moved most of the way up the west road toward the settlement. All pass.
 - Not tuned: band budgets and intervals have not been balanced against play on this layout, and only the first event was run. The baboon (step 7) will sit on the road the horde uses.
 
 ## 29 October 2026: advisory readiness summary (step 6)
 
 - `scripts/sim/readiness.gd` summarises food (and meal cost), medicine, bullets, barricades standing/damaged and able defenders. The pause menu's Street tab shows it under the stockpile as "READINESS / advisory". Nothing is gated on it.
-- Checked: all scripts load, and `tools/check_pressure.gd` asserts the summary content. Not seen: the label's layout in the real pause menu (no capture taken).
+- Checked: all scripts load, and `tools/checks/check_pressure.gd` asserts the summary content. Not seen: the label's layout in the real pause menu (no capture taken).
 
 ## 29 October 2026: the undead baboon and the bridge exit (step 7)
 
@@ -57,7 +57,7 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 - The suburb's `area.json` gains `boss` (post at the bridge road, leash 320, two shambler escorts) and `exit` (the bridge rectangle at the south-west corner). `scripts/sim/boss.gd` places them, leashes the baboon (a target beyond the leash is ignored and it walks back to its post), and tracks the kill. Death is permanent and opens the exit with a radio note. The pressure entry moved east to (380, 2140) so the exit corner is clear of spawns.
 - Save schema 37: the boss and escorts are validated as the area's non-property residents; schema 36 saves are upgraded by adding them at their posts. Position, health and charge phase ride in the existing zombie record.
 - Drawing: a large dark-furred baboon with a health bar, a wreck roadblock labelled BLOCKED while it lives and a green arrow labelled EXIT once it is down (`docs/verification/boss_baboon_post.png`, `boss_exit_open.png`).
-- Checks: `tools/check_boss.gd` (post and escorts, stays put, tell then dash, leash, round trip, schema 36 upgrade, death opens the exit and survives a save), catalog 0 problems, `check_save.gd` and `check_pressure.gd` pass.
+- Checks: `tools/checks/check_boss.gd` (post and escorts, stays put, tell then dash, leash, round trip, schema 36 upgrade, death opens the exit and survives a save), catalog 0 problems, `tools/checks/check_save.gd` and `tools/checks/check_pressure.gd` pass.
 - Not done: the fight itself has not been played, so the baboon's difficulty, whether the leash feels right and whether the horde crossing its post causes odd behaviour are unknown. The roadblock is visual only; nothing is physically blocked. Using the exit is step 8.
 
 ## 29 October 2026: area transition (step 8), schema 38
@@ -66,7 +66,7 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 - `scripts/core/area_travel.gd` builds the destination world: the area left is frozen whole in `frozen` (with the stock that was not carried), the destination is a fresh world or the restored frozen record, and the team, equipment, firearm, health and stock up to `area_carry_cap` (40 in `balance.json`) arrive with the player. People arrive on Follow with duties reset. The same exit works back: the player arrives at the exit they used.
 - Items and the firearm unlocked in one area stay unlocked: save schema 38 adds `unlocks`, and the equipment, firearm and roster validators no longer require the first area's property flags once the player has travelled.
 - Town: `_travel` loads the destination catalog and swaps world, save state and view, then shows the pause menu titled with the area's name; Load opens the area named in the save first; New street always starts the first area.
-- Checks: `tools/check_travel.gd` (blocked while the boss lives, confirmation lapses, second press requests travel, team/gear/capped stock arrive, area frozen with its surplus, destination saves and loads, a clean world goes out and comes back with its state and arrives at the exit). The second area in that check is the suburb relabelled in memory. Catalog, save, pressure and boss checks pass. Real game: the exit prompt reads correctly (`docs/verification/boss_exit_prompt.png`).
+- Checks: `tools/checks/check_travel.gd` (blocked while the boss lives, confirmation lapses, second press requests travel, team/gear/capped stock arrive, area frozen with its surplus, destination saves and loads, a clean world goes out and comes back with its state and arrives at the exit). The second area in that check is the suburb relabelled in memory. Catalog, save, pressure and boss checks pass. Real game: the exit prompt reads correctly (`docs/verification/boss_exit_prompt.png`).
 - Not seen: the actual move in the running game (there is no second area to move to), the transition menu, and Load of a non-first-area save. Fabricated mid-game states fail validation on purpose, so the round trip check uses a clean world. Several validators and `World` still assume the first area's property ids (home, garden, library, garage...); a second area must reuse them or those need generalising before step 9.
 
 ## 29 October 2026: review pass 1 (size limits and docs)
@@ -89,7 +89,7 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 
 ## 29 October 2026: review pass 3 (ring reachability)
 
-- Added `tools/check_ring.gd`: with the home gate opened, the same waypoint walking the game uses reaches the bridge approach, the exit, the boss post and every lot's site from the start, and the horde's bridge entry reaches its approach point. All pass, which covers the west road and the south of the ring that nobody had walked. Still not walked by a person: the plaza, the rear gates in use, and a real fight at the post.
+- Added `tools/checks/check_ring.gd`: with the home gate opened, the same waypoint walking the game uses reaches the bridge approach, the exit, the boss post and every lot's site from the start, and the horde's bridge entry reaches its approach point. All pass, which covers the west road and the south of the ring that nobody had walked. Still not walked by a person: the plaza, the rear gates in use, and a real fight at the post.
 - Found: walking to a gate point exactly on a lot's front fence line (for example `house_a` at 600,680) from the street stalls, because the waypoint step returns the walker's own position beside the fence. Sites inside lots, which tasks actually use, are fine. Left alone; if survivors report "Route blocked" at those gates, aim their approach at a point just off the fence.
 
 ## 29 October 2026: review pass 4 (horde past the baboon)
@@ -100,7 +100,7 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 ## 29 October 2026: review pass 5 (spawn overlap thinned every wave)
 
 - Cause of the short waves: raiders entering at the bridge walk east along the spur beside lot house_e, straight into the next spawn slot half a second later, and a slot within 22 pixels of a living zombie is skipped. Waves lost 3-5 of their 5-8 raiders (`last.skipped`).
-- Fix: `entry_seconds` 0.5 -> 1.2 in the suburb's `pressure.json`. Over 15 simulated minutes the four waves now admit 5-6 each and skip 0-2 (was 2-3 admitted, 3-5 skipped). `tools/check_pressure.gd` asserts the first event skips nothing.
+- Fix: `entry_seconds` 0.5 -> 1.2 in the suburb's `pressure.json`. Over 15 simulated minutes the four waves now admit 5-6 each and skip 0-2 (was 2-3 admitted, 3-5 skipped). `tools/checks/check_pressure.gd` asserts the first event skips nothing.
 - Consequence for tuning: the suburb now receives the full authored budget, so it is harder than it was; with the player idle, 21 raiders were alive after 15 minutes. Band numbers were authored for the old layout and have not been balanced against play.
 - Still open: why raiders at the bridge head east along a dead-end spur before turning back (a path-target question for `raiding.gd`), and everything that needs real play.
 
@@ -108,16 +108,16 @@ User feedback: the straight cul-de-sac was still one long street. Reference: San
 
 - Cause: `raiding.gd` sends a raider at the nearest lot needing zombies by straight-line distance. From the bridge entry that is the house_e/b/f row directly above the spur, behind a back fence, so raiders walked east along the fence instead of up the west road (which also made the next spawn slot collide, see pass 5).
 - Fix: a raider in the migration `inward` phase first walks to its route's `approach` point, then switches to `seeking` and hunts as before. The save validator accepts `seeking` with no destination. No schema change: `inward` raiders in old saves behave the same way.
-- Checked in simulation: over 15 minutes every raider passes the baboon's post and enters the settlement (19 of 19 at the end, with an idle player); `tools/check_pressure.gd` asserts none is left on the spur. I did not confirm the new assertion fails on the old code. Waves now also accumulate faster when nobody fights them, so pressure is harder than before; still untuned against real play.
+- Checked in simulation: over 15 minutes every raider passes the baboon's post and enters the settlement (19 of 19 at the end, with an idle player); `tools/checks/check_pressure.gd` asserts none is left on the spur. I did not confirm the new assertion fails on the old code. Waves now also accumulate faster when nobody fights them, so pressure is harder than before; still untuned against real play.
 
 ## 29 October 2026: review pass 7 (passages and rear gates)
 
-- Added `tools/check_passages.gd`: for each of the 16 authored passages, with its state set to built, the walk between its two sites is about straight when the gate is open (29 steps for 30 straight; 11 for 12 on the rear gates) and much longer or impossible when shut (150 steps, or stalled). All pass, so the four rear gates between the island rows (house_a/clinic, munitions/greenhouse, garage/No. 12, library/corner house) connect their back-to-back lots.
-- This covers geometry only; `tools/check_rear_build.gd` (pass 8) covers the build flow.
+- Added `tools/checks/check_passages.gd`: for each of the 16 authored passages, with its state set to built, the walk between its two sites is about straight when the gate is open (29 steps for 30 straight; 11 for 12 on the rear gates) and much longer or impossible when shut (150 steps, or stalled). All pass, so the four rear gates between the island rows (house_a/clinic, munitions/greenhouse, garage/No. 12, library/corner house) connect their back-to-back lots.
+- This covers geometry only; `tools/checks/check_rear_build.gd` (pass 8) covers the build flow.
 
 ## 29 October 2026: review pass 8 (building a rear gate)
 
-- Added `tools/check_rear_build.gd`: with both lots claimed and materials in hand, standing at the library/corner-house rear gate offers the passage, E approves it, holding work finishes the build, and E then opens it. All pass. Not seen in play: the drawn rear gate and its link text.
+- Added `tools/checks/check_rear_build.gd`: with both lots claimed and materials in hand, standing at the library/corner-house rear gate offers the passage, E approves it, holding work finishes the build, and E then opens it. All pass. Not seen in play: the drawn rear gate and its link text.
 
 ## 29 October 2026: double the resident zombies
 
@@ -136,22 +136,22 @@ User feedback: the zombies were not a real danger; taking space should feel like
 
 - Mistake found: I had said existing saves would keep their old residents. They would not: the resident list is validated against the catalog, so a schema 38 save from before the doubling failed to load as damaged and blocked saving.
 - Fix: schema 39. `resident_state.gd` renumbers each lot's old starting zombies into the first slots of its new numbering (`z%d` ids shifted when each lot doubled), short-term memories are cleared since they are keyed by id, and every missing resident (the new zombies, reinforcements, the boss and escorts) is added from a fresh world at its authored position. Older saves pass through the same step. Old saves now load with the doubled, refilled yards.
-- Checked: `tools/check_save.gd` builds a save shaped like the old one (half the residents, old numbering, schema 38) and restores it to the full 124 plus boss; catalog, pressure, boss and travel checks pass. Not tried with a real old save file on disk.
-- Follow-up: there is no save file on this machine (`user://` holds no `suburb.json`), so the schema 39 upgrade could only be exercised by the constructed old-style save in `check_save.gd`, not a real one.
+- Checked: `tools/checks/check_save.gd` builds a save shaped like the old one (half the residents, old numbering, schema 38) and restores it to the full 124 plus boss; catalog, pressure, boss and travel checks pass. Not tried with a real old save file on disk.
+- Follow-up: there is no save file on this machine (`user://` holds no `suburb.json`), so the schema 39 upgrade could only be exercised by the constructed old-style save in `tools/checks/check_save.gd`, not a real one.
 
 ## 29 October 2026: facilities as data, slice A
 
 - Decision (user): option 2 for the area-2 prerequisite. Slice A: every lot in `properties*.json` has a `facility` kind; `scripts/sim/facility.gd` looks facilities up by kind (`id`, `has`, `kind_of`, `definition`, `state`, `saved`, an inert record for a missing facility); `town_content.gd` validates that each kind is known and unique and that `home` is the lot with id home. Behaviour is unchanged: nothing reads the field yet. Catalog 0 problems.
 - Slice B: all 42 direct `world.properties.<facility>` / `data.properties.<facility>` reads now go through `Facility.state` / `Facility.saved` (23 files). `EquipmentState.valid` takes the catalog. Behaviour in the suburb is unchanged: catalog, save, pressure, boss, travel, ring, passage and rear-build checks all pass. Remaining: string-literal ids in comparisons (C), the roster/equipment/firearm couplings in validators (D), presentation (E).
 - Slice C: lot lookups understand facilities. `Facility.resolve` maps a facility kind to the lot that declares it (kinds are reserved words: they never match a lot id, and a lot named after a kind must hold it); `world.definition`, `remaining`, `connected`, `safe_connected`, `player_at_worksite`, `garden_tended`, `Neighbourhood.safe_connected`, the roster (rescue sites are kinds) and job validation all take either a lot id or a kind, and a missing facility reads as unclaimed and unlooted instead of crashing. The ammunition bench step returns early when the area has none.
-- New `tools/check_facilities.gd`: for each of the eight non-home facilities it removes that facility from the catalog and runs the sim, every lot's prompt and a save round trip; it also moves the clinic facility to another lot and checks June is recruited there. All pass. This found the firearms step crashing without a bench, now fixed. It is shallow (no survivors assigned to missing facilities), and the suites for the suburb are unchanged and pass.
+- New `tools/checks/check_facilities.gd`: for each of the eight non-home facilities it removes that facility from the catalog and runs the sim, every lot's prompt and a save round trip; it also moves the clinic facility to another lot and checks June is recruited there. All pass. This found the firearms step crashing without a bench, now fixed. It is shallow (no survivors assigned to missing facilities), and the suites for the suburb are unchanged and pass.
 - Still to do: D) validators that tie survivors, equipment and firearm to the first area's flags beyond what `unlocks` covers, plus remaining literal-id comparisons in `tasks.gd`, `jobs.gd`, `food_growing.gd`, `work_order_state.gd`; E) presentation (`town_view`, `hud`, `town_map`) and an end-to-end second area.
 
 ## 29 October 2026: facilities as data finished, and the office district (step 9, first slice)
 
 - Slice D/E in practice: the office district proved the refactor. Loading it found and fixed these first-area assumptions: claim effects tested lot ids (`id == "garage"`, `"residence"`, `"munitions"`, `"library"`), now `Facility.kind_of`; `p.id == <kind>` in the home-world drawing, now `p.facility`; direct `properties[...]` reads for facility kinds in food growing, jobs, restoration, salvage, slice and companion-rescue state; the greenhouse validator required a lot named `greenhouse`; the roster validator required each survivor's rescue lot to exist (rescue sites are now facility kinds, required only where the area has the facility); and the search-reward identity tested lot ids. One slice B miss in `world.gd` is fixed.
 - New area `office` (see `19-areas-and-suburb.md`): 12 lots, own ids and names, facilities by kind, one pressure route from the south-east, the Warden boss at the west road with a service-stair exit, and an `entrance` at the south-west corner. Registered after the suburb. `AreaTravel` arrives at the entrance going forward and at the used exit going back; E at an entrance asks, then goes to the previous area. New boss kind `warden`; both boss kinds are marked `boss` and drawn by one generic routine; entrances are drawn.
-- Checks: `check_catalog` now validates every registered area (both 0 problems); `check_ring` and `check_passages` run on every area (the walk check now accepts a grid path where its straight-line follower clips a corner); `check_travel` uses the real office; new `tools/check_office.gd` (boots and simulates the office, saves and loads it, real suburb exit -> office entrance -> back -> forward again restoring the frozen office). Screenshots: `office_warden.png`, `office_home_street.png`, `office_entrance.png`.
+- Checks: `check_catalog` now validates every registered area (both 0 problems); `check_ring` and `check_passages` run on every area (the walk check now accepts a grid path where its straight-line follower clips a corner); `check_travel` uses the real office; new `tools/checks/check_office.gd` (boots and simulates the office, saves and loads it, real suburb exit -> office entrance -> back -> forward again restoring the frozen office). Screenshots: `office_warden.png`, `office_home_street.png`, `office_entrance.png`.
 - Not done: the office has not been played. Pressure bands, the Warden's balance, the ranged and ambush pressure the design asks for (Spitter does not exist), area-specific survivors and the plaza are open. Area 3 (industrial) is not started. The suburb's exit now leads to the office instead of saying nothing lies beyond.
 
 ## 29 October 2026: review pass 11 (the office's pressure)
@@ -162,7 +162,7 @@ User feedback: the zombies were not a real danger; taking space should feel like
 ## 29-30 October 2026: the industrial works (step 9, second slice)
 
 - New last area `industrial` (see `19-areas-and-suburb.md`): eight lots, five facilities by kind, a south-east pressure route of Brute and Breaker waves, a resident Breaker in the depot so the kind can be taught, the Foreman boss at the west road and a `final` main gate whose closing line ends the campaign, plus a "Service road" entrance back to the office. The office exit now leads here. New zombie kinds `breaker` (420 health, from the catalogue) and `foreman` (3,200 health, boss); Breakers draw heavy.
-- Checks: `check_catalog`, `check_ring` and `check_passages` cover all three areas (all pass); `check_travel` expects office -> industrial; new `tools/check_industrial.gd` (boot and simulate, save and load, resident Breaker, Breaker template eligible only when taught, office exit -> works entrance, final gate message). Screenshots `works_entrance.png`, `works_foreman.png`, `works_home_street.png`.
+- Checks: `check_catalog`, `check_ring` and `check_passages` cover all three areas (all pass); `check_travel` expects office -> industrial; new `tools/checks/check_industrial.gd` (boot and simulate, save and load, resident Breaker, Breaker template eligible only when taught, office exit -> works entrance, final gate message). Screenshots `works_entrance.png`, `works_foreman.png`, `works_home_street.png`.
 - Not done: the area has not been played; power, vehicles and the 18-vehicle design are not mechanics here; the closing line is a text note, not an ending screen. All three areas are generated from the suburb's street grammar, so they share a layout vocabulary and differ mainly in shape, names, facilities and pressure. Step 9 is otherwise complete; step 11 (play the real game proportionate to each change) is where tuning of all three areas belongs.
 
 ## 30 October 2026: area 1 doubled again (schema 40)
@@ -176,7 +176,7 @@ User feedback: the suburb was still too easy. Every suburb lot now starts with t
 
 - Survivors below 40% health with a zombie within 90 px now fall back (away from it, else to the home respawn) instead of fighting on. Lifting a downed person now needs no zombie within 60 px (was 170 of either party), and the prompt says "Zombie too close to lift <name>" instead of silently stalling.
 - New zombie kind `spitter` (85 health, notice 340 px): it stands at 140-340 px with a clear shot, aims 0.9 s at a committed point, and lobs a 240 px/s glob (8 damage) that leaves a 42 px pool lasting 4 s (4 damage per second, one shared one-second cooldown per person so pools never stack). Walls stop globs, low barriers do not; a hit during the aim cancels it with a 3 s retry. Drawn with an aim ring, dashed pool edge and a throat sac.
-- Office district: a resident Spitter in the Bank Branch teaches the kind; templates `lobby_spit` and `floor_spit`; special cap 2. New `tools/check_spitter.gd` (11 checks) passes; catalog, save, office, pressure, boss, travel, industrial and passage checks pass.
+- Office district: a resident Spitter in the Bank Branch teaches the kind; templates `lobby_spit` and `floor_spit`; special cap 2. New `tools/checks/check_spitter.gd` (11 checks) passes; catalog, save, office, pressure, boss, travel, industrial and passage checks pass.
 - Not done: globs and pools are transient (not saved; a load drops any in flight). Armour and a facing shield reduce the direct hit; only armour reduces pool ticks, as designed. Survivor guards do not step aside from pools, and workers do not flee marked areas. None of this has been played, and the retreat/lift changes have only been checked by the existing suites, not a dedicated test.
 
 ## 30 October 2026: an ending screen
@@ -187,7 +187,7 @@ User feedback: the suburb was still too easy. Every suburb lot now starts with t
 ## 30 October 2026: the van (driving slice), schema 41
 
 - Rewrote the head of `18-vehicle.md` to the area model and built a first slice (see its "Current state"). The office has a van parked beside its start; E boards, W/S/A/D drive it, E leaves when stopped. Hull 300, damaged by adjacent zombies (7 x breach) and Spitter globs; a wrecked van ejects the driver. Engine noise draws zombies. New `data/street/vehicle.json`, `scripts/sim/vehicle.gd`, `scripts/core/vehicle_state.gd`; save schema 41 (older saves, including frozen areas, gain an undriven van) and an `engine` attention event.
-- `tools/check_vehicle.gd` (15 checks) and `tools/check_rescue_feel.gd` (6 checks) pass, as do the catalog, save, office, pressure, boss, travel, industrial, passage and spitter checks.
+- `tools/checks/check_vehicle.gd` (15 checks) and `tools/checks/check_rescue_feel.gd` (6 checks) pass, as do the catalog, save, office, pressure, boss, travel, industrial, passage and spitter checks.
 - Not done: how it handles in a real window (stopping distance numbers are right on paper, 49 px from top speed), followers do not ride along and cannot keep up, passengers, repair, recovery and any reason to drive beyond speed. The van has not been seen drawn.
 
 ## 30 October 2026: scripted boss fights (`tools/sim_boss.gd`)
@@ -237,7 +237,7 @@ Delivery steps 1-10 in `19-areas-and-suburb.md` are all done; only step 11 (play
 ## 30 October 2026: tutorial tips
 
 - New `scripts/sim/tips.gd`, `scripts/core/tips_content.gd` and `data/street/tips.json`: nine state-driven tips (move, swing near a zombie, lift, drop-off, rest, repair gate, open gate, reclaim a yard, arrivals), one at a time, in a HUD box and under Help with a Tips on/off button. No schema change: nothing is saved, session-only memory covers walking, swinging and lifting, and a world past 60 s counts the basics as taught. `world.tips` is stepped at the end of each fixed step.
-- `tools/check_tips.gd` (13 checks) passes, as do parse (120 scripts), catalog, save, pressure, boss, travel, rescue-feel, vehicle, spitter, office, industrial, passages, ring, rear-build and facilities checks. `tools/capture_tips.gd` frames `tip_move`, `tip_gate_repair` and `tip_help_tab` were looked at: the box reads cleanly and does not cover the context prompt.
+- `tools/checks/check_tips.gd` (13 checks) passes, as do parse (120 scripts), catalog, save, pressure, boss, travel, rescue-feel, vehicle, spitter, office, industrial, passages, ring, rear-build and facilities checks. `tools/capture_tips.gd` frames `tip_move`, `tip_gate_repair` and `tip_help_tab` were looked at: the box reads cleanly and does not cover the context prompt.
 - Not done: the tips have not been played through by a person. The Tips on/off choice resets each session; no tips yet for timber, the field bag, team orders (1-4), the work board, the workshop, firearms and noise, or the second and third areas. The wording is first-pass.
 
 ## 30 October 2026: code-review fixes and a second development review
@@ -304,7 +304,7 @@ Still needing development (second look, most important first):
 
 - `survivors.json` now names all eight. Theo, Nia and Rowan use `site: "search"`: they join when the lot whose `search.survivor` names them is searched, so recruits are authored per area. Theo is in the office tower lobby; Nia in the works' tool crib; Rowan in the works' gatehouse. `Roster.lot` resolves where each lives; the rescue menu, save validation and discovery validation use it. They arrive with the same Hold/Follow/home choice as June and Oliver and have no exclusive role (as in doc 05). Drawn in orange, violet and cobalt.
 - Saves: no schema change. Search-found survivors are optional in a save, so an office or works save whose lot was already searched stays valid but will not gain them retroactively.
-- `tools/check_recruits.gd` (search, intro, save per person; none in the suburb) passes with parse (124 scripts), catalog, save, travel, boss, office, industrial, vehicle, tips, rescue-feel and facilities.
+- `tools/checks/check_recruits.gd` (search, intro, save per person; none in the suburb) passes with parse (124 scripts), catalog, save, travel, boss, office, industrial, vehicle, tips, rescue-feel and facilities.
 - Not done: their introduction text is first-pass and unseen; no Theo-specific escort role, Nia power mechanic or Rowan reserve role beyond ordinary orders; not seen in a capture.
 
 ## 30 October 2026: stores left behind give a reason to go back
@@ -334,7 +334,7 @@ Still needing development (second look, most important first):
 ## 30 October 2026: three save slots
 
 - `scripts/core/save_slots.gd`: slot 1 keeps `user://suburb.json` (existing saves are untouched); slots 2 and 3 use `user://street_2.json` and `street_3.json`. The pause menu's Street tab has a slot button that cycles the slot and shows its summary ("Slot 2 · empty", "Slot 1 · suburb 34m", minutes counting every area); Save and Load then use that slot. The slot is per session and starts at 1; "New street" keeps the current slot's save until you save.
-- `tools/check_slots.gd` (paths, summary, isolation) passes with parse (125 scripts), save and travel checks; a headless boot runs; `pause_save_slots` was looked at. Not done: remembering the last slot between sessions, deleting or naming a slot, loading from another slot automatically on start (the game still opens on slot 1's area), and a confirmation before overwriting a slot.
+- `tools/checks/check_slots.gd` (paths, summary, isolation) passes with parse (125 scripts), save and travel checks; a headless boot runs; `pause_save_slots` was looked at. Not done: remembering the last slot between sessions, deleting or naming a slot, loading from another slot automatically on start (the game still opens on slot 1's area), and a confirmation before overwriting a slot.
 
 ## 30 October 2026: slot memory and overwrite guard
 
@@ -352,7 +352,7 @@ Still needing development (second look, most important first):
 ## 30 October 2026: supply caches (schema 44)
 
 - Because the plaza and car parks had no purpose and no answer came, I gave them the smallest one: a one-time supply cache in the open of each area, searched with E when no zombie is within 170 px (`scripts/sim/caches.gd`, `caches` in `area.json`, `caches_taken` in the save). Suburb: market stalls on the plaza (20 materials, 4 food, 2 medicine); office: abandoned cars on the east road (24/5/3); works: freight pallets on the east road (28/6/4). Drawn as crates with a ring; they stay as empty crates once searched. Saves from schema 43 have taken none.
-- `tools/check_caches.gd` (reachable, refused near a zombie, pays once, saves, schema 43 upgrade, unknown id rejected) passes with parse (129 scripts), catalog, save, vehicle, spitter, travel, boss, tips, office, industrial and recruits checks. Frames `cache_market` and `cache_market_searched` were looked at.
+- `tools/checks/check_caches.gd` (reachable, refused near a zombie, pays once, saves, schema 43 upgrade, unknown id rejected) passes with parse (129 scripts), catalog, save, vehicle, spitter, travel, boss, tips, office, industrial and recruits checks. Frames `cache_market` and `cache_market_searched` were looked at.
 - This is a placeholder decision, easy to change or remove (data plus one script). Still not designed: a defensive role for the plaza, and what the car parks should be as lots.
 
 ## 30 October 2026: being away has a cost
@@ -380,7 +380,7 @@ Still needing development (second look, most important first):
 
 ## 18 November 2026: raids reach a gate in every area
 
-- `raiding.gd` already takes every target from area data (route entry and approach, lot site, gate and yard). The new `tools/check_raids.gd` runs the first raid after a claim in each area and asserts it enters on an authored route and a raider reaches a held gate within 20 minutes. It failed in the office: raiders pressed against tower_lobby's fence sat in a grid cell the pathfinder marks solid, `waypoint` gave up, and they walked into the fence for good.
+- `raiding.gd` already takes every target from area data (route entry and approach, lot site, gate and yard). The new `tools/checks/check_raids.gd` runs the first raid after a claim in each area and asserts it enters on an authored route and a raider reaches a held gate within 20 minutes. It failed in the office: raiders pressed against tower_lobby's fence sat in a grid cell the pathfinder marks solid, `waypoint` gave up, and they walked into the fence for good.
 - `Routes.waypoint` now paths from and to the nearest open cell (within two cells) when the start or target cell is solid, as a spot on a fence line or gate is. Every area passes; raids also arrive sooner (suburb 497 s to 295 s, office never to 229 s, works 1063 s to 210 s), so pressure is harder than before, untuned. This likely also helps the listed "fence-line gate points stall walkers" debt; not separately checked. All 18 earlier checks pass.
 
 ## 18 November 2026: a scripted run to the ending
@@ -392,7 +392,7 @@ Still needing development (second look, most important first):
 ## 18 November 2026: the workshop and ammunition bench work while you are away
 
 - `scripts/sim/away_work.gd` runs on return to an area (from `AreaTravel._regrow`, after the garden and clinic): a workshop or gear restoration already paid for advances by the time away and finishes when it can; the ammunition bench keeps its policy (once or repeat, target, material reserve) and crafts whole batches, each paid from the stock left in that area through the normal work board. Part-done work is left with no worker named. No schema change.
-- `tools/check_away_work.gd`: 900 s away finishes the workshop, makes 24 bullets for a repeat-24 policy and charges 8 materials from the stock left behind; an unset bench makes nothing (0 failures). Travel, save and facilities checks pass. Rates are the bench's own; unplayed.
+- `tools/checks/check_away_work.gd`: 900 s away finishes the workshop, makes 24 bullets for a repeat-24 policy and charges 8 materials from the stock left behind; an unset bench makes nothing (0 failures). Travel, save and facilities checks pass. Rates are the bench's own; unplayed.
 
 ## 18 November 2026: a long absence costs more than the gate
 
@@ -402,7 +402,7 @@ Still needing development (second look, most important first):
 ## 18 November 2026: the van repair is a work-board job (schema 45)
 
 - Holding R beside the stopped, damaged van approves a `van_repair` work order (4 materials, 10 s, from `vehicle.json`); the player or a survivor assigned from the board (new `Van` order, standing at the van's flank) works it off, and cancelling refunds like any project. `scripts/sim/van_repair.gd` owns it; `vehicle.repair_paid`/`repair_progress` stay as projections of the order, and saves require a pending order whenever a repair is paid. Schema 45 refunds a repair paid the old way.
-- `tools/check_van_repair.gd` (approve, on the board, Mara assigned and finishing, mid-repair save, cancel refund, schema 44 refund) passes; all 21 checks pass and the editor import is clean. Not looked at in the running game.
+- `tools/checks/check_van_repair.gd` (approve, on the board, Mara assigned and finishing, mid-repair save, cancel refund, schema 44 refund) passes; all 21 checks pass and the editor import is clean. Not looked at in the running game.
 
 ## 18 November 2026: the van follows the team between areas
 
@@ -422,12 +422,12 @@ Still needing development (second look, most important first):
 ## 18 November 2026: synthesised sound
 
 - `scripts/presentation/street_audio.gd` watches the shown world each frame (the simulation knows nothing of audio) and plays cues from `street_sounds.gd`, all synthesised at start from one seed with the toolkit's `Synth` on a `CueBank` (Effects bus): gunshot, swing, melee hit, zombie groan from the nearest zombie within 700 px (quieter with distance, every 2-3 s), gate or barricade struck, work ticks for building and repair, a finished project, the van engine (pitch by speed), and a tip chime. Each area has an `Ambience` bed (suburb wind; office hum and draught; works machinery drone and hiss). Paused, no new cues play. A `heard` signal carries captions for gunshots, strikes, groans and the engine.
-- `tools/check_audio.gd` (headless, so cues are counted, not heard) passes. Not heard by anyone: levels and character are guesses. Volume controls come with the settings page.
+- `tools/checks/check_audio.gd` (headless, so cues are counted, not heard) passes. Not heard by anyone: levels and character are guesses. Volume controls come with the settings page.
 
 ## 18 November 2026: settings page and rebindable keys
 
 - Help → Settings opens the toolkit's settings page (`scripts/presentation/game_settings.gd`, a `settings_bundle`): master, effects and ambience volume, mute, full screen and Interface size (80-160 %, multiplying on top of screen fit), and a Controls tab rebinding 16 actions. The shortcuts that were hard-coded keys (1-4, Q, G, F, J, M, Esc/Tab) are now project actions (`order_*`, `salvage`, `road_guard`, `team`, `work_board`, `town_map`, `pause`). The HUD's tips, slot and slot-name preferences live in the same store and file. With no preferences file the bindings start from the project's keys (the toolkit store leaves them empty otherwise).
-- `tools/check_settings.gd` (defaults, rebind, refused duplicate, effects bus, interface size, slot preference) passes; slots, tips and audio checks pass. Frames `screen_settings` and `screen_settings_keys` were looked at. Not checked: the help text still names the default keys after a rebind; the aim helper in `player_controls.gd` still watches WASD/arrows/Space directly.
+- `tools/checks/check_settings.gd` (defaults, rebind, refused duplicate, effects bus, interface size, slot preference) passes; slots, tips and audio checks pass. Frames `screen_settings` and `screen_settings_keys` were looked at. Not checked: the help text still names the default keys after a rebind; the aim helper in `player_controls.gd` still watches WASD/arrows/Space directly.
 
 ## 18 November 2026: accessibility
 
@@ -445,3 +445,7 @@ Still needing development (second look, most important first):
 ## 18 November 2026: browser pass
 
 - `.\publish.ps1 -BuildOnly` built web and Windows; the web build was served from `builds/publish/.../web` on 127.0.0.1 and played in Chrome (viewport 1920x911, one layout unit per pixel): Begin, walk, pause, Save ("Street saved to slot 1"), reload the page (slot still shows "suburb 0m"), Load ("Street restored"), resume and walk. No errors seen. Not done: a small window (the window was maximised and resizing had no effect) and browser full screen.
+
+## 18 November 2026: one command runs every check
+
+- The 23 check scripts moved into `tools/checks/` and the empty `tools/scratch/` is gone. `tools/Check.ps1` runs `parse_all`, the editor import and every `tools/checks/check_*.gd`, each in its own headless Godot, and fails on a non-zero exit, a FAIL line or a SCRIPT ERROR (`-Only <names>` for a subset, `-Bot` adds `bot_ending.gd`). Each check stays its own SceneTree script rather than being rewritten as toolkit `check_runner` modules. First full run: all 25 pass in about two minutes. Paths in AGENTS and the progress notes were updated.

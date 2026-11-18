@@ -1,7 +1,7 @@
 extends SceneTree
 ## Street audio: each moment the world shows plays its cue, a paused game plays none, captions are raised for the
 ## sounds that carry information, and every area has a bed. Headless, so cues are counted, not heard. Run:
-## Godot --headless --path . --script res://tools/check_audio.gd
+## Godot --headless --path . --script res://tools/checks/check_audio.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const StreetAudio = preload("res://scripts/presentation/street_audio.gd")

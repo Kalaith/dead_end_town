@@ -1,6 +1,6 @@
 extends SceneTree
 ## Content check: loads every data file and prints validation problems. Not a simulation.
-## Run: Godot --headless --path . --script res://tools/check_catalog.gd
+## Run: Godot --headless --path . --script res://tools/checks/check_catalog.gd
 
 
 func _init() -> void:

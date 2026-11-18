@@ -1,6 +1,6 @@
 extends SceneTree
 ## Boss check: the baboon holds its post, charges with a tell, is leashed, and its death opens the exit and survives saving.
-## Run: Godot --headless --path . --script res://tools/check_boss.gd
+## Run: Godot --headless --path . --script res://tools/checks/check_boss.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
 const World = preload("res://scripts/sim/world.gd")

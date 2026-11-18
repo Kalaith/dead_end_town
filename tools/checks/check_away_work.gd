@@ -2,7 +2,7 @@ extends SceneTree
 ## Away work check: while the player is in another area, a paid-for workshop restoration finishes and the ammunition
 ## bench keeps crafting under its policy, paying from the stock left behind; a long absence wears the barricades and a
 ## much longer one loses the outlying lot with no protected route home. Run:
-## Godot --headless --path . --script res://tools/check_away_work.gd
+## Godot --headless --path . --script res://tools/checks/check_away_work.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")

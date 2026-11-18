@@ -9,7 +9,7 @@ history is in [PROGRESS](docs/PROGRESS.md). The area model is in
 [19](docs/19-areas-and-suburb.md).
 
 Review basis (16 November): `parse_all`, the headless editor import and all
-19 `tools/check_*.gd` scripts exit 0. Nothing was looked at or played. Since
+19 `tools/checks/check_*.gd` scripts exit 0. Nothing was looked at or played. Since
 the last version of this list, supply caches, away medicine and the battered
 home gate were built.
 
@@ -32,13 +32,6 @@ home gate were built.
   (right-stick aim, trigger to shoot, Start/Back, d-pad orders).
 - [ ] **Wording once pilot art lands**: drop "work-in-progress greybox"
   from `publish.json`.
-## 4. Housekeeping
-
-- [ ] **`tools/checks/` and `tools/scratch/` are empty** while 19 check
-  scripts sit flat in `tools/`. Either move the checks into `tools/checks/`
-  behind one runner on the toolkit's `testing/check_runner.gd`, or remove
-  the empty folder. One command should run them all.
-
 ## Screen fit: a real 1920x1080 layout (from spiritwright, 18 Nov 2026)
 
 Spiritwright (commit `4a335a1`) now lays out at 1920x1080 on a 1080p screen

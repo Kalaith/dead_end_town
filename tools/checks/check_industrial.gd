@@ -1,6 +1,6 @@
 extends SceneTree
 ## Industrial works check: the final area boots and simulates, a Breaker lives in its depot, heavy waves become eligible once
-## it is seen, the office exit leads in, and the main gate ends the campaign. Run: Godot --headless --path . --script res://tools/check_industrial.gd
+## it is seen, the office exit leads in, and the main gate ends the campaign. Run: Godot --headless --path . --script res://tools/checks/check_industrial.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
 const AreaTravel = preload("res://scripts/core/area_travel.gd")

@@ -1,6 +1,6 @@
 extends SceneTree
 ## Open-air supply caches: reachable, searched once, refused with zombies close, saved, and added to older saves.
-## Run: Godot --headless --path . --script res://tools/check_caches.gd
+## Run: Godot --headless --path . --script res://tools/checks/check_caches.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
 const World = preload("res://scripts/sim/world.gd")

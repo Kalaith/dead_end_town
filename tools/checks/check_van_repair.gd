@@ -2,7 +2,7 @@ extends SceneTree
 ## Van repair on the work board: R beside the van approves it, an assigned survivor finishes it, it saves, cancels
 ## with a refund, and a schema 44 save paid the old way is refunded. The van follows the team through an exit when
 ## parked near them, and stays behind otherwise. Run:
-## Godot --headless --path . --script res://tools/check_van_repair.gd
+## Godot --headless --path . --script res://tools/checks/check_van_repair.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
 const SaveState = preload("res://scripts/core/save_state.gd")
