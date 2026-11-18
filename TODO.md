@@ -91,25 +91,12 @@ toolkit's `res://addons/hatchery/settings/screen_fit.gd` (it also handles
 high-DPI screens and takes the smallest layout as an argument) rather than
 copying spiritwright's file.
 
-- [ ] `project.godot`: viewport 1280x720 -> 1920x1080, add
-  `window/stretch/aspect="expand"` (it is the default `keep` now, so 16:10
-  and ultrawide get black bars), override 1280x720 -> 1600x900. Mount
-  screen fit.
-- [ ] `presentation/town.gd` `_camera_target()` clamps the camera with a
-  hardcoded half-view of 640x360. Use half of the visible rect, or a
-  1920-wide layout will show past the town's edges.
-- [ ] `presentation/town_map.gd` sets a fixed 800x208 minimum; let it grow
-  with the panel at 1920.
-- [ ] There is no Interface size setting; consider adding one through the
-  toolkit's `settings_bundle.gd` (it multiplies on top of screen fit).
-- [ ] Capture every screen (title, settings, the main play screen and each
-  panel/overlay) at 1920x1080, 1600x900, 1280x720 and 1280x800, and look at
-  them: nothing pinned to the old 1280 edge, no panel left skinny in the
-  middle of a wide layout, no text overlapping. Then play the web build in
-  Chrome at a full-screen 1080p window and a small one.
-- [ ] Toggle full screen and drag-resize the window mid-screen: anything
-  sized once at build time (e.g. `get_viewport_rect()` read in `_ready`)
-  must follow `resized`, or it keeps the old width.
+- [ ] There is no Interface size setting; add one through the toolkit's
+  `settings_bundle.gd` with the settings page (it multiplies on top of
+  screen fit).
+- [ ] Play the web build in Chrome at a full-screen 1080p window and a
+  small one (with the browser pass), and toggle full screen mid-screen once
+  the settings page has the control.
 
 ## Rules that still hold
 

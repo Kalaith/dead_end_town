@@ -17,5 +17,5 @@ $godot = Get-ChildItem -Path 'C:\Program Files\Godot' -Filter 'Godot_v4.7.*-stab
     Sort-Object { [version]($_.Name -replace '^Godot_v(\d+\.\d+(\.\d+)?)-.*', '$1') } -Descending | Select-Object -First 1
 if (-not $godot) { throw 'Godot 4.7 console executable not found in C:\Program Files\Godot.' }
 $project = Split-Path -Parent $PSScriptRoot
-& $godot.FullName --path $project --position 10000,10000 --resolution 1280x720 --script $Tour -- --no-save
+& $godot.FullName --path $project --position 10000,10000 --resolution 1920x1080 --script $Tour -- --no-save --size=1920x1080
 exit $LASTEXITCODE

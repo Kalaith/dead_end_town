@@ -9,8 +9,11 @@ var shown: bool = false
 
 
 func _ready() -> void:
-	position = Vector2(340, 200)
-	size = Vector2(600, 300)
+	custom_minimum_size = Vector2(600, 300)
+	# Centred on the screen at any layout size.
+	set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_MINSIZE)
+	grow_horizontal = Control.GROW_DIRECTION_BOTH
+	grow_vertical = Control.GROW_DIRECTION_BOTH
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 18)
 	add_child(column)

@@ -358,3 +358,10 @@ Still needing development (second look, most important first):
 ## 30 October 2026: being away has a cost
 
 - Returning to an area after at least `away_siege_seconds` (600) elsewhere finds the home gate at `away_siege_factor` (0.6) of its health, with a note; shorter absences change nothing. Together with the away garden and clinic, an area left behind now both pays and costs. `check_travel` covers long and short absences. No schema change. Rates are unplayed guesses; raiders in the area itself stay frozen.
+
+## 18 November 2026: a real 1920x1080 layout (screen fit)
+
+- `project.godot` lays out at 1920x1080 (`stretch/aspect="expand"`, window 1600x900) and `town.gd` mounts the toolkit's `ScreenFit.watch`: windows from 1280x720 to 1920x1080 get one layout unit per pixel, bigger ones scale up, smaller ones shrink to a 1280x720 layout. A bigger screen now shows more street, not bigger text.
+- The camera clamp uses half the visible rect, not 640x360. The HUD pins the pause button and tip to the top right and the radio line to the bottom left by anchors; the pause menu grows from 880 to 1240 wide and follows `resized`. Rescue, defeat and ending panels are centred by anchors. The town map's drawing and preview grow with the menu and re-place their site buttons on resize.
+- `tools/capture_screens.gd` (title, each pause tab, credits, street, rescue, defeat, ending, and a resize to 1280x800 mid-screen) was run and looked at at 1920x1080, 1600x900, 1280x800 and 1280x720; the 1920 set is kept as `screen_*`. `Capture.ps1` now captures at 1920x1080. Parse (132 scripts) and editor import are clean.
+- Not checked: the web build in Chrome and full-screen toggling (no full-screen control exists yet; it comes with the settings page). The toolkit credits page sizes itself once when opened.

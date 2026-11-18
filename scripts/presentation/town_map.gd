@@ -28,6 +28,15 @@ func _ready() -> void:
 	preview.clip_contents = true
 	preview.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	local.add_child(preview)
+	resized.connect(_layout)
+
+
+## The map grows with the pause menu: taller drawing and preview on a wide layout.
+func _layout() -> void:
+	drawing.custom_minimum_size.y = clampf(size.x * 0.26, 208.0, 320.0)
+	preview.custom_minimum_size = Vector2(clampf(size.x * 0.45, 400.0, 560.0), clampf(size.x * 0.22, 176.0, 260.0))
+	if world != null:
+		refresh.call_deferred(world)
 
 
 func refresh(value: RefCounted) -> void:

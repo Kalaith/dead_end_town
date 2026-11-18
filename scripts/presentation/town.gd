@@ -24,6 +24,7 @@ const Hud = preload("res://scripts/presentation/hud.gd")
 const PlayerControls = preload("res://scripts/presentation/player_controls.gd")
 const TickPump = preload("res://addons/hatchery/core/tick_pump.gd")
 const LaunchArgs = preload("res://addons/hatchery/settings/launch_args.gd")
+const ScreenFit = preload("res://addons/hatchery/settings/screen_fit.gd")
 var world: RefCounted
 var save_state: RefCounted
 var slot: int = 1
@@ -39,14 +40,16 @@ var storage_enabled: bool = true
 var controls := PlayerControls.new()
 
 
-## Keeps the 1280x720 view inside the area, centring any axis the area is smaller than.
+## Keeps the visible view inside the area, centring any axis the area is smaller than.
 func _camera_target() -> Vector2:
 	var bounds := Vector2(float(world.catalog.bounds[0]), float(world.catalog.bounds[1]))
 	var focus: Vector2 = world.player.pos + Vector2(0, -40)
-	return Vector2(clampf(focus.x, minf(640.0, bounds.x / 2.0), maxf(bounds.x - 640.0, bounds.x / 2.0)), clampf(focus.y, minf(360.0, bounds.y / 2.0), maxf(bounds.y - 360.0, bounds.y / 2.0)))
+	var half: Vector2 = get_viewport().get_visible_rect().size / 2.0
+	return Vector2(clampf(focus.x, minf(half.x, bounds.x / 2.0), maxf(bounds.x - half.x, bounds.x / 2.0)), clampf(focus.y, minf(half.y, bounds.y / 2.0), maxf(bounds.y - half.y, bounds.y / 2.0)))
 
 
 func _ready() -> void:
+	ScreenFit.watch(get_tree().root)
 	var data: Dictionary = Catalog.read()
 	if data.is_empty():
 		get_tree().quit(1)
@@ -59,7 +62,7 @@ func _ready() -> void:
 	view.world = world
 	add_child(view)
 	camera = Camera2D.new()
-	camera.position = Vector2(640, 365)
+	camera.position = get_viewport().get_visible_rect().size / 2.0 + Vector2(0, 5)
 	add_child(camera)
 	var canvas := CanvasLayer.new()
 	add_child(canvas)

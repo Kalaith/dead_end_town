@@ -88,8 +88,7 @@ func _ready() -> void:
 	stats.position = Vector2(20, 60)
 	add_child(stats)
 	var pause: Button = kit.button("Ⅱ", func() -> void: requested.emit("menu"))
-	pause.position = Vector2(1220, 16)
-	pause.size = Vector2(44, 40)
+	_pin(pause, Vector2(1, 0), Rect2(-60, 16, 44, 40))
 	pause.tooltip_text = "Pause (Esc)"
 	add_child(pause)
 	context_label = kit.label("", 17, Color("dfb36e"))
@@ -98,20 +97,22 @@ func _ready() -> void:
 	casualty_label = kit.label("", 15, Color("ffac82"))
 	casualty_label.position = Vector2(20, 130)
 	add_child(casualty_label)
-	tip_panel = _panel(Vector2(860, 76), Vector2(400, 64))
+	tip_panel = _panel(Vector2.ZERO, Vector2(400, 64))
+	_pin(tip_panel, Vector2(1, 0), Rect2(-420, 76, 400, 64))
 	tip_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tip_label = kit.label("", 16, Color("c6e5cd"))
 	tip_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	tip_panel.add_child(tip_label)
 	radio = kit.label("", 16, Color("c6e5cd"))
-	radio.position = Vector2(20, 640)
-	radio.size = Vector2(740, 64)
+	_pin(radio, Vector2(0, 1), Rect2(20, -80, 740, 64))
 	radio.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	radio.add_theme_color_override("font_shadow_color", Color("142426"))
 	radio.add_theme_constant_override("shadow_offset_x", 2)
 	radio.add_theme_constant_override("shadow_offset_y", 2)
 	add_child(radio)
 	_build_menu()
+	resized.connect(_layout)
+	_layout()
 	rescue_menu = RescueMenu.new()
 	add_child(rescue_menu)
 	rescue_menu.chosen.connect(func(task: String) -> void: rescue_requested.emit(task))
@@ -121,6 +122,27 @@ func _ready() -> void:
 	ending_menu = EndingMenu.new()
 	add_child(ending_menu)
 	ending_menu.chosen.connect(func(command: String) -> void: requested.emit(command))
+
+
+## Pins `control` to the `corner` of the screen (0 or 1 on each axis), `rect` offset from it.
+func _pin(control: Control, corner: Vector2, rect: Rect2) -> void:
+	control.anchor_left = corner.x
+	control.anchor_right = corner.x
+	control.anchor_top = corner.y
+	control.anchor_bottom = corner.y
+	control.offset_left = rect.position.x
+	control.offset_top = rect.position.y
+	control.offset_right = rect.position.x + rect.size.x
+	control.offset_bottom = rect.position.y + rect.size.y
+
+
+## The pause menu grows with the screen (880 wide at 1280, up to 1240) and stays centred.
+func _layout() -> void:
+	if menu == null:
+		return
+	var extent := Vector2(clampf(size.x - 400.0, 880.0, 1240.0), maxf(size.y - 96.0, 480.0))
+	menu.position = ((size - extent) / 2.0).floor()
+	menu.size = extent
 
 
 func _panel(pos: Vector2, extent: Vector2) -> PanelContainer:

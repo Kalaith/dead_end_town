@@ -4,7 +4,7 @@ Read `README.md`, `docs/01-game-design.md`, `docs/11-decisions-and-questions.md`
 
 - A continuous top-down street, cooperative named survivors, physical home defence, connected property reclamation and equipment-led growth are the foundations. Avoid relationship drama, XP grind or colony micromanagement.
 - The Last Hearth supplies the project-layout template only. Its BDI, recruitment and turn-based combat rules do not apply to this game.
-- Godot 4.7.2, Compatibility renderer, desktop keyboard/mouse first, 1280x720. Current art is original procedural greybox drawing.
+- Godot 4.7.2, Compatibility renderer, desktop keyboard/mouse first. Laid out at 1920x1080 with screen fit (`addons/hatchery/settings/screen_fit.gd`): 1280x720 to 1920x1080 windows get one layout unit per pixel; place HUD controls by anchors, never by a 1280 edge. Current art is original procedural greybox drawing.
 - `scripts/sim/` owns authoritative state and fixed-step rules without scene-tree dependencies. `scripts/presentation/` reads state and issues commands. `scripts/core/` owns content validation and save mapping. Balance and map content live in `data/street/*.json` (zombie kinds in `data/zombies.json`).
 - Use `../godot_toolkit` through the ignored `addons/hatchery` junction. Recreate it with `../godot_toolkit/tools/Link-Toolkit.ps1 -ProjectDir .`. Do not edit shared toolkit code as a side effect.
 - Verification commands: `--headless --path . --script res://tools/parse_all.gd` and `--headless --editor --path . --quit`. Use the installed console executable in `C:/Program Files/Godot/`.
