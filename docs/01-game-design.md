@@ -96,4 +96,4 @@ Read this document and the [decision register](11-decisions-and-questions.md), t
 | [18 Vehicle](18-vehicle.md) | One utility van, discovery, travel limits, recovery and persistence |
 | [17 Acceptance and balance](17-acceptance-and-balance.md) | Reproducible scenarios, economy examples and playtest gates |
 
-[PROGRESS.md](PROGRESS.md) is the record of implementation and actual evidence. [TODO.md](TODO.md) is the immediate work queue. Neither a design decision nor the user's positive slice feedback proves a full campaign feature is implemented.
+[PROGRESS.md](PROGRESS.md) is the record of implementation and actual evidence. [TODO.md](../TODO.md) is the immediate work queue. Neither a design decision nor the user's positive slice feedback proves a full campaign feature is implemented.

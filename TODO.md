@@ -4,9 +4,9 @@ Updated 16 November 2026. Only outstanding work an agent can do alone belongs
 here: bug fixes, required improvements and next steps. Playing the three
 areas, tuning from that run and deciding the plaza's richer purpose need a
 person and are left out on purpose (see the
-[playtest checklist](playtest-checklist.md)). Remove a task when it is done;
-history is in [PROGRESS](PROGRESS.md). The area model is in
-[19](19-areas-and-suburb.md).
+[playtest checklist](docs/playtest-checklist.md)). Remove a task when it is done;
+history is in [PROGRESS](docs/PROGRESS.md). The area model is in
+[19](docs/19-areas-and-suburb.md).
 
 Review basis (16 November): `parse_all`, the headless editor import and all
 19 `tools/check_*.gd` scripts exit 0. Nothing was looked at or played. Since
@@ -74,6 +74,42 @@ home gate were built.
   scripts sit flat in `tools/`. Either move the checks into `tools/checks/`
   behind one runner on the toolkit's `testing/check_runner.gd`, or remove
   the empty folder. One command should run them all.
+
+## Screen fit: a real 1920x1080 layout (from spiritwright, 18 Nov 2026)
+
+Spiritwright (commit `4a335a1`) now lays out at 1920x1080 on a 1080p screen
+instead of stretching a 1280x720 layout by 1.5x, so bigger screens show more
+room, not bigger text. How it works: `project.godot` has a 1920x1080 viewport
+with `stretch/mode="canvas_items"` and `stretch/aspect="expand"`, and
+`scripts/ui/screen_fit.gd` (started from `main.gd`'s `_ready` with
+`ScreenFit.watch(get_tree().root)`) sets `root.content_scale_size` on every
+resize. Windows between 1280x720 and 1920x1080 get one layout unit per
+pixel. Larger screens are scaled up so the layout stays at least 1920x1080
+(4K doubles), and smaller ones are shrunk to a 1280x720 layout. The Interface
+size setting (`content_scale_factor`) still multiplies on top. Use the
+toolkit's `res://addons/hatchery/settings/screen_fit.gd` (it also handles
+high-DPI screens and takes the smallest layout as an argument) rather than
+copying spiritwright's file.
+
+- [ ] `project.godot`: viewport 1280x720 -> 1920x1080, add
+  `window/stretch/aspect="expand"` (it is the default `keep` now, so 16:10
+  and ultrawide get black bars), override 1280x720 -> 1600x900. Mount
+  screen fit.
+- [ ] `presentation/town.gd` `_camera_target()` clamps the camera with a
+  hardcoded half-view of 640x360. Use half of the visible rect, or a
+  1920-wide layout will show past the town's edges.
+- [ ] `presentation/town_map.gd` sets a fixed 800x208 minimum; let it grow
+  with the panel at 1920.
+- [ ] There is no Interface size setting; consider adding one through the
+  toolkit's `settings_bundle.gd` (it multiplies on top of screen fit).
+- [ ] Capture every screen (title, settings, the main play screen and each
+  panel/overlay) at 1920x1080, 1600x900, 1280x720 and 1280x800, and look at
+  them: nothing pinned to the old 1280 edge, no panel left skinny in the
+  middle of a wide layout, no text overlapping. Then play the web build in
+  Chrome at a full-screen 1080p window and a small one.
+- [ ] Toggle full screen and drag-resize the window mid-screen: anything
+  sized once at build time (e.g. `get_viewport_rect()` read in `_ready`)
+  must follow `resized`, or it keeps the old width.
 
 ## Rules that still hold
 

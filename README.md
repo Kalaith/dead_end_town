@@ -111,6 +111,6 @@ The production destination is `/public_html/games/dead_end_town/`, with a local 
 | [Equipment and recipes](docs/16-equipment-and-recipes.md) | Unique items, costs, work and prerequisites |
 | [Acceptance and balance](docs/17-acceptance-and-balance.md) | Funding/food examples, scenarios and human playtest gates |
 | [Vehicle design](docs/18-vehicle.md) | Recoverable utility van, travel, recovery and save rules |
-| [Progress](docs/PROGRESS.md) · [TODO](docs/TODO.md) | What is built and verified, and what is next |
+| [Progress](docs/PROGRESS.md) · [TODO](TODO.md) | What is built and verified, and what is next |
 
 The full game design targets 24 properties, eight zombie kinds and eight survivors plus the player, with a core campaign and a finite relief-signal ending. It is documentation for future implementation; the runtime currently has nine searchable properties within the full 24-site layout, including field treatment and Oliver’s greenhouse food loop. Four enemy kinds are implemented, including Runner lunges and interruptible Screecher calls, plus spatial noise and short person memory. Screecher live acceptance, campaign scheduling and later facilities remain in development. Design numbers are chosen starting values with validation gates, while `PROGRESS.md` records what exists and was actually checked.
