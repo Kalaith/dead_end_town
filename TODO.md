@@ -15,12 +15,10 @@ home gate were built.
 
 ## 1. Required
 
-- [ ] **A scripted run to the ending.** Nothing since the area transition
-  has been played. Write a headless bot in `tools/` that plays all three
-  areas through the bridge and road-room bosses to the ending screen on a
-  few seeds, and fails on a stall, a script error or an unreachable
-  objective. It does not replace the human playtest; it finds blockers
-  before it.
+- [ ] **The ending bot only rushes the bosses.** `tools/bot_ending.gd`
+  reaches the ending but skips the reclaim objective. Teach it to search,
+  claim and connect each area's `objective.reclaim` lots before the boss,
+  so blockers in that part of the campaign show up too.
 
 ## 2. Known gaps (buildable)
 
