@@ -15,6 +15,11 @@ const Boss = preload("res://scripts/sim/boss.gd")
 const Defeat = preload("res://scripts/sim/defeat.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const SliceObjective = preload("res://scripts/sim/slice_objective.gd")
+const Neighbourhood = preload("res://scripts/sim/neighbourhood.gd")
+## Simulated seconds an area may spend connecting its yards before the bot goes for the boss anyway.
+const CONNECT_SECONDS: float = 600.0
+## A connecting step that makes no progress this long is reported and skipped.
+const GIVE_UP_SECONDS: float = 60.0
 const STEP: float = 0.1
 const AREA_MINUTES: float = 30.0
 const STALL_SECONDS: float = 120.0
@@ -82,6 +87,7 @@ func _play_area(world: RefCounted, report: Dictionary) -> String:
 	var best: float = INF
 	var since_progress: float = 0.0
 	var objective: String = ""
+	var last_work: float = _work_done(world)
 	while world.elapsed < limit:
 		if world.campaign_ended:
 			return "ended"
@@ -101,6 +107,20 @@ func _play_area(world: RefCounted, report: Dictionary) -> String:
 		var target: Vector2 = boss.pos if alive else Boss.exit_rect(world.catalog).get_center()
 		var label: String = "boss" if alive else "exit"
 		var step: Dictionary = {} if rush else _reclaim_step(world)
+		if step.is_empty() and not rush:
+			if not report.has("connect_" + world.area):
+				report["connect_" + world.area] = world.elapsed
+			if world.elapsed - float(report["connect_" + world.area]) < CONNECT_SECONDS:
+				step = _connect_step(world, report.get("skipped", []))
+				if not step.is_empty() and since_progress > GIVE_UP_SECONDS:
+					# Report a step the game will not take from here, and go on without it.
+					if not report.has("skipped"):
+						report.skipped = []
+					report.skipped.append(str(step.label))
+					print("      %s: gave up on %s at %s (last note: %s)" % [world.area, step.label, str(world.player.pos.round()), str(world.messages.back()) if not world.messages.is_empty() else ""])
+					since_progress = 0.0
+					step = _connect_step(world, report.skipped)
+		world.working = false
 		if not step.is_empty():
 			target = step.pos
 			label = step.label
@@ -115,7 +135,10 @@ func _play_area(world: RefCounted, report: Dictionary) -> String:
 		var foe: Dictionary = _fight(world)
 		var fighting: bool = not foe.is_empty()
 		var foe_hp: float = float(foe.get("hp", 0.0))
-		if not step.is_empty() and bool(step.act) and not fighting:
+		if not step.is_empty() and str(step.get("work", "")) == "work" and bool(step.act) and not fighting:
+			world.move_input = Vector2.ZERO
+			world.working = true
+		elif not step.is_empty() and bool(step.act) and not fighting:
 			world.move_input = Vector2.ZERO
 			world.interact()
 		elif not alive and Boss.at_exit(world):
@@ -135,9 +158,13 @@ func _play_area(world: RefCounted, report: Dictionary) -> String:
 			print("      %ds %s at %s, %s %d px, last note: %s" % [int(world.elapsed), world.area, str(world.player.pos.round()), objective, int(distance), str(world.messages.back()) if not world.messages.is_empty() else ""])
 		world.step(STEP)
 		world.release_interact()
-		# A fight that lands blows is progress; one that cannot hurt its target is a stall.
+		# A fight that lands blows is progress, and so is work that advances; one that cannot is a stall.
 		if fighting and float(foe.hp) < foe_hp:
 			since_progress = 0.0
+		var work: float = _work_done(world)
+		if work > last_work + 0.001:
+			since_progress = 0.0
+		last_work = work
 	return "out of time going for the %s" % objective
 
 
@@ -145,6 +172,9 @@ func _play_area(world: RefCounted, report: Dictionary) -> String:
 ## connected neighbour). Clear its yard (walk at the nearest zombie inside), then search and claim it at its porch.
 ## `act` is true when standing at the porch. {} when every listed lot is held or none can be reached yet.
 func _reclaim_step(world: RefCounted) -> Dictionary:
+	for id: String in world.catalog.objective.reclaim:
+		if world.properties[id].claimed and world.remaining(id) > 0:
+			return {"label": "re-clear " + id, "pos": _nearest_in(world, Routes.rectangle(world.definition(id).rect)), "act": false}
 	for id: String in world.catalog.objective.reclaim:
 		var state: Dictionary = world.properties[id]
 		if id == "home" or state.claimed:
@@ -154,14 +184,96 @@ func _reclaim_step(world: RefCounted) -> Dictionary:
 		var p: Dictionary = world.definition(id)
 		var yard: Rect2 = Routes.rectangle(p.rect)
 		if world.remaining(id) > 0:
-			var nearest: Vector2 = Vector2.INF
-			for z: Dictionary in world.zombies:
-				if float(z.hp) > 0 and yard.has_point(z.pos) and (not nearest.is_finite() or world.player.pos.distance_to(z.pos) < world.player.pos.distance_to(nearest)):
-					nearest = z.pos
-			return {"label": "clear " + id, "pos": nearest, "act": false}
+			return {"label": "clear " + id, "pos": _nearest_in(world, yard), "act": false}
 		var site: Vector2 = Routes.point(p.site)
 		return {"label": ("search " if not state.looted else "claim ") + id, "pos": site, "act": world.player.pos.distance_to(site) < 60.0}
 	return {}
+
+
+## The next move toward joining every listed lot to home by safe links: for a passage or crossing between held lots
+## that is not yet safe, clear its yards or corridor, approve and build the passage (E then hold R), build each
+## street barricade (E on an empty one, then hold R), and open closed gates. {} when every listed lot is safely
+## connected, or nothing more can be done (a breached passage gate, say).
+func _connect_step(world: RefCounted, skipped: Array = []) -> Dictionary:
+	for step: Dictionary in _connect_steps(world):
+		if str(step.label) not in skipped:
+			return step
+	return {}
+
+
+## Every useful connecting step now, in link order (see `_connect_step`).
+func _connect_steps(world: RefCounted) -> Array[Dictionary]:
+	var steps: Array[Dictionary] = []
+	var lots: Array = world.catalog.objective.reclaim
+	if lots.all(func(id: String) -> bool: return world.safe_connected(id)):
+		return steps
+	for d: Dictionary in world.catalog.passages + world.catalog.crossings:
+		if not d.requires.any(func(id: String) -> bool: return id in lots) or not Neighbourhood.owned(world, d):
+			continue
+		var reason: String = Neighbourhood.link_reason(world, d)
+		match reason:
+			"hostile yard":
+				for id: String in d.requires:
+					if world.remaining(id) > 0:
+						steps.append({"label": "clear " + id, "pos": _nearest_in(world, Routes.rectangle(world.definition(id).rect)), "act": false})
+			"hostile in corridor":
+				steps.append({"label": "clear " + d.id, "pos": _nearest_in(world, Routes.rectangle(d.area)), "act": false})
+			"passage not built":
+				var site: Vector2 = Routes.point(d.sites[0])
+				var here: bool = world.player.pos.distance_to(site) < 30.0
+				if world.passages[d.id].started:
+					steps.append({"label": "build " + d.id, "pos": site, "act": here, "work": "work"})
+				if world.materials < int(world.balance.passage_cost):
+					continue
+				steps.append({"label": "approve " + d.id, "pos": site, "act": here})
+			"passage gate closed":
+				var gate: Vector2 = Routes.point(d.sites[0])
+				steps.append({"label": "open " + d.id, "pos": gate, "act": world.player.pos.distance_to(gate) < 30.0})
+			"street boundary open":
+				for id: String in d.barriers:
+					var b: Dictionary = world.roadworks[id]
+					var barricade: Dictionary = {}
+					for candidate: Dictionary in world.catalog.barricades:
+						if candidate.id == id:
+							barricade = candidate
+					# Work from beside the barricade on whichever side the player is (standing in its footprint blocks
+					# the build, and the inner site may be shut off from the road).
+					var center: Vector2 = Routes.point(barricade.center)
+					var inner: Vector2 = Routes.point(barricade.site)
+					var outer: Vector2 = center - (inner - center)
+					var at: Vector2 = inner if world.player.pos.distance_to(inner) <= world.player.pos.distance_to(outer) else outer
+					var close: bool = world.player.pos.distance_to(at) < 30.0
+					if b.phase == "building":
+						steps.append({"label": "build " + id, "pos": at, "act": close, "work": "work"})
+					if b.phase == "empty" and world.materials >= int(world.balance.barricade_cost):
+						steps.append({"label": "approve " + id, "pos": at, "act": close})
+			"yard gate closed":
+				for id: String in d.requires:
+					if not world.properties[id].open:
+						var gate: Vector2 = Routes.point(world.definition(id).gate)
+						steps.append({"label": "open gate " + id, "pos": gate, "act": world.player.pos.distance_to(gate) < 40.0})
+	return steps
+
+
+## Work done on every open project, so a bot standing at a build counts as making progress.
+func _work_done(world: RefCounted) -> float:
+	var total: float = 0.0
+	for order: Dictionary in world.orders.sites.values():
+		total += float(order.work_done)
+	for state: Dictionary in world.roadworks.values():
+		total += float(state.progress)
+	return total
+
+
+## The living zombie inside `rect` nearest the player, or the rect's centre.
+func _nearest_in(world: RefCounted, rect: Rect2) -> Vector2:
+	var nearest: Vector2 = rect.get_center()
+	var best: float = INF
+	for z: Dictionary in world.zombies:
+		if float(z.hp) > 0 and rect.has_point(z.pos) and world.player.pos.distance_to(z.pos) < best:
+			best = world.player.pos.distance_to(z.pos)
+			nearest = z.pos
+	return nearest
 
 
 ## Swings at the nearest living zombie in reach and in the open (not behind a fence). Returns it, or {}.

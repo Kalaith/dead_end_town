@@ -15,13 +15,6 @@ home gate were built.
 
 ## 1. Required
 
-- [ ] **The ending bot does not connect yards.** `tools/bot_ending.gd`
-  reclaims each area's listed lots, but readiness still reports "Connect
-  every yard to home through fenced passages" (suburb, office) and "Clear
-  the occupied yards" (works, raiders back in a yard). Teach it to approve
-  and build the passages and crossings, and to re-clear yards, so the bot
-  reaches each boss with readiness met.
-
 ## 2. Known gaps (buildable)
 
 ## 3. Missing basics (G09 has not started)
