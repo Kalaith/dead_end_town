@@ -32,7 +32,10 @@ const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 ## Shared files describe rules, people and equipment that travel between areas.
 const SHARED_FILES: Array[String] = ["street/attention.json", "street/recovery.json", "street/survivors.json", "street/work.json", "street/firearm.json", "street/balance.json", "street/equipment.json", "street/vehicle.json", "street/tips.json", "zombies.json"]
 ## Area files describe one map; each lives under data/areas/<id>/ and area.json supplies its bounds and start points.
-const AREA_FILES: Array[String] = ["area.json", "town.json", "pressure.json", "properties.json", "properties_additional.json", "roads.json", "passages.json"]
+## Lots are split by row: the main street's north and south sides, then the back rows.
+const AREA_FILES: Array[String] = ["area.json", "town.json", "pressure.json", "properties.json", "properties_south.json", "properties_additional.json", "properties_back.json", "roads.json", "passages.json"]
+## Area files an area may leave out (a small area keeps each side's lots in one file).
+const OPTIONAL_AREA_FILES: Array[String] = ["properties_south.json", "properties_back.json"]
 const APPENDED_KEYS: Array[String] = ["properties", "barricades", "crossings", "passages"]
 
 
@@ -57,6 +60,8 @@ static func read(area_id: String = "") -> Dictionary:
 			for file: String in SHARED_FILES:
 				_merge(data, JsonIO.read_object("res://data/" + file, errors, 1), file, errors)
 			for file: String in AREA_FILES:
+				if file in OPTIONAL_AREA_FILES and not FileAccess.file_exists("res://data/areas/%s/%s" % [area_id, file]):
+					continue
 				_merge(data, JsonIO.read_object("res://data/areas/%s/%s" % [area_id, file], errors, 1), file, errors)
 			data.areas = list.areas
 	data.schema_version = 1

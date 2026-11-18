@@ -15,11 +15,6 @@ home gate were built.
 
 ## 1. Required
 
-- [ ] **Two data files are over the 800-line hard limit.**
-  `data/areas/suburb/properties.json` is 957 lines and
-  `properties_additional.json` 813; `passages.json` is 709. Split the
-  properties by street or block into more files the area loader reads in
-  order. Move entries; do not pack them.
 - [ ] **A lot searched too early never yields its survivor.** A Theo, Nia
   or Rowan lot searched before they existed stays empty. Migrate such
   saves so the survivor can still be found, with a check on an old save.

@@ -365,3 +365,7 @@ Still needing development (second look, most important first):
 - The camera clamp uses half the visible rect, not 640x360. The HUD pins the pause button and tip to the top right and the radio line to the bottom left by anchors; the pause menu grows from 880 to 1240 wide and follows `resized`. Rescue, defeat and ending panels are centred by anchors. The town map's drawing and preview grow with the menu and re-place their site buttons on resize.
 - `tools/capture_screens.gd` (title, each pause tab, credits, street, rescue, defeat, ending, and a resize to 1280x800 mid-screen) was run and looked at at 1920x1080, 1600x900, 1280x800 and 1280x720; the 1920 set is kept as `screen_*`. `Capture.ps1` now captures at 1920x1080. Parse (132 scripts) and editor import are clean.
 - Not checked: the web build in Chrome and full-screen toggling (no full-screen control exists yet; it comes with the settings page). The toolkit credits page sizes itself once when opened.
+
+## 18 November 2026: suburb lots split by row
+
+- The suburb's lots move into four files by row: `properties.json` (north side of the main street), `properties_south.json` (south side), `properties_additional.json` and `properties_back.json` (the back rows). The catalog reads the two new names when an area has them (`OPTIONAL_AREA_FILES`), in the original order, so ids and order are unchanged. No file is over 800 lines now (largest: `passages.json` 709). `check_catalog`, `check_save` and `check_travel` pass.
