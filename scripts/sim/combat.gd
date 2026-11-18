@@ -131,7 +131,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.cooldown = float(Equipment.stats(world, a).cooldown)
 				a.activity = "Holding the barricade"
 				return
-	if (a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo", "Clinic", "Greenhouse"] and (danger(world, anchor, 170) or a.duty.clear_left > 0)) or (Firearms.civilian(a) and danger(world, a.pos, 170)):
+	if (a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo", "Clinic", "Greenhouse", "Van"] and (danger(world, anchor, 170) or a.duty.clear_left > 0)) or (Firearms.civilian(a) and danger(world, a.pos, 170)):
 		anchor = Routes.point(world.balance.home_respawn)
 		a.activity = "Sheltering - work preserved"
 	else:
@@ -160,7 +160,7 @@ static func _survivor(world: RefCounted, a: Dictionary, dt: float) -> void:
 				a.activity = "Passage build/repair"
 			"Roadwork":
 				a.activity = "Road defence work"
-	if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo", "Clinic", "Greenhouse"] and a.duty.retry > 0 and not a.activity.begins_with("Sheltering"):
+	if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo", "Clinic", "Greenhouse", "Van"] and a.duty.retry > 0 and not a.activity.begins_with("Sheltering"):
 		a.activity = previous
 		return
 	var productive: bool = (a.order == "Greenhouse" and world.greenhouse.done) or (a.order == "Garden" and world.garden_done) or (a.order == "Workshop" and world.workshop.done) or a.order == "Ammo" or (a.order == "Clinic" and world.clinic.done)

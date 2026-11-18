@@ -7,6 +7,7 @@ const Clinic = preload("res://scripts/sim/clinic.gd")
 const Roster = preload("res://scripts/sim/roster.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
+const VanRepair = preload("res://scripts/sim/van_repair.gd")
 const Repairs = preload("res://scripts/sim/repairs.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const Restoration = preload("res://scripts/sim/restoration.gd")
@@ -346,7 +347,7 @@ func cancel_production() -> void:
 
 
 func cancel_work(socket: String) -> void:
-	if Greenhouse.cancel(world, socket) or Clinic.cancel(world, socket) or Neighbourhood.cancel(world, socket) or Restoration.cancel(world, socket) or Roadworks.cancel(world, socket) or Repairs.cancel(world, socket):
+	if Greenhouse.cancel(world, socket) or Clinic.cancel(world, socket) or Neighbourhood.cancel(world, socket) or Restoration.cancel(world, socket) or Roadworks.cancel(world, socket) or Repairs.cancel(world, socket) or VanRepair.cancel(world, socket):
 		hud.menu_status.text = "Work cancelled"
 		hud.refresh(world, paused)
 

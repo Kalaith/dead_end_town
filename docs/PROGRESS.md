@@ -398,3 +398,8 @@ Still needing development (second look, most important first):
 
 - `scripts/sim/away_pressure.gd` runs on return after the home gate rule: from `away_siege_seconds` (600) away every standing street barricade is worn to `away_siege_factor` (0.6) of its health (a broken one is cleared and routes rebuilt), and from the new `away_loss_seconds` (1800, `balance.json`) the claimed lot farthest from home with no protected route to it falls and must be reclaimed. Lots joined to home by safe routes always hold, which is what the absent survivors could have defended. No schema change.
 - `check_away_work` adds 700 s (barricade worn, outlying lot held) and 2000 s (barricade worn, house_e lost, home held) cases; 0 failures. Travel, catalog, save and boss checks pass. Numbers are unplayed guesses.
+
+## 18 November 2026: the van repair is a work-board job (schema 45)
+
+- Holding R beside the stopped, damaged van approves a `van_repair` work order (4 materials, 10 s, from `vehicle.json`); the player or a survivor assigned from the board (new `Van` order, standing at the van's flank) works it off, and cancelling refunds like any project. `scripts/sim/van_repair.gd` owns it; `vehicle.repair_paid`/`repair_progress` stay as projections of the order, and saves require a pending order whenever a repair is paid. Schema 45 refunds a repair paid the old way.
+- `tools/check_van_repair.gd` (approve, on the board, Mara assigned and finishing, mid-repair save, cancel refund, schema 44 refund) passes; all 21 checks pass and the editor import is clean. Not looked at in the running game.

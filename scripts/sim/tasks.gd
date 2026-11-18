@@ -1,5 +1,6 @@
 extends RefCounted
 ## Named survivor orders share physical work sites, never a global worker slot.
+const VanRepair = preload("res://scripts/sim/van_repair.gd")
 const FieldMedicine = preload("res://scripts/sim/field_medicine.gd")
 const Facility = preload("res://scripts/sim/facility.gd")
 const CompanionRescue = preload("res://scripts/sim/companion_rescue.gd")
@@ -38,6 +39,8 @@ static func options(world: RefCounted, a: Dictionary = {}) -> Array[Dictionary]:
 	for p: Dictionary in world.catalog.properties:
 		if world.properties[p.id].looted and float(world.properties[p.id].gate_hp) < float(world.balance.gate_health):
 			result.append({"id": "repair:" + str(p.id), "label": "Repair: " + str(p.name)})
+	if VanRepair.pending(world):
+		result.append({"id": "van", "label": "Repair the van"})
 	for d: Dictionary in world.catalog.barricades:
 		var s: Dictionary = world.roadworks[d.id]
 		if s.phase == "empty":
@@ -83,6 +86,8 @@ static func unavailable(world: RefCounted, task: String, a: Dictionary = {}) -> 
 			return "Approve garden at its porch first" if not world.garden_started else ""
 		"garage":
 			return "Approve workshop restoration at its porch first" if not world.workshop.started else ""
+		"van":
+			return "Approve a van repair beside it first (hold R)" if not VanRepair.pending(world) else ""
 	for d: Dictionary in world.catalog.barricades:
 		if task == "work:" + d.id:
 			var s: Dictionary = world.roadworks[d.id]
@@ -146,6 +151,10 @@ static func assign(world: RefCounted, id: String, task: String, announce: bool =
 			a.order = "Garden" if task == "garden" else "Workshop"
 			a.job = task
 			a.anchor = Routes.point(world.definition(task).site)
+		"van":
+			a.order = VanRepair.ORDER
+			a.job = VanRepair.SOCKET
+			a.anchor = VanRepair.stand(world)
 		"follow", "hold", "engage":
 			a.order = task.capitalize()
 			a.anchor = a.pos if task == "hold" else world.player.pos

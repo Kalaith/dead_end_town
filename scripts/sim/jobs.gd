@@ -35,6 +35,8 @@ static func current(catalog: Dictionary, a: Dictionary) -> String:
 			return "rescue:" + str(a.job)
 		"Repair":
 			return "repair:" + str(a.job)
+		"Van":
+			return "van"
 		"Idle":
 			return a.duty.role
 		"Roadguard":
@@ -49,7 +51,7 @@ static func current(catalog: Dictionary, a: Dictionary) -> String:
 
 
 static func temporary(task: String) -> bool:
-	return task.begins_with("field:") or task.begins_with("rescue:") or task.begins_with("work:") or task.begins_with("passage:") or task.begins_with("repair:")
+	return task == "van" or task.begins_with("field:") or task.begins_with("rescue:") or task.begins_with("work:") or task.begins_with("passage:") or task.begins_with("repair:")
 
 
 static func remember(world: RefCounted, a: Dictionary, task: String) -> void:
@@ -121,6 +123,8 @@ static func _task(order: Dictionary) -> String:
 			return "passage:" + str(order.target)
 		"road_build", "road_remove":
 			return "work:" + str(order.target)
+		"van_repair":
+			return "van"
 		"repair_line", "gate_rebuild", "legacy_repair":
 			var parts: PackedStringArray = str(order.target).split(":")
 			return ("work:" if parts[0] == "road" else "passage:" if parts[0] == "passage" else "repair:") + parts[1]
@@ -176,6 +180,8 @@ static func _safe(world: RefCounted, order: Dictionary, a: Dictionary) -> bool:
 		for d: Dictionary in world.catalog.passages:
 			if d.id == order.target:
 				required = d.requires
+	elif order.recipe == "van_repair":
+		required = []
 	elif str(order.recipe).begins_with("road_"):
 		for d: Dictionary in world.catalog.barricades:
 			if d.id == order.target:
@@ -265,7 +271,7 @@ static func step(world: RefCounted, dt: float) -> void:
 		a.duty.clear_left = maxf(0.0, float(a.duty.clear_left) - dt)
 		if float(a.hp) <= 0:
 			continue
-		if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo", "Clinic", "Greenhouse"]:
+		if a.order in ["Build", "Garden", "Workshop", "Roadwork", "Passage", "Repair", "Ammo", "Clinic", "Greenhouse", "Van"]:
 			for z: Dictionary in world.zombies:
 				if float(z.hp) > 0 and z.pos.distance_to(a.anchor) < 170:
 					a.duty.clear_left = float(world.balance.work_clear_seconds)

@@ -32,6 +32,8 @@ static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 	for id: String in data.roadworks:
 		if data.roadworks[id].phase in ["building", "dismantling"] and not ledger.sites.has("road:" + id):
 			return false
+	if data.get("vehicle") is Dictionary and data.vehicle.get("repair_paid") == true and not ledger.sites.has("van"):
+		return false
 	for id: String in ["garden", "workshop", "armour", "clinic", "greenhouse"]:
 		var flags: Array = _restoration(data, id)
 		if flags[0] and not flags[1] and not ledger.sites.has("restore:" + id):
@@ -74,6 +76,12 @@ static func _valid_site(o: Dictionary, data: Dictionary, catalog: Dictionary) ->
 		if o.phase == "completed":
 			return flags[1]
 		return not flags[0] and not flags[1]
+	if o.recipe == "van_repair":
+		if o.socket != "van" or o.target != "van" or not data.vehicle.present:
+			return false
+		if o.phase in ["approved", "working", "blocked"]:
+			return data.vehicle.repair_paid and float(data.vehicle.repair_progress) == float(o.work_done)
+		return not data.vehicle.repair_paid
 	if o.recipe == "medicine":
 		return o.socket == "clinic_medicine" and o.target == "clinic" and data.clinic.done
 	if o.recipe == "bullets":

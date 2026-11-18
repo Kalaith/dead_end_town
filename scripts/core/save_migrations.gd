@@ -99,6 +99,7 @@ func _steps() -> Dictionary:
 		41: _upgrade_fittings,
 		42: _upgrade_retired_slice,
 		43: _upgrade_caches,
+		44: _upgrade_van_board,
 	}
 
 
@@ -546,5 +547,17 @@ func _upgrade_retired_slice(data: Dictionary) -> Dictionary:
 ## Saves before the open-air supply caches have taken none.
 func _upgrade_caches(data: Dictionary) -> Dictionary:
 	data.caches_taken = []
+	data.schema_version = 44
+	return data
+
+
+## The van's repair became a work-board project. A repair paid for the old way is refunded, so it can be approved again.
+func _upgrade_van_board(data: Dictionary) -> Dictionary:
+	if not data.get("vehicle") is Dictionary or not Rules.finite(data.get("materials")):
+		return {}
+	if data.vehicle.get("repair_paid") == true:
+		data.materials = int(data.materials) + int(catalog.vehicle.repair_materials)
+	data.vehicle.repair_paid = false
+	data.vehicle.repair_progress = 0.0
 	data.schema_version = save.SCHEMA
 	return data if save.valid(data) else {}

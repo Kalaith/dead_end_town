@@ -1,6 +1,6 @@
 extends RefCounted
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
-const IDS: Array[String] = ["bullets", "passage", "garden", "workshop", "armour", "road_build", "road_remove", "repair_line", "gate_rebuild", "legacy_repair", "clinic", "medicine", "greenhouse"]
+const IDS: Array[String] = ["bullets", "passage", "garden", "workshop", "armour", "road_build", "road_remove", "repair_line", "gate_rebuild", "legacy_repair", "clinic", "medicine", "greenhouse", "van_repair"]
 
 
 static func definition(catalog: Dictionary, id: String) -> Dictionary:
@@ -37,7 +37,7 @@ static func content(catalog: Dictionary, errors: Array[String]) -> void:
 			continue
 		var entry: Dictionary = raw
 		rules.text(entry, "name")
-		if entry.get("source") not in ["balance", "firearm"] or entry.get("kind") not in ["construction", "production", "repair"]:
+		if entry.get("source") not in ["balance", "firearm", "vehicle"] or entry.get("kind") not in ["construction", "production", "repair"]:
 			errors.append("Invalid work recipe source/kind.")
 			continue
 		if not catalog.get(entry.source) is Dictionary:
@@ -54,5 +54,5 @@ static func content(catalog: Dictionary, errors: Array[String]) -> void:
 		elif entry.get("id") == "medicine":
 			if entry.source != "balance" or entry.kind != "production" or entry.get("output") != "medicine" or entry.get("count") != "medicine_batch" or entry.get("food_cost") != "medicine_food_cost" or not Rules.integer_in(source.get("medicine_food_cost"), 1, 1000):
 				errors.append("Medicine must use the implemented material/food batch.")
-		elif entry.get("output") != "" or entry.get("count") != "" or entry.kind != ("repair" if entry.id in ["repair_line", "legacy_repair"] else "construction") or entry.source != "balance":
+		elif entry.get("output") != "" or entry.get("count") != "" or entry.kind != ("repair" if entry.id in ["repair_line", "legacy_repair"] else "construction") or entry.source != ("vehicle" if entry.id == "van_repair" else "balance"):
 			errors.append("Construction cannot invent resource outputs.")

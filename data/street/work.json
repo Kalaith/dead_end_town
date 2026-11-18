@@ -133,6 +133,16 @@
         "output": "",
         "count": "",
         "kind": "construction"
+      },
+      {
+        "id": "van_repair",
+        "name": "Van repair",
+        "source": "vehicle",
+        "cost": "repair_materials",
+        "seconds": "repair_seconds",
+        "output": "",
+        "count": "",
+        "kind": "construction"
       }
     ]
   }

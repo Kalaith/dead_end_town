@@ -22,8 +22,8 @@ home gate were built.
 
 ## 2. Known gaps (buildable)
 
-- [ ] **Survivors cannot repair the van**, and the van does not cross
-  areas. Add a repair job to the work board first.
+- [ ] **The van does not cross areas.** It stays in the office. Decide how
+  it follows the team through an exit (the exits are on foot today).
 - [ ] **Tips are missing** for the work board (J) and for areas 2 and 3.
 - [ ] **Save slots cannot be deleted or named.** Add both, and capture the
   overwrite prompt, which has never been seen (`tools/capture_slots.gd`).

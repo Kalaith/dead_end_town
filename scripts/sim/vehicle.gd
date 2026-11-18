@@ -3,6 +3,7 @@ extends RefCounted
 ## State is plain numbers (x, y, heading in radians, speed, hull) so it saves as JSON.
 const Acoustics = preload("res://scripts/sim/noise.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
+const VanRepair = preload("res://scripts/sim/van_repair.gd")
 
 
 static func initial(catalog: Dictionary) -> Dictionary:
@@ -187,25 +188,9 @@ static func _repair_prompt(world: RefCounted) -> String:
 	return "   Hold R Repair · %d materials" % int(config.repair_materials)
 
 
-## Hold R beside a stopped, empty van: the materials are paid once and the work survives interruptions.
+## Hold R beside a stopped van to approve a repair; it is then a work-board project (see van_repair.gd).
 static func repair(world: RefCounted, dt: float) -> void:
-	var config: Dictionary = world.catalog.vehicle
-	var state: Dictionary = world.vehicle
-	if not bool(state.present) or driving(world) or not world.working or float(state.hull) >= float(config.hull):
-		return
-	if world.player.pos.distance_to(pos(world)) > float(config.enter_range):
-		return
-	if not bool(state.repair_paid):
-		if world.materials < int(config.repair_materials):
-			return
-		world.materials -= int(config.repair_materials)
-		state.repair_paid = true
-	state.repair_progress = float(state.repair_progress) + dt
-	if float(state.repair_progress) >= float(config.repair_seconds):
-		state.repair_progress = 0.0
-		state.repair_paid = false
-		state.hull = minf(float(config.hull), float(state.hull) + float(config.repair_hull))
-		world.note("Van repaired. Hull %d." % int(state.hull))
+	VanRepair.step(world, dt)
 
 
 static func step(world: RefCounted, dt: float) -> void:

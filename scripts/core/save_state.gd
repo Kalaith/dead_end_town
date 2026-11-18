@@ -35,7 +35,7 @@ const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
 const Roster = preload("res://scripts/sim/roster.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
-const SCHEMA: int = 44
+const SCHEMA: int = 45
 ## Saved world fields that are collections and are copied, not shared.
 const COPIED_KEYS: Array[String] = ["noise", "memories", "growing", "greenhouse", "field_care", "rescue_jobs", "medicine_production", "recovery_salvage", "carry", "home_rest", "clinic", "seen", "production", "orders", "workshop", "roadworks", "pressure", "passages", "equipment", "provisions", "timber", "firearms", "unlocks", "vehicle", "caches_taken"]
 const VECTOR_KEYS: Array[String] = ["pos", "anchor", "facing"]
@@ -238,7 +238,7 @@ func _valid_actor(a: Variant, max_health: float) -> bool:
 	for key: String in ["id", "name", "activity"]:
 		if not Rules.nonempty(a.get(key)):
 			return false
-	if a.get("order") not in ["Guard", "Follow", "Hold", "Engage", "Home", "Build", "Roadwork", "Roadguard", "Garden", "Workshop", "Passage", "Ammo", "Idle", "Repair", "Clinic", "Greenhouse", "Rescue", "Field"]:
+	if a.get("order") not in ["Guard", "Follow", "Hold", "Engage", "Home", "Build", "Roadwork", "Roadguard", "Garden", "Workshop", "Passage", "Ammo", "Idle", "Repair", "Clinic", "Greenhouse", "Rescue", "Field", "Van"]:
 		return false
 	for key: String in VECTOR_KEYS:
 		if not Rules.is_vec2(a.get(key)):
@@ -280,6 +280,8 @@ func _valid_task(a: Dictionary, data: Dictionary) -> bool:
 	match a.order:
 		"Repair":
 			return data.properties.has(a.job) and data.properties[a.job].looted
+		"Van":
+			return a.job == "van" and data.vehicle.present
 		"Field":
 			return a.job == "you" or data.survivors.any(func(person: Dictionary) -> bool: return person.id == a.job)
 		"Rescue":
