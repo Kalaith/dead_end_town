@@ -22,8 +22,6 @@ home gate were built.
 
 ## 2. Known gaps (buildable)
 
-- [ ] **Away production beyond gardens and clinics**: the workshop and the
-  ammunition bench keep working while the player is in another area.
 - [ ] **Live pressure on an area left behind.** Only the home gate is
   battered on return; the rest stays frozen. Let a long absence cost
   barricades or a rear building, within what survivors could hold.

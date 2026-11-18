@@ -8,6 +8,7 @@ const Equipment = preload("res://scripts/sim/equipment.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Roster = preload("res://scripts/sim/roster.gd")
+const AwayWork = preload("res://scripts/sim/away_work.gd")
 const ARRIVAL_SPACING: float = 40.0
 
 
@@ -105,6 +106,7 @@ static func _regrow(destination: RefCounted, away: float) -> void:
 		if made > 0:
 			destination.medicine += made
 			destination.note("While you were away the clinic made %d medicine." % made)
+	AwayWork.run(destination, away)
 
 
 ## Going forward arrives at the destination's entrance; going back arrives at the exit that was used.
