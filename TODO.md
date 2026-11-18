@@ -22,9 +22,6 @@ home gate were built.
 
 ## 2. Known gaps (buildable)
 
-- [ ] **Live pressure on an area left behind.** Only the home gate is
-  battered on return; the rest stays frozen. Let a long absence cost
-  barricades or a rear building, within what survivors could hold.
 - [ ] **Survivors cannot repair the van**, and the van does not cross
   areas. Add a repair job to the work board first.
 - [ ] **Tips are missing** for the work board (J) and for areas 2 and 3.

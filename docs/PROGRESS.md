@@ -393,3 +393,8 @@ Still needing development (second look, most important first):
 
 - `scripts/sim/away_work.gd` runs on return to an area (from `AreaTravel._regrow`, after the garden and clinic): a workshop or gear restoration already paid for advances by the time away and finishes when it can; the ammunition bench keeps its policy (once or repeat, target, material reserve) and crafts whole batches, each paid from the stock left in that area through the normal work board. Part-done work is left with no worker named. No schema change.
 - `tools/check_away_work.gd`: 900 s away finishes the workshop, makes 24 bullets for a repeat-24 policy and charges 8 materials from the stock left behind; an unset bench makes nothing (0 failures). Travel, save and facilities checks pass. Rates are the bench's own; unplayed.
+
+## 18 November 2026: a long absence costs more than the gate
+
+- `scripts/sim/away_pressure.gd` runs on return after the home gate rule: from `away_siege_seconds` (600) away every standing street barricade is worn to `away_siege_factor` (0.6) of its health (a broken one is cleared and routes rebuilt), and from the new `away_loss_seconds` (1800, `balance.json`) the claimed lot farthest from home with no protected route to it falls and must be reclaimed. Lots joined to home by safe routes always hold, which is what the absent survivors could have defended. No schema change.
+- `check_away_work` adds 700 s (barricade worn, outlying lot held) and 2000 s (barricade worn, house_e lost, home held) cases; 0 failures. Travel, catalog, save and boss checks pass. Numbers are unplayed guesses.

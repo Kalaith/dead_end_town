@@ -1,6 +1,7 @@
 extends SceneTree
 ## Away work check: while the player is in another area, a paid-for workshop restoration finishes and the ammunition
-## bench keeps crafting under its policy, paying from the stock left behind. Run:
+## bench keeps crafting under its policy, paying from the stock left behind; a long absence wears the barricades and a
+## much longer one loses the outlying lot with no protected route home. Run:
 ## Godot --headless --path . --script res://tools/check_away_work.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
@@ -53,6 +54,8 @@ func _init() -> void:
 	gone.elapsed = 900.0
 	var still: RefCounted = AreaTravel.travel(gone, annex_saves, data)
 	_expect("a bench never set up makes nothing", still != null and int(still.firearms.bullets) == int(idle.firearms.bullets))
+	_pressure(data, annex, saves, annex_saves, 700.0, false)
+	_pressure(data, annex, saves, annex_saves, 2000.0, true)
 	print("%d failures" % failures)
 	quit(1 if failures > 0 else 0)
 
@@ -61,3 +64,31 @@ func _expect(label: String, ok: bool) -> void:
 	print(("pass  " if ok else "FAIL  ") + label)
 	if not ok:
 		failures += 1
+
+
+## Leaves a street with one standing barricade and one outlying lot held without a safe route, for `seconds`.
+func _pressure(data: Dictionary, annex: Dictionary, saves: RefCounted, annex_saves: RefCounted, seconds: float, loses: bool) -> void:
+	var world := World.new(data)
+	Boss.find(world).hp = 0.0
+	var barricade: String = str(data.barricades[0].id)
+	world.roadworks[barricade].phase = "ready"
+	world.roadworks[barricade].hp = float(data.balance.barricade_health)
+	# A standing barricade needs the lots it joins searched (save rule).
+	for id: String in data.barricades[0].requires:
+		world.properties[id].looted = true
+		world.properties[id].claimed_once = true
+		world.properties[id].claimed = true
+	var outlying: String = "house_e"
+	world.properties[outlying].looted = true
+	world.properties[outlying].claimed_once = true
+	world.properties[outlying].claimed = true
+	var gone: RefCounted = AreaTravel.travel(world, saves, annex)
+	gone.elapsed = seconds
+	var back: RefCounted = AreaTravel.travel(gone, annex_saves, data)
+	_expect("%ds away: travel back succeeds" % int(seconds), back != null)
+	if back == null:
+		return
+	var expected: float = floorf(float(data.balance.barricade_health) * float(data.balance.away_siege_factor))
+	_expect("%ds away: the barricade is worn to %d (%d)" % [int(seconds), int(expected), int(back.roadworks[barricade].hp)], float(back.roadworks[barricade].hp) == expected)
+	_expect("%ds away: %s is %s" % [int(seconds), outlying, "lost" if loses else "still held"], back.properties[outlying].claimed != loses)
+	_expect("%ds away: home always holds" % int(seconds), back.properties.home.claimed)
