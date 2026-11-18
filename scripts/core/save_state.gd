@@ -32,6 +32,7 @@ const RoadState = preload("res://scripts/core/road_state.gd")
 const SaveMigrations = preload("res://scripts/core/save_migrations.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const JsonSave = preload("res://addons/hatchery/storage/json_save.gd")
+const Roster = preload("res://scripts/sim/roster.gd")
 const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
 const SCHEMA: int = 44
@@ -119,6 +120,7 @@ func restore(raw: Dictionary) -> RefCounted:
 		world.zombies.append(_decode_actor(z))
 	world.rebuild_routes()
 	world.note("Street restored. Work, supplies and threats continue from this moment.")
+	Roster.catch_up(world)
 	return world
 
 

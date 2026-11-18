@@ -7,6 +7,7 @@ const Boss = preload("res://scripts/sim/boss.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
+const Roster = preload("res://scripts/sim/roster.gd")
 const ARRIVAL_SPACING: float = 40.0
 
 
@@ -55,6 +56,8 @@ static func travel(world: RefCounted, saves: RefCounted, to_data: Dictionary) ->
 			destination.unlocks.append(item)
 	destination.player.hp = world.player.hp
 	_arrive(world, destination)
+	# The team was just replaced by the travellers, so look again for anyone a lot here still owes.
+	Roster.catch_up(destination)
 	destination.note("%s / Arrived. Your team came with you." % str(to_data.area.name))
 	_regrow(destination, away)
 	var left: String = Boss.stored(record)

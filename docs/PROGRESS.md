@@ -369,3 +369,7 @@ Still needing development (second look, most important first):
 ## 18 November 2026: suburb lots split by row
 
 - The suburb's lots move into four files by row: `properties.json` (north side of the main street), `properties_south.json` (south side), `properties_additional.json` and `properties_back.json` (the back rows). The catalog reads the two new names when an area has them (`OPTIONAL_AREA_FILES`), in the original order, so ids and order are unchanged. No file is over 800 lines now (largest: `passages.json` 709). `check_catalog`, `check_save` and `check_travel` pass.
+
+## 18 November 2026: survivors owed by an early search
+
+- A lot searched in a save from before its survivor was written in (Theo, Nia, Rowan; schema 43 and earlier) no longer stays empty. `Roster.catch_up` recruits anyone whose lot is searched but who never joined, at their lot with their introduction, after a save is restored and after arriving back in an area (travel replaces the team, so it looks again then). A current save never needs it; no schema change. `check_recruits` covers loading such an office save and returning to the office from the works (0 failures); save, travel, slots and tips checks pass.

@@ -56,6 +56,19 @@ static func recruit(world: RefCounted, id: String) -> bool:
 	return true
 
 
+## Someone whose lot was searched before they were written into it (an older save) is found there now, as if just
+## searched. Returns the ids recruited; a current save never needs any.
+static func catch_up(world: RefCounted) -> Array[String]:
+	var found: Array[String] = []
+	for p: Dictionary in world.catalog.properties:
+		if not p.has("search") or str(p.search.get("survivor", "")).is_empty() or not world.properties[p.id].looted:
+			continue
+		var id: String = str(p.search.survivor)
+		if person(world, id).is_empty() and recruit(world, id):
+			found.append(id)
+	return found
+
+
 static func dismiss(world: RefCounted, task: String) -> bool:
 	var d: Dictionary = definition(world.catalog, world.rescue_intro)
 	if d.is_empty() or task not in ["hold", "follow", "home"]:

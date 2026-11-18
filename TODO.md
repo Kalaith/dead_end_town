@@ -15,9 +15,6 @@ home gate were built.
 
 ## 1. Required
 
-- [ ] **A lot searched too early never yields its survivor.** A Theo, Nia
-  or Rowan lot searched before they existed stays empty. Migrate such
-  saves so the survivor can still be found, with a check on an old save.
 - [ ] **`migrate` builds a `World` from current content** to upgrade a
   save, so an old save is read against today's catalogs. Make each
   migration step work on plain data for its own schema.
