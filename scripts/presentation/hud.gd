@@ -1,5 +1,6 @@
 extends Control
-const SettingsStore = preload("res://addons/hatchery/settings/settings_store.gd")
+const GameSettings = preload("res://scripts/presentation/game_settings.gd")
+const SettingsHost = preload("res://addons/hatchery/ui/settings_host.gd")
 const DefeatMenu = preload("res://scripts/presentation/defeat_menu.gd")
 const EndingMenu = preload("res://scripts/presentation/ending_menu.gd")
 const Carrying = preload("res://scripts/sim/carrying.gd")
@@ -53,7 +54,10 @@ var tip_log: Label
 var tips_on: bool = true
 var tip_switch: Button
 ## Preferences live apart from the saved street, so starting a new street keeps them.
-var settings := SettingsStore.new({"tips": true, "slot": 1, "slot_name_1": "", "slot_name_2": "", "slot_name_3": ""})
+## Every preference and the settings page; `settings` is its store (tips, slot, names, volumes, display, keys).
+var prefs: RefCounted = GameSettings.new(null)
+var settings: RefCounted = prefs.store
+var settings_host: RefCounted
 var radio: Label
 var team_orders: VBoxContainer
 var supplies: Label
@@ -73,12 +77,9 @@ var last_message: String = ""
 var message_seconds: float = 0.0
 
 
-func _init() -> void:
-	# The chosen save slot is 1 to 3, not the store's default 0..1 range.
-	settings.ranges["slot"] = Vector2(1, SaveSlots.COUNT)
-
-
 func _ready() -> void:
+	prefs.engine.tree = get_tree()
+	settings_host = SettingsHost.new(self)
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var palette := Palette.new()
@@ -220,6 +221,7 @@ func _build_menu() -> void:
 	tip_switch = kit.button("Tips: on")
 	tip_switch.pressed.connect(_toggle_tips)
 	sections.Help.add_child(tip_switch)
+	sections.Help.add_child(kit.button("Settings", func() -> void: open_settings()))
 	sections.Help.add_child(kit.button("Credits", func() -> void: CreditsPage.open(self, kit)))
 	tip_log = kit.label("", 17)
 	tip_log.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -328,8 +330,15 @@ func _set_tips(on: bool) -> void:
 func load_preferences(enabled: bool) -> void:
 	settings.save_enabled = enabled
 	if enabled:
-		settings.load_settings()
+		prefs.load_and_apply()
+	else:
+		prefs.apply_all()
 	_set_tips(bool(settings.values.tips))
+
+
+## The settings page over the pause menu; Back (or Esc) returns to where you were.
+func open_settings() -> void:
+	settings_host.open(func() -> Control: return prefs.make_page(kit))
 
 
 func _goal(world: RefCounted) -> String:

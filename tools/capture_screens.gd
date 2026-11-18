@@ -1,5 +1,5 @@
 extends "res://addons/hatchery/testing/capture_runner.gd"
-## Screen-fit tour: every screen (title, each pause tab, credits, the street,
+## Screen-fit tour: every screen (title, each pause tab, settings and its keys, credits, the street,
 ## the rescue, defeat and ending overlays) at one window size, plus a resize
 ## mid-screen. Pick the size with --size (Capture.ps1 passes 1920x1080):
 ##
@@ -21,6 +21,14 @@ func tour() -> void:
 		town.hud.show_section(tab)
 		await seconds(0.3)
 		await shot("screen_pause_" + tab.to_lower())
+	town.hud.open_settings()
+	await seconds(0.3)
+	await shot("screen_settings")
+	town.hud.settings_host.page.tabs.current_tab = 1
+	await seconds(0.3)
+	await shot("screen_settings_keys")
+	town.hud.settings_host.close()
+	await seconds(0.2)
 	var page: Control = CreditsPage.open(town.hud, town.hud.kit)
 	await seconds(0.3)
 	await shot("screen_credits")

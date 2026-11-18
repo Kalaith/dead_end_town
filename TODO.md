@@ -27,8 +27,6 @@ home gate were built.
 - [ ] **Listen to the sounds.** Synthesised cues and beds exist
   (`street_audio.gd`, `street_sounds.gd`) but nobody has heard them: a
   person should judge levels and character.
-- [ ] **Settings page**: volume, fullscreen, interface size and key
-  bindings with the toolkit's `SettingsStore` and `ui/settings_panel.gd`.
 - [ ] **Accessibility**: a colour-safe palette for threat and health,
   captions for the sounds that carry information (noise draws zombies),
   and reduced motion.
@@ -64,12 +62,9 @@ toolkit's `res://addons/hatchery/settings/screen_fit.gd` (it also handles
 high-DPI screens and takes the smallest layout as an argument) rather than
 copying spiritwright's file.
 
-- [ ] There is no Interface size setting; add one through the toolkit's
-  `settings_bundle.gd` with the settings page (it multiplies on top of
-  screen fit).
 - [ ] Play the web build in Chrome at a full-screen 1080p window and a
-  small one (with the browser pass), and toggle full screen mid-screen once
-  the settings page has the control.
+  small one (with the browser pass), and toggle full screen (Settings) mid-
+  screen.
 
 ## Rules that still hold
 

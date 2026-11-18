@@ -24,6 +24,16 @@ move_down={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":83),
 attack={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":32),Object(InputEventMouseButton,"button_index":1)]}
 interact={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":69)]}
 work={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":82)]}
+order_follow={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":49)]}
+order_hold={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":50)]}
+order_engage={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":51)]}
+order_home={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":52)]}
+salvage={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":81)]}
+road_guard={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":71)]}
+team={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":70)]}
+work_board={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":74)]}
+town_map={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":77)]}
+pause={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":4194305),Object(InputEventKey,"physical_keycode":4194306)]}
 
 [rendering]
 renderer/rendering_method="gl_compatibility"

@@ -159,35 +159,38 @@ func _step_world() -> bool:
 func _unhandled_input(event: InputEvent) -> void:
 	if not paused:
 		controls.observe(event)
-	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode in [KEY_ESCAPE, KEY_TAB]:
-			command("menu")
-			get_viewport().set_input_as_handled()
-			return
-		if not paused:
-			match event.physical_keycode:
-				KEY_1:
-					world.order("Follow")
-				KEY_2:
-					world.order("Hold")
-				KEY_3:
-					world.order("Engage")
-				KEY_4:
-					world.order("Home")
-				KEY_Q:
-					world.salvage()
-				KEY_G:
-					world.post_road_guard()
-				KEY_F:
-					command("team")
-				KEY_J:
-					command("work")
-				KEY_M:
-					command("town")
+	if hud.settings_host.is_open():
+		return
+	if event.is_action_pressed("pause"):
+		command("menu")
+		get_viewport().set_input_as_handled()
+		return
+	if not paused and not event.is_echo():
+		for entry: Array in SHORTCUTS:
+			if event.is_action_pressed(entry[0]):
+				_shortcut(str(entry[1]))
+				get_viewport().set_input_as_handled()
+				return
 	if not paused and event.is_action_pressed("interact"):
 		world.interact()
 	elif not paused and event.is_action_released("interact"):
 		world.release_interact()
+
+
+## Rebindable shortcuts (project.godot actions) -> what they do.
+const SHORTCUTS: Array = [["order_follow", "Follow"], ["order_hold", "Hold"], ["order_engage", "Engage"], ["order_home", "Home"], ["salvage", "salvage"], ["road_guard", "guard"], ["team", "team"], ["work_board", "work"], ["town_map", "town"]]
+
+
+func _shortcut(value: String) -> void:
+	match value:
+		"Follow", "Hold", "Engage", "Home":
+			world.order(value)
+		"salvage":
+			world.salvage()
+		"guard":
+			world.post_road_guard()
+		_:
+			command(value)
 
 
 func command(value: String) -> void:
