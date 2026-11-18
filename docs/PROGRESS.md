@@ -377,3 +377,8 @@ Still needing development (second look, most important first):
 ## 18 November 2026: migrations read plain data
 
 - No migration step builds a `World` any more. `SaveState.authored()` snapshots today's starting state for the area once, as plain save data, and the steps that add residents, lots or passages (schemas 4, 11, 20, 21, 29, 38-39) copy from it; `ResidentState.renumber` takes that list. An old save is no longer read through today's world, only topped up from today's authored content (past catalogs are not kept, so content a step adds is still today's). `check_save` adds: the reference is plain data, a step cannot change it, and the same old save upgrades identically twice. Save, travel, recruits, slots, caches and vehicle checks pass.
+
+## 18 November 2026: raids reach a gate in every area
+
+- `raiding.gd` already takes every target from area data (route entry and approach, lot site, gate and yard). The new `tools/check_raids.gd` runs the first raid after a claim in each area and asserts it enters on an authored route and a raider reaches a held gate within 20 minutes. It failed in the office: raiders pressed against tower_lobby's fence sat in a grid cell the pathfinder marks solid, `waypoint` gave up, and they walked into the fence for good.
+- `Routes.waypoint` now paths from and to the nearest open cell (within two cells) when the start or target cell is solid, as a spot on a fence line or gate is. Every area passes; raids also arrive sooner (suburb 497 s to 295 s, office never to 229 s, works 1063 s to 210 s), so pressure is harder than before, untuned. This likely also helps the listed "fence-line gate points stall walkers" debt; not separately checked. All 18 earlier checks pass.

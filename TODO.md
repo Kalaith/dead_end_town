@@ -15,9 +15,6 @@ home gate were built.
 
 ## 1. Required
 
-- [ ] **Raider path targets in `raiding.gd`** (listed debt): replace the
-  fixed targets with ones read from the area's data and check a raid in
-  each area reaches a gate.
 - [ ] **A scripted run to the ending.** Nothing since the area transition
   has been played. Write a headless bot in `tools/` that plays all three
   areas through the bridge and road-room bosses to the ending screen on a

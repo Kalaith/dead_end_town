@@ -8,6 +8,7 @@ var safe_signature: String = ""
 var bounds := Vector2(1440, 1160)
 const CELL: float = 20.0
 const RADIUS: float = 11.0
+const NO_CELL := Vector2i(-1, -1)
 
 
 static func point(value: Array) -> Vector2:
@@ -86,12 +87,34 @@ func waypoint(from: Vector2, to: Vector2) -> Vector2:
 	var end := Vector2i(to / CELL)
 	if not grid.is_in_boundsv(start) or not grid.is_in_boundsv(end):
 		return from
-	if grid.is_point_solid(start) or grid.is_point_solid(end):
+	# Someone pressed against a fence, or a target on a fence line (a gate), sits in a cell the grid marks solid
+	# although the spot itself is walkable. Path from and to the nearest open cell instead of giving up.
+	start = _open_cell(start, from)
+	end = _open_cell(end, to)
+	if start == NO_CELL or end == NO_CELL:
 		return from
 	var path: PackedVector2Array = grid.get_point_path(start, end)
 	if path.is_empty():
 		return from
 	return path[1] if path.size() > 1 else to
+
+
+## `cell` when it is open, else the open cell within two cells nearest `pos`, else NO_CELL.
+func _open_cell(cell: Vector2i, pos: Vector2) -> Vector2i:
+	if not grid.is_point_solid(cell):
+		return cell
+	var best: Vector2i = NO_CELL
+	var best_distance: float = INF
+	for dx: int in range(-2, 3):
+		for dy: int in range(-2, 3):
+			var next: Vector2i = cell + Vector2i(dx, dy)
+			if not grid.is_in_boundsv(next) or grid.is_point_solid(next):
+				continue
+			var distance: float = pos.distance_squared_to(grid.get_point_position(next))
+			if distance < best_distance:
+				best = next
+				best_distance = distance
+	return best
 
 
 func line_clear(from: Vector2, to: Vector2, over_low_barriers: bool = false) -> bool:
