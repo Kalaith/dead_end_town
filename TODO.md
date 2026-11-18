@@ -15,10 +15,12 @@ home gate were built.
 
 ## 1. Required
 
-- [ ] **The ending bot only rushes the bosses.** `tools/bot_ending.gd`
-  reaches the ending but skips the reclaim objective. Teach it to search,
-  claim and connect each area's `objective.reclaim` lots before the boss,
-  so blockers in that part of the campaign show up too.
+- [ ] **The ending bot does not connect yards.** `tools/bot_ending.gd`
+  reclaims each area's listed lots, but readiness still reports "Connect
+  every yard to home through fenced passages" (suburb, office) and "Clear
+  the occupied yards" (works, raiders back in a yard). Teach it to approve
+  and build the passages and crossings, and to re-clear yards, so the bot
+  reaches each boss with readiness met.
 
 ## 2. Known gaps (buildable)
 

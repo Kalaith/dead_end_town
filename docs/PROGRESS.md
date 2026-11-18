@@ -449,3 +449,7 @@ Still needing development (second look, most important first):
 ## 18 November 2026: one command runs every check
 
 - The 23 check scripts moved into `tools/checks/` and the empty `tools/scratch/` is gone. `tools/Check.ps1` runs `parse_all`, the editor import and every `tools/checks/check_*.gd`, each in its own headless Godot, and fails on a non-zero exit, a FAIL line or a SCRIPT ERROR (`-Only <names>` for a subset, `-Bot` adds `bot_ending.gd`). Each check stays its own SceneTree script rather than being rewritten as toolkit `check_runner` modules. First full run: all 25 pass in about two minutes. Paths in AGENTS and the progress notes were updated.
+
+## 18 November 2026: the ending bot reclaims each area first
+
+- `tools/bot_ending.gd` now reclaims each area's `objective.reclaim` lots before the boss: it takes the first listed lot that borders held ground (the office lists `maintenance` before the `atrium` it needs), clears the yard, searches and claims at the porch (`--rush` keeps the old boss rush). Seeds 1-3 reach the ending; reclaiming takes about 100 s in the suburb, 78 s in the office and 45 s in the works, with 63-77 health top-ups a run. At each boss readiness is still unmet: the suburb and office want fenced passages and crossings built, and in the works raiders were back in a reclaimed yard. No blocker found.
