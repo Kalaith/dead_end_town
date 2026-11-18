@@ -32,9 +32,6 @@ home gate were built.
   (right-stick aim, trigger to shoot, Start/Back, d-pad orders).
 - [ ] **Wording once pilot art lands**: drop "work-in-progress greybox"
   from `publish.json`.
-- [ ] **Browser pass.** `.\publish.ps1 -BuildOnly`, serve the web build
-  locally, and in Chrome start a run, save to a slot, reload and continue.
-
 ## 4. Housekeeping
 
 - [ ] **`tools/checks/` and `tools/scratch/` are empty** while 19 check
@@ -58,9 +55,9 @@ toolkit's `res://addons/hatchery/settings/screen_fit.gd` (it also handles
 high-DPI screens and takes the smallest layout as an argument) rather than
 copying spiritwright's file.
 
-- [ ] Play the web build in Chrome at a full-screen 1080p window and a
-  small one (with the browser pass), and toggle full screen (Settings) mid-
-  screen.
+- [ ] In Chrome, try a small (un-maximised) window and full screen
+  (Settings): the automated pass could only use a maximised 1920x911
+  window, which laid out correctly.
 
 ## Rules that still hold
 

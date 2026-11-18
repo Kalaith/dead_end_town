@@ -441,3 +441,7 @@ Still needing development (second look, most important first):
 ## 18 November 2026: icon and Windows product details
 
 - `icon.png` (256 px) is drawn by `tools/make_icon.gd` in the greybox palette: a lit house behind a fence and gate, a striped dead-end bar across the road. It is the project icon (`config/icon`, the web export's icon) and the Windows icon; the Windows preset now sets `application/modify_resources=true` with product name, description, company, copyright and file/product version 0.1.0.0. A release export was made to `builds/windows/` (ignored): Windows reports the product details and the extracted icon is the new one. Credits were already in Help. The "work-in-progress greybox" wording stays in `publish.json` until pilot art lands.
+
+## 18 November 2026: browser pass
+
+- `.\publish.ps1 -BuildOnly` built web and Windows; the web build was served from `builds/publish/.../web` on 127.0.0.1 and played in Chrome (viewport 1920x911, one layout unit per pixel): Begin, walk, pause, Save ("Street saved to slot 1"), reload the page (slot still shows "suburb 0m"), Load ("Street restored"), resume and walk. No errors seen. Not done: a small window (the window was maximised and resizing had no effect) and browser full screen.
