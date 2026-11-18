@@ -45,6 +45,7 @@ const STATE_KEYS: Array[String] = COPIED_KEYS + SCALAR_KEYS
 var catalog: Dictionary
 var store: RefCounted
 var migrations: RefCounted
+var _authored: Dictionary = {}
 
 
 func _init(data: Dictionary, path: String = "user://suburb.json") -> void:
@@ -54,6 +55,13 @@ func _init(data: Dictionary, path: String = "user://suburb.json") -> void:
 	store.migrate = migrate
 	store.schema_key = "schema_version"
 	store.block_on_damage = true
+
+
+## Today's starting state for this area as plain save data, built once and shared by the migration steps.
+func authored() -> Dictionary:
+	if _authored.is_empty():
+		_authored = snapshot(World.new(catalog))
+	return _authored.duplicate(true)
 
 
 func snapshot(world: RefCounted) -> Dictionary:

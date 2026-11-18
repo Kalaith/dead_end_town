@@ -15,9 +15,6 @@ home gate were built.
 
 ## 1. Required
 
-- [ ] **`migrate` builds a `World` from current content** to upgrade a
-  save, so an old save is read against today's catalogs. Make each
-  migration step work on plain data for its own schema.
 - [ ] **Raider path targets in `raiding.gd`** (listed debt): replace the
   fixed targets with ones read from the area's data and check a raid in
   each area reaches a gate.

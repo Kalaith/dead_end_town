@@ -26,9 +26,11 @@ const PressureState = preload("res://scripts/core/pressure_state.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const Rules = preload("res://addons/hatchery/core/data_rules.gd")
 const Migrations = preload("res://addons/hatchery/storage/migrations.gd")
-const World = preload("res://scripts/sim/world.gd")
 const Workshop = preload("res://scripts/sim/workshop.gd")
 var catalog: Dictionary
+## Today's starting state for this area as plain save data (see `SaveState.authored`). Steps that add authored
+## residents, lots or passages copy them from here; no step builds a world or reads the old save through one.
+var fresh: Dictionary = {}
 ## The owning SaveState is held weakly: it owns this object, and a strong link back would leak both.
 var _owner: WeakRef
 var save: RefCounted:
@@ -47,6 +49,7 @@ func migrate(data: Dictionary) -> Dictionary:
 	var upgraded: Dictionary = data.duplicate(true)
 	if not TownState.expand(upgraded, catalog):
 		return {}
+	fresh = save.authored()
 	return Migrations.run(upgraded, _steps(), save.SCHEMA)
 
 
@@ -130,19 +133,19 @@ func _upgrade_pressure(data: Dictionary) -> Dictionary:
 	if not data.get("zombies") is Array or not data.get("properties") is Dictionary or not data.get("approach") is bool or not Rules.finite(data.get("elapsed")):
 		return {}
 	# Preserve old residents and cleared yards. Only previously unclaimed yards gain occupants.
-	var fresh := World.new(catalog)
 	var ids: Array[String] = []
 	for z: Variant in data.zombies:
 		if not z is Dictionary or not z.get("id") is String:
 			return {}
 		ids.append(z.id)
-	for z: Dictionary in fresh.zombies:
-		if z.id.begins_with("resident_") and not ids.has(z.id):
-			if not data.properties.get(z.home) is Dictionary or not data.properties[z.home].get("claimed") is bool:
+	for authored: Dictionary in fresh.zombies:
+		if str(authored.id).begins_with("resident_") and not ids.has(authored.id):
+			if not data.properties.get(authored.home) is Dictionary or not data.properties[authored.home].get("claimed") is bool:
 				return {}
+			var z: Dictionary = authored.duplicate(true)
 			if data.properties[z.home].claimed:
 				z.hp = 0.0
-			data.zombies.append(save.encode_actor(z))
+			data.zombies.append(z)
 	data.pressure = {"wave": 0, "next": 0.0, "warned": false}
 	data.pressure.wave = 1 if data.approach else 0
 	# Loading old progress gives a preparation interval, never an immediate overdue wave.
@@ -210,14 +213,13 @@ func _upgrade_slice(data: Dictionary) -> Dictionary:
 func _upgrade_firearms(data: Dictionary) -> Dictionary:
 	if not data.get("properties") is Dictionary or not data.get("passages") is Dictionary or not data.get("zombies") is Array:
 		return {}
-	var fresh := World.new(catalog)
 	for id: String in ["residence", "munitions"]:
 		if data.properties.has(id):
 			continue
 		data.properties[id] = fresh.properties[id].duplicate(true)
 		for z: Dictionary in fresh.zombies:
 			if z.home == id:
-				data.zombies.append(save.encode_actor(z))
+				data.zombies.append(z.duplicate(true))
 	for id: String in fresh.passages:
 		if not data.passages.has(id):
 			data.passages[id] = fresh.passages[id].duplicate(true)
@@ -354,10 +356,9 @@ func _upgrade_discoveries(data: Dictionary) -> Dictionary:
 		if not z is Dictionary or not z.get("id") is String:
 			return {}
 		ids.append(z.id)
-	var fresh := World.new(catalog)
 	for z: Dictionary in fresh.zombies:
 		if z.home == "hardware" and z.id not in ids:
-			data.zombies.append(save.encode_actor(z))
+			data.zombies.append(z.duplicate(true))
 	data.schema_version = 21
 	return data
 
@@ -372,10 +373,9 @@ func _upgrade_clinic_search(data: Dictionary) -> Dictionary:
 		if not z is Dictionary or not z.get("id") is String:
 			return {}
 		ids.append(z.id)
-	var fresh := World.new(catalog)
 	for z: Dictionary in fresh.zombies:
 		if z.home == "clinic" and z.id not in ids:
-			data.zombies.append(save.encode_actor(z))
+			data.zombies.append(z.duplicate(true))
 	data.schema_version = 22
 	return data
 
@@ -435,10 +435,9 @@ func _upgrade_greenhouse_search(data: Dictionary) -> Dictionary:
 		if not z is Dictionary or not z.get("id") is String:
 			return {}
 		ids.append(z.id)
-	var fresh := World.new(catalog)
 	for z: Dictionary in fresh.zombies:
 		if z.home == "greenhouse" and z.id not in ids:
-			data.zombies.append(save.encode_actor(z))
+			data.zombies.append(z.duplicate(true))
 	data.schema_version = 30
 	return data
 
@@ -506,14 +505,14 @@ func _upgrade_unlocks(data: Dictionary) -> Dictionary:
 
 ## Saves before the doubled yards and the boss gain every resident they lack, at its authored post.
 func _upgrade_residents(data: Dictionary) -> Dictionary:
-	if not ResidentState.renumber(data, catalog):
+	if not ResidentState.renumber(data, fresh.zombies):
 		return {}
 	# Short-term memories are keyed by zombie id, and ids may have just changed.
 	data.memories = {}
 	var ids: Array = data.zombies.map(func(z: Dictionary) -> String: return str(z.id))
-	for z: Dictionary in World.new(catalog).zombies:
+	for z: Dictionary in fresh.zombies:
 		if not z.raid and z.id not in ids:
-			data.zombies.append(save.encode_actor(z))
+			data.zombies.append(z.duplicate(true))
 	data.schema_version = 40
 	return data
 

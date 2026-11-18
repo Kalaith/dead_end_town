@@ -373,3 +373,7 @@ Still needing development (second look, most important first):
 ## 18 November 2026: survivors owed by an early search
 
 - A lot searched in a save from before its survivor was written in (Theo, Nia, Rowan; schema 43 and earlier) no longer stays empty. `Roster.catch_up` recruits anyone whose lot is searched but who never joined, at their lot with their introduction, after a save is restored and after arriving back in an area (travel replaces the team, so it looks again then). A current save never needs it; no schema change. `check_recruits` covers loading such an office save and returning to the office from the works (0 failures); save, travel, slots and tips checks pass.
+
+## 18 November 2026: migrations read plain data
+
+- No migration step builds a `World` any more. `SaveState.authored()` snapshots today's starting state for the area once, as plain save data, and the steps that add residents, lots or passages (schemas 4, 11, 20, 21, 29, 38-39) copy from it; `ResidentState.renumber` takes that list. An old save is no longer read through today's world, only topped up from today's authored content (past catalogs are not kept, so content a step adds is still today's). `check_save` adds: the reference is plain data, a step cannot change it, and the same old save upgrades identically twice. Save, travel, recruits, slots, caches and vehicle checks pass.

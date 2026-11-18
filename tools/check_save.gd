@@ -36,6 +36,13 @@ func _init() -> void:
 	thin39.schema_version = 39
 	var grown39: RefCounted = saves.restore(thin39)
 	_expect("a schema 39 save from before the second doubling is renumbered and refilled", grown39 != null and grown39.zombies.size() == world.zombies.size())
+	var reference: Dictionary = saves.authored()
+	_expect("the migrations' authored start is plain save data", not var_to_str(reference).contains("Vector2"))
+	reference.zombies.clear()
+	_expect("a step cannot change the shared authored start", not saves.authored().zombies.is_empty())
+	var first: Dictionary = saves.migrations.migrate(_halved(raw, data).merged({"schema_version": 38}, true))
+	var second: Dictionary = saves.migrations.migrate(_halved(raw, data).merged({"schema_version": 38}, true))
+	_expect("upgrading the same old save twice gives the same data", not first.is_empty() and first == second)
 	quit(failures)
 
 

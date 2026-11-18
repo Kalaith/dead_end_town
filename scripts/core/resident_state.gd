@@ -1,14 +1,14 @@
 extends RefCounted
 ## Saves from before the yards were doubled hold fewer starting zombies, numbered in the old order. Renumber each lot's
-## into the first slots of its new numbering; the rest of the residents are added afterwards from a fresh world.
-const World = preload("res://scripts/sim/world.gd")
+## into the first slots of its new numbering; the rest of the residents are added afterwards from today's authored start.
 
 
-static func renumber(data: Dictionary, catalog: Dictionary) -> bool:
+## `authored` is today's starting zombies as plain save data.
+static func renumber(data: Dictionary, authored: Array) -> bool:
 	if not data.get("zombies") is Array:
 		return false
 	var slots: Dictionary = {}
-	for z: Dictionary in World.new(catalog).zombies:
+	for z: Dictionary in authored:
 		if _starting(z):
 			if not slots.has(z.home):
 				slots[z.home] = []
