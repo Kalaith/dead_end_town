@@ -1,6 +1,7 @@
 extends SceneTree
 ## Van repair on the work board: R beside the van approves it, an assigned survivor finishes it, it saves, cancels
-## with a refund, and a schema 44 save paid the old way is refunded. Run:
+## with a refund, and a schema 44 save paid the old way is refunded. The van follows the team through an exit when
+## parked near them, and stays behind otherwise. Run:
 ## Godot --headless --path . --script res://tools/check_van_repair.gd
 const Catalog = preload("res://scripts/core/catalog.gd")
 const World = preload("res://scripts/sim/world.gd")
@@ -9,6 +10,8 @@ const Vehicle = preload("res://scripts/sim/vehicle.gd")
 const VanRepair = preload("res://scripts/sim/van_repair.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
+const AreaTravel = preload("res://scripts/core/area_travel.gd")
+const Boss = preload("res://scripts/sim/boss.gd")
 const ConstructionMenu = preload("res://scripts/presentation/construction_menu.gd")
 var failures: int = 0
 
@@ -53,8 +56,27 @@ func _init() -> void:
 	raw.materials = 6
 	var up: RefCounted = saves.restore(raw)
 	_expect("a schema 44 repair paid the old way is refunded", up != null and up.materials == 10 and not bool(up.vehicle.repair_paid) and not VanRepair.pending(up))
+	_travel(data)
 	print("%d failures" % failures)
 	quit(1 if failures > 0 else 0)
+
+
+func _travel(data: Dictionary) -> void:
+	var works: Dictionary = Catalog.read("industrial")
+	var saves := SaveState.new(data, "user://check_van_repair.json")
+	var works_saves := SaveState.new(works, "user://check_van_repair.json")
+	saves.store.enabled = false
+	works_saves.store.enabled = false
+	var world := _damaged(data)
+	Boss.find(world).hp = 0.0
+	var there: RefCounted = AreaTravel.travel(world, saves, works)
+	_expect("a van parked by the team follows them to the works", there != null and bool(there.vehicle.present) and float(there.vehicle.hull) == 50.0 and not bool(there.frozen.office.vehicle.present))
+	if there == null:
+		return
+	_expect("the works with the van saves and loads", works_saves.restore(JSON.parse_string(JSON.stringify(works_saves.snapshot(there)))) != null)
+	there.player.pos = Vehicle.pos(there) + Vector2(0, 400)
+	var back: RefCounted = AreaTravel.travel(there, works_saves, data)
+	_expect("a van left far away stays in the works", back != null and not bool(back.vehicle.present) and bool(back.frozen.industrial.vehicle.present))
 
 
 ## An office street with nothing hostile, the van at 50 hull and the player beside it with 10 materials.

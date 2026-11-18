@@ -8,9 +8,13 @@ const Equipment = preload("res://scripts/sim/equipment.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
 const Routes = preload("res://scripts/sim/routes.gd")
 const Roster = preload("res://scripts/sim/roster.gd")
+const Vehicle = preload("res://scripts/sim/vehicle.gd")
+const VanRepair = preload("res://scripts/sim/van_repair.gd")
 const AwayWork = preload("res://scripts/sim/away_work.gd")
 const AwayPressure = preload("res://scripts/sim/away_pressure.gd")
 const ARRIVAL_SPACING: float = 40.0
+## The van follows the team through an exit when it is parked this close to the player as they leave.
+const VAN_FOLLOW_RANGE: float = 320.0
 
 
 ## Returns the world for `to_data`'s area, or null when its frozen record is unusable (nothing is changed then).
@@ -58,6 +62,8 @@ static func travel(world: RefCounted, saves: RefCounted, to_data: Dictionary) ->
 			destination.unlocks.append(item)
 	destination.player.hp = world.player.hp
 	_arrive(world, destination)
+	if _bring_van(world, destination):
+		record.vehicle = Vehicle.initial({})
 	# The team was just replaced by the travellers, so look again for anyone a lot here still owes.
 	Roster.catch_up(destination)
 	destination.note("%s / Arrived. Your team came with you." % str(to_data.area.name))
@@ -137,3 +143,29 @@ static func _arrive(world: RefCounted, destination: RefCounted) -> void:
 		a.job = ""
 		Jobs.initialise(a, str(world.survivors[i].duty.role))
 		destination.survivors.append(a)
+
+
+## A van parked near the door the team leaves by, with no repair under way, comes along and is parked beside the
+## arrival door with its hull as it was. Returns whether it came (the area left behind then has no van).
+static func _bring_van(world: RefCounted, destination: RefCounted) -> bool:
+	var van: Dictionary = world.vehicle
+	if not bool(van.present) or bool(van.driving) or VanRepair.pending(world) or bool(destination.vehicle.present):
+		return false
+	if Vehicle.pos(world).distance_to(world.player.pos) > VAN_FOLLOW_RANGE:
+		return false
+	var door: Vector2 = destination.player.pos
+	var heading: float = float(van.heading)
+	for offset: Vector2 in [Vector2(0, -90), Vector2(0, 90), Vector2(-120, 0), Vector2(120, 0), Vector2(-120, -90), Vector2(120, -90), Vector2(-120, 90), Vector2(120, 90), Vector2(0, -180), Vector2(0, 180)]:
+		var at: Vector2 = door + offset
+		for angle: float in [heading, 0.0, PI / 2.0]:
+			if Vehicle.fits(destination, at, angle):
+				destination.vehicle = Vehicle.initial({})
+				destination.vehicle.present = true
+				destination.vehicle.x = at.x
+				destination.vehicle.y = at.y
+				destination.vehicle.heading = angle
+				destination.vehicle.hull = float(van.hull)
+				destination.note("The van came with you; it is parked by the way in.")
+				return true
+	world.note("There was no room to park the van on the other side; it stays here.")
+	return false

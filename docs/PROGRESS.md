@@ -403,3 +403,8 @@ Still needing development (second look, most important first):
 
 - Holding R beside the stopped, damaged van approves a `van_repair` work order (4 materials, 10 s, from `vehicle.json`); the player or a survivor assigned from the board (new `Van` order, standing at the van's flank) works it off, and cancelling refunds like any project. `scripts/sim/van_repair.gd` owns it; `vehicle.repair_paid`/`repair_progress` stay as projections of the order, and saves require a pending order whenever a repair is paid. Schema 45 refunds a repair paid the old way.
 - `tools/check_van_repair.gd` (approve, on the board, Mara assigned and finishing, mid-repair save, cancel refund, schema 44 refund) passes; all 21 checks pass and the editor import is clean. Not looked at in the running game.
+
+## 18 November 2026: the van follows the team between areas
+
+- Decision taken without an answer, easy to change: the van comes through an exit or entrance with the team when it is parked within 320 px of the player as they leave, not being driven and with no repair under way. It is parked beside the arrival door (the first nearby spot it fits), keeps its hull, and the area left behind no longer has it. There is still one van; it starts in the office. A van too far away, or with nowhere to park, stays where it is. Saves now allow a van in any area (`present` is a plain flag), so no schema change.
+- `check_van_repair` adds: the van follows from the office to the works, that save loads, and a van left far away stays in the works (0 failures). Vehicle, travel, save, office, industrial, away-work and recruits checks pass. Not seen in the running game.

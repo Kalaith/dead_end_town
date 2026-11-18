@@ -16,7 +16,7 @@ static func content(data: Dictionary, errors: Array[String]) -> void:
 
 static func valid(data: Dictionary, catalog: Dictionary) -> bool:
 	var v: Variant = data.get("vehicle")
-	if not v is Dictionary or v.get("present") != catalog.has("vehicle_bay") or not v.get("driving") is bool:
+	if not v is Dictionary or not v.get("present") is bool or not v.get("driving") is bool:
 		return false
 	for key: String in ["x", "y", "heading", "speed", "hull"]:
 		if not Rules.finite(v.get(key)):
