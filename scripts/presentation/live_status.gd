@@ -1,4 +1,5 @@
 extends Control
+const Access = preload("res://scripts/presentation/access.gd")
 ## Health is a shape and a bar. Ammunition earns a number only after discovery.
 var health: float = 1.0
 var armed: bool = false
@@ -23,7 +24,7 @@ func refresh(world: RefCounted) -> void:
 func _draw() -> void:
 	var ink := Color("142426")
 	var cream := Color("e7dfc9")
-	var accent := Color("9dceb3") if health > 0.3 else Color("ffac82")
+	var accent: Color = Access.health(health)
 	draw_style_box(_backing(ink), Rect2(0, 0, 196 if armed else 132, 36))
 	draw_rect(Rect2(12, 15, 16, 6), accent)
 	draw_rect(Rect2(17, 10, 6, 16), accent)

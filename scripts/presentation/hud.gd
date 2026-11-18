@@ -21,6 +21,7 @@ const UiKit = preload("res://addons/hatchery/ui/ui_kit.gd")
 const Palette = preload("res://addons/hatchery/ui/palette.gd")
 const TeamOrders = preload("res://scripts/presentation/team_orders.gd")
 const SaveSlots = preload("res://scripts/core/save_slots.gd")
+const Captions = preload("res://scripts/presentation/captions.gd")
 const SlotControls = preload("res://scripts/presentation/slot_controls.gd")
 const CreditsPage = preload("res://addons/hatchery/ui/credits_page.gd")
 signal rescue_requested(task: String)
@@ -70,6 +71,7 @@ var town_map: VBoxContainer
 var menu_status: Label
 var slot_button: Button
 var slot_controls: HBoxContainer
+var captions: VBoxContainer
 var pause_title: Label
 var readiness: Label
 var first_button: Button
@@ -120,6 +122,9 @@ func _ready() -> void:
 	radio.add_theme_constant_override("shadow_offset_x", 2)
 	radio.add_theme_constant_override("shadow_offset_y", 2)
 	add_child(radio)
+	captions = Captions.new()
+	captions.setup(kit)
+	add_child(captions)
 	_build_menu()
 	resized.connect(_layout)
 	_layout()
@@ -308,6 +313,8 @@ func refresh(world: RefCounted, paused: bool, dt: float = 0.0) -> void:
 		message_seconds = maxf(0.0, message_seconds - dt)
 	radio.text = latest
 	radio.visible = not paused and message_seconds > 0 and not latest.is_empty()
+	captions.step(dt if not paused else 0.0)
+	captions.visible = captions.visible and not paused
 	rescue_menu.refresh(world)
 	rescue_menu.visible = rescue_menu.visible and not world.defeat_pending and not world.campaign_ended
 	defeat_menu.refresh(world, menu_status.text)

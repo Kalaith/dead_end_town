@@ -27,9 +27,6 @@ home gate were built.
 - [ ] **Listen to the sounds.** Synthesised cues and beds exist
   (`street_audio.gd`, `street_sounds.gd`) but nobody has heard them: a
   person should judge levels and character.
-- [ ] **Accessibility**: a colour-safe palette for threat and health,
-  captions for the sounds that carry information (noise draws zombies),
-  and reduced motion.
 - [ ] **Gamepad.** No pad bindings were found; add them with the toolkit's
   `input/pad_bindings.gd` and drive the pause menu and work board by pad.
 - [ ] **Credits, icon, wording.** Add a credits page with Godot's licence

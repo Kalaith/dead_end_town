@@ -26,6 +26,7 @@ const Hud = preload("res://scripts/presentation/hud.gd")
 const PlayerControls = preload("res://scripts/presentation/player_controls.gd")
 const TickPump = preload("res://addons/hatchery/core/tick_pump.gd")
 const LaunchArgs = preload("res://addons/hatchery/settings/launch_args.gd")
+const Access = preload("res://scripts/presentation/access.gd")
 const StreetAudio = preload("res://scripts/presentation/street_audio.gd")
 const ScreenFit = preload("res://addons/hatchery/settings/screen_fit.gd")
 var world: RefCounted
@@ -70,6 +71,7 @@ func _ready() -> void:
 	add_child(camera)
 	audio = StreetAudio.new()
 	add_child(audio)
+	audio.heard.connect(func(cue: String, caption: String, pos: Vector2) -> void: hud.captions.add(cue, caption, pos, world.player.pos))
 	var canvas := CanvasLayer.new()
 	add_child(canvas)
 	hud = Hud.new()
@@ -126,7 +128,7 @@ func _process(dt: float) -> void:
 		pump.run(minf(dt, 0.2), _step_world)
 	audio.listen(world, paused, dt)
 	var target := _camera_target()
-	camera.position = camera.position.lerp(target, 1.0 - exp(-dt * 8))
+	camera.position = target if Access.reduce_motion else camera.position.lerp(target, 1.0 - exp(-dt * 8))
 	if not paused:
 		# Use the current camera transform and actor position, including on frames
 		# shorter than one fixed step, before accepting an attack.

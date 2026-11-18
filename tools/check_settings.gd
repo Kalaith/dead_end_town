@@ -3,6 +3,7 @@ extends SceneTree
 ## the interface size multiplies the window's scale and the HUD's own preferences share the store. Run:
 ## Godot --headless --path . --script res://tools/check_settings.gd
 const GameSettings = preload("res://scripts/presentation/game_settings.gd")
+const Access = preload("res://scripts/presentation/access.gd")
 var failures: int = 0
 
 
@@ -20,6 +21,12 @@ func _init() -> void:
 	prefs.apply("ui_scale")
 	_expect("the largest interface size scales the window by 1.6", is_equal_approx(root.content_scale_factor, 1.6))
 	_expect("slot 3 and its name are preferences too", prefs.store.set_value("slot", 3) and prefs.store.set_value("slot_name_3", "Late game"))
+	var before: Color = Access.threat()
+	for key: String in ["colour_safe", "captions", "reduce_motion"]:
+		prefs.store.set_value(key, true)
+	prefs.apply("colour_safe")
+	_expect("colour-safe changes the threat colour", Access.colour_safe and Access.threat() != before)
+	_expect("reduced motion holds the pulse still", Access.pulse(1234) == 1.0 and Access.captions)
 	prefs.release()
 	print("%d failures" % failures)
 	quit(1 if failures > 0 else 0)

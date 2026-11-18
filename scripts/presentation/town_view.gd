@@ -19,8 +19,14 @@ var world: RefCounted
 var font: Font = ThemeDB.fallback_font
 const INK := Color("142426")
 const CREAM := Color("e7dfbf")
-const TEAL := Color("9dceb3")
-const RUST := Color("d88c63")
+const Access = preload("res://scripts/presentation/access.gd")
+## Held/healthy and threat colours come from the accessibility palette.
+var TEAL: Color:
+	get:
+		return Access.good()
+var RUST: Color:
+	get:
+		return Access.threat()
 
 
 ## Streets are authored rectangles. Alleys are plain, roads get kerbs and a centre line, and a plaza is a round
@@ -279,7 +285,7 @@ func _garden(rect: Rect2, site: Vector2) -> void:
 
 ## Downed and hurt survivors get a pulsing ring; while carrying, every valid drop-off is ringed and the nearest has a guide line.
 func _casualty_marks() -> void:
-	var pulse: float = 0.5 + 0.5 * sin(Time.get_ticks_msec() / 250.0)
+	var pulse: float = Access.pulse(Time.get_ticks_msec())
 	for a: Dictionary in Carrying.casualties(world):
 		if Carrying.carried(world, a.id) or not visible_world.grow(100).has_point(a.pos):
 			continue
@@ -322,7 +328,7 @@ func _actor(a: Dictionary, zombie: bool) -> void:
 	var heavy: bool = a.get("kind") in ["brute", "breaker"]
 	_ellipse(pos + Vector2(1, 4), Vector2(21, 9) if heavy else Vector2(15, 7), Color(0, 0, 0, 0.3))
 	var body: Color = (Color("8a5a4a") if a.get("kind") == "brute" else Color("6f6a76") if a.get("kind") == "breaker" else Color("788357")) if zombie else (Color("dfad62") if a.id == "you" else (Color("7daeb9") if a.id == "mara" else (Color("91b69e") if a.id == "ellis" else Color("9dc1ce") if a.id == "june" else Color("e0903a") if a.id == "theo" else Color("8f6bc0") if a.id == "nia" else Color("4a6fb5") if a.id == "rowan" else Color("b7a0c8"))))
-	if float(a.flash) > 0:
+	if float(a.flash) > 0 and not Access.reduce_motion:
 		body = Color("fff0d5")
 	draw_line(pos + Vector2(-5, -3), pos + Vector2(-6, 3), INK, 5)
 	draw_line(pos + Vector2(5, -3), pos + Vector2(6, 3), INK, 5)
@@ -423,7 +429,7 @@ func _entrance() -> void:
 func _baboon(a: Dictionary) -> void:
 	var pos: Vector2 = a.pos
 	var direction: Vector2 = a.facing
-	var fur: Color = Color("fff0d5") if float(a.flash) > 0 else Color("5e4a3f")
+	var fur: Color = Color("fff0d5") if float(a.flash) > 0 and not Access.reduce_motion else Color("5e4a3f")
 	_ellipse(pos + Vector2(2, 6), Vector2(34, 14), Color(0, 0, 0, 0.35))
 	draw_line(pos + Vector2(-18, -4), pos + Vector2(-20, 8), INK, 9)
 	draw_line(pos + Vector2(18, -4), pos + Vector2(20, 8), INK, 9)
