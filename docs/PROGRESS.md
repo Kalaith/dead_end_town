@@ -412,3 +412,9 @@ Still needing development (second look, most important first):
 ## 18 November 2026: tips for the work board and the later areas
 
 - New tips: `work_board` (paid-for work and a team: press J; learned when the board is opened with J), `area_office` and `area_industrial` (on first arrival, in the area's first two minutes, for 12 s: who holds the way out and where, and what lies behind). The `van` tip now mentions the repair job and that a van parked by an exit comes along. `check_tips` covers both welcomes and the board tip (0 failures); catalog passes. Wording is unplayed.
+
+## 18 November 2026: save slots can be named and deleted
+
+- The pause menu's Street page has a second save row (`scripts/presentation/slot_controls.gd`): a name for the chosen slot (Enter or leaving the field; up to 24 characters, kept with the preferences, shown on the slot button) and Delete slot, which asks for a second press and removes the save with its backup and any kept or damaged copies. A run with saving off deletes nothing. `SaveSlots.root` lets tours and checks use their own folder.
+- Bug found on the way: the chosen slot was never remembered past slot 1, because the preference accepted only 0 to 1. The HUD now gives it the 1-3 range.
+- The overwrite prompt was seen for the first time (`pause_overwrite_prompt`), with `pause_delete_armed` and `pause_save_slots`, from `tools/capture_slots.gd` in its own folder. `check_slots` adds names, delete and the remembered slot (0 failures). The `screen_*` set was recaptured with the new row.

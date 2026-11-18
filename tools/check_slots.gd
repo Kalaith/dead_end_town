@@ -23,8 +23,27 @@ func _init() -> void:
 	_expect("a file reports the seconds it holds", is_equal_approx(SaveSlots.seconds("user://check_slot_a.json"), 600.0) and SaveSlots.seconds("user://check_slot_missing.json") == 0.0)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://check_slot_a.json"))
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://check_slot_a.json.bak"))
+	_names_and_delete(data, world)
 	print("%d failures" % failures)
 	quit(1 if failures > 0 else 0)
+
+
+## Slot files in a folder of the check's own: a name shows on the button, Delete removes the save and its copies,
+## and the chosen slot (2 or 3) is remembered.
+func _names_and_delete(data: Dictionary, world: RefCounted) -> void:
+	SaveSlots.root = "user://check_slots/"
+	var save := SaveState.new(data, SaveSlots.path(2))
+	_expect("a slot in the check folder saves", save.store.save_data(save.snapshot(world)) and save.store.save_data(save.snapshot(world)))
+	_expect("a named slot shows its name", SaveSlots.summary(2, "", SaveSlots.clean_name("  Sunday run  ")) == "Slot 2 · Sunday run · suburb 10m")
+	_expect("names are cut to fit", SaveSlots.clean_name("x".repeat(60)).length() == SaveSlots.NAME_LENGTH)
+	_expect("deleting removes the save and its backup", SaveSlots.remove(2) and not FileAccess.file_exists(SaveSlots.path(2)) and not FileAccess.file_exists(SaveSlots.path(2) + ".bak"))
+	_expect("the deleted slot reads as empty", SaveSlots.summary(2) == "Slot 2 · empty" and not SaveSlots.remove(2))
+	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://check_slots/"))
+	SaveSlots.root = "user://"
+	var hud: Control = load("res://scripts/presentation/hud.gd").new()
+	hud.settings.save_enabled = false
+	_expect("slot 3 can be remembered", hud.settings.set_value("slot", 3) and hud.settings.set_value(SaveSlots.name_key(3), "Late game"))
+	hud.free()
 
 
 func _expect(label: String, ok: bool) -> void:

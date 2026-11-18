@@ -22,9 +22,6 @@ home gate were built.
 
 ## 2. Known gaps (buildable)
 
-- [ ] **Save slots cannot be deleted or named.** Add both, and capture the
-  overwrite prompt, which has never been seen (`tools/capture_slots.gd`).
-
 ## 3. Missing basics (G09 has not started)
 
 - [ ] **Sound.** No audio code was found. Synthesise with the toolkit:

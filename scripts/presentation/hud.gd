@@ -19,6 +19,8 @@ const Roadworks = preload("res://scripts/sim/roadworks.gd")
 const UiKit = preload("res://addons/hatchery/ui/ui_kit.gd")
 const Palette = preload("res://addons/hatchery/ui/palette.gd")
 const TeamOrders = preload("res://scripts/presentation/team_orders.gd")
+const SaveSlots = preload("res://scripts/core/save_slots.gd")
+const SlotControls = preload("res://scripts/presentation/slot_controls.gd")
 const CreditsPage = preload("res://addons/hatchery/ui/credits_page.gd")
 signal rescue_requested(task: String)
 signal medicine_requested(mode: String, target: int, reserve: int)
@@ -30,6 +32,7 @@ signal work_located(socket: String)
 signal work_assigned(socket: String, id: String)
 signal production_cancelled
 signal requested(command: String)
+signal slot_named(text: String)
 signal equipment_requested(actor_id: String, slot: String, item_id: String)
 signal assignment_requested(survivor_id: String, task: String)
 var sections: Dictionary = {}
@@ -50,7 +53,7 @@ var tip_log: Label
 var tips_on: bool = true
 var tip_switch: Button
 ## Preferences live apart from the saved street, so starting a new street keeps them.
-var settings := SettingsStore.new({"tips": true, "slot": 1})
+var settings := SettingsStore.new({"tips": true, "slot": 1, "slot_name_1": "", "slot_name_2": "", "slot_name_3": ""})
 var radio: Label
 var team_orders: VBoxContainer
 var supplies: Label
@@ -62,11 +65,17 @@ var equipment_menu: VBoxContainer
 var town_map: VBoxContainer
 var menu_status: Label
 var slot_button: Button
+var slot_controls: HBoxContainer
 var pause_title: Label
 var readiness: Label
 var first_button: Button
 var last_message: String = ""
 var message_seconds: float = 0.0
+
+
+func _init() -> void:
+	# The chosen save slot is 1 to 3, not the store's default 0..1 range.
+	settings.ranges["slot"] = Vector2(1, SaveSlots.COUNT)
 
 
 func _ready() -> void:
@@ -225,6 +234,11 @@ func _build_menu() -> void:
 		var button: Button = kit.button(entry[0], func() -> void: requested.emit(command))
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(button)
+	slot_controls = SlotControls.new()
+	slot_controls.build(kit)
+	sections.Street.add_child(slot_controls)
+	slot_controls.named.connect(func(text: String) -> void: slot_named.emit(text))
+	slot_controls.delete_confirmed.connect(func() -> void: requested.emit("delete"))
 	menu_status = kit.label("", 18)
 	menu_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(menu_status)

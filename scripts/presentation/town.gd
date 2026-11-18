@@ -72,6 +72,7 @@ func _ready() -> void:
 	canvas.add_child(hud)
 	hud.load_preferences(storage_enabled)
 	hud.requested.connect(command)
+	hud.slot_named.connect(name_slot)
 	hud.rescue_requested.connect(dismiss_rescue)
 	hud.production_requested.connect(configure_production)
 	hud.medicine_requested.connect(configure_medicine)
@@ -88,7 +89,7 @@ func _ready() -> void:
 	slot = clampi(int(hud.settings.values.slot), 1, SaveSlots.COUNT)
 	save_state = SaveState.new(world.catalog, SaveSlots.path(slot))
 	save_state.store.enabled = storage_enabled
-	hud.slot_button.text = SaveSlots.summary(slot)
+	_show_slot()
 	# Loading is explicit, so opening the prototype cannot overwrite a run.
 	if storage_enabled:
 		_open_saved_area()
@@ -246,17 +247,26 @@ func command(value: String) -> void:
 			save_state.store.enabled = storage_enabled
 			hud.settings.set_value("slot", slot)
 			hud.settings.save_settings()
-			hud.slot_button.text = SaveSlots.summary(slot)
+			_show_slot()
 			hud.menu_status.text = "Save and Load now use slot %d." % slot
+		"delete":
+			var gone: bool = SaveSlots.remove(slot) if storage_enabled else false
+			hud.settings.set_value(SaveSlots.name_key(slot), "")
+			hud.settings.save_settings()
+			_show_slot()
+			if not storage_enabled:
+				hud.menu_status.text = "Saving is off in this run, so nothing was deleted."
+			else:
+				hud.menu_status.text = ("Slot %d deleted. Your current street is unchanged." % slot) if gone else ("Slot %d was already empty." % slot)
 		"save":
 			# A slot holding a longer run than this one is probably someone else's progress: ask first.
 			if not overwrite_ok and SaveSlots.seconds(save_state.store.path) > AreaTravel.played(world) + 1.0:
 				overwrite_ok = true
-				hud.menu_status.text = "%s holds a longer run than this one. Press Save again to overwrite it." % SaveSlots.summary(slot)
+				hud.menu_status.text = "%s holds a longer run than this one. Press Save again to overwrite it." % _slot_summary()
 				return
 			var okay: bool = save_state.store.save_data(save_state.snapshot(world))
 			hud.menu_status.text = ("Street saved to slot %d. Previous good save retained as backup." % slot) if okay else save_state.store.last_error
-			hud.slot_button.text = SaveSlots.summary(slot)
+			_show_slot()
 		"load":
 			_open_saved_area()
 			var data: Dictionary = save_state.store.load_data()
@@ -313,6 +323,26 @@ func _enter(next: RefCounted, data: Dictionary) -> void:
 
 
 ## A save belongs to one area; load that area's content before reading it.
+func _slot_summary() -> String:
+	return SaveSlots.summary(slot, "", str(hud.settings.values.get(SaveSlots.name_key(slot), "")))
+
+
+func _show_slot() -> void:
+	hud.slot_button.text = _slot_summary()
+	hud.slot_controls.show_name(str(hud.settings.values.get(SaveSlots.name_key(slot), "")))
+
+
+## The player named the chosen slot; an empty name clears it.
+func name_slot(text: String) -> void:
+	var label: String = SaveSlots.clean_name(text)
+	if label == str(hud.settings.values.get(SaveSlots.name_key(slot), "")):
+		return
+	hud.settings.set_value(SaveSlots.name_key(slot), label)
+	hud.settings.save_settings()
+	_show_slot()
+	hud.menu_status.text = ("Slot %d is now called %s." % [slot, label]) if not label.is_empty() else ("Slot %d has no name now." % slot)
+
+
 func _open_saved_area() -> void:
 	if not FileAccess.file_exists(save_state.store.path):
 		return
