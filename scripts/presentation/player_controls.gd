@@ -8,6 +8,8 @@ func observe(event: InputEvent) -> void:
 		mouse_aiming = true
 	elif event is InputEventMouseButton and event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT] and event.pressed:
 		mouse_aiming = true
+	elif event is InputEventJoypadButton or (event is InputEventJoypadMotion and absf(event.axis_value) > 0.35):
+		mouse_aiming = false
 	elif event is InputEventKey and event.pressed and not event.echo and event.physical_keycode in [KEY_W, KEY_A, KEY_S, KEY_D, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE]:
 		mouse_aiming = false
 

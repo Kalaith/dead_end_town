@@ -2,6 +2,7 @@ extends "res://addons/hatchery/settings/settings_bundle.gd"
 ## Dead End Town's preferences and settings page: sound volumes, full screen, interface size (on top of screen fit)
 ## and rebindable keys, in one file with the HUD's own preferences (tips, the chosen save slot and slot names).
 const KeyBindings = preload("res://addons/hatchery/input/key_bindings.gd")
+const PadBindings = preload("res://addons/hatchery/input/pad_bindings.gd")
 const Access = preload("res://scripts/presentation/access.gd")
 const SaveSlots = preload("res://scripts/core/save_slots.gd")
 ## A fraction of 0.25 on the 0.8..1.6 interface size range is 100 %.
@@ -18,6 +19,13 @@ const ACTIONS: Dictionary = {
 	"order_engage": "Team: engage", "order_home": "Team: guard home",
 }
 
+## Rebindable gamepad buttons; the sticks move and aim, the right trigger shoots and Start pauses.
+const PAD_ACTIONS: Dictionary = {
+	"attack": "Swing", "interact": "Interact / carry", "work": "Work / repair", "team": "Team orders",
+	"work_board": "Work board", "town_map": "Town map", "road_guard": "Post road guard", "salvage": "Strip timber",
+	"order_follow": "Team: follow", "order_hold": "Team: hold", "order_engage": "Team: engage", "order_home": "Team: guard home",
+}
+
 
 func _init(scene_tree: SceneTree) -> void:
 	super(DEFAULTS, scene_tree, {"Master": "master", "Effects": "effects", "Ambience": "ambience"})
@@ -25,6 +33,8 @@ func _init(scene_tree: SceneTree) -> void:
 	store.keys = KeyBindings.new(ACTIONS)
 	# With no preferences file yet (or saving off) the page still needs the project's keys to show and rebind.
 	store.key_bindings = store.keys.defaults()
+	store.pad = PadBindings.new(PAD_ACTIONS, [JOY_BUTTON_START])
+	store.pad_bindings = store.pad.defaults()
 	engine.scale_min = 0.8
 	engine.scale_max = 1.6
 	sections = [

@@ -432,3 +432,8 @@ Still needing development (second look, most important first):
 ## 18 November 2026: accessibility
 
 - Settings → Accessibility: Colour-safe threat and health (`access.gd` swaps the teal/rust pair for blue `#56b4e9` / orange `#e69f00`, the live health bar too), Captions for sounds (`captions.gd`, bottom right on a dark backing: gunshot, engine, a struck gate or barricade, a groan nearby, each with left/right/nearby, 3 s, repeats refresh their line), and Reduce motion (pulsing rings held still, no white hit flash, the camera snaps). `check_settings` covers the palette swap and still pulse; `access_off` and `access_on` were looked at. Not judged by anyone with colour blindness.
+
+## 18 November 2026: gamepad
+
+- Every action has a pad binding (left stick moves, right stick aims, right trigger shoots through a new `shoot` action that also holds right mouse, X swings, A interacts, B works, Y team orders, Back the work board, LB the town map, RB posts a road guard, left stick press strips timber, the d-pad gives the four team orders, Start pauses). The 12 button actions can be rebound on the settings page (`PadBindings`, Start reserved). The project now adds A to `ui_accept` and B to `ui_cancel`: Godot's defaults have no pad button for them, so A could not press a focused menu button.
+- `tools/capture_pad.gd` drives the game only with joypad events: Start pauses (`pad_pause`), the d-pad moves focus and A presses a tab (`pad_tab_pressed`, the Town page opened), Start resumes, and the settings page lists the buttons (`pad_bindings`); all looked at. Settings, slots, tips and audio checks pass. No real pad was used.

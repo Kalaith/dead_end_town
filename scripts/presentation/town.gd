@@ -134,8 +134,12 @@ func _process(dt: float) -> void:
 		# shorter than one fixed step, before accepting an attack.
 		camera.force_update_scroll()
 		world.aim = controls.direction(world.move_input, get_global_mouse_position() - world.player.pos, world.aim, Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) or Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT), Input.is_physical_key_pressed(KEY_SPACE))
+		# A gamepad's right stick aims; otherwise the pad aims where the player walks.
+		var stick := Vector2(Input.get_joy_axis(0, JOY_AXIS_RIGHT_X), Input.get_joy_axis(0, JOY_AXIS_RIGHT_Y))
+		if stick.length() > 0.35:
+			world.aim = stick.normalized()
 		world.face_aim()
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+		if Input.is_action_pressed("shoot"):
 			world.shoot()
 		elif Input.is_action_pressed("attack"):
 			world.attack()

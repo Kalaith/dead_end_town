@@ -27,8 +27,9 @@ home gate were built.
 - [ ] **Listen to the sounds.** Synthesised cues and beds exist
   (`street_audio.gd`, `street_sounds.gd`) but nobody has heard them: a
   person should judge levels and character.
-- [ ] **Gamepad.** No pad bindings were found; add them with the toolkit's
-  `input/pad_bindings.gd` and drive the pause menu and work board by pad.
+- [ ] **Try a real gamepad.** Bindings and menu focus were driven by
+  injected events only; a person with a pad should play a few minutes
+  (right-stick aim, trigger to shoot, Start/Back, d-pad orders).
 - [ ] **Credits, icon, wording.** Add a credits page with Godot's licence
   text, set the Windows icon and product details
   (`application/modify_resources=false` today), and drop "work-in-progress
