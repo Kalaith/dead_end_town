@@ -110,8 +110,41 @@ func _init() -> void:
 	kit.step(0.05)
 	_expect("assigning it ends the tip", Tips.current(kit) != "field_bag")
 	_expect("tips never touched the stock", int(world.food) == int(data.balance.starting_food) and int(world.materials) == int(data.balance.starting_materials))
+	_areas_and_board()
 	print("%d failures" % failures)
 	quit(1 if failures > 0 else 0)
+
+
+## Each later area greets a fresh arrival once; paid-for work points at the work board until it is opened.
+func _areas_and_board() -> void:
+	for id: String in ["office", "industrial"]:
+		var area: RefCounted = World.new(Catalog.read(id))
+		for z: Dictionary in area.zombies:
+			z.hp = 0.0
+		area.tips.moved = true
+		area.step(0.05)
+		_expect("arriving in the %s shows its welcome (%s)" % [id, Tips.current(area)], Tips.current(area) == "area_" + id and not Tips.text(area, Tips.current(area)).is_empty())
+		for i: int in range(140):
+			area.step(0.1)
+		_expect("the %s welcome goes after a while" % id, Tips.current(area) != "area_" + id)
+	var data: Dictionary = Catalog.read()
+	var board := World.new(data)
+	for z: Dictionary in board.zombies:
+		z.hp = 0.0
+	board.elapsed = 100.0
+	board.properties.home.open = true
+	board.properties.garden.looted = true
+	board.properties.garden.claimed_once = true
+	board.properties.garden.claimed = true
+	board.player.pos = Vector2(board.definition("garden").site[0], board.definition("garden").site[1])
+	board.materials = 100
+	board.interact()
+	board.player.pos += Vector2(0, 300)
+	board.step(0.05)
+	_expect("paid-for work teaches the work board (%s)" % Tips.current(board), Tips.current(board) == "work_board")
+	Tips.saw_board(board)
+	board.step(0.05)
+	_expect("opening the board ends it", Tips.current(board) != "work_board")
 
 
 func _expect(label: String, ok: bool) -> void:

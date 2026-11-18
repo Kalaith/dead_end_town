@@ -5,19 +5,22 @@ const HomeRest = preload("res://scripts/sim/home_rest.gd")
 const Equipment = preload("res://scripts/sim/equipment.gd")
 const Salvage = preload("res://scripts/sim/salvage.gd")
 const Vehicle = preload("res://scripts/sim/vehicle.gd")
+const WorkOrders = preload("res://scripts/sim/work_orders.gd")
 
 ## Guidance follows what the world looks like, never a fixed script: the first tip whose moment has come and whose
 ## lesson has not been learned is shown. Nothing here changes the game, spends anything or is saved; what cannot be read
 ## from saved state (walked, swung, lifted) is remembered for the session only, and a save past a minute counts as taught.
-const ORDER: Array[String] = ["move", "swing", "orders", "pistol", "noise", "carry", "carry_drop", "rest", "gate_repair", "gate_open", "reclaim", "timber", "loadout", "field_bag", "van", "arrivals"]
+const ORDER: Array[String] = ["move", "area_office", "area_industrial", "swing", "orders", "pistol", "noise", "carry", "carry_drop", "rest", "gate_repair", "gate_open", "reclaim", "timber", "loadout", "field_bag", "van", "work_board", "arrivals"]
 const WALK_DISTANCE: float = 150.0
 const ZOMBIE_NEAR: float = 220.0
 const INFO_SECONDS: float = 12.0
 const VETERAN_SECONDS: float = 60.0
+## An area's welcome shows only in the first minutes after first arriving there.
+const ARRIVAL_SECONDS: float = 120.0
 
 
 static func initial(world: RefCounted) -> Dictionary:
-	return {"origin": world.player.pos, "moved": false, "swung": false, "opened": false, "lifted": false, "dropped": false, "rested": false, "ordered": false, "salvaged": false, "shot": false, "drove": false, "shown": {}, "current": ""}
+	return {"origin": world.player.pos, "moved": false, "swung": false, "opened": false, "lifted": false, "dropped": false, "rested": false, "ordered": false, "salvaged": false, "shot": false, "drove": false, "board": false, "shown": {}, "current": ""}
 
 
 ## Called once per fixed step: notes the things only the moment can show.
@@ -103,6 +106,10 @@ static func _due(world: RefCounted, id: String) -> bool:
 			return Vehicle.near(world)
 		"arrivals":
 			return bool(world.pressure.warned)
+		"work_board":
+			return not world.survivors.is_empty() and world.orders.sites.values().any(func(o: Dictionary) -> bool: return o.kind != "production" and WorkOrders.pending(o))
+		"area_office", "area_industrial":
+			return world.area == id.trim_prefix("area_") and float(world.elapsed) < ARRIVAL_SECONDS
 	return false
 
 
@@ -139,9 +146,16 @@ static func _learned(world: RefCounted, id: String) -> bool:
 			return not world.equipment.field_bag.is_empty()
 		"van":
 			return t.drove
-		"arrivals":
+		"arrivals", "area_office", "area_industrial":
 			return float(t.shown.get(id, 0.0)) >= INFO_SECONDS
+		"work_board":
+			return t.board
 	return true
+
+
+## The work board was opened (J): its tip has done its job.
+static func saw_board(world: RefCounted) -> void:
+	world.tips.board = true
 
 
 static func _reclaimed(world: RefCounted) -> bool:

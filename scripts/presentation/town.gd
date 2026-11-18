@@ -7,6 +7,7 @@ const Clinic = preload("res://scripts/sim/clinic.gd")
 const Roster = preload("res://scripts/sim/roster.gd")
 const Jobs = preload("res://scripts/sim/jobs.gd")
 const WorkOrders = preload("res://scripts/sim/work_orders.gd")
+const Tips = preload("res://scripts/sim/tips.gd")
 const VanRepair = preload("res://scripts/sim/van_repair.gd")
 const Repairs = preload("res://scripts/sim/repairs.gd")
 const Roadworks = preload("res://scripts/sim/roadworks.gd")
@@ -216,6 +217,7 @@ func command(value: String) -> void:
 				paused = false
 				hud.refresh(world, false)
 		"work":
+			Tips.saw_board(world)
 			if world.clinic.done or Facility.state(world, "munitions").looted or ConstructionMenu.available(world):
 				paused = true
 				hud.refresh(world, true)

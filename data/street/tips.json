@@ -15,7 +15,10 @@
     "noise": "Gunshots and engines are loud and pull zombies from far off, even ones that have not seen you. Keep them away from home and from anyone hurt.",
     "loadout": "The workshop has armour and a shield ready. Press F, open Loadouts, and give them to a survivor who fights.",
     "field_bag": "Someone is hurt and the field bag is unassigned. Press F, open Loadouts and give it to a survivor: they can then treat people in the field.",
-    "van": "Press E beside the van to drive it: W/S throttle, A/D steer. Followers close by ride along, a casualty in your arms comes too, and holding R beside it repairs the hull.",
-    "arrivals": "Raiders are coming along the road from the entrance. Keep gates shut and fall back to home."
+    "van": "Press E beside the van to drive it: W/S throttle, A/D steer. Followers close by ride along, a casualty in your arms comes too. Hold R beside it to start a repair that you or a survivor can finish. Park it near an exit and it comes with you.",
+    "arrivals": "Raiders are coming along the road from the entrance. Keep gates shut and fall back to home.",
+    "work_board": "Paid-for work waits on the work board. Press J to see it, put a survivor on each job and mark what comes first.",
+    "area_office": "The Office District. The Warden holds the service stair out, in the north-west. The bridge behind you leads back to the suburb, and a van is parked by home.",
+    "area_industrial": "The Industrial Works. The Foreman guards the main gate in the north-west: past it the road leaves town for good. The service road behind you leads back."
   }
 }

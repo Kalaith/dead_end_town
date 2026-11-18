@@ -408,3 +408,7 @@ Still needing development (second look, most important first):
 
 - Decision taken without an answer, easy to change: the van comes through an exit or entrance with the team when it is parked within 320 px of the player as they leave, not being driven and with no repair under way. It is parked beside the arrival door (the first nearby spot it fits), keeps its hull, and the area left behind no longer has it. There is still one van; it starts in the office. A van too far away, or with nowhere to park, stays where it is. Saves now allow a van in any area (`present` is a plain flag), so no schema change.
 - `check_van_repair` adds: the van follows from the office to the works, that save loads, and a van left far away stays in the works (0 failures). Vehicle, travel, save, office, industrial, away-work and recruits checks pass. Not seen in the running game.
+
+## 18 November 2026: tips for the work board and the later areas
+
+- New tips: `work_board` (paid-for work and a team: press J; learned when the board is opened with J), `area_office` and `area_industrial` (on first arrival, in the area's first two minutes, for 12 s: who holds the way out and where, and what lies behind). The `van` tip now mentions the repair job and that a van parked by an exit comes along. `check_tips` covers both welcomes and the board tip (0 failures); catalog passes. Wording is unplayed.

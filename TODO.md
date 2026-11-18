@@ -22,7 +22,6 @@ home gate were built.
 
 ## 2. Known gaps (buildable)
 
-- [ ] **Tips are missing** for the work board (J) and for areas 2 and 3.
 - [ ] **Save slots cannot be deleted or named.** Add both, and capture the
   overwrite prompt, which has never been seen (`tools/capture_slots.gd`).
 
