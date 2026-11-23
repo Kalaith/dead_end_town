@@ -163,7 +163,9 @@ func _start_analytics() -> void:
 	analytics = SignalsClient.new()
 	add_child(analytics)
 	analytics.is_playing = func() -> bool: return world != null and not paused and not hud.settings_host.is_open()
-	analytics.start("res://data/analytics.json", SignalsConfig.allowed(), bool(hud.settings.values.get(SignalsClient.SETTING_KEY, true)), false)
+	# A tools/ script driving the game (a custom SceneTree) never reports.
+	var allowed: bool = SignalsConfig.allowed() and get_tree().get_script() == null
+	analytics.start("res://data/analytics.json", allowed, bool(hud.settings.values.get(SignalsClient.SETTING_KEY, true)), false)
 	hud.prefs.changed.connect(func(key: String) -> void:
 		if key == SignalsClient.SETTING_KEY or key.is_empty():
 			analytics.set_enabled(bool(hud.settings.values.get(SignalsClient.SETTING_KEY, true))))
