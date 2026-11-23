@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "endpoint": "https://webhatchery.au/game_analytics/api/v1/events",
+  "game": "dead_end_town",
+  "write_key": "hs-c6c059ac491f67e8f12e78f13f174c9f9da4766a175c55e9"
+}
