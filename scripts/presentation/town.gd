@@ -29,6 +29,10 @@ const LaunchArgs = preload("res://addons/hatchery/settings/launch_args.gd")
 const Access = preload("res://scripts/presentation/access.gd")
 const StreetAudio = preload("res://scripts/presentation/street_audio.gd")
 const ScreenFit = preload("res://addons/hatchery/settings/screen_fit.gd")
+const SignalsClient = preload("res://addons/hatchery/telemetry/signals_client.gd")
+const SignalsConfig = preload("res://addons/hatchery/telemetry/signals_config.gd")
+const StreetMilestones = preload("res://scripts/presentation/street_milestones.gd")
+const MILESTONE_POLL_SECONDS: float = 3.0
 var world: RefCounted
 var save_state: RefCounted
 var slot: int = 1
@@ -43,6 +47,11 @@ var defeat_shown: bool = false
 var storage_enabled: bool = true
 var controls := PlayerControls.new()
 var audio: Node
+## Anonymous play stats for Hatchery Signals, for the whole launch.
+var analytics: SignalsClient
+var _milestone_poll: float = MILESTONE_POLL_SECONDS
+## The campaign was still open when last seen, so its end is a real finish.
+var _campaign_open: bool = false
 
 
 ## Keeps the visible view inside the area, centring any axis the area is smaller than.
@@ -77,6 +86,7 @@ func _ready() -> void:
 	hud = Hud.new()
 	canvas.add_child(hud)
 	hud.load_preferences(storage_enabled)
+	_start_analytics()
 	hud.requested.connect(command)
 	hud.slot_named.connect(name_slot)
 	hud.rescue_requested.connect(dismiss_rescue)
@@ -145,6 +155,31 @@ func _process(dt: float) -> void:
 			world.attack()
 	view.queue_redraw()
 	hud.refresh(world, paused, dt)
+	_report_milestones(dt)
+
+
+## Reporting runs for the whole launch; active time counts while the street runs.
+func _start_analytics() -> void:
+	analytics = SignalsClient.new()
+	add_child(analytics)
+	analytics.is_playing = func() -> bool: return world != null and not paused and not hud.settings_host.is_open()
+	analytics.start("res://data/analytics.json", SignalsConfig.allowed(), bool(hud.settings.values.get(SignalsClient.SETTING_KEY, true)), false)
+	hud.prefs.changed.connect(func(key: String) -> void:
+		if key == SignalsClient.SETTING_KEY or key.is_empty():
+			analytics.set_enabled(bool(hud.settings.values.get(SignalsClient.SETTING_KEY, true))))
+
+
+## Every few seconds the world's progress becomes once-per-install milestones.
+func _report_milestones(dt: float) -> void:
+	_milestone_poll -= dt
+	if _milestone_poll > 0.0 or analytics == null or not analytics.is_enabled():
+		return
+	_milestone_poll = MILESTONE_POLL_SECONDS
+	for name in StreetMilestones.reached(world):
+		analytics.milestone_once(name)
+	if world.campaign_ended and _campaign_open:
+		analytics.game_completed()
+	_campaign_open = not world.campaign_ended
 
 
 ## One fixed step of the street. A defeat or a rescue stops this frame's steps.

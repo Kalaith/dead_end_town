@@ -5,10 +5,12 @@ const KeyBindings = preload("res://addons/hatchery/input/key_bindings.gd")
 const PadBindings = preload("res://addons/hatchery/input/pad_bindings.gd")
 const Access = preload("res://scripts/presentation/access.gd")
 const SaveSlots = preload("res://scripts/core/save_slots.gd")
+const SignalsClient = preload("res://addons/hatchery/telemetry/signals_client.gd")
 ## A fraction of 0.25 on the 0.8..1.6 interface size range is 100 %.
 const DEFAULTS: Dictionary = {
 	"master": 0.8, "effects": 0.9, "ambience": 0.6, "muted": false, "fullscreen": false, "ui_scale": 0.25, "colour_safe": false, "captions": false, "reduce_motion": false,
 	"tips": true, "slot": 1, "slot_name_1": "", "slot_name_2": "", "slot_name_3": "",
+	SignalsClient.SETTING_KEY: true,
 }
 ## Rebindable actions in the order the Controls tab lists them.
 const ACTIONS: Dictionary = {
@@ -39,11 +41,11 @@ func _init(scene_tree: SceneTree) -> void:
 	engine.scale_max = 1.6
 	sections = [
 		{"title": "Sound", "sliders": ["master", "effects", "ambience"], "toggles": ["muted"]},
-		{"title": "Display", "sliders": ["ui_scale"], "toggles": ["fullscreen"]},
+		{"title": "Display", "sliders": ["ui_scale"], "toggles": ["fullscreen", SignalsClient.SETTING_KEY]},
 		{"title": "Accessibility", "sliders": [], "toggles": ["colour_safe", "captions", "reduce_motion"]},
 	]
 	engine.extra = _accessibility
-	words = {"setting_master": "Master volume", "setting_effects": "Effects", "setting_ambience": "Ambience", "setting_muted": "Mute", "setting_fullscreen": "Full screen", "setting_ui_scale": "Interface size", "setting_colour_safe": "Colour-safe threat and health", "setting_captions": "Captions for sounds", "setting_reduce_motion": "Reduce motion"}
+	words = {"setting_master": "Master volume", "setting_effects": "Effects", "setting_ambience": "Ambience", "setting_muted": "Mute", "setting_fullscreen": "Full screen", "setting_ui_scale": "Interface size", "setting_colour_safe": "Colour-safe threat and health", "setting_captions": "Captions for sounds", "setting_reduce_motion": "Reduce motion", "setting_" + SignalsClient.SETTING_KEY: SignalsClient.SETTING_LABEL}
 	panel_size = Vector2(820, 760)
 
 
